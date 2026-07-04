@@ -1,0 +1,185 @@
+/* ==================================================================
+   MONKEY-PARTY - global styles (dark jungle theme)
+   ================================================================== */
+
+:root {
+  --jungle-bg-0: #08140c;
+  --jungle-bg-1: #0c1f12;
+  --jungle-bg-2: #10281a;
+  --jungle-panel: rgba(12, 31, 18, 0.88);
+  --jungle-panel-border: rgba(158, 215, 106, 0.25);
+  --leaf-100: #e8f5d8;
+  --leaf-300: #9ed76a;
+  --leaf-500: #58a35c;
+  --leaf-700: #2c5e38;
+  --banana-400: #ffd94d;
+  --banana-600: #e0a800;
+  --danger: #ff7a5c;
+  --font-display: 'Trebuchet MS', 'Segoe UI', Verdana, sans-serif;
+  --font-body: 'Segoe UI', 'Trebuchet MS', Verdana, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: var(--jungle-bg-1);
+  color: var(--leaf-100);
+  font-family: var(--font-body);
+}
+
+/* ------------------------------------------------------------------
+   Layers: canvas below, UI overlay above
+   ------------------------------------------------------------------ */
+
+#game {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  z-index: 0;
+  background:
+    radial-gradient(ellipse 90% 60% at 50% -10%, rgba(58, 125, 68, 0.35), transparent 60%),
+    linear-gradient(180deg, var(--jungle-bg-0) 0%, var(--jungle-bg-1) 55%, var(--jungle-bg-2) 100%);
+}
+
+#ui-root {
+  position: fixed;
+  inset: 0;
+  z-index: 10;
+  pointer-events: none; /* screens re-enable pointer events themselves */
+}
+
+/* ------------------------------------------------------------------
+   Screen router: fade transitions
+   ------------------------------------------------------------------ */
+
+.screen {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  pointer-events: auto;
+  opacity: 0;
+  transform: translateY(6px);
+  transition: opacity 0.25s ease, transform 0.25s ease;
+  overflow: auto;
+}
+
+.screen--visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.screen--exit {
+  opacity: 0;
+  transform: translateY(-6px);
+  pointer-events: none;
+}
+
+/* ------------------------------------------------------------------
+   Shared UI bits
+   ------------------------------------------------------------------ */
+
+.panel {
+  background: var(--jungle-panel);
+  border: 1px solid var(--jungle-panel-border);
+  border-radius: 16px;
+  padding: 28px 36px;
+  box-shadow: 0 12px 48px rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(4px);
+  max-width: min(560px, 92vw);
+}
+
+.title {
+  margin: 0 0 4px;
+  font-family: var(--font-display);
+  font-size: clamp(1.8rem, 5vw, 3rem);
+  font-weight: 900;
+  letter-spacing: 0.1em;
+  color: var(--banana-400);
+  text-shadow: 0 2px 0 #7a5c00, 0 6px 24px rgba(0, 0, 0, 0.6);
+  text-align: center;
+}
+
+.subtitle {
+  margin: 0 0 20px;
+  text-align: center;
+  color: var(--leaf-300);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  font-size: 0.85rem;
+}
+
+.button {
+  display: inline-block;
+  padding: 10px 22px;
+  border: none;
+  border-radius: 999px;
+  background: linear-gradient(180deg, var(--banana-400), var(--banana-600));
+  color: #3a2b00;
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+  box-shadow: 0 4px 0 #8a6a00, 0 8px 20px rgba(0, 0, 0, 0.4);
+  transition: transform 0.1s ease, box-shadow 0.1s ease, filter 0.1s ease;
+}
+
+.button:hover {
+  filter: brightness(1.06);
+  transform: translateY(-1px);
+}
+
+.button:active {
+  transform: translateY(2px);
+  box-shadow: 0 2px 0 #8a6a00, 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+/* ------------------------------------------------------------------
+   Placeholder screen (used until the ui/ package exists)
+   ------------------------------------------------------------------ */
+
+.registry-list {
+  list-style: none;
+  margin: 0 0 18px;
+  padding: 0;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 6px 24px;
+}
+
+.registry-list__name {
+  color: var(--leaf-100);
+  letter-spacing: 0.04em;
+}
+
+.registry-list__count {
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+  color: var(--leaf-300);
+  text-align: right;
+}
+
+.registry-list__count--empty {
+  color: rgba(232, 245, 216, 0.45);
+}
+
+.placeholder-note {
+  margin: 0;
+  font-size: 0.85rem;
+  line-height: 1.5;
+  color: rgba(232, 245, 216, 0.65);
+  text-align: center;
+}
