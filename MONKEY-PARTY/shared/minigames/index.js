@@ -14,6 +14,7 @@ const BATCH_SOURCES = [
   { label: 'batch1', path: './sims/batch1/index.js' },
   { label: 'batch2', path: './sims/batch2/index.js' },
   { label: 'templates', path: './sims/templates/index.js' },
+  { label: 'batch3', path: './sims/batch3/index.js' },
 ];
 
 /** @type {{loaded: string[], missing: string[]}|null} */
