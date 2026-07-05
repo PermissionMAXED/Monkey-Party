@@ -26,6 +26,8 @@ import * as THREE from 'three';
 import { createRng } from '#shared/rng.js';
 import { createFixedStepper, MINIGAME_HZ, COUNTDOWN_TICKS } from '#shared/minigames/framework.js';
 import { clampFrame, emptyFrame } from '#shared/minigames/inputs.js';
+import { t, localized } from '../ui/i18n.js';
+import { getActivePalette, onPaletteChange } from '../app/playerPalette.js';
 
 /* ------------------------------------------------------------------ */
 /* Guarded engine-kit loader                                           */
@@ -71,11 +73,18 @@ export function loadViewKit() {
 /* Small shared utilities                                              */
 /* ------------------------------------------------------------------ */
 
-/** Distinct per-seat player colors (8 seats). */
-export const PLAYER_COLORS = [
-  '#ef5350', '#42a5f5', '#ffca28', '#66bb6a',
-  '#ab47bc', '#ff7043', '#26c6da', '#ec407a',
-];
+/**
+ * Distinct per-seat player colors (8 seats), following the active
+ * colorblind palette (src/app/playerPalette.js, mirrors ui.css --mp-p*).
+ * The array is MUTATED IN PLACE on settings changes so every view that
+ * indexes PLAYER_COLORS[i] picks up the active set at (re)tint time -
+ * i.e. each minigame started after a mode switch uses the new palette.
+ * Presentation-only: never feeds the deterministic sim.
+ */
+export const PLAYER_COLORS = [...getActivePalette()];
+onPaletteChange((palette) => {
+  PLAYER_COLORS.splice(0, PLAYER_COLORS.length, ...palette);
+});
 
 /** Linear interpolation. */
 export const lerp = (a, b, t) => a + (b - a) * t;
@@ -414,10 +423,9 @@ function createHud(def, roster) {
     + 'padding:26px 34px;text-align:center;max-width:520px;');
   intro.className = 'mg-intro';
   intro.append(
-    el('div', 'font-size:30px;font-weight:800;color:#ffe135;margin-bottom:6px;', def.name?.en ?? def.id),
-    el('div', 'font-size:15px;opacity:0.9;margin-bottom:12px;', def.howTo?.en ?? ''),
-    el('div', 'font-size:13px;opacity:0.7;margin-bottom:10px;',
-      'Move: stick / WASD - A: primary - B: secondary'),
+    el('div', 'font-size:30px;font-weight:800;color:#ffe135;margin-bottom:6px;', localized(def.name) || def.id),
+    el('div', 'font-size:15px;opacity:0.9;margin-bottom:12px;', localized(def.howTo)),
+    el('div', 'font-size:13px;opacity:0.7;margin-bottom:10px;', t('mg.controlsHint')),
   );
   const countdownEl = el('div', 'font-size:64px;font-weight:900;color:#ffe135;', '3');
   countdownEl.className = 'mg-countdown';
@@ -472,16 +480,16 @@ function createHud(def, roster) {
 /** Best-effort generic "score" readout for the HUD chip. */
 function hudValue(stateP) {
   if (!stateP || typeof stateP !== 'object') return '-';
-  if (stateP.alive === false) return 'OUT';
+  if (stateP.alive === false) return t('mg.out');
   if (typeof stateP.score === 'number') return String(stateP.score);
-  if (typeof stateP.roundsCleared === 'number') return `rd ${stateP.roundsCleared}`;
-  if (typeof stateP.hits === 'number') return `${stateP.hits} hits`;
+  if (typeof stateP.roundsCleared === 'number') return t('mg.roundShort', { n: stateP.roundsCleared });
+  if (typeof stateP.hits === 'number') return t('mg.hits', { n: stateP.hits });
   if (typeof stateP.holdTicks === 'number') return `${(stateP.holdTicks / MINIGAME_HZ).toFixed(1)}s`;
   if (typeof stateP.x === 'number' && typeof stateP.finishTick === 'number') {
-    return stateP.finishTick >= 0 ? 'FIN' : `${Math.round(stateP.x)}m`;
+    return stateP.finishTick >= 0 ? t('mg.fin') : `${Math.round(stateP.x)}m`;
   }
   if (typeof stateP.z === 'number' && typeof stateP.finished === 'boolean') {
-    return stateP.finished ? 'IDOL!' : `${Math.round(stateP.z)}m`;
+    return stateP.finished ? t('mg.idol') : `${Math.round(stateP.z)}m`;
   }
   return '-';
 }
@@ -689,7 +697,7 @@ export function runMinigame({ engine, input, def, driver, localSeats, players, o
       hud.intro.style.display = 'none';
       hud.results.style.display = 'block';
       hud.results.textContent = '';
-      hud.results.append(el('div', 'font-size:26px;font-weight:900;color:#ffe135;margin-bottom:12px;', 'Results'));
+      hud.results.append(el('div', 'font-size:26px;font-weight:900;color:#ffe135;margin-bottom:12px;', t('mg.results')));
       const flat = (results?.ranking ?? []).flat();
       flat.forEach((pid, i) => {
         const p = roster.find((r) => r.id === pid);
@@ -697,7 +705,7 @@ export function runMinigame({ engine, input, def, driver, localSeats, players, o
         hud.results.append(el(
           'div',
           `font-size:17px;font-weight:700;margin:3px 0;color:${p?.seatColor ?? '#fff'};`,
-          `${i + 1}. ${p?.name ?? pid}  +${coins} coins`,
+          `${i + 1}. ${p?.name ?? pid}  ${t('mg.coinsReward', { n: coins })}`,
         ));
       });
     }
@@ -723,7 +731,7 @@ export function runMinigame({ engine, input, def, driver, localSeats, players, o
       const remaining = Math.max(1, Math.ceil((cdTotal - tick) / MINIGAME_HZ));
       hud.countdownEl.textContent = String(remaining);
     } else if (phase === 'playing') {
-      if (tick < cdTotal + MINIGAME_HZ) hud.countdownEl.textContent = 'GO!';
+      if (tick < cdTotal + MINIGAME_HZ) hud.countdownEl.textContent = t('mg.goShort');
       else hud.intro.style.display = 'none';
     }
     // Timer.
@@ -744,7 +752,7 @@ export function runMinigame({ engine, input, def, driver, localSeats, players, o
       }
       state.teams.forEach((team, i) => {
         const bar = hud.teamWrap.children[i];
-        bar.textContent = `Team ${i + 1}: ${team.score}`;
+        bar.textContent = `${t('mg.team', { n: i + 1 })}: ${team.score}`;
         bar.style.color = i === 0 ? '#7fd4ff' : '#ffab91';
       });
     }

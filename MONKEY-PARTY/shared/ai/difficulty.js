@@ -33,15 +33,17 @@ export const PROFILES = Object.freeze({
    */
   hard: Object.freeze({ randomChance: 0.05, topK: 2, noise: 0.5, lookahead: 12 }),
   /**
-   * wild = erratic/aggressive: deep reads, loud noise, frequent gambles.
-   * randomChance 0.5 / noise 5.5 (was 0.4 / 4): the frozen minigame sims'
-   * bot tables treat 'wild' as the sharpest reflexes (avg minigame rank
-   * 1.40 of 4 vs hard's 2.08, measured over 60 real sims), so the board
-   * profile gambles harder to keep wild a chaos-monkey rather than a
-   * secret top difficulty. Board-side blunders (declined stars, random
-   * junctions) claw back part of that frozen minigame edge.
+   * wild = erratic/aggressive: hard-level MEANS, loud variance. lookahead
+   * 12 (was 16) matches hard instead of out-reading it - wild's board
+   * profile is no longer strictly superior on any knob. randomChance 0.5 /
+   * noise 5.5 keep the gambles loud: many frozen minigame bot tables (pre
+   * batch3) still treat 'wild' as the sharpest reflexes (avg minigame rank
+   * 1.40 of 4 vs hard's 2.08, measured over 60 real sims), so board-side
+   * blunders (declined stars, random junctions) claw back part of that
+   * frozen minigame edge. The batch3 tables sample wild per-window between
+   * peak/'hard'/'easy' rows for the same hard-mean/high-variance shape.
    */
-  wild: Object.freeze({ randomChance: 0.5, topK: 3, noise: 5.5, lookahead: 16 }),
+  wild: Object.freeze({ randomChance: 0.5, topK: 3, noise: 5.5, lookahead: 12 }),
 });
 
 /**

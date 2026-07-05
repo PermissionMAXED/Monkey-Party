@@ -16,12 +16,18 @@
 
 import * as THREE from 'three';
 import { makeTextSprite, disposeSprite, disposeObject } from './fieldFx.js';
+import { getActivePalette, playerColor, onPaletteChange } from '../app/playerPalette.js';
 
-/** Distinct per-seat token colors (8 seats). */
-export const TOKEN_COLORS = [
-  '#ef5350', '#42a5f5', '#ffca28', '#66bb6a',
-  '#ab47bc', '#ff7043', '#26c6da', '#ec407a',
-];
+/**
+ * Distinct per-seat token colors (8 seats), following the active
+ * colorblind palette (src/app/playerPalette.js, mirrors ui.css --mp-p*).
+ * MUTATED IN PLACE on settings changes so importers indexing
+ * TOKEN_COLORS[i] always read the active set. Presentation-only.
+ */
+export const TOKEN_COLORS = [...getActivePalette()];
+onPaletteChange((palette) => {
+  TOKEN_COLORS.splice(0, TOKEN_COLORS.length, ...palette);
+});
 
 /* Shared geometries/materials (perf: reused across all 8 tokens). */
 const RING_GEO = new THREE.TorusGeometry(0.62, 0.06, 8, 28);
@@ -84,14 +90,17 @@ const EMOTE_BUBBLES = {
  * @param {{
  *   player: {id: string, name?: string, isBot?: boolean, cosmetics?: Object},
  *   characterDef?: Object|null CharacterDef (may be null - capsule/default),
- *   color?: string Seat color,
+ *   color?: string Seat color (explicit override; defaults to the active
+ *     colorblind palette color for `seat`),
+ *   seat?: number Turn-order seat index (drives the palette color),
  *   monkeyKit?: {buildMonkey?: Function, createAnimator?: Function}|null
  *     Guarded characters-package modules (null -> capsule fallback),
  * }} opts
  */
-export function createTokenActor({ player, characterDef = null, color = '#ffca28', monkeyKit = null } = {}) {
+export function createTokenActor({ player, characterDef = null, color = null, seat = 0, monkeyKit = null } = {}) {
   const group = new THREE.Group();
   group.name = `token:${player?.id ?? 'unknown'}`;
+  let seatColor = color ?? playerColor(seat);
 
   /* ---- body: monkey (guarded) or capsule fallback ------------------ */
   let monkey = null;
@@ -105,6 +114,7 @@ export function createTokenActor({ player, characterDef = null, color = '#ffca28
   }
 
   let bodyRoot;
+  let capsuleBody = null;
   if (monkey?.group?.isObject3D) {
     bodyRoot = monkey.group;
     if (typeof monkeyKit.createAnimator === 'function') {
@@ -119,10 +129,10 @@ export function createTokenActor({ player, characterDef = null, color = '#ffca28
     monkey = null;
     bodyRoot = new THREE.Group();
     bodyRoot.name = 'capsuleMonkey';
-    const body = new THREE.Mesh(BODY_GEO, bodyMat(color));
-    body.castShadow = body.receiveShadow = true;
-    body.position.y = 0.58;
-    bodyRoot.add(body);
+    capsuleBody = new THREE.Mesh(BODY_GEO, bodyMat(seatColor));
+    capsuleBody.castShadow = capsuleBody.receiveShadow = true;
+    capsuleBody.position.y = 0.58;
+    bodyRoot.add(capsuleBody);
     for (const side of [-1, 1]) {
       const eye = new THREE.Mesh(EYE_GEO, EYE_MAT);
       eye.position.set(side * 0.11, 0.78, 0.26);
@@ -133,12 +143,12 @@ export function createTokenActor({ player, characterDef = null, color = '#ffca28
   const baseBodyScale = bodyRoot.scale.clone();
 
   /* ---- seat ring + local-turn glow --------------------------------- */
-  const ring = new THREE.Mesh(RING_GEO, ringMat(color));
+  const ring = new THREE.Mesh(RING_GEO, ringMat(seatColor));
   ring.rotation.x = -Math.PI / 2;
   ring.position.y = 0.06;
   group.add(ring);
 
-  const glow = new THREE.Mesh(GLOW_GEO, glowMat(color));
+  const glow = new THREE.Mesh(GLOW_GEO, glowMat(seatColor));
   glow.rotation.x = -Math.PI / 2;
   glow.position.y = 0.03;
   glow.visible = false;
@@ -147,16 +157,20 @@ export function createTokenActor({ player, characterDef = null, color = '#ffca28
   /* ---- name tag ----------------------------------------------------- */
   const isBot = !!player?.isBot;
   const label = isBot ? `${player?.name ?? 'Bot'} [BOT]` : (player?.name ?? player?.id ?? '?');
-  const nameTag = makeTextSprite(label, {
-    color: isBot ? '#cfd8dc' : '#ffffff',
-    bg: 'rgba(16,20,14,0.72)',
-    stroke: color,
-    size: 42,
-    height: 0.34,
-  });
   const bounds = new THREE.Box3().setFromObject(bodyRoot);
   const headY = Number.isFinite(bounds.max.y) ? Math.max(1.2, bounds.max.y) : 1.6;
-  nameTag.position.y = headY + 0.45;
+  function buildNameTag() {
+    const tag = makeTextSprite(label, {
+      color: isBot ? '#cfd8dc' : '#ffffff',
+      bg: 'rgba(16,20,14,0.72)',
+      stroke: seatColor,
+      size: 42,
+      height: 0.34,
+    });
+    tag.position.y = headY + 0.45;
+    return tag;
+  }
+  let nameTag = buildNameTag();
   group.add(nameTag);
 
   /* ---- speech bubble (emotes) --------------------------------------- */
@@ -260,6 +274,22 @@ export function createTokenActor({ player, characterDef = null, color = '#ffca28
     glow.visible = !!on;
   }
 
+  /**
+   * Re-tint the seat accents (ring, glow, capsule body, name-tag stroke)
+   * - e.g. when the colorblind palette changes. Presentation-only; the
+   * character monkey keeps its own fur colors (seat identity is the ring).
+   */
+  function setColor(next) {
+    if (!next || next === seatColor || disposed) return;
+    seatColor = next;
+    ring.material = ringMat(seatColor);
+    glow.material = glowMat(seatColor);
+    if (capsuleBody) capsuleBody.material = bodyMat(seatColor);
+    disposeSprite(nameTag);
+    nameTag = buildNameTag();
+    group.add(nameTag);
+  }
+
   /** Show a speech bubble above the head for `dur` seconds. */
   function say(text, dur = 1.6) {
     if (bubble) disposeSprite(bubble);
@@ -360,7 +390,10 @@ export function createTokenActor({ player, characterDef = null, color = '#ffca28
   return {
     group,
     player,
-    color,
+    seat,
+    get color() {
+      return seatColor;
+    },
     placeAt,
     worldPos,
     startHop,
@@ -369,6 +402,7 @@ export function createTokenActor({ player, characterDef = null, color = '#ffca28
     setWiggle,
     setCurrent,
     setLocalTurn,
+    setColor,
     say,
     playEmote,
     celebrate,

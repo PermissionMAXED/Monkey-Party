@@ -475,6 +475,33 @@ export function createMatchSim({ seed, rules: rawRules, boardId, players: player
   /** Recent minigame ids hard-excluded by the built-in fallback picker. */
   const ANTI_REPEAT_WINDOW = 8;
 
+  /**
+   * True when some boss game fits the table and was NOT played within the
+   * last BOSS_MINIGAME_EVERY-1 minigames. The boss pool is tiny (2 games,
+   * 1 under competitive rules), so the cadence skips its slot rather than
+   * replay a boss that just ran.
+   */
+  function freshBossAvailable() {
+    const count = state.turnOrder.length;
+    const recent = new Set(state.minigameHistory.slice(-(BOSS_MINIGAME_EVERY - 1)));
+    return minigamesRegistry.all().some((def) => {
+      if (def.category !== 'boss') return false;
+      if (rules.competitive && !def.competitiveSafe) return false;
+      const min = def.players?.min ?? 1;
+      const max = def.players?.max ?? MAX_SEATS;
+      return min <= count && count <= max && !recent.has(def.id);
+    });
+  }
+
+  /** Round of the next minigame after the current one (-1 when none). */
+  function nextMinigameRound() {
+    if (!rules.minigameEvery) return -1;
+    for (let r = state.round + 1; r <= rules.rounds; r += 1) {
+      if (r % rules.minigameEvery === 0) return r;
+    }
+    return -1;
+  }
+
   /** Run the external selector under (possibly overridden) rules. */
   function selectViaExternal(effectiveRules) {
     if (!externalSelect) return null;
@@ -526,13 +553,22 @@ export function createMatchSim({ seed, rules: rawRules, boardId, players: player
   }
 
   function pickMinigame() {
-    // Boss cadence: every BOSS_MINIGAME_EVERY-th minigame - and the final
-    // round - forces a boss-category game when the rules allow one and any
-    // fits the table. Selection preference is passed via minigameCategories.
+    // Boss cadence: the final round always forces a boss-category game when
+    // the rules allow one. The every-BOSS_MINIGAME_EVERY-th cadence slot
+    // additionally requires a FRESH boss (see freshBossAvailable) and never
+    // sits adjacent to another boss game: it is skipped right after one and
+    // right before the forced final-round boss (fast preset, 5 rounds:
+    // minigames 4 and 5 would otherwise both be boss games back-to-back).
+    // Selection preference is passed via minigameCategories.
     const bossAllowed = rules.minigameCategories.includes('*') || rules.minigameCategories.includes('boss');
-    const bossDue = bossAllowed
-      && ((state.minigameHistory.length + 1) % BOSS_MINIGAME_EVERY === 0 || state.round >= rules.rounds);
-    if (bossDue) {
+    const finalRound = state.round >= rules.rounds;
+    const lastId = state.minigameHistory[state.minigameHistory.length - 1];
+    const lastWasBoss = minigamesRegistry.get(lastId)?.category === 'boss';
+    const cadenceDue = (state.minigameHistory.length + 1) % BOSS_MINIGAME_EVERY === 0
+      && !lastWasBoss
+      && nextMinigameRound() !== rules.rounds
+      && freshBossAvailable();
+    if (bossAllowed && (finalRound || cadenceDue)) {
       const boss = selectViaExternal({ ...rules, minigameCategories: ['boss'] }) ?? pickFromRegistry(['boss']);
       if (boss) return boss;
     }

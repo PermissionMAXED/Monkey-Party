@@ -342,7 +342,13 @@ export async function buildUI(app) {
       return netClient;
     }
     const { createNetClient, NetClientError } = await import('../net/client.js');
-    if (!netClient || netClient.state === 'closed' || netClient.state === 'fatal') {
+    // A 'closed' client (the transport gave up retrying) is still fully
+    // usable: connect() resets the attempt counter and resumes with the
+    // same token, so every live createOnlineSession subscription keeps
+    // working after a successful Retry. Replacing it would orphan the
+    // running session on a dead client (zombie screen until reload).
+    // Only a 'fatal' client (protocol mismatch) is unrecoverable.
+    if (!netClient || netClient.state === 'fatal') {
       netClient = createNetClient();
     }
     try {

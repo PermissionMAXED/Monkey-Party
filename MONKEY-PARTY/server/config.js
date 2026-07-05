@@ -22,8 +22,11 @@ export const DEFAULT_CONFIG = Object.freeze({
   rateWarnPerSec: 30,
   /** Messages/second that get the connection kicked. */
   rateKickPerSec: 60,
-  /** Max wire frame size accepted by ws (bytes). */
-  maxPayloadBytes: 262144,
+  /** Max wire frame size accepted by ws (bytes). The largest legitimate
+   *  client frame is a maxed-out chat/action at a few KB; 16KB leaves
+   *  ample headroom while a hostile megabyte blob is refused by ws
+   *  itself (the socket closes with 1009) before it pins any memory. */
+  maxPayloadBytes: 16384,
 
   /* -------- players / resume -------- */
   /** Grace window to resume after a mid-match socket drop. */
@@ -55,6 +58,11 @@ export const DEFAULT_CONFIG = Object.freeze({
   /** Humanized bot decision delay range. */
   botDelayMinMs: 500,
   botDelayMaxMs: 1200,
+  /** Delay before a room re-arms scheduling after a FAILED server action
+   *  (bot pick / minigame results the sim rejected). Deferred so a
+   *  persistent failure retries calmly instead of spinning, and a match
+   *  can never hang on a consumed decision timer. */
+  actionRetryMs: 250,
   /** Minigame fixed-step rate (must match shared TICK_RATE = 30). */
   mgTickHz: 30,
   /** mg_state broadcast rate. */
@@ -65,6 +73,8 @@ export const DEFAULT_CONFIG = Object.freeze({
   chatMaxLen: 200,
   /** Minimum interval between chat messages per player. */
   chatIntervalMs: 1000,
+  /** Minimum interval between emote relays per player (mirrors chat). */
+  emoteIntervalMs: 500,
   /** Keep a finished room alive this long for a rematch. */
   rematchKeepMs: 60000,
 });

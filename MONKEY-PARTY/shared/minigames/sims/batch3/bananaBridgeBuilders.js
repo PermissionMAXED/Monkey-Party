@@ -106,22 +106,30 @@ function createSim({ seed, players, params = {}, rules = {} } = {}) {
         const frozen = t < p.frozenUntil;
         const frame = frozen ? emptyFrame() : clampFrame(inputsMap[pid] ?? emptyFrame());
 
-        // Move (up = +z = toward the gorge / far side).
+        // Move. The view camera sits BEHIND the bank at -z looking toward
+        // +z, so stick up (+y) = +z = toward the gorge = up-screen, and
+        // screen-right = world -x (camera right = cross(up, pos-look) =
+        // -x): move.x is negated so pressing right moves right ON SCREEN.
         const speed = p.carrying ? cfg.carrySpeed : cfg.moveSpeed;
-        p.vx = p.vx * 0.75 + frame.move.x * speed * 0.25;
+        p.vx = p.vx * 0.75 + (-frame.move.x) * speed * 0.25;
         p.vz = p.vz * 0.75 + frame.move.y * speed * 0.25;
+        const zPrev = p.z;
         p.x += p.vx * DT;
         p.z += p.vz * DT;
 
         const tipZ = team.planks * cfg.plankLen;
+        // Gorge-lip wall: stepping past z=0 is only possible over your own
+        // bridge. Clamp BEFORE the bank/deck branch so a misaligned player
+        // coming from the bank is walled at the lip (per howTo) instead of
+        // entering the deck branch and tumbling. (Pre-fix this check lived
+        // inside the z<=0 branch where Math.min(p.z, 0) was a no-op.)
+        if (p.z > 0 && zPrev <= 0 && Math.abs(p.x - team.bridgeX) > cfg.bridgeHalfWidth) {
+          p.z = 0;
+        }
         if (p.z <= 0) {
           // Bank area: free movement.
           p.x = Math.max(-cfg.bankHalfWidth, Math.min(cfg.bankHalfWidth, p.x));
           p.z = Math.max(-cfg.bankDepth, p.z);
-          // Stepping onto the gorge is only possible over your own bridge.
-          if (p.z > -0.05 && Math.abs(p.x - team.bridgeX) > cfg.bridgeHalfWidth) {
-            p.z = Math.min(p.z, 0);
-          }
         } else {
           // On the bridge deck: don't run past the tip...
           p.z = Math.min(p.z, Math.max(0, tipZ));
@@ -202,26 +210,47 @@ function createSim({ seed, players, params = {}, rules = {} } = {}) {
 const STEER_ERR = { easy: 0.55, normal: 0.28, hard: 0.12, wild: 0.04 };
 const PRESS_PACE = { easy: 14, normal: 9, hard: 6, wild: 4 };
 
+function ihash(a, b) {
+  let h = (Math.imul(a | 0, 374761393) + Math.imul(b | 0, 668265263)) >>> 0;
+  h = Math.imul(h ^ (h >>> 13), 1274126177) >>> 0;
+  return (h ^ (h >>> 16)) >>> 0;
+}
+
+/**
+ * Wild bots are erratic, not superhuman: per ~1s window they swing between
+ * peak reflexes (the old 'wild' row), solid play ('hard') and outright
+ * blunders ('easy'), so the MEANS land near 'hard' while the variance is
+ * loud. Seeded hash only, so replays stay deterministic.
+ */
+function wildRow(s, me) {
+  const roll = ihash(Math.floor(s.tick / 30), me.slot * 29 + 11) % 100;
+  if (roll < 30) return 'wild';
+  return roll < 72 ? 'hard' : 'easy';
+}
+
 function bot(publicState, playerId, difficulty, rng) {
   const frame = emptyFrame();
   const s = publicState;
   const me = s?.players?.[playerId];
   if (!me || s.tick <= s.countdownTicks || s.tick < me.frozenUntil) return frame;
 
-  const err = STEER_ERR[difficulty] ?? STEER_ERR.normal;
-  const pace = PRESS_PACE[difficulty] ?? PRESS_PACE.normal;
+  const row = difficulty === 'wild' ? wildRow(s, me) : difficulty;
+  const err = STEER_ERR[row] ?? STEER_ERR.normal;
+  const pace = PRESS_PACE[row] ?? PRESS_PACE.normal;
   const team = s.teams[me.team];
   const tipZ = team.planks * s.plankLen;
 
+  // Bots plan in world coords; the sim maps stick right (+x) to world -x
+  // (the camera sits behind the bank), so every emitted x is negated.
   if (me.carrying) {
     if (me.z < -0.4 && Math.abs(me.x - team.bridgeX) > 0.45) {
       // Line up with the bridge mouth before heading north.
-      frame.move.x = Math.max(-1, Math.min(1, (team.bridgeX - me.x) * 1.2));
+      frame.move.x = -Math.max(-1, Math.min(1, (team.bridgeX - me.x) * 1.2));
       frame.move.y = 0.25;
     } else {
       // March up the deck; sloppy monkeys wobble toward the edge.
       const wobble = (rng.next() - 0.5) * err * 2;
-      frame.move.x = Math.max(-1, Math.min(1, (team.bridgeX - me.x) * 1.6 + wobble));
+      frame.move.x = -Math.max(-1, Math.min(1, (team.bridgeX - me.x) * 1.6 + wobble));
       frame.move.y = 1;
     }
     if (tipZ >= (s.planksToWin ?? 8) * s.plankLen) frame.move.y = 0; // Nothing left to place.
@@ -233,7 +262,7 @@ function bot(publicState, playerId, difficulty, rng) {
   const dz = team.pileZ - me.z + (rng.next() - 0.5) * err;
   const mag = Math.hypot(dx, dz);
   if (mag > 0.25) {
-    frame.move.x = dx / mag;
+    frame.move.x = -(dx / mag);
     frame.move.y = dz / mag;
   }
   if (mag <= 1.2 && s.tick % pace < Math.ceil(pace / 2)) frame.a = true;

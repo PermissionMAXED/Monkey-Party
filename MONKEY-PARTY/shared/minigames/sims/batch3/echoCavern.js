@@ -27,7 +27,10 @@ const ID = 'echo_cavern';
 const DEFAULTS = {
   pads: 4,
   startLen: 3,
-  maxRounds: 6,
+  // 5 rounds fit the 60s cap worst-case (countdown 90 + show/replay for
+  // seq lengths 3..7 + 4 inter breaks = ~1770 of 1800 ticks); 6 rounds
+  // could not finish and the last melody was routinely cut off by the horn.
+  maxRounds: 5,
   showTicks: 12, // Flash per melody note.
   gapTicks: 4,
   replayTicksPerNote: 34,
@@ -209,7 +212,15 @@ function createSim({ seed, players, params = {}, rules = {} } = {}) {
     for (const pid of state.order) {
       const p = state.players[pid];
       const team = state.teams[p.team];
-      scores[pid] = (team.best * 1000 + team.total) * 10000 + p.score * 10 - p.wrongs;
+      // Team score: best chain, then cumulative notes, then SPEED - the
+      // tick the team completed its latest clean echo (earlier = better).
+      // Without the speed term two perfect teams tie on best+total and the
+      // ranking fell through to p.score, i.e. which pads each player
+      // happened to own (a lottery). Speed < 4096 and personal < 1024, so
+      // the components can never bleed into each other.
+      const speed = team.doneTick >= 0 ? state.durationTicks - team.doneTick : 0;
+      scores[pid] = ((team.best * 1000 + team.total) * 4096 + speed) * 1024
+        + p.score * 10 - p.wrongs;
     }
     const ranking = rankByScoreGrouped(scores);
     const coins = coinsForRanking(ranking, { chaos });
@@ -239,6 +250,18 @@ function ihash(a, b) {
   return (h ^ (h >>> 16)) >>> 0;
 }
 
+/**
+ * Wild bots are erratic, not superhuman: per ~1s window they swing between
+ * peak reflexes (the old 'wild' row), solid play ('hard') and outright
+ * blunders ('easy'), so the MEANS land near 'hard' while the variance is
+ * loud. Seeded hash only, so replays stay deterministic.
+ */
+function wildRow(s, me) {
+  const roll = ihash(Math.floor(s.tick / 30), me.slot * 29 + 11) % 100;
+  if (roll < 30) return 'wild';
+  return roll < 72 ? 'hard' : 'easy';
+}
+
 function bot(publicState, playerId, difficulty, _rng) {
   const frame = emptyFrame();
   const s = publicState;
@@ -251,7 +274,8 @@ function bot(publicState, playerId, difficulty, _rng) {
   const padIdx = me.ownedPads.indexOf(expected);
   if (padIdx < 0) return frame; // Not my drum - stay quiet.
 
-  const react = REACT[difficulty] ?? REACT.normal;
+  const row = difficulty === 'wild' ? wildRow(s, me) : difficulty;
+  const react = REACT[row] ?? REACT.normal;
   const jitter = ihash(s.round * 37 + team.progress, me.slot) % 5;
   const pressAt = team.lastAdvanceTick + react + jitter;
   if (s.tick < pressAt || s.tick > pressAt + 1) return frame;
@@ -260,7 +284,7 @@ function bot(publicState, playerId, difficulty, _rng) {
   let idx = padIdx;
   if (me.ownedPads.length > 1
     && ihash(s.round * 53 + team.progress * 7, me.slot * 11 + 3) % 100
-      < (WRONG_PCT[difficulty] ?? WRONG_PCT.normal)) {
+      < (WRONG_PCT[row] ?? WRONG_PCT.normal)) {
     idx = 1 - padIdx;
   }
   if (idx === 0) frame.a = true;

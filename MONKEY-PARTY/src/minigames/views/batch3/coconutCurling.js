@@ -136,10 +136,20 @@ export function createView({ sim, engine }) {
         const p = curr.players[pid];
         const rig = aimRigs.get(pid);
         if (!p || !rig) continue;
+        // Launch slots rotate one place per wave (sim fairness fix): keep
+        // the token and aim rig on the player's current lane.
+        if (typeof p.launchX === 'number') {
+          rig.group.position.x = p.launchX;
+          const token = tokens.get(pid);
+          if (token) token.position.x = p.launchX;
+        }
         const aiming = curr.phase === 'aim' && !p.thrown;
         rig.group.visible = aiming;
         if (aiming) {
-          rig.arrow.rotation.y = -p.angle;
+          // The camera sits behind the sheet (screen-right = world -x), so
+          // rotation.y = +angle makes the arrow tilt the way the stone will
+          // actually travel on screen (angle > 0 -> world +x -> screen-left).
+          rig.arrow.rotation.y = p.angle;
           rig.chargeFill.scale.y = Math.max(0.01, p.charge);
           rig.chargeFill.position.y = 0.57 + (p.charge * 1.26) / 2;
         }

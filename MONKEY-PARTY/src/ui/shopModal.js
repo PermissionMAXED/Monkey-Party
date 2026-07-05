@@ -4,6 +4,12 @@
  *   - showBuyStarPrompt: golden banana purchase yes/no
  *   - showItemTargetPrompt: pick a target player/node for a used item
  * All run a ~20s countdown with a safe auto-default.
+ *
+ * Gamepad/keyboard parity: every prompt here is built on promptFrame
+ * (junctionPrompt.js), which polls the deciding seat's InputFrame and maps
+ * d-pad/stick to option focus + A to confirm - the shop cards, buy/decline
+ * buttons and target cards are all plain <button>s inside the frame panel,
+ * so they are navigable without a mouse.
  */
 
 import { items as itemRegistry } from '#shared/registries.js';

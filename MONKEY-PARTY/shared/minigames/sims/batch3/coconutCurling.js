@@ -64,6 +64,7 @@ function createSim({ seed, players, params = {}, rules = {} } = {}) {
         score: 0, // Live house points (HUD chip).
         knocks: 0,
         throwTick: -1,
+        launchX: launchX(i, pids.length), // Rotated per wave (see beginAim).
       };
     });
     state = {
@@ -95,7 +96,7 @@ function createSim({ seed, players, params = {}, rules = {} } = {}) {
     state.stones.push({
       id: state.nextStoneId,
       owner: pid,
-      x: launchX(p.slot, state.order.length),
+      x: p.launchX ?? launchX(p.slot, state.order.length),
       z: 0,
       vx: Math.sin(p.angle) * speed,
       vz: Math.cos(p.angle) * speed,
@@ -124,11 +125,15 @@ function createSim({ seed, players, params = {}, rules = {} } = {}) {
   function beginAim(t) {
     state.phase = 'aim';
     state.phaseTick = t;
+    const n = state.order.length;
     for (const pid of state.order) {
       const p = state.players[pid];
       p.angle = 0;
       p.charge = 0;
       p.thrown = false;
+      // Fairness: rotate the launch slots one place per wave so nobody
+      // keeps the easy straight-ahead center lane all game (deterministic).
+      p.launchX = launchX((p.slot + state.wave - 1) % n, n);
     }
   }
 
@@ -147,8 +152,12 @@ function createSim({ seed, players, params = {}, rules = {} } = {}) {
           const p = state.players[pid];
           const frame = clampFrame(inputsMap[pid] ?? emptyFrame());
           if (!p.thrown) {
+            // The view camera sits behind the sheet at -z looking toward
+            // +z (the house), so screen-right = world -x. move.x is
+            // negated so pressing right steers the stone right ON SCREEN
+            // (angle > 0 launches toward world +x = screen-left).
             p.angle = Math.max(-cfg.maxAngle,
-              Math.min(cfg.maxAngle, p.angle + frame.move.x * cfg.aimSpeed * DT));
+              Math.min(cfg.maxAngle, p.angle + (-frame.move.x) * cfg.aimSpeed * DT));
             if (frame.a) p.charge = Math.min(1, p.charge + cfg.chargeRate * DT);
             const released = !frame.a && p.prevA && p.charge > 0;
             if (released) launch(pid, t);
@@ -205,8 +214,15 @@ function createSim({ seed, players, params = {}, rules = {} } = {}) {
             a.z -= nz * push;
             b.x += nx * push;
             b.z += nz * push;
-            const rel = (a.vx - b.vx) * nx + (a.vz - b.vz) * nz;
+            const va = a.vx * nx + a.vz * nz;
+            const vb = b.vx * nx + b.vz * nz;
+            const rel = va - vb;
             if (rel > 0) {
+              // Knock credit goes to the STRIKER: the stone moving faster
+              // along the collision normal (pre-fix the credit always went
+              // to stone `a`, i.e. the earlier-thrown - usually stationary
+              // - stone that got hit).
+              const striker = va + vb >= 0 ? a : b;
               const imp = ((1 + cfg.restitution) / 2) * rel;
               a.vx -= imp * nx;
               a.vz -= imp * nz;
@@ -215,7 +231,7 @@ function createSim({ seed, players, params = {}, rules = {} } = {}) {
               a.moving = true;
               b.moving = true;
               if (a.owner !== b.owner) {
-                state.players[a.owner].knocks += 1;
+                state.players[striker.owner].knocks += 1;
               }
               anyMoving = true;
             }
@@ -277,25 +293,40 @@ function snoise(a, b) {
   return (ihash(a, b) % 2001) / 1000 - 1;
 }
 
+/**
+ * Wild bots are erratic, not superhuman: per ~1s window they swing between
+ * peak reflexes (the old 'wild' row), solid play ('hard') and outright
+ * blunders ('easy'), so the MEANS land near 'hard' while the variance is
+ * loud. Seeded hash only, so replays stay deterministic.
+ */
+function wildRow(s, me) {
+  const roll = ihash(Math.floor(s.tick / 30), me.slot * 29 + 11) % 100;
+  if (roll < 30) return 'wild';
+  return roll < 72 ? 'hard' : 'easy';
+}
+
 function bot(publicState, playerId, difficulty, _rng) {
   const frame = emptyFrame();
   const s = publicState;
   const me = s?.players?.[playerId];
   if (!me || s.phase !== 'aim' || me.thrown || s.tick <= s.countdownTicks) return frame;
 
-  const think = THINK[difficulty] ?? THINK.normal;
+  const row = difficulty === 'wild' ? wildRow(s, me) : difficulty;
+  const think = THINK[row] ?? THINK.normal;
   if (s.tick - s.phaseTick < think + me.slot * 3) return frame; // Line up in your own time.
 
-  const aErr = ANGLE_ERR[difficulty] ?? ANGLE_ERR.normal;
-  const cErr = CHARGE_ERR[difficulty] ?? CHARGE_ERR.normal;
+  const aErr = ANGLE_ERR[row] ?? ANGLE_ERR.normal;
+  const cErr = CHARGE_ERR[row] ?? CHARGE_ERR.normal;
   const n = s.order.length;
-  const x0 = n <= 1 ? 0 : -4 + (8 * me.slot) / (n - 1);
+  const x0 = me.launchX ?? (n <= 1 ? 0 : -4 + (8 * me.slot) / (n - 1));
 
-  // Aim at the button with a per-wave stable error.
+  // Aim at the button with a per-wave stable error. The desired angle is a
+  // world-space plan; the sim maps stick right (+x) to -angle, so the
+  // emitted x is negated to keep the bot functionally identical.
   const houseZ = s.houseZ ?? 20;
   const desired = Math.atan2(0 - x0, houseZ) + snoise(s.wave * 31 + 5, me.slot) * aErr;
   const da = desired - me.angle;
-  if (Math.abs(da) > 0.01) frame.move.x = Math.max(-1, Math.min(1, da * 8));
+  if (Math.abs(da) > 0.01) frame.move.x = -Math.max(-1, Math.min(1, da * 8));
 
   // Charge to the speed that dies right on the button (v^2 = 2*a*d).
   const dist = Math.hypot(x0, houseZ);

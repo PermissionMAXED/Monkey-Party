@@ -12,7 +12,14 @@
  *    token -> same player, still host, host powers intact,
  *  - mid-match resume-grace expiry broadcasts a pid:'' system chat notice,
  *  - graceful shutdown: sockets get error{code:'shutdown'} and the
- *    shutdown promise resolves.
+ *    shutdown promise resolves,
+ *  - reconnect burst: the REAL browser net client (src/net/client.js)
+ *    never queues 20Hz mg_input during an outage, so the reopen flush
+ *    cannot trip the rate kick, and the heartbeat keeps latencyMs fresh,
+ *  - failed server actions re-arm scheduling (a rejected bot pick or
+ *    minigameResults injection can never hang the room),
+ *  - emote relays are rate-limited per player (config.emoteIntervalMs),
+ *  - frames above maxPayloadBytes close only the offending socket.
  *
  * Every test closes its server + sockets so the process exits cleanly.
  */
@@ -22,7 +29,12 @@ import assert from 'node:assert/strict';
 import WebSocket from 'ws';
 
 import { MSG, SRV, encode, decode, PROTOCOL_VERSION } from '#shared/protocol.js';
+import { validateRules } from '#shared/rules.js';
+import { registerAllContent } from '#shared/content/index.js';
 import { createGameServer } from '../server/index.js';
+import { createRoom, relayEmote } from '../server/room.js';
+import { makeConfig, createLogger } from '../server/config.js';
+import { createNetClient } from '../src/net/client.js';
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -489,5 +501,189 @@ test('graceful shutdown: sockets get error{code:"shutdown"}, rooms close, and sh
     b.dispose();
     // close() after shutdown() is a no-op-ish double call; guard with catch.
     await server.close().catch(() => {});
+  }
+});
+
+/* ------------------------------------------------------------------ */
+/* Reconnect burst: mg_input never queues, resume cannot rate-kick     */
+/* ------------------------------------------------------------------ */
+
+test('reconnect burst: the real net client drops mg_input during an outage, the resume flush cannot trip the rate kick, and latencyMs stays fresh', { timeout: 60000 }, async () => {
+  const server = await createGameServer({
+    port: 0,
+    silent: true,
+    // Fast heartbeat so the client-side RTT refresh (a probe per ping) is
+    // observable within the test budget.
+    config: { ...FAST_CONFIG, heartbeatIntervalMs: 150 },
+  });
+  // The REAL browser transport (Node >= 22 provides a global WebSocket).
+  const client = createNetClient(`ws://127.0.0.1:${server.port}`);
+
+  try {
+    let welcomes = 0;
+    let lastLobby = null;
+    const chats = [];
+    const rateErrors = [];
+    client.on(SRV.WELCOME, () => { welcomes += 1; });
+    client.on(SRV.LOBBY_STATE, (p) => { lastLobby = p?.lobby ?? null; });
+    client.on(SRV.CHAT, (p) => chats.push(p?.text));
+    client.on(SRV.ERROR, (p) => {
+      if (p?.code === 'rate') rateErrors.push(p);
+    });
+
+    await client.connect();
+    client.send(MSG.HELLO, { name: 'Bursty' });
+    await waitUntil(() => client.playerId !== null, 5000, 'welcome received');
+    // Seat the player in a lobby so the resume grace keeps the record alive.
+    client.send(MSG.CREATE_LOBBY, { isPublic: false, rules: {}, boardId: 'jungle_ruins' });
+    await waitUntil(() => lastLobby !== null, 5000, 'lobby created');
+    assert.ok(Number.isFinite(client.latencyMs), 'initial hello round trip measured latency');
+
+    // Simulated outage: the server side of the socket dies (network blip).
+    server.connections.getPlayer(client.playerId).conn.socket.terminate();
+    await waitUntil(() => client.state === 'reconnecting', 5000, 'client entered reconnecting');
+
+    // The minigame harness keeps pumping ~20Hz input frames during the
+    // outage. Pre-fix these queued (capped at 256) and burst on reopen,
+    // blowing straight through rateKickPerSec (60 in a 1s window).
+    for (let seq = 1; seq <= 150; seq += 1) {
+      client.send(MSG.MG_INPUT, { seq, frame: { move: { x: 1, y: 0 }, a: true, b: false } });
+    }
+    // Non-realtime traffic must STILL queue and flush in order.
+    client.send(MSG.CHAT, { text: 'sent during the outage' });
+
+    await waitUntil(() => client.state === 'open', 20000, 'client reconnected');
+    await waitUntil(() => welcomes >= 2, 10000, 'resume answered with a welcome');
+    await waitUntil(() => chats.includes('sent during the outage'), 5000, 'queued chat flushed after the resume');
+    await sleep(1100); // sit out a full rate window after the flush
+    assert.equal(server.stats.rateKicked, 0, 'reconnect flush never tripped the rate kick');
+    assert.deepEqual(rateErrors, [], 'no rate warning/kick errors were sent');
+    assert.equal(client.state, 'open', 'client survived its own flush');
+
+    // Heartbeat-driven RTT refresh: every server ping triggers a cheap
+    // idempotent re-hello probe answered by welcome.
+    const welcomesBefore = welcomes;
+    await waitUntil(() => welcomes >= welcomesBefore + 2, 10000, 'periodic RTT probes keep getting answered');
+    assert.ok(Number.isFinite(client.latencyMs), 'latencyMs still holds a fresh measurement');
+
+    // The SAME identity still works end to end after the resume.
+    assert.equal(lastLobby?.hostId, client.playerId, 'still the lobby host after resume');
+  } finally {
+    client.close();
+    await server.close();
+  }
+});
+
+/* ------------------------------------------------------------------ */
+/* Failed server actions re-arm scheduling (anti-hang backstop)        */
+/* ------------------------------------------------------------------ */
+
+test('a failed server action re-arms scheduling: injected sim.apply failures can never hang the match', { timeout: 60000 }, async () => {
+  await registerAllContent();
+  const broadcasts = [];
+  const lobby = {
+    code: 'REARM',
+    boardId: 'jungle_ruins',
+    rules: validateRules({ rounds: 2, minigameEvery: 0, fastMode: true, botsFill: false, maxSeats: 4, items: 'off' }),
+    seats: [
+      { pid: 'botA', seat: 0, name: 'A (bot)', isBot: true, difficulty: 'normal', characterId: null, cosmetics: {}, ready: true, connected: true },
+      { pid: 'botB', seat: 1, name: 'B (bot)', isBot: true, difficulty: 'normal', characterId: null, cosmetics: {}, ready: true, connected: true },
+    ],
+  };
+  const room = createRoom({
+    lobby,
+    config: makeConfig({ botDelayMinMs: 5, botDelayMaxMs: 15, actionRetryMs: 20 }),
+    log: createLogger('test', { silent: true }),
+    connections: { send: () => {}, sendError: () => {}, getPlayer: () => null },
+    broadcast: (t, payload) => broadcasts.push({ t, payload }),
+    onDispose: () => {},
+  });
+
+  try {
+    room.start();
+    const sim = room.getSim();
+    assert.ok(sim, 'sim created');
+
+    // Sabotage: the next 5 applies throw, as if the bot's pick AND its
+    // legal[0] fallback kept being rejected by the sim's deep validation.
+    // Pre-fix, the first failure consumed the armed decision timer and
+    // nothing ever re-armed it: state.awaiting stayed pending forever.
+    const realApply = sim.apply.bind(sim);
+    let failuresLeft = 5;
+    let failuresInjected = 0;
+    sim.apply = (action) => {
+      if (failuresLeft > 0) {
+        failuresLeft -= 1;
+        failuresInjected += 1;
+        throw new Error('injected apply failure');
+      }
+      return realApply(action);
+    };
+
+    await waitUntil(() => failuresInjected >= 5, 15000, 'all injected failures were consumed (room kept retrying)');
+    await waitUntil(() => room.isFinished(), 45000, 'match still reaches game_over after the failures', 50);
+    assert.ok(
+      broadcasts.some((b) => b.t === SRV.ACTION_APPLIED),
+      'actions were applied and broadcast after recovery',
+    );
+  } finally {
+    room.dispose();
+  }
+});
+
+/* ------------------------------------------------------------------ */
+/* Emote rate limit                                                    */
+/* ------------------------------------------------------------------ */
+
+test('emote throttle: relayEmote drops emotes inside emoteIntervalMs and still throttles config-less callers', async () => {
+  const sent = [];
+  const broadcast = (t, payload) => sent.push(payload);
+  const config = makeConfig({ emoteIntervalMs: 120 });
+
+  const player = { id: 'p1' };
+  relayEmote({ config, broadcast }, player, 'wave');
+  relayEmote({ config, broadcast }, player, 'dance');
+  assert.equal(sent.length, 1, 'second emote within the window is dropped');
+  assert.deepEqual(sent[0], { pid: 'p1', emoteId: 'wave' });
+  await sleep(140);
+  relayEmote({ config, broadcast }, player, 'dance');
+  assert.equal(sent.length, 2, 'emote after the window relays');
+
+  // The pre-match lobby router (server/index.js) calls relayEmote WITHOUT
+  // a config: the production default (500ms) must throttle there too.
+  const p2 = { id: 'p2' };
+  relayEmote({ broadcast }, p2, 'wave');
+  relayEmote({ broadcast }, p2, 'wave');
+  assert.equal(sent.length, 3, 'config-less caller falls back to the default interval');
+});
+
+/* ------------------------------------------------------------------ */
+/* Payload size cap                                                    */
+/* ------------------------------------------------------------------ */
+
+test('oversize frame: a frame above maxPayloadBytes closes only that socket; the server keeps serving', { timeout: 30000 }, async () => {
+  const server = await createGameServer({ port: 0, silent: true, config: FAST_CONFIG });
+  const url = `ws://127.0.0.1:${server.port}`;
+  const evil = new TestClient(url, 'Oversize');
+  const bystander = new TestClient(url, 'Bystander');
+
+  try {
+    await evil.connect();
+    await bystander.connect();
+    assert.ok(server.config.maxPayloadBytes <= 16384, 'payload cap is tight (16KB or less)');
+
+    // A ~5KB fuzz frame is comfortably legit (covered by server.test.js);
+    // anything above the cap gets the sender closed by ws itself (1009).
+    evil.ws.send('x'.repeat(server.config.maxPayloadBytes + 1024));
+    await waitUntil(() => evil.closed, 10000, 'oversize sender was closed');
+
+    // The server survived and other connections keep working.
+    bystander.send(MSG.CREATE_LOBBY, { isPublic: false, rules: {}, boardId: 'jungle_ruins' });
+    const lobby = (await bystander.next(SRV.LOBBY_STATE)).lobby;
+    assert.ok(lobby.code, 'server still serves other sockets');
+  } finally {
+    evil.dispose();
+    bystander.dispose();
+    await server.close();
   }
 });

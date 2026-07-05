@@ -112,10 +112,14 @@ function createSim({ seed, players, params = {}, rules = {} } = {}) {
 
     if (playing) {
       // Solo: steer the crosshair (aim stick preferred) and fire.
+      // Standard arena mapping (see fireflyCatchers/collectRush): the view
+      // camera sits at +z looking toward -z, so stick up (+y, the house
+      // convention in src/engine/input.js) must map to -z = away from the
+      // camera = up-screen.
       const solo = state.players[state.soloId];
       const soloFrame = clampFrame(inputsMap[state.soloId] ?? emptyFrame());
       const ax = soloFrame.aim ? soloFrame.aim.x : soloFrame.move.x;
-      const az = soloFrame.aim ? soloFrame.aim.y : soloFrame.move.y;
+      const az = -(soloFrame.aim ? soloFrame.aim.y : soloFrame.move.y);
       solo.x = Math.max(-cfg.raftHalfW, Math.min(cfg.raftHalfW, solo.x + ax * cfg.crossSpeed * DT));
       solo.z = Math.max(-cfg.raftHalfD, Math.min(cfg.raftHalfD, solo.z + az * cfg.crossSpeed * DT));
       const soloEdgeA = soloFrame.a && !solo.prevA;
@@ -133,7 +137,7 @@ function createSim({ seed, players, params = {}, rules = {} } = {}) {
         if (p.role !== 'dodger' || !p.alive) continue;
         const frame = clampFrame(inputsMap[pid] ?? emptyFrame());
         p.vx = p.vx * 0.72 + frame.move.x * cfg.dodgerSpeed * 0.28;
-        p.vz = p.vz * 0.72 + frame.move.y * cfg.dodgerSpeed * 0.28;
+        p.vz = p.vz * 0.72 + (-frame.move.y) * cfg.dodgerSpeed * 0.28;
         p.x = Math.max(-cfg.raftHalfW, Math.min(cfg.raftHalfW, p.x + p.vx * DT));
         p.z = Math.max(-cfg.raftHalfD, Math.min(cfg.raftHalfD, p.z + p.vz * DT));
       }
@@ -187,11 +191,19 @@ function createSim({ seed, players, params = {}, rules = {} } = {}) {
     for (const pid of state.order) {
       const p = state.players[pid];
       if (p.role === 'solo') {
-        scores[pid] = (state.soloWon ? 2000000000 : 0) + p.score * 1000;
+        // A full sweep is an outright win. Without one, the solo grades
+        // BETWEEN the dodgers by hits landed: every hit outranks any sunk
+        // dodger (elimTick < 250000) while surviving dodgers (>= 1e9) stay
+        // ahead. Pre-fix a non-sweeping solo always ranked dead last, which
+        // made the seat near-hopeless against sharp dodgers.
+        scores[pid] = state.soloWon ? 2000000000 + p.score * 1000 : p.score * 250000;
       } else {
-        scores[pid] = (state.soloWon ? 0 : 1000000000)
-          + p.lives * 1000000
-          + (p.alive ? state.durationTicks : p.elimTick);
+        // Survivors sit above any non-sweeping solo score; sunk dodgers
+        // rank purely by how long they lasted (elimTick <= 1350, i.e.
+        // below a single solo hit).
+        scores[pid] = p.alive
+          ? 1000000000 + p.lives * 1000000 + state.durationTicks
+          : p.elimTick;
       }
     }
     const ranking = rankByScoreGrouped(scores);
@@ -218,18 +230,38 @@ const REACT = { easy: 18, normal: 12, hard: 7, wild: 4 };
 const AIM_ERR = { easy: 2.4, normal: 1.4, hard: 0.7, wild: 0.25 };
 const LEAD_Q = { easy: 0.2, normal: 0.55, hard: 0.85, wild: 1.0 };
 
+function ihash(a, b) {
+  let h = (Math.imul(a | 0, 374761393) + Math.imul(b | 0, 668265263)) >>> 0;
+  h = Math.imul(h ^ (h >>> 13), 1274126177) >>> 0;
+  return (h ^ (h >>> 16)) >>> 0;
+}
+
+/**
+ * Wild bots are erratic, not superhuman: per ~1s window they swing between
+ * peak reflexes (the old 'wild' row), solid play ('hard') and outright
+ * blunders ('easy'), so the MEANS land near 'hard' while the variance is
+ * loud - the chaos preset expects a gambler, not a secret top difficulty.
+ * Seeded hash only, so replays stay deterministic.
+ */
+function wildRow(s, me) {
+  const roll = ihash(Math.floor(s.tick / 30), me.slot * 29 + 11) % 100;
+  if (roll < 30) return 'wild';
+  return roll < 72 ? 'hard' : 'easy';
+}
+
 function bot(publicState, playerId, difficulty, rng) {
   const frame = emptyFrame();
   const s = publicState;
   const me = s?.players?.[playerId];
   if (!me || s.tick <= s.countdownTicks) return frame;
 
-  const react = REACT[difficulty] ?? REACT.normal;
+  const row = difficulty === 'wild' ? wildRow(s, me) : difficulty;
+  const react = REACT[row] ?? REACT.normal;
 
   if (me.role === 'solo') {
     // Aim ahead of the closest living dodger and fire when lined up.
-    const err = AIM_ERR[difficulty] ?? AIM_ERR.normal;
-    const lead = LEAD_Q[difficulty] ?? LEAD_Q.normal;
+    const err = AIM_ERR[row] ?? AIM_ERR.normal;
+    const lead = LEAD_Q[row] ?? LEAD_Q.normal;
     let best = null;
     let bestD = Infinity;
     for (const pid of s.order) {
@@ -245,8 +277,10 @@ function bot(publicState, playerId, difficulty, rng) {
     const flightSec = (s.flightTicks ?? 27) / MINIGAME_HZ;
     const tx = best.x + best.vx * flightSec * lead + (rng.next() - 0.5) * err;
     const tz = best.z + best.vz * flightSec * lead + (rng.next() - 0.5) * err;
+    // Bots plan in world coords; the sim maps stick up (+y) to -z, so the
+    // emitted y is negated to keep the world-space behavior identical.
     frame.move.x = Math.max(-1, Math.min(1, (tx - me.x) * 1.4));
-    frame.move.y = Math.max(-1, Math.min(1, (tz - me.z) * 1.4));
+    frame.move.y = -Math.max(-1, Math.min(1, (tz - me.z) * 1.4));
     if (s.tick >= me.readyAt && Math.hypot(tx - me.x, tz - me.z) < 0.9
       && s.tick % react < Math.ceil(react / 2)) frame.a = true;
     return frame;
@@ -280,13 +314,14 @@ function bot(publicState, playerId, difficulty, rng) {
     // Cornered? Push back toward the raft center instead of into the rail.
     if (Math.abs(me.x + fx) > (s.raftHalfW ?? 6) - 0.3) fx = -Math.sign(me.x);
     if (Math.abs(me.z + fz) > (s.raftHalfD ?? 4) - 0.3) fz = -Math.sign(me.z);
+    // World-coords plan -> stick frame: y is negated (stick up = -z).
     frame.move.x = fx;
-    frame.move.y = fz;
+    frame.move.y = -fz;
     return frame;
   }
   // No threat: drift loosely toward a wandering anchor point.
   frame.move.x = Math.max(-1, Math.min(1, (-me.x * 0.2) + (rng.next() - 0.5) * 0.8));
-  frame.move.y = Math.max(-1, Math.min(1, (-me.z * 0.2) + (rng.next() - 0.5) * 0.8));
+  frame.move.y = -Math.max(-1, Math.min(1, (-me.z * 0.2) + (rng.next() - 0.5) * 0.8));
   return frame;
 }
 

@@ -22,10 +22,11 @@
  */
 
 import crypto from 'node:crypto';
-import { SRV } from '#shared/protocol.js';
+import { SRV, encode } from '#shared/protocol.js';
 import { createMatchSim } from '#shared/sim/match.js';
 import { minigames as minigameRegistry } from '#shared/registries.js';
 import { clampFrame, emptyFrame } from '#shared/minigames/inputs.js';
+import { DEFAULT_CONFIG } from './config.js';
 import { createBotHost } from './botHost.js';
 
 /* ------------------------------------------------------------------ */
@@ -45,10 +46,19 @@ export function relayChat({ config, broadcast }, player, text) {
   broadcast(SRV.CHAT, { pid: player.id, text: clean });
 }
 
-/** Relay an emote (id length-capped, no rate limit beyond the socket's). */
-export function relayEmote({ broadcast }, player, emoteId) {
+/**
+ * Relay an emote: id length-capped and rate-limited per player (~500ms,
+ * config.emoteIntervalMs, mirroring lastChatAt; drops silently when over).
+ * The pre-match lobby router calls this without a config - it falls back
+ * to the production default so emote spam is throttled there too.
+ */
+export function relayEmote({ config, broadcast }, player, emoteId) {
+  const now = Date.now();
+  const interval = config?.emoteIntervalMs ?? DEFAULT_CONFIG.emoteIntervalMs;
+  if (now - (player.lastEmoteAt ?? 0) < interval) return;
   const id = String(emoteId ?? '').slice(0, 32);
   if (id.length === 0) return;
+  player.lastEmoteAt = now;
   broadcast(SRV.EMOTE, { pid: player.id, emoteId: id });
 }
 
@@ -115,6 +125,8 @@ export function createRoom({ lobby, config, log, connections, broadcast, onDispo
   let disposed = false;
   let decisionTimer = null;
   let disposeTimer = null;
+  /** Coalesced deferred re-arm after a failed server action. */
+  let rearmTimer = null;
   /** @type {Object|null} Live minigame runner. */
   let mg = null;
 
@@ -163,6 +175,10 @@ export function createRoom({ lobby, config, log, connections, broadcast, onDispo
   /** Re-evaluate what the sim is waiting for; arm bots and timeouts. */
   function scheduleNext() {
     if (disposed || !sim) return;
+    if (rearmTimer) {
+      clearTimeout(rearmTimer);
+      rearmTimer = null;
+    }
     if (decisionTimer) {
       clearTimeout(decisionTimer);
       decisionTimer = null;
@@ -201,15 +217,33 @@ export function createRoom({ lobby, config, log, connections, broadcast, onDispo
     return result;
   }
 
-  /** Server-originated actions (bot host, minigame results). */
+  /**
+   * Server-originated actions (bot host, minigame results).
+   * @returns {boolean} true when the action was applied.
+   */
   function applyServerAction(action, meta = {}) {
-    if (disposed || !sim) return;
+    if (disposed || !sim) return false;
     try {
       applyAndBroadcast(action);
+      return true;
     } catch (err) {
       log.error('server_action_failed', {
         type: action?.type, pid: action?.playerId, source: meta.source, err: err?.message,
       });
+      // A failed apply must NEVER wedge the room: re-arm the pending
+      // decision (bot timer / human timeout / minigame launch) so the
+      // match keeps moving. Without this, state.awaiting would stay
+      // pending forever after a consumed decision timer ended in a
+      // rejected action. Deferred (config.actionRetryMs) so callers get
+      // to run their own fallback first and a persistent failure retries
+      // calmly instead of spinning.
+      if (!rearmTimer && !disposed) {
+        rearmTimer = setTimeout(() => {
+          rearmTimer = null;
+          scheduleNext();
+        }, config.actionRetryMs);
+      }
+      return false;
     }
   }
   room.applyServerAction = applyServerAction;
@@ -332,13 +366,41 @@ export function createRoom({ lobby, config, log, connections, broadcast, onDispo
     }, stepMs);
   }
 
+  /**
+   * Hot-path broadcast for mg_state (15Hz): encode the frame ONCE and send
+   * the same wire string to every connected human, instead of re-encoding
+   * the snapshot per recipient like the generic lobby broadcast does.
+   */
+  function broadcastMgState(payload) {
+    let wire;
+    try {
+      wire = encode(SRV.MG_STATE, payload);
+    } catch (err) {
+      log.warn('mg_state_encode_failed', { err: err?.message });
+      return;
+    }
+    for (const seat of lobby.seats) {
+      if (seat.isBot) continue;
+      const socket = connections.getPlayer(seat.pid)?.conn?.socket;
+      if (!socket || socket.readyState !== 1 /* OPEN */) continue;
+      try {
+        socket.send(wire);
+      } catch (err) {
+        log.warn('mg_state_send_failed', { pid: seat.pid, err: err?.message });
+      }
+    }
+  }
+
   function stepMinigame(broadcastEvery) {
     const runner = mg;
-    const publicState = runner.sim.getState();
     const inputs = {};
+    /** Lazily cloned: only bot/disconnected seats read the public state,
+     *  so a full-human tick skips the 30Hz getState() deep clone. */
+    let publicState = null;
     for (const pid of runner.players) {
       const seat = seatOf(pid);
       if (!seat || seat.isBot || !seat.connected) {
+        if (publicState === null) publicState = runner.sim.getState();
         inputs[pid] = botHost.minigameFrame(pid, publicState);
       } else {
         inputs[pid] = runner.inputs.get(pid)?.frame ?? emptyFrame();
@@ -353,7 +415,7 @@ export function createRoom({ lobby, config, log, connections, broadcast, onDispo
     }
     runner.tick += 1;
     if (runner.tick % broadcastEvery === 0) {
-      broadcast(SRV.MG_STATE, { tick: runner.tick, snapshot: runner.sim.getState() });
+      broadcastMgState({ tick: runner.tick, snapshot: runner.sim.getState() });
     }
     if (runner.sim.isFinished()) {
       let results;
@@ -383,12 +445,22 @@ export function createRoom({ lobby, config, log, connections, broadcast, onDispo
     log.info('minigame_finished', { id: minigameId, winner: results?.ranking?.[0] });
     broadcast(SRV.MG_END, { results });
     // Feed the outcome back into the board sim; broadcast as a normal
-    // action so replicas stay in lockstep.
-    applyServerAction({
+    // action so replicas stay in lockstep. A broken results object (the
+    // sim rejects it) must not wedge the room: award neutral results so
+    // the board can advance - applyServerAction's deferred re-arm is the
+    // final backstop should even that fail.
+    const applied = applyServerAction({
       type: 'minigameResults',
       playerId: players[0],
       payload: { results },
     }, { source: 'minigame' });
+    if (!applied && !disposed && sim) {
+      applyServerAction({
+        type: 'minigameResults',
+        playerId: players[0],
+        payload: { results: { ranking: players.slice(), coins: {}, stats: {} } },
+      }, { source: 'minigame_neutral_fallback' });
+    }
   }
 
   /** mg_input{seq,frame}: keep only the freshest frame per participant. */
@@ -409,7 +481,7 @@ export function createRoom({ lobby, config, log, connections, broadcast, onDispo
   }
 
   function handleEmote(player, payload) {
-    relayEmote({ broadcast }, player, payload?.emoteId);
+    relayEmote({ config, broadcast }, player, payload?.emoteId);
   }
 
   /* ---------------- connection churn ------------------------------------ */
@@ -417,6 +489,12 @@ export function createRoom({ lobby, config, log, connections, broadcast, onDispo
   /** Socket dropped mid-match: bot host covers the seat immediately. */
   function handleDisconnect(pid) {
     if (disposed || !sim) return;
+    // NOTE: `players[pid].connected` is PRESENTATION-ONLY state. The
+    // server mutates it out-of-band (no action, no event log entry), so
+    // client replicas never see the write - it MUST NOT influence any
+    // sim logic in shared/, or the authoritative sim and the replicas
+    // would silently diverge. Sim behavior for absent players is driven
+    // by the bot host answering their decisions, never by this flag.
     if (sim.state.players[pid]) sim.state.players[pid].connected = false;
     broadcast(SRV.PLAYER_CONN, { pid, connected: false });
     const state = sim.getState();
@@ -433,6 +511,8 @@ export function createRoom({ lobby, config, log, connections, broadcast, onDispo
   function handleResume(player) {
     if (disposed || !sim) return;
     const pid = player.id;
+    // Presentation-only mirror of the seat's connectivity (see the note
+    // in handleDisconnect - never let sim logic read this flag).
     if (sim.state.players[pid]) sim.state.players[pid].connected = true;
     botHost.cancel(pid);
     connections.send(player, SRV.STATE_SYNC, { snapshot: sim.snapshot() });
@@ -481,6 +561,8 @@ export function createRoom({ lobby, config, log, connections, broadcast, onDispo
     disposed = true;
     if (decisionTimer) clearTimeout(decisionTimer);
     decisionTimer = null;
+    if (rearmTimer) clearTimeout(rearmTimer);
+    rearmTimer = null;
     if (disposeTimer) clearTimeout(disposeTimer);
     disposeTimer = null;
     stopMinigameRunner();

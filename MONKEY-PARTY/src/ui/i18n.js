@@ -137,6 +137,14 @@ const DICT = {
   'char.cost': { en: '{n} bananas', de: '{n} Bananen' },
   'char.unlocked': { en: 'Unlocked!', de: 'Freigeschaltet!' },
   'char.seatPicks': { en: '{name} picks…', de: '{name} wählt…' },
+  // Character select is a CORE screen: the banana-economy keys must exist
+  // here even when the optional progression package (which also registers
+  // them via extendDict, with identical values) fails to load.
+  'char.bank': { en: 'Banana Bank', de: 'Bananen-Konto' },
+  'char.filter.all': { en: 'All', de: 'Alle' },
+  'char.filter.owned': { en: 'Owned', de: 'Freigeschaltet' },
+  'char.filter.locked': { en: 'Locked', de: 'Gesperrt' },
+  'char.filterEmpty': { en: 'Nothing here yet.', de: 'Hier ist noch nichts.' },
 
   /* ---------- HUD / match ---------- */
   'hud.turn': { en: "{name}'s turn", de: '{name} ist dran' },
@@ -156,6 +164,17 @@ const DICT = {
   'hud.phase.round_end': { en: 'Round end', de: 'Rundenende' },
   'hud.phase.bonus': { en: 'Bonus', de: 'Bonus' },
   'hud.phase.game_over': { en: 'Game over', de: 'Spielende' },
+  /* Board-play 3D banners / float texts (src/boardplay/boardPlayView.js). */
+  'hud.roundN': { en: 'Round {r}', de: 'Runde {r}' },
+  'hud.finalRound': { en: 'FINAL ROUND', de: 'LETZTE RUNDE' },
+  'hud.finalRoundSub': { en: 'Last chance for golden bananas!', de: 'Letzte Chance auf Goldene Bananen!' },
+  'hud.roundStart': { en: 'Get those bananas!', de: 'Holt euch die Bananen!' },
+  'hud.yourTurn': { en: 'Your turn!', de: 'Du bist dran!' },
+  'hud.blocked': { en: 'Blocked!', de: 'Blockiert!' },
+  'hud.gotBanana': { en: '{name} got a Golden Banana!', de: '{name} hat eine Goldene Banane geholt!' },
+  'hud.bananaDelta': { en: '{n} Golden Banana', de: '{n} Goldene Banane' },
+  'hud.wins': { en: '{name} wins!', de: '{name} gewinnt!' },
+  'hud.champion': { en: 'Golden banana champion', de: 'Goldene-Bananen-Champion' },
 
   /* ---------- prompts ---------- */
   'prompt.roll': { en: 'Roll the dice!', de: 'Würfeln!' },
@@ -183,6 +202,16 @@ const DICT = {
   'mg.place.2': { en: '2nd', de: '2.' },
   'mg.place.3': { en: '3rd', de: '3.' },
   'mg.place.n': { en: '{n}th', de: '{n}.' },
+  /* Minigame harness HUD (src/minigames/viewHarness.js). */
+  'mg.controlsHint': { en: 'Move: stick / WASD - A: primary - B: secondary', de: 'Bewegen: Stick / WASD - A: Primär - B: Sekundär' },
+  'mg.goShort': { en: 'GO!', de: 'LOS!' },
+  'mg.team': { en: 'Team {n}', de: 'Team {n}' },
+  'mg.fin': { en: 'FIN', de: 'ZIEL' },
+  'mg.out': { en: 'OUT', de: 'RAUS' },
+  'mg.idol': { en: 'IDOL!', de: 'IDOL!' },
+  'mg.hits': { en: '{n} hits', de: '{n} Treffer' },
+  'mg.roundShort': { en: 'rd {n}', de: 'Rd. {n}' },
+  'mg.coinsReward': { en: '+{n} coins', de: '+{n} Münzen' },
 
   /* ---------- victory / stats ---------- */
   'victory.bonusTitle': { en: 'Bonus Bananas!', de: 'Bonus-Bananen!' },
@@ -221,6 +250,10 @@ const DICT = {
   'settings.resetData': { en: 'Reset all data', de: 'Alle Daten zurücksetzen' },
   'settings.resetConfirm': { en: 'Really reset settings AND profile?', de: 'Wirklich Einstellungen UND Profil zurücksetzen?' },
   'settings.playerName': { en: 'Player name', de: 'Spielername' },
+
+  /* ---------- net status (core additions; netStrings.js owns net.*) ---- */
+  'net.errorUnknown': { en: 'unknown error', de: 'unbekannter Fehler' },
+  'net.fatalState': { en: 'connection is in a fatal state', de: 'Verbindung ist in einem fatalen Zustand' },
 };
 
 /**
@@ -236,7 +269,12 @@ export function extendDict(entries) {
   for (const [key, value] of Object.entries(entries)) {
     if (value === null || typeof value !== 'object') continue;
     if (Object.prototype.hasOwnProperty.call(DICT, key)) {
-      console.warn(`[i18n] extendDict: key "${key}" already registered - later registration wins`);
+      const prev = DICT[key];
+      // Identical re-registrations are intentional (core DICT keeps a copy
+      // of keys an optional package also ships, e.g. char.*): stay silent.
+      if (prev?.en !== value.en || prev?.de !== value.de) {
+        console.warn(`[i18n] extendDict: key "${key}" already registered - later registration wins`);
+      }
     }
     DICT[key] = value;
   }

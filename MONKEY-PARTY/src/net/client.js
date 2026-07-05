@@ -9,7 +9,13 @@
  * - The resume token is persisted in sessionStorage so a page reload can
  *   rejoin a running match.
  * - Outbound messages are queued while (re)connecting and flushed in order
- *   once the socket is open (after the resume frame).
+ *   once the socket is open (after the resume frame). MSG.MG_INPUT frames
+ *   are real-time-only and are NEVER queued: bursting a backlog of 20Hz
+ *   input frames on reopen would trip the server's rate kick, and the
+ *   minigame harness sends a fresh frame within ~50ms anyway.
+ * - latencyMs is measured on every hello/resume round trip AND refreshed
+ *   on the server's heartbeat cadence (each SRV.PING triggers a cheap
+ *   idempotent re-hello probe answered by SRV.WELCOME).
  * - A protocol version mismatch is fatal: reconnection stops and a typed
  *   error (err.code === 'version') is emitted via the 'fatal' event and
  *   rejects any pending connect() promise.
@@ -105,8 +111,12 @@ export function createNetClient(url = defaultUrl()) {
   let reconnectTimer = null;
   let manuallyClosed = false;
 
-  /** RTT probe: set when hello/resume goes out, resolved by the reply. */
+  /** RTT probe: set when hello/resume goes out, resolved by the welcome. */
   let probeSentAt = null;
+  /** True once the CURRENT socket received a welcome (safe to re-hello). */
+  let identified = false;
+  /** Last hello name the app sent; reused for heartbeat RTT probes. */
+  let lastHelloName = '';
 
   /** @type {[string, Object][]} outbound queue while not open. */
   const queue = [];
@@ -151,6 +161,7 @@ export function createNetClient(url = defaultUrl()) {
   function rawSend(t, payload) {
     ws.send(encode(t, payload));
     if (t === MSG.HELLO || t === MSG.RESUME) probeSentAt = nowMs();
+    if (t === MSG.HELLO && typeof payload?.name === 'string') lastHelloName = payload.name;
   }
 
   function flushQueue() {
@@ -173,6 +184,11 @@ export function createNetClient(url = defaultUrl()) {
     if (ws && ws.readyState === 1 && state === 'open') {
       rawSend(t, payload);
     } else {
+      // mg_input is real-time-only: queueing 20Hz frames during an outage
+      // would burst on reopen and trip the server's rate kick (60 msg/s),
+      // and a stale frame is worthless - the harness sends a fresh one
+      // within ~50ms of the reconnect anyway. Drop instead of queueing.
+      if (t === MSG.MG_INPUT) return;
       if (queue.length >= QUEUE_CAP) queue.shift(); // drop oldest
       queue.push([t, payload]);
     }
@@ -233,21 +249,30 @@ export function createNetClient(url = defaultUrl()) {
       return;
     }
 
-    if (probeSentAt !== null) {
-      latencyMs = Math.max(0, Math.round(nowMs() - probeSentAt));
-      probeSentAt = null;
-    }
-
     if (msg.t === SRV.ERROR && msg.payload?.code === 'version') {
       fatal('version', msg.payload.msg ?? 'protocol version mismatch');
       return;
     }
     if (msg.t === SRV.PING) {
-      if (ws && ws.readyState === 1) rawSend(MSG.PONG, {});
+      if (ws && ws.readyState === 1) {
+        rawSend(MSG.PONG, {});
+        // Refresh the RTT estimate on the heartbeat cadence: a repeat
+        // hello is idempotent server-side (it only re-sends welcome), so
+        // once identified it doubles as a cheap application-level probe.
+        if (identified) rawSend(MSG.HELLO, { name: lastHelloName });
+      }
       emit(SRV.PING, msg.payload);
       return;
     }
     if (msg.t === SRV.WELCOME) {
+      // Only the welcome answers a hello/resume probe - measuring against
+      // "any next frame" would undershoot whenever an unrelated broadcast
+      // (e.g. a 15Hz mg_state) lands between the probe and its reply.
+      if (probeSentAt !== null) {
+        latencyMs = Math.max(0, Math.round(nowMs() - probeSentAt));
+        probeSentAt = null;
+      }
+      identified = true;
       playerId = msg.payload.playerId;
       resumeToken = msg.payload.resumeToken;
       storageSet(STORAGE_PID, playerId);
@@ -274,6 +299,8 @@ export function createNetClient(url = defaultUrl()) {
       if (ws !== socket) return;
       state = 'open';
       attempts = 0;
+      identified = false; // welcome pending on this fresh socket
+      probeSentAt = null; // never measure across a reconnect boundary
       if (resumeToken) rawSend(MSG.RESUME, { token: resumeToken });
       flushQueue();
       emit('open', { url });

@@ -76,7 +76,18 @@ export function createBotHost(room) {
       log.warn('bot_decide_threw', { pid, err: err?.message });
     }
     if (!action) action = legal[0];
-    room.applyServerAction(action, { source: 'botHost' });
+    const applied = room.applyServerAction(action, { source: 'botHost' });
+    if (!applied) {
+      // The sim's deeper validation rejected the bot's pick (targets,
+      // prices, ...). Retry once with the first enumerated legal action
+      // before giving up - the room's deferred re-arm (scheduleNext in
+      // applyServerAction's catch) is the final anti-hang backstop.
+      const fallback = legal[0];
+      if (JSON.stringify(fallback) !== JSON.stringify(action)) {
+        log.warn('bot_pick_rejected', { pid, type: action?.type });
+        room.applyServerAction(fallback, { source: 'botHost:fallback' });
+      }
+    }
   }
 
   /**

@@ -10,15 +10,20 @@
  *     that always auto-default (~20s) so the game never hangs,
  *   - orchestrates the minigame phase: intro roulette -> viewHarness
  *     runMinigame -> results overlay -> back to the board,
- *   - mounts the pause menu (Esc / HUD button; never pauses the shared
- *     sim - offline it only render-pauses the board) and the in-match
- *     chat (online sessions),
+ *   - mounts the pause menu (Esc / HUD button; online never pauses the
+ *     shared sim - offline it render-pauses the board, holds decision
+ *     prompts (freezing their auto-default countdowns) and defers
+ *     minigame starts until resume) and the in-match chat (online
+ *     sessions),
  *   - drives dynamic music (setIntensity ramp by round, star/gameover
  *     stingers) and screen shake on boss hits / trap triggers,
- *   - on game_over: victory scene -> stats screen; folds the results into
- *     the profile store (or the optional progression package) and offers
- *     a rematch (offline: recreate from ctx.lastOfflineConfig; online:
- *     back to the lobby the server reopens).
+ *   - on game_over: victory scene -> stats screen (passing the offline
+ *     progression payoff so the XP bar / achievement banners animate);
+ *     folds the results into the profile store (or the optional
+ *     progression package) and offers a rematch (offline: recreate from
+ *     ctx.lastOfflineConfig; online: back to the lobby the server
+ *     reopens; tournament legs instead get a "Continue Cup" button back
+ *     to the tournament screen).
  *
  * OFFLINE MINIGAME COORDINATION: src/app/session.js runs its own 30Hz
  * minigame stepper (bots + sendInput frames) and submits the results
@@ -98,6 +103,9 @@ export function createMatchScreen(ctx) {
   let emoteWheel = null;
   let activePrompt = null;
   let requestOffs = [];
+  /** Latest unanswered ui.request; held (not rendered) while the offline
+   *  pause menu is open and re-presented on resume. */
+  let pendingRequest = null;
 
   /* minigame flow state */
   let capturedMgSim = null;
@@ -110,6 +118,8 @@ export function createMatchScreen(ctx) {
   let chat = null;
   /** Render-pause from the pause menu (offline only; the sim never stops). */
   let menuPaused = false;
+  /** mg_start deferred because the offline pause menu is open. */
+  let pendingMgStart = null;
 
   /* dynamic music state */
   let lastIntensity = -1;
@@ -219,10 +229,21 @@ export function createMatchScreen(ctx) {
 
   function handleRequest(decision, options, cb) {
     closePrompt();
+    const request = { decision, options, cb };
+    pendingRequest = request;
+    // Offline pause: hold the prompt (and its auto-default countdown)
+    // until the player resumes - the offline sim just waits on `awaiting`.
+    if (menuPaused) return;
+    presentRequest(request);
+  }
+
+  function presentRequest(request) {
+    const { decision, options } = request;
     playSfx('hover', { vol: 0.3 });
     const answer = (choice) => {
       activePrompt = null;
-      cb(choice);
+      if (pendingRequest === request) pendingRequest = null;
+      request.cb(choice);
     };
     switch (decision) {
       case 'roll':
@@ -605,18 +626,24 @@ export function createMatchScreen(ctx) {
   /**
    * Victory scene finished: fold the match into the profile (progression
    * package first, built-in fold otherwise), hand off to the stats screen
-   * and offer a rematch. Online sessions stay alive so "Play Again" can
-   * rejoin the lobby the server reopens after game over.
+   * (with the progression payoff for local results, so the XP bar /
+   * level-up / achievement banners animate) and offer a rematch. Online
+   * sessions stay alive so "Play Again" can rejoin the lobby the server
+   * reopens after game over.
    */
   async function concludeMatch(state, over) {
     const match = buildMatchSummary(state, over);
     const pids = localPids();
     const endedSession = session();
     const mode = endedSession?.mode ?? null;
+    let progression = null;
     try {
       const prog = await tryImport(PROGRESSION_PATH);
       if (typeof prog?.applyMatchResults === 'function') {
-        prog.applyMatchResults(ctx.profile, { state, gameOver: over, bonuses, localPids: pids });
+        const result = prog.applyMatchResults(ctx.profile, { state, gameOver: over, bonuses, localPids: pids });
+        // Progression is local-only: only LOCAL/offline results carry the
+        // payoff to the stats screen (it tolerates absence forever).
+        if (mode === 'offline' && result) progression = result;
       } else {
         applyMatchToProfile(ctx.profile, state, over, pids, minigamesPlayed);
       }
@@ -624,7 +651,7 @@ export function createMatchScreen(ctx) {
       console.warn('[match] profile update failed:', err);
     }
     if (mode !== 'online') ctx.setSession(null);
-    ctx.router.go('stats', { match });
+    ctx.router.go('stats', progression ? { match, progression } : { match });
     offerRematch({ mode, state, endedSession });
   }
 
@@ -633,12 +660,20 @@ export function createMatchScreen(ctx) {
    * recreates a session from ctx.lastOfflineConfig (hidden when the menu
    * package never set one); online it returns to the lobby screen (the
    * server keeps the room for a rematch window, then reopens the lobby).
-   * Always dismissible + self-expiring - it can never hang anything.
+   * Tournament legs (session.origin === 'tournament', tagged by
+   * tournamentScreen's startNextRace) never get the couch "Play Again"
+   * (which would restart a stale ctx.lastOfflineConfig game with the
+   * wrong seats/board, outside the cup) - they get a "Continue Cup"
+   * button back to the tournament screen, whose game_over subscription
+   * already folded the leg into the standings. Always dismissible - it
+   * can never hang anything.
    */
   function offerRematch({ mode, state, endedSession }) {
-    const canOffline = mode === 'offline' && Boolean(ctx.lastOfflineConfig);
-    const canOnline = mode === 'online';
-    if (!canOffline && !canOnline) return;
+    const fromTournament = endedSession?.origin === 'tournament';
+    const canTournament = fromTournament && ctx.router.has?.('tournament');
+    const canOffline = mode === 'offline' && !fromTournament && Boolean(ctx.lastOfflineConfig);
+    const canOnline = mode === 'online' && !fromTournament;
+    if (!canOffline && !canOnline && !canTournament) return;
 
     const host = document.getElementById('ui-root') ?? document.body;
     const panel = div('match-again');
@@ -661,17 +696,23 @@ export function createMatchScreen(ctx) {
       if (mode === 'online' && ctx.session === endedSession) ctx.setSession(null);
     }
 
-    panel.appendChild(div('match-again__title', `🔄 ${tm('match.again.title')}`));
-    const again = button(tm('match.again.play'), 'ui-btn--green', () => {
+    panel.appendChild(div('match-again__title', canTournament
+      ? `🏆 ${t('tour.title')}`
+      : `🔄 ${tm('match.again.title')}`));
+    const again = button(canTournament ? t('tour.continue') : tm('match.again.play'), 'ui-btn--green', () => {
       cleanup();
-      if (canOffline) playAgainOffline(state);
+      if (canTournament) ctx.router.go('tournament');
+      else if (canOffline) playAgainOffline(state);
       else ctx.router.go('lobby');
     });
     if (canOnline) again.title = tm('match.again.lobbyHint');
     panel.appendChild(again);
     panel.appendChild(button('✕', 'ui-btn--ghost ui-btn--small', dismiss));
 
-    ttlTimer = setTimeout(dismiss, REMATCH_OFFER_TTL_MS);
+    // The tournament continue offer never self-expires (expiring it would
+    // dead-end the leg on the stats screen); it still dismisses on any
+    // navigation via the poll below, and manually via ✕.
+    if (!canTournament) ttlTimer = setTimeout(dismiss, REMATCH_OFFER_TTL_MS);
     // Leaving the stats screen (any navigation) also dismisses the offer.
     pollTimer = setInterval(() => {
       const name = ctx.router.currentName?.();
@@ -746,17 +787,34 @@ export function createMatchScreen(ctx) {
     chat = attachMatchChat(ctx, s, root);
 
     /* Pause menu (Esc / HUD pause button). Pausing NEVER pauses the shared
-     * sim: online the server keeps running (the menu shows a note), and
-     * offline only the board RENDERING pauses (the existing render-pause
-     * pattern) - session timers, bot decisions and prompt auto-default
-     * countdowns keep ticking so the match can never hang. */
+     * sim online (the server keeps running; the menu shows a note).
+     * Offline it render-pauses the board AND freezes the decision flow:
+     * the open prompt closes (cancelling its auto-default countdown) but
+     * stays pending, new prompts are held unrendered, and mg_start is
+     * deferred (the captured facade means nothing steps the real minigame
+     * sim until the harness starts). Resume re-presents the pending
+     * prompt with a fresh countdown and starts the deferred minigame, so
+     * the match still can never hang. */
     pauseMenu = attachPauseMenu(ctx, {
       getSession: session,
       isChatOpen: () => Boolean(chat?.isOpen?.()),
       closeChat: () => chat?.close?.(),
+      isMinigameLive: () => Boolean(mgFlow),
       onQuit: quitToMenu,
       onPauseChange: (isPaused) => {
-        menuPaused = isPaused && session()?.mode === 'offline';
+        const offline = session()?.mode === 'offline';
+        menuPaused = isPaused && offline;
+        if (offline) {
+          if (isPaused) {
+            // Freeze the prompt countdown; the request stays pending.
+            closePrompt();
+          } else {
+            const mgEvt = pendingMgStart;
+            pendingMgStart = null;
+            if (mgEvt) startMinigame(mgEvt);
+            if (pendingRequest && !activePrompt) presentRequest(pendingRequest);
+          }
+        }
         ctx.bus.emit(isPaused ? 'match:paused' : 'match:resumed', { mode: session()?.mode ?? null });
       },
     });
@@ -796,6 +854,13 @@ export function createMatchScreen(ctx) {
       armSimCapture(evt?.minigameId);
     });
     sub('mg_start', (evt) => {
+      if (menuPaused) {
+        // Offline pause: defer the whole flow (intro + harness). The
+        // session runner only holds the step-noop facade, so the real
+        // minigame sim stays frozen until the player resumes.
+        pendingMgStart = evt;
+        return;
+      }
       startMinigame(evt);
     });
     sub('state_sync', () => {
@@ -918,6 +983,8 @@ export function createMatchScreen(ctx) {
       disposed = false;
       paused = false;
       menuPaused = false;
+      pendingRequest = null;
+      pendingMgStart = null;
       lastIntensity = -1;
       bonuses = [];
       gameOverEvt = null;
@@ -934,6 +1001,8 @@ export function createMatchScreen(ctx) {
     unmount() {
       disposed = true;
       closePrompt();
+      pendingRequest = null;
+      pendingMgStart = null;
       clearTimeout(mgZombieTimer);
       mgZombieTimer = null;
       try {

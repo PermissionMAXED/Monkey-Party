@@ -9,13 +9,16 @@
  * fall back cleanly instead of crashing.
  *
  * Launch flow: build cfg {seed, boardId, rules, localPlayers} from the
- * current leg -> createOfflineSession(cfg) -> seat the 3 rival bots with
- * their tournament characters -> subscribe to the session's 'game_over'
- * (the same event matchController uses) BEFORE navigating -> setSession +
- * start() -> router.go('match'). When the match ends, the game_over
- * handler folds the result into the store, so returning to this screen
- * shows updated standings and unlocks. Quitting mid-match (HUD quit) never
- * fires game_over - the leg stays unrecorded and the cup resumes there.
+ * current leg -> createOfflineSession(cfg), tagged session.origin =
+ * 'tournament' (matchController reads it to swap the couch "Play Again"
+ * offer for a "Continue Cup" button back here) -> seat the 3 rival bots
+ * with their tournament characters -> subscribe to the session's
+ * 'game_over' (the same event matchController uses) BEFORE navigating ->
+ * setSession + start() -> router.go('match'). When the match ends, the
+ * game_over handler folds the result into the store, so returning to this
+ * screen shows updated standings and unlocks. Quitting mid-match (HUD
+ * quit) never fires game_over - the leg stays unrecorded and the cup
+ * resumes there.
  */
 
 import {
@@ -181,6 +184,11 @@ export function createTournamentScreen(ctx) {
       localPlayers: [{ pid: PLAYER_PID, name: tour.playerName }],
     };
     const session = createOfflineSession(cfg);
+    // Tag the session so matchController can tell a tournament leg from a
+    // couch game: it suppresses the stale offline "Play Again" offer and
+    // shows a "Continue Cup" button back to this screen instead. The tag
+    // dies with the session - nothing to clear when the leg ends.
+    session.origin = 'tournament';
 
     // Seat the fixed tournament roster: the human + the 3 rivals with
     // their seeded characters (addBot pids are bot1..bot3, matching the

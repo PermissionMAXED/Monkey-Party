@@ -1,34 +1,65 @@
 /**
  * In-match pause menu: Esc (or the HUD pause button) opens a dim overlay
- * with Resume / Quick Settings / How to Play (router-guarded) / Quit to
- * Menu.
+ * with Resume / Quick Settings / How to Play (router-guarded, hidden
+ * during the minigame phase - leaving the match mid-minigame would void
+ * it offline) / Quit to Menu.
  *
- * Pausing NEVER pauses the shared sim: online the server keeps running
- * (an explicit note says so), and offline only the board RENDERING is
- * paused by the caller (matchController's existing render-pause pattern);
- * session timers, bot decisions and prompt auto-defaults keep ticking, so
- * a match can never hang on this menu. The overlay itself is always
- * dismissible (Resume, Esc, backdrop click).
+ * Pausing NEVER pauses the shared sim online: the server keeps running
+ * (an explicit note says so). Offline the caller (matchController)
+ * render-pauses the board AND holds the decision prompts (freezing their
+ * auto-default countdowns) and defers minigame starts while this menu is
+ * open; an already-running minigame keeps playing (a note says so). The
+ * overlay itself is always dismissible (Resume, Esc, backdrop click).
  *
  * attachPauseMenu(ctx, opts) -> { open, close, toggle, isOpen, dispose }
  */
 
+import * as i18n from './i18n.js';
 import { t } from './i18n.js';
 import { tm } from './matchStrings.js';
 import { el, div, button, clearNode, overlay, fieldRow, select, slider, toggle as uiToggle, playSfx } from './dom.js';
 
 const QUALITY_LEVELS = ['low', 'med', 'high'];
 
+/** Local strings (this module owns them; matchStrings.js owns match.*). */
+const PAUSE_DICT = {
+  'match.pause.minigameNote': {
+    en: 'A minigame is running — it keeps playing while this menu is open.',
+    de: 'Ein Minispiel läuft — es spielt weiter, solange dieses Menü offen ist.',
+  },
+};
+i18n.extendDict?.(PAUSE_DICT);
+
+/** tm() with a PAUSE_DICT fallback (same convention as matchStrings.tm). */
+function tp(key) {
+  const viaMain = tm(key);
+  if (viaMain !== key) return viaMain;
+  const entry = PAUSE_DICT[key];
+  if (!entry) return key;
+  const lang = i18n.getLang?.() ?? 'en';
+  return entry[lang] ?? entry.en;
+}
+
 export function attachPauseMenu(ctx, {
   getSession = () => null,
   isChatOpen = () => false,
   closeChat = () => {},
+  isMinigameLive = () => false,
   onQuit = () => {},
   onPauseChange = () => {},
 } = {}) {
   let modal = null;
   let disposed = false;
   let quitArmed = false;
+
+  /** True while the match sim is in its minigame phase. */
+  function inMinigame() {
+    try {
+      return getSession()?.getSim?.()?.getState?.()?.phase === 'minigame';
+    } catch {
+      return false;
+    }
+  }
 
   function notify(paused) {
     try {
@@ -104,10 +135,20 @@ export function attachPauseMenu(ctx, {
     col.appendChild(button(tm('match.pause.resume'), 'ui-btn--green ui-btn--big', () => close()));
     col.appendChild(button(tm('match.pause.settings'), 'ui-btn--wood', renderSettings));
 
-    // How to Play shortcut only when the help package registered its screen.
+    // How to Play shortcut only when the help package registered its
+    // screen, and NEVER during the minigame phase: navigating away
+    // unmounts the match, and offline the view harness is the only
+    // stepper of the real minigame sim - leaving would freeze it and
+    // hand out bogus fallback results on return.
     const router = ctx.app?.router ?? ctx.router;
-    if (typeof router?.has === 'function' && router.has('howToPlay')) {
+    if (typeof router?.has === 'function' && router.has('howToPlay') && !inMinigame()) {
       col.appendChild(button(tm('match.pause.howToPlay'), 'ui-btn--wood', () => {
+        if (inMinigame()) {
+          // A minigame started while the menu sat open: refresh instead
+          // of navigating (the button disappears).
+          renderMain();
+          return;
+        }
         close();
         router.go('howToPlay');
       }));
@@ -132,6 +173,10 @@ export function attachPauseMenu(ctx, {
 
     if (getSession()?.mode === 'online') {
       modal.panel.appendChild(div('pause-menu__note', `🌐 ${tm('match.pause.onlineNote')}`));
+    } else if (isMinigameLive()) {
+      // Offline board decisions are frozen while paused, but a minigame
+      // that is already running keeps stepping - say so honestly.
+      modal.panel.appendChild(div('pause-menu__note', `🎮 ${tp('match.pause.minigameNote')}`));
     }
   }
 

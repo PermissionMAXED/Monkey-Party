@@ -20,11 +20,18 @@
  */
 
 import * as THREE from 'three';
-import { characters as characterRegistry, items as itemRegistry, boards as boardRegistry } from '#shared/registries.js';
+import {
+  characters as characterRegistry,
+  items as itemRegistry,
+  boards as boardRegistry,
+  minigames as minigameRegistry,
+} from '#shared/registries.js';
+import { t, localized } from '../ui/i18n.js';
+import { onPaletteChange } from '../app/playerPalette.js';
 import { sfx, voice } from '../engine/audio.js';
 import { prefersReducedMotion } from '../engine/tween.js';
 import { createParticles } from '../engine/particles.js';
-import { createTokenActor, TOKEN_COLORS } from './tokenActor.js';
+import { createTokenActor } from './tokenActor.js';
 import { createDiceView } from './diceView.js';
 import { createCameraDirector } from './cameraDirector.js';
 import { createFieldFx } from './fieldFx.js';
@@ -38,6 +45,8 @@ import { createTurnBanner } from './turnBanner.js';
 const BOARDS_PATH = '../boards/index.js';
 const MONKEY_FACTORY_PATH = '../characters/monkeyFactory.js';
 const ANIMATOR_PATH = '../characters/animator.js';
+/** Optional prompt-navigation hook (ui package): gamepad/keyboard parity. */
+const PROMPT_NAV_PATH = '../ui/junctionPrompt.js';
 
 async function tryImport(path) {
   try {
@@ -363,6 +372,7 @@ export function createBoardPlayView({ engine = null, session = null, ui = null, 
   let disposed = false;
   let boardsMod = null;
   let monkeyKit = null;
+  let promptNavMod = null;
 
   let boardView = null;
   let boardDef = null;
@@ -464,9 +474,17 @@ export function createBoardPlayView({ engine = null, session = null, ui = null, 
 
   function itemName(itemId) {
     try {
-      return itemRegistry.get(itemId)?.name?.en ?? itemId;
+      return localized(itemRegistry.get(itemId)?.name) || itemId;
     } catch {
       return itemId;
+    }
+  }
+
+  function minigameName(minigameId) {
+    try {
+      return localized(minigameRegistry.get(minigameId)?.name) || minigameId;
+    } catch {
+      return minigameId;
     }
   }
 
@@ -513,13 +531,14 @@ export function createBoardPlayView({ engine = null, session = null, ui = null, 
     root.add(boardView.group);
     computeBounds();
 
-    // Tokens: one per player, in turn order (seat colors).
+    // Tokens: one per player, in turn order (seat colors follow the
+    // active colorblind palette - see src/app/playerPalette.js).
     (latestState?.turnOrder ?? []).forEach((pid, i) => {
       const player = latestState.players[pid];
       const token = createTokenActor({
         player,
         characterDef: characterDefOf(player),
-        color: TOKEN_COLORS[i % TOKEN_COLORS.length],
+        seat: i,
         monkeyKit,
       });
       token.placeAt(nodePos(player.node));
@@ -607,6 +626,17 @@ export function createBoardPlayView({ engine = null, session = null, ui = null, 
     }
     if (key === lastPromptKey) return;
     lastPromptKey = key;
+    // Input parity: point the DOM prompts' d-pad/stick navigation at the
+    // DECIDING local seat before the request fires (optional ui hook; the
+    // prompts poll the source lazily, so late module resolution is fine).
+    try {
+      const seat = session?.localSeats?.()?.get?.(awaiting.playerId);
+      promptNavMod?.setPromptInputSource?.(
+        typeof input?.getFrame === 'function' && typeof seat === 'number'
+          ? { input, seat }
+          : null,
+      );
+    } catch { /* pad navigation is presentation-only */ }
     const respond = (choice) => {
       const action = decisionToAction(awaiting, choice);
       if (!action) return;
@@ -649,14 +679,14 @@ export function createBoardPlayView({ engine = null, session = null, ui = null, 
   function enqueueRoundBanner(round, subtitle = undefined) {
     const totalRounds = Number(latestState?.rules?.rounds) || 0;
     if (totalRounds > 0 && round >= totalRounds) {
-      enqueueBanner('FINAL ROUND', {
+      enqueueBanner(t('hud.finalRound'), {
         style: 'final',
-        subtitle: 'Last chance for golden bananas!',
+        subtitle: t('hud.finalRoundSub'),
         duration: 2.0,
         sfx: 'drumroll',
       });
     } else {
-      enqueueBanner(`Round ${round}`, { color: '#ffd23f', subtitle });
+      enqueueBanner(t('hud.roundN', { r: round }), { color: '#ffd23f', subtitle });
     }
   }
 
@@ -707,7 +737,7 @@ export function createBoardPlayView({ engine = null, session = null, ui = null, 
         duration: pace(0.5),
         onStart() {
           sfx('error', { vol: 0.7 });
-          fx?.floatText('Blocked!', token.worldPos(), { color: '#ff8a80' });
+          fx?.floatText(t('hud.blocked'), token.worldPos(), { color: '#ff8a80' });
         },
         onUpdate(k) {
           token.setWiggle(k);
@@ -853,7 +883,7 @@ export function createBoardPlayView({ engine = null, session = null, ui = null, 
           director?.applyShot();
         },
       });
-      enqueueBanner(`${playerName(evt.playerId)} got a Golden Banana!`, { color: '#ffe135', duration: 1.5 });
+      enqueueBanner(t('hud.gotBanana', { name: playerName(evt.playerId) }), { color: '#ffe135', duration: 1.5 });
     } else if (kind === 'relocated') {
       const to = nodePos(evt.node);
       queue.enqueue({
@@ -893,7 +923,7 @@ export function createBoardPlayView({ engine = null, session = null, ui = null, 
         duration: pace(0.5),
         onStart() {
           const gain = (evt.delta ?? 0) >= 0;
-          fx?.floatText(`${gain ? '+' : ''}${evt.delta} Golden Banana`, token?.worldPos() ?? boardCenter.clone(), {
+          fx?.floatText(t('hud.bananaDelta', { n: `${gain ? '+' : ''}${evt.delta}` }), token?.worldPos() ?? boardCenter.clone(), {
             color: gain ? '#ffe135' : '#ff8a80',
           });
         },
@@ -920,7 +950,7 @@ export function createBoardPlayView({ engine = null, session = null, ui = null, 
       duration: pace(0.8),
       onStart() {
         if (evt.cancelled) {
-          fx?.floatText('Blocked!', pos, { color: '#9ff0c8' });
+          fx?.floatText(t('hud.blocked'), pos, { color: '#9ff0c8' });
           sfx('pop');
         } else {
           director?.punch(pos);
@@ -1000,12 +1030,12 @@ export function createBoardPlayView({ engine = null, session = null, ui = null, 
         lastTurnKey = key;
         if (evt.round !== lastRoundSeen) {
           lastRoundSeen = evt.round;
-          enqueueRoundBanner(evt.round, 'Get those bananas!');
+          enqueueRoundBanner(evt.round, t('hud.roundStart'));
         }
         const isLocal = localHumanIds().has(evt.playerId);
-        enqueueBanner(`${playerName(evt.playerId)}'s turn`, {
+        enqueueBanner(t('hud.turn', { name: playerName(evt.playerId) }), {
           color: isLocal ? '#9ff0c8' : '#ffe135',
-          subtitle: isLocal ? 'Your turn!' : undefined,
+          subtitle: isLocal ? t('hud.yourTurn') : undefined,
           duration: 1.3,
         });
       }
@@ -1024,7 +1054,7 @@ export function createBoardPlayView({ engine = null, session = null, ui = null, 
 
   function enqueueBonus(evt) {
     const token = tokenOf(evt.playerId);
-    enqueueBanner(`${evt.name?.en ?? evt.category}: ${playerName(evt.playerId)} +${evt.bananas ?? 1}`, {
+    enqueueBanner(`${localized(evt.name) || evt.category}: ${playerName(evt.playerId)} +${evt.bananas ?? 1}`, {
       color: '#ffd23f',
       duration: 1.6,
     });
@@ -1060,9 +1090,9 @@ export function createBoardPlayView({ engine = null, session = null, ui = null, 
         sfx('crowd_cheer');
       },
     });
-    enqueueBanner(`${playerName(winner)} wins!`, {
+    enqueueBanner(t('hud.wins', { name: playerName(winner) }), {
       color: '#ffe135',
-      subtitle: 'Golden banana champion',
+      subtitle: t('hud.champion'),
       duration: 2.4,
     });
   }
@@ -1086,7 +1116,7 @@ export function createBoardPlayView({ engine = null, session = null, ui = null, 
 
   function enqueueMinigame(evt) {
     if (evt.type === 'minigame_start') {
-      enqueueBanner('Minigame time!', { color: '#8ecbff', subtitle: evt.minigameId, duration: 1.4 });
+      enqueueBanner(t('mg.incoming'), { color: '#8ecbff', subtitle: minigameName(evt.minigameId), duration: 1.4 });
       queue.enqueue({
         name: 'minigame:overview',
         onEnd() {
@@ -1200,11 +1230,23 @@ export function createBoardPlayView({ engine = null, session = null, ui = null, 
 
   /* ---------------- public surface ----------------------------------- */
 
+  /** ui bus 'fireworks' (victoryScene emits it): burst at the winner. */
+  function onFireworks(evt) {
+    if (disposed) return;
+    const token = tokenOf(evt?.playerId);
+    const pos = token?.worldPos() ?? boardCenter.clone();
+    particles?.burst('fireworks', { pos: pos.clone().setY(pos.y + 2.2) });
+    particles?.burst('starburst', { pos: pos.clone().setY(pos.y + 1.4), count: 24 });
+  }
+
   async function mount() {
     if (mounted || disposed) return api;
     mounted = true;
     boardsMod = await tryImport(BOARDS_PATH);
     monkeyKit = await loadMonkeyKit();
+    tryImport(PROMPT_NAV_PATH).then((mod) => {
+      promptNavMod = mod;
+    });
     buildScene();
 
     const subscribe = (evt, cb) => {
@@ -1217,8 +1259,21 @@ export function createBoardPlayView({ engine = null, session = null, ui = null, 
     subscribe('emote', onLooseEmote);
     subscribe('match_start', onMatchStart);
 
+    // Victory fireworks over the winner token (bus event, optional).
+    try {
+      const off = ui?.on?.('fireworks', onFireworks);
+      if (typeof off === 'function') unsubs.push(off);
+    } catch { /* ui without events (tests) */ }
+
+    // Live re-tint when the colorblind palette changes (presentation-only).
+    unsubs.push(onPaletteChange((palette) => {
+      for (const token of tokens.values()) {
+        token.setColor(palette[(token.seat ?? 0) % palette.length]);
+      }
+    }));
+
     if (latestState) {
-      enqueueRoundBanner(latestState.round ?? 1, boardDef?.name?.en);
+      enqueueRoundBanner(latestState.round ?? 1, localized(boardDef?.name) || undefined);
       queue.enqueue({ name: 'ack', onEnd: checkAwaiting });
     }
     return api;
@@ -1243,6 +1298,9 @@ export function createBoardPlayView({ engine = null, session = null, ui = null, 
   function dispose() {
     if (disposed) return;
     disposed = true;
+    try {
+      promptNavMod?.setPromptInputSource?.(null);
+    } catch { /* optional */ }
     for (const unsub of unsubs) {
       try {
         unsub();

@@ -225,6 +225,18 @@ function ihash(a, b) {
   return (h ^ (h >>> 16)) >>> 0;
 }
 
+/**
+ * Wild bots are erratic, not superhuman: per ~1s window they swing between
+ * peak reflexes (the old 'wild' row), solid play ('hard') and outright
+ * blunders ('easy'), so the MEANS land near 'hard' while the variance is
+ * loud. Seeded hash only, so replays stay deterministic.
+ */
+function wildRow(s, me) {
+  const roll = ihash(Math.floor(s.tick / 30), me.slot * 29 + 11) % 100;
+  if (roll < 30) return 'wild';
+  return roll < 72 ? 'hard' : 'easy';
+}
+
 function bot(publicState, playerId, difficulty, _rng) {
   const frame = emptyFrame();
   const s = publicState;
@@ -233,7 +245,8 @@ function bot(publicState, playerId, difficulty, _rng) {
   if (s.order[s.turn] !== playerId) return frame;
   if (!Array.isArray(s.candidates) || s.candidates.length === 0) return frame;
 
-  const think = THINK[difficulty] ?? THINK.normal;
+  const row = difficulty === 'wild' ? wildRow(s, me) : difficulty;
+  const think = THINK[row] ?? THINK.normal;
   const elapsed = s.tick - s.turnStartTick;
   if (elapsed < think) return frame;
 
@@ -255,7 +268,7 @@ function bot(publicState, playerId, difficulty, _rng) {
   }
   // Sloppier monkeys sometimes just grab whatever is shiny.
   const salt = s.pulls * 131 + me.slot * 17;
-  if (ihash(salt, 9) % 100 < (BLUNDER_PCT[difficulty] ?? BLUNDER_PCT.normal)) {
+  if (ihash(salt, 9) % 100 < (BLUNDER_PCT[row] ?? BLUNDER_PCT.normal)) {
     bestIdx = ihash(salt, 23) % s.candidates.length;
   }
 

@@ -109,7 +109,7 @@ export default function register(ctx) {
   function showFatal(err) {
     const message = err?.code === 'version'
       ? tNet('net.versionMismatch')
-      : tNet('net.fatal', { msg: err?.message ?? 'unknown' });
+      : tNet('net.fatal', { msg: err?.message ?? tNet('net.errorUnknown') });
     // A version mismatch cannot be retried into success - reloading the
     // page (fresh client build) is the fix, so no Retry button for it.
     show(message, { error: true, retryable: err?.code !== 'version' });
@@ -157,7 +157,7 @@ export default function register(ctx) {
     // Reflect the state the client is ALREADY in (we may attach mid-outage).
     if (client.state === 'reconnecting') show(tNet('net.reconnectingShort'));
     else if (client.state === 'closed') show(tNet('net.reconnectFailed'), { error: true, retryable: true });
-    else if (client.state === 'fatal') showFatal({ code: 'fatal', message: 'connection is in a fatal state' });
+    else if (client.state === 'fatal') showFatal({ code: 'fatal', message: tNet('net.fatalState') });
     else if (client.state === 'open') hide();
   }
 

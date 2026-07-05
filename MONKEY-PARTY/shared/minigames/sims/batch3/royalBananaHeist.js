@@ -284,13 +284,26 @@ function ihash(a, b) {
   return (h ^ (h >>> 16)) >>> 0;
 }
 
+/**
+ * Wild bots are erratic, not superhuman: per ~1s window they swing between
+ * peak reflexes (the old 'wild' row), solid play ('hard') and outright
+ * blunders ('easy'), so the MEANS land near 'hard' while the variance is
+ * loud. Seeded hash only, so replays stay deterministic.
+ */
+function wildRow(s, me) {
+  const roll = ihash(Math.floor(s.tick / 30), me.slot * 29 + 11) % 100;
+  if (roll < 30) return 'wild';
+  return roll < 72 ? 'hard' : 'easy';
+}
+
 function bot(publicState, playerId, difficulty, rng) {
   const frame = emptyFrame();
   const s = publicState;
   const me = s?.players?.[playerId];
   if (!me || s.tick <= s.countdownTicks || s.tick < me.stunUntil) return frame;
 
-  const react = REACT[difficulty] ?? REACT.normal;
+  const row = difficulty === 'wild' ? wildRow(s, me) : difficulty;
+  const react = REACT[row] ?? REACT.normal;
 
   // The snort is the cue: freeze once it registers (skill = reacting fast).
   const king = s.king ?? {};
@@ -300,7 +313,7 @@ function bot(publicState, playerId, difficulty, rng) {
       : (s.tick - king.phaseTick) + (s.warnTicks ?? 20);
     const myReact = react + (ihash(king.phaseTick, me.slot * 7 + 1) % 5);
     if (warned >= myReact) return frame; // Statue mode.
-  } else if (s.tick - king.phaseTick < (RESUME[difficulty] ?? RESUME.normal)) {
+  } else if (s.tick - king.phaseTick < (RESUME[row] ?? RESUME.normal)) {
     return frame; // Make sure he is really asleep again before moving.
   }
 

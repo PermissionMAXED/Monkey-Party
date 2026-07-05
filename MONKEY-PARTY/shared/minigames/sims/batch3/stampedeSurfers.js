@@ -138,14 +138,17 @@ function createSim({ seed, players, params = {}, rules = {} } = {}) {
         p.x = Math.max(-cfg.fieldHalfW,
           Math.min(cfg.fieldHalfW, p.x + frame.move.x * cfg.runSpeed * DT));
 
-        // Hop lanes with fresh up/down pushes (up = +1 = higher lane).
+        // Hop lanes with fresh up/down pushes. The view camera sits at +z
+        // looking toward -z and lays lane 0 at the most negative z, so
+        // stick up (+y, house convention) = away from the camera =
+        // up-screen = a LOWER lane index (-z); stick down = higher index.
         const y = frame.move.y;
         if (t >= p.hopReadyAt && t > p.airUntil) {
-          if (y > 0.6 && p.prevY <= 0.6 && p.lane < cfg.lanes - 1) {
-            p.lane += 1;
-            p.hopReadyAt = t + cfg.hopCooldown;
-          } else if (y < -0.6 && p.prevY >= -0.6 && p.lane > 0) {
+          if (y > 0.6 && p.prevY <= 0.6 && p.lane > 0) {
             p.lane -= 1;
+            p.hopReadyAt = t + cfg.hopCooldown;
+          } else if (y < -0.6 && p.prevY >= -0.6 && p.lane < cfg.lanes - 1) {
+            p.lane += 1;
             p.hopReadyAt = t + cfg.hopCooldown;
           }
         }
@@ -227,6 +230,18 @@ function ihash(a, b) {
   return (h ^ (h >>> 16)) >>> 0;
 }
 
+/**
+ * Wild bots are erratic, not superhuman: per ~1s window they swing between
+ * peak reflexes (the old 'wild' row), solid play ('hard') and outright
+ * blunders ('easy'), so the MEANS land near 'hard' while the variance is
+ * loud. Seeded hash only, so replays stay deterministic.
+ */
+function wildRow(s, me) {
+  const roll = ihash(Math.floor(s.tick / 30), me.slot * 29 + 11) % 100;
+  if (roll < 30) return 'wild';
+  return roll < 72 ? 'hard' : 'easy';
+}
+
 /** Ticks until this boar's snout reaches x (Infinity when receding). */
 function ticksToHit(boar, x, t) {
   const gap = (x - boar.x) * boar.dir; // Warned boars wait at the field edge.
@@ -252,7 +267,8 @@ function bot(publicState, playerId, difficulty, rng) {
   const me = s?.players?.[playerId];
   if (!me || !me.alive || s.tick <= s.countdownTicks) return frame;
 
-  const react = REACT[difficulty] ?? REACT.normal;
+  const row = difficulty === 'wild' ? wildRow(s, me) : difficulty;
+  const react = REACT[row] ?? REACT.normal;
 
   // Closest incoming boar in my lane (I only notice it after `react` ticks
   // of it existing - the dust cloud needs to register).
@@ -268,7 +284,7 @@ function bot(publicState, playerId, difficulty, rng) {
   if (eta < 34) {
     // Panic check: sloppy monkeys freeze or pick a bad lane.
     const panicked = ihash(Math.floor(s.tick / 15), me.slot * 13 + 5) % 100
-      < (PANIC_PCT[difficulty] ?? PANIC_PCT.normal);
+      < (PANIC_PCT[row] ?? PANIC_PCT.normal);
     if (!panicked) {
       // Prefer a clean hop to a safer lane, otherwise time a jump.
       const horizon = 45;
@@ -285,7 +301,9 @@ function bot(publicState, playerId, difficulty, rng) {
         }
       }
       if (bestLane >= 0 && s.tick >= me.hopReadyAt && s.tick > me.airUntil) {
-        frame.move.y = bestLane > me.lane ? 1 : -1;
+        // Bots plan in lane indices; the sim maps stick up (+y) to a LOWER
+        // lane index, so the emitted sign flips to keep bots identical.
+        frame.move.y = bestLane > me.lane ? -1 : 1;
         return frame;
       }
       // Jump just before the boar arrives (skill = tighter timing).

@@ -18,6 +18,7 @@ const HARNESS_PATH = '../../minigames/viewHarness.js';
 const VIEW_PACK_PATHS = [
   '../../minigames/views/batch1/index.js',
   '../../minigames/views/batch2/index.js',
+  '../../minigames/views/batch3/index.js',
   '../../minigames/views/templates/index.js',
 ];
 
