@@ -2,8 +2,9 @@
  * Render-quality presets for MONKEY-PARTY.
  *
  * Maps the settings-store quality level ('low' | 'med' | 'high') to concrete
- * renderer knobs: shadow map size, device pixel ratio cap, and the particle
- * budget consumed by src/engine/particles.js.
+ * renderer knobs: shadow map size, device pixel ratio cap, the particle
+ * budget consumed by src/engine/particles.js, and whether the post-processing
+ * chain (src/engine/postfx.js: bloom + vignette/grade) is enabled.
  */
 
 export const QUALITY_LEVELS = ['low', 'med', 'high'];
@@ -14,27 +15,30 @@ export const QUALITY_PRESETS = Object.freeze({
     shadows: false,
     shadowMapSize: 512,
     pixelRatioCap: 1,
-    particleBudget: 400,
+    particleBudget: 600,
     antialias: false,
     anisotropy: 1,
+    postfx: false,
   }),
   med: Object.freeze({
     id: 'med',
     shadows: true,
     shadowMapSize: 1024,
     pixelRatioCap: 1.5,
-    particleBudget: 1500,
+    particleBudget: 2200,
     antialias: true,
     anisotropy: 2,
+    postfx: true,
   }),
   high: Object.freeze({
     id: 'high',
     shadows: true,
     shadowMapSize: 2048,
     pixelRatioCap: 2,
-    particleBudget: 4000,
+    particleBudget: 6000,
     antialias: true,
     anisotropy: 4,
+    postfx: true,
   }),
 });
 

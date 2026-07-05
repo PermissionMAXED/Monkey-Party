@@ -11,7 +11,8 @@
  * Burst/emitter spec fields: { pos, count, color (or colors: []), spread,
  * up, gravity, life, size, rate (emitters only) }.
  * Presets: confetti, coinSparkle, dust, splash, lavaEmber, snow, ghostWisp,
- * bananaBits (see PARTICLE_PRESETS).
+ * bananaBits, fireworks, starburst, leaves, bubbles, shockwave
+ * (see PARTICLE_PRESETS).
  */
 
 import * as THREE from 'three';
@@ -89,6 +90,54 @@ export const PARTICLE_PRESETS = {
     gravity: -8,
     life: 1.1,
     size: 0.12,
+  },
+  fireworks: {
+    count: 90,
+    colors: ['#ff5252', '#ffd740', '#69f0ae', '#40c4ff', '#e040fb', '#ffffff'],
+    spread: 8,
+    up: 5.5,
+    gravity: -4,
+    life: 1.7,
+    size: 0.13,
+    jitter: 0.1,
+  },
+  starburst: {
+    count: 44,
+    colors: ['#fff9c4', '#ffd740', '#ffffff', '#ffe082'],
+    spread: 6,
+    up: 3,
+    gravity: -1.2,
+    life: 0.9,
+    size: 0.16,
+    jitter: 0.05,
+  },
+  leaves: {
+    count: 26,
+    colors: ['#66bb6a', '#9ccc65', '#43a047', '#d4e157'],
+    spread: 1.6,
+    up: -0.3,
+    gravity: -0.7,
+    life: 3.2,
+    size: 0.15,
+  },
+  bubbles: {
+    count: 20,
+    colors: ['#b3e5fc', '#e1f5fe', '#81d4fa', '#ffffff'],
+    spread: 0.9,
+    up: 1.5,
+    gravity: 0.9,
+    life: 2.2,
+    size: 0.12,
+  },
+  shockwave: {
+    count: 55,
+    colors: ['#ffffff', '#ffe082', '#ffcc80'],
+    spread: 10,
+    up: 0.4,
+    gravity: -0.5,
+    life: 0.45,
+    size: 0.2,
+    jitter: 0.15,
   },
 };
 

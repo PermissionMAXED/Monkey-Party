@@ -2,13 +2,14 @@
  * Smooth-damped camera rig for MONKEY-PARTY.
  *
  * Wraps a THREE.PerspectiveCamera with follow / orbit / fly behaviors plus
- * screen shake. The rig must be driven every frame:
+ * screen shake and a fov punch-in. The rig must be driven every frame:
  *
  *   const rig = createCameraRig(engine.camera);
  *   engine.onFrame((dt) => rig.update(dt));
  */
 
 import * as THREE from 'three';
+import { prefersReducedMotion } from './tween.js';
 
 /**
  * Named camera presets: world-space offset from the target, look offset, and
@@ -44,6 +45,7 @@ function dampFactor(lambda, dt) {
  *   lookAt: (target: *) => void,
  *   orbit: (center: *, radius?: number, speed?: number, height?: number) => void,
  *   shake: (intensity?: number, dur?: number) => void,
+ *   punchIn: (zoomFactor?: number, durSec?: number) => Promise<void>,
  *   flyTo: (pose: {position: *, lookAt?: *, fov?: number}, dur?: number) => Promise<void>,
  *   snap: () => void,
  *   update: (dt: number) => void,
@@ -80,6 +82,9 @@ export function createCameraRig(camera) {
   let shakeDur = 0;
   let shakeIntensity = 0;
   const shakeOffset = new THREE.Vector3();
+
+  // Punch-in state: quick fov zoom that decays back to the pre-punch fov.
+  let punch = null; // { t, dur, zoom, baseFov, resolve }
 
   function resolvePreset(p) {
     if (typeof p === 'string') return CAMERA_PRESETS[p] ?? CAMERA_PRESETS.player;
@@ -118,11 +123,42 @@ export function createCameraRig(camera) {
     mode = 'orbit';
   }
 
-  /** Trigger a decaying screen shake. */
+  /** Trigger a decaying screen shake (no-op under 'reduced-motion'). */
   function shake(intensity = 0.3, dur = 0.4) {
+    if (prefersReducedMotion()) return;
     shakeIntensity = Math.max(shakeIntensity * (shakeTime > 0 ? shakeTime / shakeDur : 0), intensity);
     shakeDur = Math.max(dur, 0.01);
     shakeTime = shakeDur;
+  }
+
+  /**
+   * Smooth punch-in: quickly zoom the fov by zoomFactor, then ease back to
+   * the original fov over durSec. Resolves when the punch has fully decayed.
+   * Instant no-op under 'reduced-motion'.
+   *
+   * @param {number} [zoomFactor] e.g. 1.2 = 20% tighter.
+   * @param {number} [durSec]
+   * @returns {Promise<void>}
+   */
+  function punchIn(zoomFactor = 1.2, durSec = 0.4) {
+    if (prefersReducedMotion() || !(zoomFactor > 0) || zoomFactor === 1) {
+      return Promise.resolve();
+    }
+    if (punch) {
+      // Supersede: restore the previous base fov so punches don't compound.
+      camera.fov = punch.baseFov;
+      camera.updateProjectionMatrix();
+      punch.resolve();
+    }
+    return new Promise((resolve) => {
+      punch = {
+        t: 0,
+        dur: Math.max(durSec, 0.05),
+        zoom: zoomFactor,
+        baseFov: camera.fov,
+        resolve,
+      };
+    });
   }
 
   /**
@@ -198,6 +234,21 @@ export function createCameraRig(camera) {
       look.lerp(lookGoal, f);
     }
 
+    // Punch-in: fov envelope that spikes fast and decays back to base.
+    if (punch) {
+      punch.t += dt;
+      const k = Math.min(punch.t / punch.dur, 1);
+      const env = k >= 1 ? 0 : Math.sin(Math.min(k * 5, 1) * (Math.PI / 2)) * (1 - k) ** 1.6;
+      camera.fov = punch.baseFov / (1 + (punch.zoom - 1) * env);
+      camera.updateProjectionMatrix();
+      if (k >= 1) {
+        camera.fov = punch.baseFov;
+        camera.updateProjectionMatrix();
+        punch.resolve();
+        punch = null;
+      }
+    }
+
     // Shake: random offset with linear decay.
     if (shakeTime > 0) {
       shakeTime = Math.max(0, shakeTime - dt);
@@ -216,5 +267,5 @@ export function createCameraRig(camera) {
     camera.lookAt(_v);
   }
 
-  return { follow, lookAt, orbit, shake, flyTo, snap, update, presets: CAMERA_PRESETS };
+  return { follow, lookAt, orbit, shake, punchIn, flyTo, snap, update, presets: CAMERA_PRESETS };
 }

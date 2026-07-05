@@ -7,8 +7,18 @@
  *
  *   engine.onFrame((dt) => tweenUpdate(dt));
  *
- * Eases: linear, quadOut, quadInOut, cubicOut, backOut, bounceOut, elasticOut.
+ * Eases: linear, quadOut, quadInOut, cubicOut, backOut, bounceOut, elasticOut
+ * (plus the aliases easeOutBack / easeOutElastic).
  */
+
+/**
+ * True when the player opted out of decorative motion (document.body carries
+ * the 'reduced-motion' class). Safe to call in node (always false).
+ */
+export function prefersReducedMotion() {
+  return typeof document !== 'undefined'
+    && !!document.body?.classList?.contains('reduced-motion');
+}
 
 export const eases = {
   linear: (k) => k,
@@ -38,6 +48,10 @@ export const eases = {
     return 2 ** (-10 * k) * Math.sin((k - 0.075) * (2 * Math.PI) / 0.3) + 1;
   },
 };
+
+// Conventional aliases (used by transitions/cameraRig and the spectacle pkg).
+eases.easeOutBack = eases.backOut;
+eases.easeOutElastic = eases.elasticOut;
 
 /** @type {Set<Object>} */
 const active = new Set();

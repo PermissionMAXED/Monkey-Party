@@ -9,6 +9,22 @@
  *
  * sfx(name, { pitch, vol }) plays one of the named presets; voice(cfg, kind)
  * synthesizes monkey chirps from a CharacterDef voice { pitch, style }.
+ * Unknown preset names are silent no-ops (they never throw).
+ *
+ * Spectacle-package presets (referenced by NAME from the spectacle/juice
+ * layer - keep these names stable):
+ *   'drumroll'     accelerating snare roll (results / roulette build-up)
+ *   'fanfare_big'  grand multi-chord fanfare (match win / star ceremony)
+ *   'whoosh'       band-swept air whoosh (camera moves, fast objects)
+ *   'impact_heavy' deep slam + rumble (heavy landings, big hits)
+ *   'sparkle'      rising glissando shimmer (pickups, magic)
+ *   'boo'          crowd disapproval murmur (bad outcomes)
+ *   'crowd_cheer'  big crowd roar + swell (celebrations)
+ *   'tick'         tiny high tick (timers, selection)
+ *   'buzzer'       harsh wrong-answer buzzer (fouls, time-up)
+ *   'splash_big'   large water splash with droplets
+ *   'charge'       rising charge-up sweep (ends at the peak)
+ *   'pop'          soft bubble pop (UI, small bursts)
  */
 
 let ctx = null;
@@ -243,6 +259,83 @@ const PRESETS = {
     for (const [i, f] of [392, 349, 294].entries()) {
       tone(out, t + i * 0.22, { freq: f * p, dur: 0.24, type: 'triangle', vol: 0.24 * v });
     }
+  },
+
+  /* ------------- spectacle-package presets (see header) ------------- */
+
+  drumroll: (out, t, p, v) => {
+    // Accelerating snare roll: hits get faster and slightly louder.
+    let dt = 0;
+    for (let i = 0; i < 26; i += 1) {
+      const k = i / 25;
+      noiseHit(out, t + dt, { dur: 0.045, vol: (0.14 + 0.14 * k) * v, type: 'bandpass', from: 1700 * p, q: 0.9 });
+      tone(out, t + dt, { freq: 160 * p, end: 120 * p, dur: 0.05, type: 'sine', vol: 0.1 * v });
+      dt += 0.085 - 0.045 * k;
+    }
+    noiseHit(out, t + dt, { dur: 0.35, vol: 0.4 * v, type: 'bandpass', from: 1500 * p, q: 0.7 });
+    tone(out, t + dt, { freq: 140 * p, end: 50 * p, dur: 0.3, type: 'sine', vol: 0.45 * v });
+  },
+  fanfare_big: (out, t, p, v) => {
+    // Three rising chord stacks, then a long held major chord + shimmer.
+    const chords = [
+      [0, [392, 494, 587], 0.16],
+      [0.18, [440, 554, 659], 0.16],
+      [0.36, [494, 622, 740], 0.16],
+      [0.56, [523, 659, 784, 1047], 0.9],
+    ];
+    for (const [dt, freqs, dur] of chords) {
+      for (const f of freqs) {
+        tone(out, t + dt, { freq: f * p, dur, type: 'square', vol: 0.13 * v });
+        tone(out, t + dt, { freq: f * p * 1.004, dur, type: 'triangle', vol: 0.11 * v });
+      }
+    }
+    tone(out, t + 0.56, { freq: 131 * p, dur: 0.9, type: 'triangle', vol: 0.3 * v });
+    noiseHit(out, t + 0.56, { dur: 0.8, vol: 0.08 * v, type: 'highpass', from: 6000 });
+  },
+  impact_heavy: (out, t, p, v) => {
+    tone(out, t, { freq: 95 * p, end: 24, dur: 0.5, type: 'sine', vol: 0.65 * v, attack: 0.002 });
+    tone(out, t, { freq: 190 * p, end: 48, dur: 0.22, type: 'triangle', vol: 0.3 * v, attack: 0.002 });
+    noiseHit(out, t, { dur: 0.3, vol: 0.4 * v, from: 1600 * p, to: 90 });
+    noiseHit(out, t + 0.05, { dur: 0.5, vol: 0.16 * v, from: 300, to: 60, q: 0.5 });
+  },
+  sparkle: (out, t, p, v) => {
+    for (const [i, f] of [1047, 1319, 1568, 2093, 2637].entries()) {
+      tone(out, t + i * 0.045, { freq: f * p, dur: 0.14, type: 'sine', vol: 0.16 * v });
+    }
+    noiseHit(out, t, { dur: 0.3, vol: 0.05 * v, type: 'highpass', from: 8000 });
+  },
+  boo: (out, t, p, v) => {
+    // Low descending crowd murmur.
+    for (let i = 0; i < 5; i += 1) {
+      const f = (200 + Math.random() * 90) * p;
+      tone(out, t + i * 0.07 + Math.random() * 0.04, { freq: f, end: f * 0.7, dur: 0.5, type: 'triangle', vol: 0.12 * v });
+    }
+    noiseHit(out, t, { dur: 0.7, vol: 0.1 * v, type: 'bandpass', from: 500, to: 250, q: 0.6 });
+  },
+  crowd_cheer: (out, t, p, v) => {
+    // Bigger, longer version of 'cheer': more voices + a swelling wash.
+    for (let i = 0; i < 12; i += 1) {
+      const f = (500 + Math.random() * 900) * p;
+      tone(out, t + i * 0.06 + Math.random() * 0.05, { freq: f, end: f * 1.35, dur: 0.2, type: 'triangle', vol: 0.1 * v });
+    }
+    noiseHit(out, t, { dur: 1.1, vol: 0.14 * v, type: 'bandpass', from: 900, to: 2600, q: 0.5, attack: 0.15 });
+    noiseHit(out, t + 0.1, { dur: 0.9, vol: 0.06 * v, type: 'highpass', from: 5000 });
+  },
+  buzzer: (out, t, p, v) => {
+    tone(out, t, { freq: 120 * p, dur: 0.5, type: 'sawtooth', vol: 0.3 * v, attack: 0.002 });
+    tone(out, t, { freq: 121.5 * p, dur: 0.5, type: 'square', vol: 0.22 * v, attack: 0.002 });
+  },
+  splash_big: (out, t, p, v) => {
+    noiseHit(out, t, { dur: 0.8, vol: 0.45 * v, from: 1800 * p, to: 200 * p });
+    tone(out, t, { freq: 160 * p, end: 60, dur: 0.25, type: 'sine', vol: 0.35 * v });
+    for (const [i, f] of [700, 950, 1200, 850].entries()) {
+      tone(out, t + 0.15 + i * 0.11, { freq: f * p, end: f * 1.5 * p, dur: 0.08, type: 'sine', vol: 0.09 * v });
+    }
+  },
+  charge: (out, t, p, v) => {
+    tone(out, t, { freq: 180 * p, end: 950 * p, dur: 0.65, type: 'sawtooth', vol: 0.2 * v, attack: 0.05 });
+    tone(out, t, { freq: 360 * p, end: 1900 * p, dur: 0.65, type: 'sine', vol: 0.12 * v, attack: 0.05 });
+    noiseHit(out, t, { dur: 0.65, vol: 0.1 * v, type: 'bandpass', from: 500 * p, to: 4200 * p, q: 1.4, attack: 0.1 });
   },
 };
 
