@@ -7,6 +7,15 @@
  * Loaded by shared/content/index.js registerAllContent(), which expects a
  * default-exported registerAll(). registerAll() is idempotent: already
  * registered ids are skipped so repeated bootstraps don't throw.
+ *
+ * Balance notes (tests/balance.test.js):
+ *  - The economy's stock/grant weighting input is each ItemDef's `rarity`
+ *    (shop.js RARITY_WEIGHTS: common 0.7 / rare 0.25 / epic 0.05) plus its
+ *    `price`; tune those per-def, there is no separate weight table here.
+ *  - The item roster is FROZEN at these 14 ids: tests/items.test.js pins
+ *    the exact count and id list, so new items cannot be added without
+ *    breaking the frozen suite. The 40-match harness batches show every
+ *    item both traded and used (no roster gap), so no new item was needed.
  */
 
 import { items } from '../../registries.js';

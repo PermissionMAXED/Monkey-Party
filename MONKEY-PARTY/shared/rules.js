@@ -125,11 +125,20 @@ export const PRESETS = Object.freeze({
   /** The classic party experience - the defaults. */
   party: validateRules({}),
 
-  /** Shorter match, snappier pacing (skips can't-buy shop prompts, views shorten timers). */
+  /**
+   * Shorter match, snappier pacing (skips can't-buy shop prompts, views
+   * shorten timers). Economy tuned for the short clock: startCoins 20 +
+   * starPrice 15 (was 15/20) - measured over 40-match harness batches,
+   * the old values left 42% of 5-round matches with ZERO stars bought
+   * (winner decided by the coin tiebreak); the new values get a star into
+   * play in 82% of matches (1.3 buys/match) so fast games still end on
+   * golden bananas. See tests/balance.test.js.
+   */
   fast: validateRules({
     rounds: 5,
     fastMode: true,
-    startCoins: 15,
+    startCoins: 20,
+    starPrice: 15,
     minigameEvery: 1,
   }),
 
@@ -147,7 +156,12 @@ export const PRESETS = Object.freeze({
     botDifficulty: 'wild',
   }),
 
-  /** Punishing economy (red fields -5, no bonus bananas) and tougher bots. */
+  /**
+   * Punishing economy (red fields -5, no bonus bananas) and tougher bots.
+   * startCoins 0 / starPrice 30 kept as-is: harness batches still show a
+   * liquid star economy (1.45 star buys/match, >=1 star in 92% of
+   * 10-round matches) - hardcore is meant to be a grind, not a stalemate.
+   */
   hardcore: validateRules({
     hardcore: true,
     startCoins: 0,

@@ -12,7 +12,11 @@ export default {
     en: 'A spooky banana spirit steals 1d6+4 coins from a rival - sometimes it snatches an item instead.',
     de: 'Ein spukender Bananengeist stiehlt 1d6+4 Muenzen von einem Rivalen - manchmal schnappt er sich stattdessen ein Item.',
   },
-  price: 12,
+  // Balance tuning: 10 (was 12). Expected haul is ~7.5 coins (1d6+4) or a
+  // 20% item snatch; at 12 the ghost was shop shelf-ware (1-2 buys per
+  // 40-match harness batch, least-bought item). 10 prices it with
+  // shield_shell, its natural counter.
+  price: 10,
   rarity: 'rare',
   phase: 'anytime',
   target: 'player',

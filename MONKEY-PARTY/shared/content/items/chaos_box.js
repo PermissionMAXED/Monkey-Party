@@ -24,7 +24,11 @@ export default {
     en: 'Crack it open: one of 8 random things happens. Good luck.',
     de: 'Mach sie auf: Eines von 8 zufaelligen Dingen passiert. Viel Glueck.',
   },
-  price: 8,
+  // Balance tuning: 7 (was 8). At 8 the box was the least-traded item in
+  // the 40-match harness batches (0-3 shop buys, sometimes zero uses all
+  // batch); its outcome table EV is roughly +1..+2 coins, so it should
+  // price as an impulse gamble, not alongside dice_curse (9).
+  price: 7,
   rarity: 'rare',
   phase: 'anytime',
   target: 'none',

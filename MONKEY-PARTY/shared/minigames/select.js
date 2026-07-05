@@ -17,6 +17,13 @@
  * the shorthand opts.boss === true for 'boss') narrows the pool to that
  * category when possible - used by the match sim for boss rounds.
  *
+ * Balance verification (tests/balance.test.js): over 500 sequential picks
+ * at a 4-player neutral table the 18 eligible families each land a
+ * 4.2%-6.4% share (fair split ~5.6%), i.e. every template family really
+ * does compete as roughly ONE game against each unique custom, and the
+ * id+family anti-repeat window holds with zero violations - so the
+ * weights below are kept as-is.
+ *
  * Also compatible with the match sim's caller shape
  * ({ state, rng, minigames, rules } - see shared/sim/match.js), and the
  * returned object carries both `minigameId` and `id` for the same reason.

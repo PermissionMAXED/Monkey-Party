@@ -139,7 +139,15 @@ export function pickBonusCategoryIds(rng, rules) {
  * Award the end-game bonus bananas: one banana per announced category
  * (state.bonusCategories - Minigame King + 1 random) to the leading player.
  * Skipped entirely in competitive AND hardcore rules. Categories where
- * every score is 0 award nothing. Ties break by turn order.
+ * every score is 0 award nothing.
+ *
+ * Ties break by a SEEDED RANDOM pick among the tied players (deterministic
+ * per match seed) - NOT by turn order. Balance tuning: with 4 equal bots
+ * over 400 harness matches, the old turn-order tie-break funneled 34.9% of
+ * all bonus bananas to seat 0 vs 19.3% to seat 3, inflating seat 0's match
+ * win share to 38.3% (25% fair baseline). The seeded pick restores bonus
+ * bananas to 24-27% per seat and seat 0's win share to 29.5% - the rest is
+ * the (frozen) first-to-pass-the-star turn-order edge in movement.js.
  *
  * @param {Object} sim
  * @returns {{category: string, playerId: string, score: number}[]} Awards given.
@@ -155,16 +163,19 @@ export function awardBonuses(sim) {
   for (const id of ids) {
     const category = BONUS_CATEGORIES.find((c) => c.id === id);
     if (!category) continue;
-    let best = null;
     let bestScore = 0;
+    let tied = [];
     for (const pid of state.turnOrder) {
       const score = category.score(state.players[pid].stats);
       if (score > bestScore) {
         bestScore = score;
-        best = pid;
+        tied = [pid];
+      } else if (score === bestScore && score > 0) {
+        tied.push(pid);
       }
     }
-    if (best === null) continue;
+    if (tied.length === 0) continue;
+    const best = tied.length === 1 ? tied[0] : sim.rng.pick(tied);
     addBananas(sim, best, 1, `bonus:${category.id}`);
     sim.emit('bonus', { category: category.id, name: category.name, playerId: best, score: bestScore, bananas: 1 });
     awards.push({ category: category.id, playerId: best, score: bestScore });

@@ -13,8 +13,9 @@
  *
  * Scoring note: plain 'roll' scores a flat 10, so situationally-STRONG item
  * plays must score above 10 (12 for star-race boosters and leader curses,
- * 11 for traps aimed at high-traffic nodes) or low-noise bots would never
- * use items at all.
+ * 11 for traps aimed at high-traffic nodes, star-denial pushbacks/steals,
+ * and racing lucky_mask rerolls) or low-noise bots would never use items
+ * at all. Thresholds tuned against tests/balance.test.js harness batches.
  */
 
 import { createRng } from '../rng.js';
@@ -57,7 +58,12 @@ function goodieScore(board, state, pid, fromId, depth) {
   for (const { id } of forwardTargets(board, fromId, depth)) {
     const node = nodeById(board, id);
     if (node.type === 'item' && me.items.length < 3) goodies += 1;
-    if (node.type === 'shop' && me.items.length < 3 && me.coins >= 8) goodies += 1;
+    if (node.type === 'shop' && me.items.length < 3 && me.coins >= 8) {
+      // A rich, empty-handed monkey should actively route toward a shop
+      // (double weight); with a stuffed bag or thin wallet it is just a
+      // nice-to-have stop.
+      goodies += me.items.length === 0 && me.coins >= 20 ? 2 : 1;
+    }
     if (node.type === 'blue') goodies += 0.25;
   }
   return goodies;
@@ -115,21 +121,46 @@ function itemUseScore(state, board, pid, itemId, profile) {
       if (canAffordStar && Number.isFinite(dist) && dist > 6 && dist <= 12) return 12;
       return canAffordStar && dist > 6 ? 9 : 5;
     case 'lucky_mask':
-      return 6;
+      // Balance tuning: a reroll-keep-better is a near-free roll booster
+      // whenever the player is racing an affordable star. At a flat 6 the
+      // low-noise bots hoarded it forever (17 uses vs 51 buys per 40-match
+      // harness batch); >10 makes hard bots actually fire it in the race.
+      return canAffordStar && Number.isFinite(dist) && dist <= 12 ? 11 : 6;
     case 'dice_curse':
       // Hexing the banana leader is a top play (>10 beats a plain roll).
       return leader && state.players[leader].goldenBananas >= me.goldenBananas ? 12 : 4;
     case 'ghost_banana':
-      return richest && state.players[richest].coins >= 10 ? 9 : 3;
+      // Balance tuning: denying a rival their star budget is the real play
+      // (was: flat 9 when richest held >= 10 coins - only 3 uses per
+      // 40-match batch because 9 never beat a plain roll's 10).
+      if (!richest) return 3;
+      if (state.players[richest].coins >= state.rules.starPrice) return 11;
+      return state.players[richest].coins >= 10 ? 8 : 3;
     case 'swap_totem': {
-      if (!leader) return 2;
-      const theirDist = distToStar(board, state, state.players[leader].node, profile.lookahead * 2);
-      return Number.isFinite(theirDist) && theirDist + 3 < dist && canAffordStar ? 12 : 2;
+      // Balance tuning: any rival meaningfully closer to an affordable star
+      // is worth swapping with (was: leader only - 2 uses per 40-match
+      // batch because the banana leader is rarely also the closest runner).
+      if (!canAffordStar) return 2;
+      let best = Infinity;
+      for (const other of state.turnOrder) {
+        if (other === pid) continue;
+        const d = distToStar(board, state, state.players[other].node, profile.lookahead * 2);
+        if (d < best) best = d;
+      }
+      return Number.isFinite(best) && best + 3 < dist ? 12 : 2;
     }
     case 'mini_gorilla': {
-      if (!leader) return 2;
-      const theirDist = distToStar(board, state, state.players[leader].node, profile.lookahead * 2);
-      return Number.isFinite(theirDist) && theirDist <= 6 ? 8 : 3;
+      // Balance tuning: pushing back a leader who can actually BUY the star
+      // they are approaching is star denial (>10); a broke leader is not a
+      // threat. (Was: flat 8 when the leader stood within 6 - 4 uses per
+      // 40-match batch since 8 never beat the plain roll's 10.) The hold
+      // scores sit at 5/8 (not 2/3) so gambler profiles keep it in their
+      // random top-K; at 3 whole batches passed with zero gorilla plays.
+      if (!leader) return 5;
+      const them = state.players[leader];
+      const theirDist = distToStar(board, state, them.node, profile.lookahead * 2);
+      if (!Number.isFinite(theirDist) || theirDist > 6) return 5;
+      return them.coins >= state.rules.starPrice ? 11 : 8;
     }
     case 'coconut_trap':
     case 'banana_peel': {
@@ -140,8 +171,10 @@ function itemUseScore(state, board, pid, itemId, profile) {
       return hot ? 11 : 6;
     }
     case 'chaos_box':
-      // Gambling appeals less the smarter the bot is.
-      return profile.randomChance > 0.2 ? 6 : 3;
+      // Gambling appeals less the smarter the bot is. 9 (was 6) keeps the
+      // box in play for gambler profiles (easy/wild): at 6 a 40-match
+      // harness batch could end with zero chaos_box uses all batch.
+      return profile.randomChance > 0.2 ? 9 : 3;
     case 'shop_coupon':
     case 'shield_shell':
     case 'magnet_banana':
@@ -168,7 +201,9 @@ function shopBuyScore(state, board, pid, itemId, price, profile) {
     coconut_trap: 4,
     banana_peel: 4,
     shop_coupon: 4,
-    chaos_box: 3,
+    // 5 (was 3): with base 3 the box lost to shopLeave (4) for every
+    // profile and went entirely untraded in harness batches.
+    chaos_box: 5,
   }[itemId] ?? 4;
   // Keep a reserve when the star is nearby and almost affordable.
   const reserve = Number.isFinite(dist) && dist <= profile.lookahead ? state.rules.starPrice : 5;
@@ -193,9 +228,15 @@ function itemTargetScore(state, board, pid, itemId, target, profile) {
       return Number.isFinite(theirDist) && theirDist < myDist ? 10 + (myDist - theirDist) : 1;
     }
     case 'coconut_trap':
-    case 'banana_peel':
-      // High-traffic nodes catch the most monkeys.
-      return trafficScore(board, target) * 3 + 1;
+    case 'banana_peel': {
+      // High-traffic nodes catch the most monkeys - and nodes sitting on
+      // the approach to the star are where rivals are actually headed.
+      // Without the star-path term bots dropped traps on busy but dead
+      // corners while the star lane stayed clean.
+      const starDist = distToStar(board, state, target, profile.lookahead);
+      const onStarPath = Number.isFinite(starDist) && starDist <= 6 ? 4 : 0;
+      return trafficScore(board, target) * 3 + onStarPath + 1;
+    }
     default:
       return 1;
   }
@@ -237,8 +278,14 @@ function scoreAction(state, board, action, pid, profile) {
     case 'dicePick': {
       const value = action.payload.value;
       const dist = distToStar(board, state, me.node, profile.lookahead * 2);
-      const exactStar = me.coins >= state.rules.starPrice && dist === value ? 8 : 0;
-      return value + exactStar;
+      // The star prompts on PASS as well as on land (see movement.js
+      // performStep), so every draft value >= dist reaches the purchase -
+      // and bigger values keep walking toward goodies afterwards. The old
+      // `dist === value` bonus made bots pick a small exact-landing die
+      // over a larger die that buys the SAME star plus extra movement.
+      const reachesStar = me.coins >= state.rules.starPrice
+        && Number.isFinite(dist) && value >= dist ? 8 : 0;
+      return value + reachesStar;
     }
     case 'itemTarget':
       return itemTargetScore(state, board, pid, state.awaiting?.itemId, action.payload.target, profile);

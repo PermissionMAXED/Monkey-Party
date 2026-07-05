@@ -13,7 +13,10 @@ export default {
     en: 'A pocket-sized gorilla pushes a rival 5 fields back.',
     de: 'Ein Taschen-Gorilla schiebt einen Rivalen 5 Felder zurueck.',
   },
-  price: 12,
+  // Balance tuning: 10 (was 12). A 5-node pushback is pure tempo denial
+  // with no coin upside; at 12 it sold 2-5 times per 40-match harness
+  // batch. 10 matches its actual impact (one denied star window).
+  price: 10,
   rarity: 'rare',
   phase: 'anytime',
   target: 'player',

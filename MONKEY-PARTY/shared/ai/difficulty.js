@@ -17,12 +17,31 @@
  */
 
 export const PROFILES = Object.freeze({
-  easy: Object.freeze({ randomChance: 0.35, topK: 3, noise: 3, lookahead: 4 }),
+  /**
+   * easy: randomChance/topK are pinned by tests/sim.test.js (0.35 / 3), so
+   * beginner-friendliness is tuned through noise + lookahead instead:
+   * noise 4.5 (was 3) drowns out most score gaps below "use the ticket",
+   * and lookahead 3 (was 4) means easy barely reads past the next corner.
+   * Measured (tests/balance.test.js batch): easy avg final rank 3.2-3.4 of
+   * 4 vs hard 2.1-2.5 - clearly beatable without playing dead.
+   */
+  easy: Object.freeze({ randomChance: 0.35, topK: 3, noise: 4.5, lookahead: 3 }),
   normal: Object.freeze({ randomChance: 0.15, topK: 2, noise: 1.5, lookahead: 8 }),
-  /** hard = strongest: near-optimal play, deepest consistent lookahead. */
+  /**
+   * hard = strongest CONSISTENT profile: near-optimal play, deep lookahead,
+   * but 5% random top-2 picks + 0.5 noise keep it human ("not psychic").
+   */
   hard: Object.freeze({ randomChance: 0.05, topK: 2, noise: 0.5, lookahead: 12 }),
-  /** wild = erratic/aggressive: deep reads, loud noise, frequent gambles. */
-  wild: Object.freeze({ randomChance: 0.4, topK: 3, noise: 4, lookahead: 16 }),
+  /**
+   * wild = erratic/aggressive: deep reads, loud noise, frequent gambles.
+   * randomChance 0.5 / noise 5.5 (was 0.4 / 4): the frozen minigame sims'
+   * bot tables treat 'wild' as the sharpest reflexes (avg minigame rank
+   * 1.40 of 4 vs hard's 2.08, measured over 60 real sims), so the board
+   * profile gambles harder to keep wild a chaos-monkey rather than a
+   * secret top difficulty. Board-side blunders (declined stars, random
+   * junctions) claw back part of that frozen minigame edge.
+   */
+  wild: Object.freeze({ randomChance: 0.5, topK: 3, noise: 5.5, lookahead: 16 }),
 });
 
 /**
