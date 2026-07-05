@@ -22,6 +22,7 @@
 import * as THREE from 'three';
 import { characters as characterRegistry, items as itemRegistry, boards as boardRegistry } from '#shared/registries.js';
 import { sfx, voice } from '../engine/audio.js';
+import { prefersReducedMotion } from '../engine/tween.js';
 import { createParticles } from '../engine/particles.js';
 import { createTokenActor, TOKEN_COLORS } from './tokenActor.js';
 import { createDiceView } from './diceView.js';
@@ -324,6 +325,21 @@ export function decisionToAction(awaiting, choice) {
 }
 
 /* ------------------------------------------------------------------ */
+/* Match-state snapshot (read-only, for the spectacle UI package)      */
+/* ------------------------------------------------------------------ */
+
+/* The minigame intro / results overlays (src/ui) want portraits + teams
+ * but are called with a minimal options object; they read this snapshot
+ * through a guarded dynamic import instead of widening their call sites.
+ * Strictly read-only presentation data - never used to mutate the sim. */
+let publishedState = null;
+
+/** Latest MatchState the active board-play view has seen (or null). */
+export function getLatestMatchState() {
+  return publishedState;
+}
+
+/* ------------------------------------------------------------------ */
 /* The view                                                            */
 /* ------------------------------------------------------------------ */
 
@@ -386,6 +402,22 @@ export function createBoardPlayView({ engine = null, session = null, ui = null, 
     } catch {
       return null;
     }
+  }
+
+  /**
+   * Spectacle pacing discipline: reduced-motion cuts choreography to
+   * near-instant (prompts fire immediately, nothing gates on animation),
+   * fastMode (from the sim rules, surfaced as state.fastMode) halves every
+   * duration. Deterministic - no wall clock, no randomness.
+   */
+  function pace(seconds) {
+    if (prefersReducedMotion()) return Math.min(seconds, 0.05);
+    return latestState?.fastMode ? seconds * 0.5 : seconds;
+  }
+
+  /** Skip decorative screen shake/flash under reduced-motion. */
+  function juiceFx() {
+    return prefersReducedMotion() ? null : (engine?.fx ?? null);
   }
 
   function nodePos(nodeId) {
@@ -455,6 +487,7 @@ export function createBoardPlayView({ engine = null, session = null, ui = null, 
 
   function buildScene() {
     latestState = safeGetState();
+    publishedState = latestState ?? publishedState;
     const sim = getSim();
     boardDef = (sim && !sim.__missing && sim.board) ? sim.board : null;
     if (!boardDef && latestState?.boardId) {
@@ -507,6 +540,8 @@ export function createBoardPlayView({ engine = null, session = null, ui = null, 
       particles,
       audio: sfx,
       shake: (i, d) => director.shake(i, d),
+      flash: (c, d) => juiceFx()?.flash?.(c, d),
+      camera: engine?.camera ?? null,
     });
     dice = createDiceView(root);
     banner = createTurnBanner(engine, root);
@@ -591,27 +626,61 @@ export function createBoardPlayView({ engine = null, session = null, ui = null, 
   /* ---------------- event choreography ------------------------------- */
 
   function enqueueBanner(text, opts = {}) {
+    const dur = pace(opts.duration ?? 1.6);
     queue.enqueue({
       name: `banner:${text}`,
-      duration: opts.duration ?? 1.6,
+      duration: dur,
       onStart() {
-        banner?.show(text, { ...opts, duration: opts.duration ?? 1.6 });
+        if (opts.sfx) sfx(opts.sfx);
+        // Under reduced-motion the queue step is near-zero but the banner
+        // itself stays readable briefly; it never gates acknowledgements.
+        banner?.show(text, { ...opts, duration: Math.max(dur, prefersReducedMotion() ? 0.6 : 0) });
       },
     });
+  }
+
+  /**
+   * Round banner with the final-round special treatment (red/gold kinetic
+   * banner + drum roll) whenever `round` is the match's last one - also
+   * true from the very start of 1-round matches.
+   * @param {number} round
+   * @param {string} [subtitle] Fallback subtitle for regular rounds.
+   */
+  function enqueueRoundBanner(round, subtitle = undefined) {
+    const totalRounds = Number(latestState?.rules?.rounds) || 0;
+    if (totalRounds > 0 && round >= totalRounds) {
+      enqueueBanner('FINAL ROUND', {
+        style: 'final',
+        subtitle: 'Last chance for golden bananas!',
+        duration: 2.0,
+        sfx: 'drumroll',
+      });
+    } else {
+      enqueueBanner(`Round ${round}`, { color: '#ffd23f', subtitle });
+    }
   }
 
   function enqueueDice(evt) {
     const token = tokenOf(evt.playerId);
     queue.enqueue({
       name: 'dice',
-      duration: 1.4,
+      duration: pace(1.7),
       onStart() {
         sfx('dice');
         if (token) {
           director?.setFocus(token.group);
           director?.follow(token.group);
         }
-        dice?.begin(token?.worldPos() ?? boardCenter.clone(), evt.values ?? [evt.total ?? 1], evt.sides ?? 6, evt.total ?? null);
+        const at = token?.worldPos() ?? boardCenter.clone();
+        dice?.begin(at, evt.values ?? [evt.total ?? 1], evt.sides ?? 6, evt.total ?? null, {
+          onLand() {
+            // Touchdown juice: dust + spark burst and a light screen kick.
+            particles?.burst('dust', { pos: at.clone().setY(at.y + 0.9), count: 10 });
+            particles?.burst('starburst', { pos: at.clone().setY(at.y + 1.1), count: 16 });
+            sfx('land', { vol: 0.6 });
+            juiceFx()?.shake?.(0.3);
+          },
+        });
       },
       onUpdate(k) {
         dice?.setProgress(k);
@@ -622,7 +691,12 @@ export function createBoardPlayView({ engine = null, session = null, ui = null, 
     });
   }
 
-  function enqueueMoveStep(evt) {
+  /**
+   * @param {*} evt move_step SimEvent.
+   * @param {Array|null} batch Full event batch (lead-room lookahead).
+   * @param {number} index Position of evt inside the batch.
+   */
+  function enqueueMoveStep(evt, batch = null, index = -1) {
     const token = tokenOf(evt.playerId);
     if (!token) return;
     const kind = evt.kind ?? 'step';
@@ -630,7 +704,7 @@ export function createBoardPlayView({ engine = null, session = null, ui = null, 
     if (kind === 'blocked') {
       queue.enqueue({
         name: 'move:blocked',
-        duration: 0.5,
+        duration: pace(0.5),
         onStart() {
           sfx('error', { vol: 0.7 });
           fx?.floatText('Blocked!', token.worldPos(), { color: '#ff8a80' });
@@ -652,14 +726,30 @@ export function createBoardPlayView({ engine = null, session = null, ui = null, 
       teleport: { dur: 0.55, height: 2.2, jumpSfx: 'whoosh', landSfx: 'pop' },
     }[kind] ?? { dur: HOP_SECONDS, height: 0.55, jumpSfx: 'jump', landSfx: 'land' };
 
+    // Camera lead-room: frame the mover plus the next 1-2 nodes on its path
+    // (peeked from the same instant event batch - purely presentational).
+    let ahead = null;
+    if (Array.isArray(batch) && index >= 0) {
+      const nexts = [];
+      for (let i = index + 1; i < batch.length && nexts.length < 2; i += 1) {
+        const e = batch[i];
+        if (e?.type === 'move_step' && e.playerId === evt.playerId && e.to) nexts.push(e.to);
+      }
+      if (nexts.length > 0) {
+        ahead = new THREE.Vector3();
+        for (const id of nexts) ahead.add(nodePos(id));
+        ahead.multiplyScalar(1 / nexts.length);
+      }
+    }
+
     queue.enqueue({
       name: `move:${kind}`,
-      duration: cfg.dur,
+      duration: pace(cfg.dur),
       onStart() {
         token.startHop(from, to, { height: cfg.height });
         if (cfg.jumpSfx) sfx(cfg.jumpSfx, { vol: 0.45, pitch: 0.95 + Math.random() * 0.1 });
         director?.setFocus(token.group);
-        director?.follow(token.group);
+        director?.lead(token.group, ahead ?? to);
       },
       onUpdate(k) {
         token.setHop(k);
@@ -667,7 +757,13 @@ export function createBoardPlayView({ engine = null, session = null, ui = null, 
       onEnd() {
         token.endHop();
         if (cfg.landSfx) sfx(cfg.landSfx, { vol: 0.5 });
+        // Footstep dust puff on every landing.
         particles?.burst('dust', { pos: to.clone().setY(to.y + 0.1) });
+        // Pass-by star sparkle when the hop lands on the star node.
+        if (evt.to && evt.to === latestState?.board?.starNode) {
+          particles?.burst('starburst', { pos: to.clone().setY(to.y + 1), count: 18 });
+          sfx('sparkle', { vol: 0.4 });
+        }
       },
     });
   }
@@ -676,7 +772,7 @@ export function createBoardPlayView({ engine = null, session = null, ui = null, 
     const token = tokenOf(evt.playerId);
     queue.enqueue({
       name: 'coins',
-      duration: 0.7,
+      duration: pace(0.7),
       onStart() {
         fx?.coinBurst(token?.worldPos() ?? boardCenter.clone(), evt.delta ?? 0);
       },
@@ -689,7 +785,7 @@ export function createBoardPlayView({ engine = null, session = null, ui = null, 
     const type = evt.fieldType ?? 'event';
     queue.enqueue({
       name: `field:${type}`,
-      duration: 0.9,
+      duration: pace(0.9),
       onStart() {
         director?.punch(pos);
         fx?.play(type, pos, evt);
@@ -705,7 +801,7 @@ export function createBoardPlayView({ engine = null, session = null, ui = null, 
       const pos = evt.node ? nodePos(evt.node) : boardCenter.clone();
       queue.enqueue({
         name: 'shop:open',
-        duration: 0.6,
+        duration: pace(0.6),
         onStart() {
           fx?.play('shop', pos, evt);
         },
@@ -714,7 +810,7 @@ export function createBoardPlayView({ engine = null, session = null, ui = null, 
       const token = tokenOf(evt.playerId);
       queue.enqueue({
         name: 'shop:buy',
-        duration: 0.6,
+        duration: pace(0.6),
         onStart() {
           sfx('buy');
           fx?.floatText(itemName(evt.itemId), token?.worldPos() ?? boardCenter.clone(), { color: '#9ff0c8' });
@@ -727,16 +823,23 @@ export function createBoardPlayView({ engine = null, session = null, ui = null, 
   function enqueueStar(evt) {
     const kind = evt.kind ?? 'passed';
     if (kind === 'bought') {
+      // Star purchase set-piece: camera orbits the star, grand fanfare,
+      // golden fountain + beacon, banana flies to the buyer, banner.
+      // Total budget: 2.0s + 1.5s banner = 3.5s (halved to 1.75s by
+      // fastMode via pace(); near-instant under reduced-motion).
       const token = tokenOf(evt.playerId);
       const from = evt.node ? nodePos(evt.node) : (star?.worldPos() ?? boardCenter.clone());
       queue.enqueue({
         name: 'star:bought',
-        duration: 1.5,
+        duration: pace(2.0),
         onStart() {
-          sfx('fanfare');
+          sfx('fanfare_big');
+          director?.orbitPoint(from, { radius: 6, speed: 1.1, height: 2.6 });
           const to = token?.worldPos() ?? boardCenter.clone();
           star?.beginFlight(from, to.setY(to.y + 0.8));
-          if (token) director?.punch(token.worldPos());
+          fx?.fountain(from, { dur: 1.1 });
+          fx?.beacon(from, '#ffe27a');
+          juiceFx()?.flash?.('#ffe135', 0.3);
         },
         onUpdate(k) {
           star?.setFlight(k);
@@ -745,16 +848,17 @@ export function createBoardPlayView({ engine = null, session = null, ui = null, 
           star?.endFlight({ hide: true });
           const pos = token?.worldPos() ?? boardCenter.clone();
           particles?.burst('confetti', { pos: pos.clone().setY(pos.y + 1) });
+          particles?.burst('starburst', { pos: pos.clone().setY(pos.y + 1.4), count: 30 });
           sfx('star');
           director?.applyShot();
         },
       });
-      enqueueBanner(`${playerName(evt.playerId)} got a Golden Banana!`, { color: '#ffe135' });
+      enqueueBanner(`${playerName(evt.playerId)} got a Golden Banana!`, { color: '#ffe135', duration: 1.5 });
     } else if (kind === 'relocated') {
       const to = nodePos(evt.node);
       queue.enqueue({
         name: 'star:relocated',
-        duration: 1.0,
+        duration: pace(1.0),
         onStart() {
           star?.beginFlight(star.worldPos(), to);
           sfx('whoosh', { vol: 0.6 });
@@ -766,16 +870,19 @@ export function createBoardPlayView({ engine = null, session = null, ui = null, 
           star?.endFlight();
           star?.placeAt(to);
           fx?.play('star', to, evt);
+          // Beacon beam marks the new star spawn from across the board.
+          fx?.beacon(to, '#ffe27a');
         },
       });
     } else if (kind === 'passed' || kind === 'ticket_arrival') {
       const pos = evt.node ? nodePos(evt.node) : boardCenter.clone();
       queue.enqueue({
         name: 'star:passed',
-        duration: 0.4,
+        duration: pace(0.4),
         onStart() {
           fx?.pulse(pos, '#ffd23f', { scale: 1.4 });
-          sfx('hover');
+          particles?.burst('starburst', { pos: pos.clone().setY(pos.y + 1), count: 14 });
+          sfx('sparkle', { vol: 0.5 });
         },
       });
     } else if (kind === 'bananas' && evt.reason !== 'star') {
@@ -783,7 +890,7 @@ export function createBoardPlayView({ engine = null, session = null, ui = null, 
       const token = tokenOf(evt.playerId);
       queue.enqueue({
         name: 'star:bananas',
-        duration: 0.5,
+        duration: pace(0.5),
         onStart() {
           const gain = (evt.delta ?? 0) >= 0;
           fx?.floatText(`${gain ? '+' : ''}${evt.delta} Golden Banana`, token?.worldPos() ?? boardCenter.clone(), {
@@ -800,7 +907,7 @@ export function createBoardPlayView({ engine = null, session = null, ui = null, 
     if (evt.kind === 'placed') {
       queue.enqueue({
         name: 'trap:placed',
-        duration: 0.5,
+        duration: pace(0.5),
         onStart() {
           fx?.pulse(pos, '#9aa2ad', { scale: 1.1 });
           sfx('click');
@@ -810,14 +917,14 @@ export function createBoardPlayView({ engine = null, session = null, ui = null, 
     }
     queue.enqueue({
       name: 'trap:sprung',
-      duration: 0.8,
+      duration: pace(0.8),
       onStart() {
         if (evt.cancelled) {
           fx?.floatText('Blocked!', pos, { color: '#9ff0c8' });
           sfx('pop');
         } else {
           director?.punch(pos);
-          fx?.play('trap', pos, evt);
+          fx?.play('trap', pos, evt); // shockwave burst + shake 0.6
         }
       },
       onEnd() {
@@ -831,7 +938,7 @@ export function createBoardPlayView({ engine = null, session = null, ui = null, 
     const pos = token?.worldPos() ?? boardCenter.clone();
     queue.enqueue({
       name: `item:${evt.kind ?? 'event'}`,
-      duration: 0.6,
+      duration: pace(0.6),
       onStart() {
         if (evt.kind === 'used') {
           sfx('pop');
@@ -850,7 +957,7 @@ export function createBoardPlayView({ engine = null, session = null, ui = null, 
   function enqueueMechanic(evt) {
     queue.enqueue({
       name: 'mechanic',
-      duration: 0.6,
+      duration: pace(0.6),
       onStart() {
         // Refresh the board's mechanic visuals right away.
         try {
@@ -871,10 +978,13 @@ export function createBoardPlayView({ engine = null, session = null, ui = null, 
     const pos = evt.node ? nodePos(evt.node) : boardCenter.clone();
     queue.enqueue({
       name: 'boss',
-      duration: 1.4,
+      duration: pace(1.4),
       onStart() {
+        // Dramatic boss slam: fly-in + fov punch, heavy impact + hit-stop.
         director?.punch(pos, 0.6);
-        fx?.play('boss', pos, evt);
+        director?.zoomPunch(1.3, 0.6);
+        fx?.play('boss', pos, evt); // 'impact_heavy' + shockwave + big shake
+        juiceFx()?.hitStop?.(0.09);
       },
       onEnd() {
         director?.applyShot();
@@ -890,7 +1000,7 @@ export function createBoardPlayView({ engine = null, session = null, ui = null, 
         lastTurnKey = key;
         if (evt.round !== lastRoundSeen) {
           lastRoundSeen = evt.round;
-          enqueueBanner(`Round ${evt.round}`, { color: '#ffd23f', subtitle: 'Get those bananas!' });
+          enqueueRoundBanner(evt.round, 'Get those bananas!');
         }
         const isLocal = localHumanIds().has(evt.playerId);
         enqueueBanner(`${playerName(evt.playerId)}'s turn`, {
@@ -920,7 +1030,7 @@ export function createBoardPlayView({ engine = null, session = null, ui = null, 
     });
     queue.enqueue({
       name: 'bonus:confetti',
-      duration: 0.6,
+      duration: pace(0.6),
       onStart() {
         sfx('star');
         const pos = token?.worldPos() ?? boardCenter.clone();
@@ -934,7 +1044,7 @@ export function createBoardPlayView({ engine = null, session = null, ui = null, 
     const winnerToken = tokenOf(winner);
     queue.enqueue({
       name: 'game_over',
-      duration: 2.4,
+      duration: pace(2.4),
       onStart() {
         sfx('fanfare');
         director?.setPhase('game_over');
@@ -944,9 +1054,10 @@ export function createBoardPlayView({ engine = null, session = null, ui = null, 
         updateTurnHighlight();
         const pos = winnerToken?.worldPos() ?? boardCenter.clone();
         particles?.burst('confetti', { pos: pos.clone().setY(pos.y + 1.6), count: 80 });
+        particles?.burst('fireworks', { pos: pos.clone().setY(pos.y + 2.2) });
       },
       onEnd() {
-        sfx('cheer');
+        sfx('crowd_cheer');
       },
     });
     enqueueBanner(`${playerName(winner)} wins!`, {
@@ -962,7 +1073,7 @@ export function createBoardPlayView({ engine = null, session = null, ui = null, 
     if (!token) return;
     queue.enqueue({
       name: 'emote',
-      duration: 1.2,
+      duration: pace(1.2),
       onStart() {
         token.playEmote(evt.emoteId ?? 'taunt', 1.2);
         const def = characterDefOf(latestState?.players?.[pid]);
@@ -987,12 +1098,17 @@ export function createBoardPlayView({ engine = null, session = null, ui = null, 
     // minigame_result payouts arrive as coins events (handled above).
   }
 
-  /** Translate one SimEvent into choreography steps. */
-  function enqueueEvent(evt) {
+  /**
+   * Translate one SimEvent into choreography steps.
+   * @param {*} evt
+   * @param {number} [index] Position inside the batch (lead-room lookahead).
+   * @param {Array|null} [batch] The full instant event batch.
+   */
+  function enqueueEvent(evt, index = -1, batch = null) {
     if (!evt || typeof evt.type !== 'string') return;
     switch (evt.type) {
       case 'dice': enqueueDice(evt); break;
-      case 'move_step': enqueueMoveStep(evt); break;
+      case 'move_step': enqueueMoveStep(evt, batch, index); break;
       case 'coins': enqueueCoins(evt); break;
       case 'field': enqueueField(evt); break;
       case 'shop': enqueueShop(evt); break;
@@ -1020,10 +1136,14 @@ export function createBoardPlayView({ engine = null, session = null, ui = null, 
     // again next round) is a NEW prompt and must not be deduped away.
     if (msg?.action?.type && msg.action.type !== 'emote') lastPromptKey = null;
     latestState = safeGetState() ?? latestState;
-    for (const evt of msg?.events ?? []) {
+    publishedState = latestState ?? publishedState;
+    // sim.apply() hands the events as an iterable batch object (the tests
+    // feed plain arrays): materialize so move lookahead can index into it.
+    const events = [...(msg?.events ?? [])];
+    events.forEach((evt, i) => {
       if (evt && typeof evt === 'object') seenEvents.add(evt);
-      enqueueEvent(evt);
-    }
+      enqueueEvent(evt, i, events);
+    });
     // Acknowledge only after every queued animation has played out.
     queue.enqueue({ name: 'ack', onEnd: checkAwaiting });
   }
@@ -1044,7 +1164,7 @@ export function createBoardPlayView({ engine = null, session = null, ui = null, 
       } catch { /* nothing built yet */ }
       root.clear();
       buildScene();
-      enqueueBanner(`Round ${latestState?.round ?? 1}`, { color: '#ffd23f' });
+      enqueueRoundBanner(latestState?.round ?? 1);
       queue.enqueue({ name: 'ack', onEnd: checkAwaiting });
     }
   }
@@ -1098,10 +1218,7 @@ export function createBoardPlayView({ engine = null, session = null, ui = null, 
     subscribe('match_start', onMatchStart);
 
     if (latestState) {
-      enqueueBanner(`Round ${latestState.round ?? 1}`, {
-        color: '#ffd23f',
-        subtitle: boardDef?.name?.en,
-      });
+      enqueueRoundBanner(latestState.round ?? 1, boardDef?.name?.en);
       queue.enqueue({ name: 'ack', onEnd: checkAwaiting });
     }
     return api;

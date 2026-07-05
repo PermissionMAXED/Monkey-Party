@@ -113,9 +113,10 @@ export function createStarActor() {
   function setFlight(k) {
     if (!flight.active) return;
     const kk = Math.min(1, Math.max(0, k));
-    group.position.lerpVectors(flight.from, flight.to, kk);
+    const e = kk * kk * (3 - 2 * kk); // smoothstep: gentle launch, soft catch
+    group.position.lerpVectors(flight.from, flight.to, e);
     group.position.y += Math.sin(Math.PI * kk) * 2.4;
-    banana.rotation.y += 0.4; // extra excited spin during flight
+    banana.rotation.y += 0.25 + kk * 0.5; // spin-up toward the climax
     const s = 1 + Math.sin(Math.PI * kk) * 0.35;
     group.scale.setScalar(s);
   }

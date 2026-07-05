@@ -6,8 +6,12 @@
  *  - overview: slow orbit around the board center (minigame_select,
  *    round_end, bonus, and whenever there is nothing to follow)
  *  - follow:   damped follow-cam on the moving/current token
+ *  - lead:     follow-cam with lead-room - the look-at is biased toward
+ *    where the mover is heading (current hop target + next path nodes)
  *  - punch:    quick fly-in on an event position (field/boss/star), the
  *    choreography calls applyShot() afterwards to resume the phase shot
+ *  - zoomPunch: fov punch-in on top of the current shot (boss slams)
+ *  - orbitPoint: tight celebratory orbit around a point (star ceremony)
  *  - podium:   slow close orbit framing the winner on game_over
  *
  * Headless-safe: without an engine camera every method no-ops.
@@ -63,6 +67,31 @@ export function createCameraDirector({ engine = null, center = new THREE.Vector3
     rig?.follow(target, 'player');
   }
 
+  /**
+   * Follow with lead-room: keep following the mover's position but bias the
+   * look-at ahead of it (toward the hop target / next path nodes), so the
+   * frame opens up in the direction of travel. Falls back to plain follow.
+   */
+  function lead(target = focus, aheadPos = null) {
+    if (!target) {
+      overview();
+      return;
+    }
+    focus = target;
+    mode = 'follow';
+    rig?.follow(target, 'player');
+    if (aheadPos && rig?.lookAt) {
+      const t = worldPosOf(target, new THREE.Vector3());
+      const a = worldPosOf(aheadPos, _v);
+      // 60% mover / 40% ahead keeps the mover framed with visible lead-room.
+      rig.lookAt(new THREE.Vector3(
+        t.x + (a.x - t.x) * 0.4,
+        t.y + 1 + (a.y - t.y) * 0.25,
+        t.z + (a.z - t.z) * 0.4,
+      ));
+    }
+  }
+
   /** Quick punch-in on an event position. Resume via applyShot(). */
   function punch(pos, dur = 0.45) {
     if (!pos) return;
@@ -72,6 +101,24 @@ export function createCameraDirector({ engine = null, center = new THREE.Vector3
       position: new THREE.Vector3(p.x + 2.6, p.y + 2.8, p.z + 3.6),
       lookAt: new THREE.Vector3(p.x, p.y + 0.8, p.z),
     }, dur);
+  }
+
+  /** Fov punch-in layered on the current shot (boss slams). No-op headless. */
+  function zoomPunch(zoom = 1.3, dur = 0.5) {
+    try {
+      rig?.punchIn?.(zoom, dur);
+    } catch { /* juice is best-effort */ }
+  }
+
+  /**
+   * Tight celebratory orbit around a world point (star purchase ceremony).
+   * Resume the phase shot via applyShot().
+   */
+  function orbitPoint(pos, { radius: r = 5.5, speed = 0.9, height = 2.4 } = {}) {
+    if (!pos) return;
+    mode = 'orbitPoint';
+    const p = worldPosOf(pos, new THREE.Vector3());
+    rig?.orbit(p.add(new THREE.Vector3(0, 1.0, 0)), r, speed, height);
   }
 
   /** Winner framing for game_over: tight low orbit around the podium. */
@@ -128,7 +175,10 @@ export function createCameraDirector({ engine = null, center = new THREE.Vector3
   return {
     overview,
     follow,
+    lead,
     punch,
+    zoomPunch,
+    orbitPoint,
     podium,
     setPhase,
     setFocus,

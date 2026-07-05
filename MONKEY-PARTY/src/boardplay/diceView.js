@@ -1,13 +1,17 @@
 /**
  * 3D dice presentation for the board-play view (P4).
  *
- * The die tumbles above the rolling player and lands showing the rolled
- * face. Up to 4 dice (double_dice etc.) are shown side by side; the final
- * total floats above them as a canvas-texture sprite.
+ * Roll timeline (all driven by setProgress(k), no wall clock): a short
+ * anticipation wobble low over the player, a big toss with fast tumbling
+ * that eases into a slow-motion final tumble, then the die drops, bounces
+ * and settles on the rolled face; the total pops in with an easeOutBack
+ * scale. Up to 4 dice (double_dice etc.) are shown side by side.
  *
- * Choreography-driven: the queue calls begin(pos, values, sides, total)
- * once, setProgress(k) with k in [0,1] every frame, then end(). No wall
- * clock, so it is fully deterministic in headless tests.
+ * Choreography-driven: the queue calls begin(pos, values, sides, total,
+ * { onLand }) once, setProgress(k) with k in [0,1] every frame, then
+ * end(). onLand fires exactly once when the die touches down (progress
+ * crossing the settle point), so the caller can burst particles / shake -
+ * deterministic in headless tests.
  *
  * Perf: one shared BoxGeometry; the standard 1-6 pip face materials are
  * built once and shared by every die. Non-d6 values fall back to a number
@@ -116,7 +120,10 @@ export function createDiceView(parent = null) {
   let active = [];
   let basePos = new THREE.Vector3();
   let totalSprite = null;
+  let totalBaseScale = new THREE.Vector3(1, 1, 1);
   let rolling = false;
+  let onLand = null;
+  let landed = false;
 
   // Pool of MAX_DICE meshes, reused across rolls.
   const pool = [];
@@ -134,9 +141,12 @@ export function createDiceView(parent = null) {
    * @param {number[]} values Rolled values.
    * @param {number} [sides]
    * @param {number} [total]
+   * @param {{onLand?: () => void}} [opts] onLand fires once at touchdown.
    */
-  function begin(pos, values, sides = 6, total = null) {
+  function begin(pos, values, sides = 6, total = null, opts = {}) {
     endInternal();
+    onLand = typeof opts.onLand === 'function' ? opts.onLand : null;
+    landed = false;
     basePos = pos?.clone?.() ?? new THREE.Vector3();
     const vals = (Array.isArray(values) && values.length > 0 ? values : [1]).slice(0, MAX_DICE);
     active = vals.map((value, i) => {
@@ -160,24 +170,37 @@ export function createDiceView(parent = null) {
         color: '#ffe135', stroke: 'rgba(0,0,0,0.85)', size: 72, height: 0.7,
       });
       totalSprite.material.opacity = 0;
+      totalBaseScale = totalSprite.scale.clone();
       group.add(totalSprite);
     }
     group.visible = true;
     rolling = true;
   }
 
+  /** easeOutBack (overshoot) for the total-number pop. */
+  function easeOutBack(k) {
+    const s = 1.70158;
+    const t = k - 1;
+    return t * t * ((s + 1) * t + s) + 1;
+  }
+
   /** Apply the roll pose for progress k in [0,1]. */
   function setProgress(k) {
     if (!rolling) return;
     const kk = Math.min(1, Math.max(0, k));
+    const WINDUP = 0.14; // anticipation wobble before the toss
     const SETTLE = 0.62;
-    // Height: toss up, then drop with a small bounce.
+    // Height: hover-wobble, toss up, then drop with a small bounce.
     const riseY = basePos.y + 2.1;
     const restY = basePos.y + 1.05;
     let y;
-    if (kk < SETTLE) {
-      y = basePos.y + 1.1 + Math.sin((kk / SETTLE) * Math.PI) * 1.1;
-      if (kk / SETTLE > 0.5) y = Math.min(y, riseY);
+    if (kk < WINDUP) {
+      const a = kk / WINDUP;
+      y = basePos.y + 1.0 - Math.sin(a * Math.PI) * 0.18; // dip down first
+    } else if (kk < SETTLE) {
+      const j = (kk - WINDUP) / (SETTLE - WINDUP);
+      y = basePos.y + 1.1 + Math.sin(j * Math.PI) * 1.15;
+      if (j > 0.5) y = Math.min(y, riseY);
     } else {
       const j = (kk - SETTLE) / (1 - SETTLE);
       const bounce = Math.abs(Math.sin(j * Math.PI * 2)) * 0.18 * (1 - j);
@@ -186,8 +209,16 @@ export function createDiceView(parent = null) {
 
     for (const die of active) {
       die.mesh.position.set(basePos.x + die.offsetX, y, basePos.z);
-      if (kk < SETTLE) {
-        const t = kk;
+      if (kk < WINDUP) {
+        // Nervous shiver while charging up.
+        const a = kk / WINDUP;
+        const w = Math.sin(a * Math.PI * 5) * 0.16;
+        die.mesh.rotation.set(w, w * 0.6, -w);
+        die.settleFrom = null;
+      } else if (kk < SETTLE) {
+        // Tumble fast out of the toss, then slow-motion into the last turn.
+        const j = (kk - WINDUP) / (SETTLE - WINDUP);
+        const t = (1 - (1 - j) ** 2.4) * 0.62; // decelerating spin progress
         die.mesh.rotation.set(die.spin.x * t, die.spin.y * t, die.spin.z * t);
         die.settleFrom = null;
       } else {
@@ -198,9 +229,19 @@ export function createDiceView(parent = null) {
       }
     }
 
+    // Touchdown: fires exactly once when crossing the settle point.
+    if (!landed && kk >= SETTLE) {
+      landed = true;
+      try {
+        onLand?.();
+      } catch { /* juice is best-effort */ }
+    }
+
     if (totalSprite) {
       const show = kk < 0.72 ? 0 : Math.min(1, (kk - 0.72) / 0.15);
       totalSprite.material.opacity = show;
+      const pop = show <= 0 ? 0 : easeOutBack(show);
+      totalSprite.scale.set(totalBaseScale.x * pop, totalBaseScale.y * pop, 1);
       totalSprite.position.set(basePos.x, y + 0.75 + show * 0.25, basePos.z);
     }
   }
@@ -213,6 +254,8 @@ export function createDiceView(parent = null) {
     }
     active = [];
     rolling = false;
+    landed = false;
+    onLand = null;
     group.visible = false;
   }
 

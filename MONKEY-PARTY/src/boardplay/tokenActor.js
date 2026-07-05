@@ -199,27 +199,47 @@ export function createTokenActor({ player, characterDef = null, color = '#ffca28
     animator?.play('walk', { loop: true, fade: 0.08 });
   }
 
-  /** Apply hop pose for progress k in [0,1] (parabola + squash-stretch). */
+  /**
+   * Apply hop pose for progress k in [0,1]: anticipation crouch, parabolic
+   * flight with a forward lean, stretch mid-air and squash on touchdown.
+   */
   function setHop(k) {
     if (!hop.active) return;
     const kk = Math.min(1, Math.max(0, k));
-    group.position.lerpVectors(hop.from, hop.to, kk);
-    const arc = Math.sin(Math.PI * kk);
+    const ANTICIPATE = 0.14; // crouch before leaving the ground
+    if (kk < ANTICIPATE) {
+      const a = kk / ANTICIPATE;
+      group.position.copy(hop.from);
+      const crouch = 1 - Math.sin(a * Math.PI) * 0.18;
+      bodyRoot.scale.set(
+        baseBodyScale.x * (2 - crouch) ** 0.5,
+        baseBodyScale.y * crouch,
+        baseBodyScale.z * (2 - crouch) ** 0.5,
+      );
+      bodyRoot.rotation.x = 0;
+      return;
+    }
+    const m = (kk - ANTICIPATE) / (1 - ANTICIPATE); // airborne progress
+    group.position.lerpVectors(hop.from, hop.to, m);
+    const arc = Math.sin(Math.PI * m);
     group.position.y += arc * hop.height;
     // Stretch mid-air, squash on touchdown.
-    const stretch = 1 + arc * 0.22 - (kk > 0.9 ? (kk - 0.9) * 2.4 : 0);
+    const stretch = 1 + arc * 0.22 - (m > 0.9 ? (m - 0.9) * 2.4 : 0);
     bodyRoot.scale.set(
       baseBodyScale.x * (2 - stretch < 0.6 ? 0.6 : 2 - stretch) ** 0.5,
       baseBodyScale.y * stretch,
       baseBodyScale.z * (2 - stretch < 0.6 ? 0.6 : 2 - stretch) ** 0.5,
     );
+    // Lean into the jump going up, sit back for the landing.
+    bodyRoot.rotation.x = Math.cos(Math.PI * m) * 0.22 * Math.min(1, hop.height);
   }
 
-  /** Land: snap to the destination and reset the squash. */
+  /** Land: snap to the destination and reset squash + lean. */
   function endHop() {
     if (!hop.active) return;
     group.position.copy(hop.to);
     bodyRoot.scale.copy(baseBodyScale);
+    bodyRoot.rotation.x = 0;
     hop.active = false;
     animator?.play('idle', { loop: true, fade: 0.12 });
   }
