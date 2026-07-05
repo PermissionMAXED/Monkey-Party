@@ -5,6 +5,8 @@
  * ('language' field). t(key, vars) resolves a key from the dictionary and
  * interpolates {placeholders}. localized(obj) picks .en/.de from content
  * LocalizedText objects. onLangChange(cb) re-renders language-sensitive UI.
+ * extendDict(entries) lets optional UI packages (help, progression, ...)
+ * merge their own {key: {en, de}} maps into the dictionary.
  */
 
 const DICT = {
@@ -220,6 +222,25 @@ const DICT = {
   'settings.resetConfirm': { en: 'Really reset settings AND profile?', de: 'Wirklich Einstellungen UND Profil zurücksetzen?' },
   'settings.playerName': { en: 'Player name', de: 'Spielername' },
 };
+
+/**
+ * Merge a {key: {en: string, de: string}} map into the dictionary. Used by
+ * optional UI packages to register their strings at load time. Later
+ * registrations win; overwriting an existing key logs a console.warn so
+ * accidental collisions between packages are visible during dev.
+ *
+ * @param {Object<string, {en: string, de: string}>} entries
+ */
+export function extendDict(entries) {
+  if (entries === null || typeof entries !== 'object') return;
+  for (const [key, value] of Object.entries(entries)) {
+    if (value === null || typeof value !== 'object') continue;
+    if (Object.prototype.hasOwnProperty.call(DICT, key)) {
+      console.warn(`[i18n] extendDict: key "${key}" already registered - later registration wins`);
+    }
+    DICT[key] = value;
+  }
+}
 
 let lang = 'en';
 let store = null;

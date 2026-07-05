@@ -1,7 +1,10 @@
 /**
- * Main menu screen: title, Local Game (couch setup: seats + devices),
+ * Main menu screen: animated title sequence (once per app boot, skipped
+ * under body.reduced-motion), Local Game (couch setup: seats + devices),
  * Online (quick match / lobby browser / private lobby / join code),
- * statistics, settings, and the en/de language toggle.
+ * statistics, settings, the en/de language toggle, and a footer with the
+ * version string plus buttons contributed by optional UI extensions
+ * (How to Play / Credits / ...).
  */
 
 import { MSG } from '#shared/protocol.js';
@@ -11,6 +14,100 @@ import { el, div, button, clearNode, overlay, toast, select, playSfx } from './d
 
 const MAX_LOCAL = 8; // total local seats offered in the couch setup
 const MAX_DEVICE_SEATS = 4; // src/engine/input.js binds devices to seats 0..3
+
+/* ---------------- version string (optional sibling module) ---------- */
+
+// import.meta.glob so an absent module stays silent (no devtools 404).
+const VERSION_LOADERS = import.meta.glob('../app/version.js');
+let versionString = 'dev';
+const versionReady = Promise.resolve(VERSION_LOADERS['../app/version.js']?.())
+  .then((mod) => {
+    const v = [mod?.VERSION, mod?.version, mod?.default]
+      .find((x) => typeof x === 'string' && x.length > 0);
+    if (v) versionString = v;
+  })
+  .catch(() => { /* optional - stays 'dev' */ });
+
+/* ---------------- title sequence (once per app boot) ---------------- */
+
+/** Consumed on the first main-menu mount; never replays within a boot. */
+let introPlayed = false;
+
+function reducedMotion() {
+  return document.body.classList.contains('reduced-motion');
+}
+
+/** Vine/banana flourishes dropped over the title while the intro plays. */
+function spawnIntroFlourishes(host) {
+  if (typeof host.animate !== 'function') return;
+  const fx = div('mm-intro-fx');
+  fx.style.cssText = 'position:absolute;inset:0;pointer-events:none;overflow:hidden;z-index:2;';
+  const sprites = [
+    { glyph: '🌿', x: 18, y: 4, delay: 0, vine: true },
+    { glyph: '🌿', x: 78, y: 6, delay: 140, vine: true },
+    { glyph: '🌿', x: 48, y: 2, delay: 260, vine: true },
+    { glyph: '🍌', x: 30, y: 22, delay: 620 },
+    { glyph: '🍌', x: 68, y: 20, delay: 760 },
+    { glyph: '🐒', x: 50, y: 28, delay: 920 },
+  ];
+  for (const s of sprites) {
+    const node = el('span', '', s.glyph);
+    node.style.cssText = `position:absolute;left:${s.x}%;top:${s.y}%;`
+      + 'font-size:clamp(1.8rem,3.4vw,3.2rem);filter:drop-shadow(0 6px 10px rgba(0,0,0,0.5));';
+    fx.appendChild(node);
+    if (s.vine) {
+      node.animate([
+        { transform: 'translateY(-140px) rotate(-24deg)', opacity: 0 },
+        { transform: 'translateY(10px) rotate(10deg)', opacity: 1, offset: 0.6 },
+        { transform: 'translateY(0) rotate(-4deg)', opacity: 1 },
+      ], { duration: 900, delay: s.delay, easing: 'cubic-bezier(0.3, 1.3, 0.4, 1)', fill: 'backwards' });
+    } else {
+      node.animate([
+        { transform: 'scale(0) rotate(-40deg)', opacity: 0 },
+        { transform: 'scale(1.3) rotate(12deg)', opacity: 1, offset: 0.65 },
+        { transform: 'scale(1) rotate(0deg)', opacity: 1 },
+      ], { duration: 520, delay: s.delay, easing: 'cubic-bezier(0.3, 1.5, 0.4, 1)', fill: 'backwards' });
+    }
+    node.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 500, delay: 2400, fill: 'forwards' });
+  }
+  host.appendChild(fx);
+  setTimeout(() => fx.remove(), 3000);
+}
+
+/**
+ * Entrance animations via WAAPI (fill 'backwards' keeps elements hidden
+ * until their delay). `full` adds the one-per-boot logo drop-in with
+ * letter stagger + flourishes; otherwise only the buttons/footer stagger.
+ */
+function animateEntrance(root, wrap, full) {
+  if (typeof wrap.animate !== 'function') return;
+  let offset = 0;
+  if (full) {
+    const letters = wrap.querySelectorAll('.mm-title__letter');
+    letters.forEach((span, i) => {
+      span.animate([
+        { transform: 'translateY(-120px) rotate(-12deg) scale(0.4)', opacity: 0 },
+        { transform: 'translateY(9px) rotate(4deg) scale(1.1)', opacity: 1, offset: 0.7 },
+        { transform: 'translateY(0) rotate(0deg) scale(1)', opacity: 1 },
+      ], { duration: 640, delay: 160 + i * 55, easing: 'cubic-bezier(0.34, 1.45, 0.4, 1)', fill: 'backwards' });
+    });
+    spawnIntroFlourishes(root);
+    offset = 160 + letters.length * 55 + 260;
+  }
+  const subtitle = wrap.querySelector('.ui-subtitle');
+  subtitle?.animate?.([{ opacity: 0 }, { opacity: 1 }], { duration: 420, delay: offset, fill: 'backwards' });
+  const buttons = wrap.querySelectorAll('.mm-buttons > .ui-btn');
+  buttons.forEach((b, i) => {
+    b.animate([
+      { transform: 'translateY(28px) scale(0.92)', opacity: 0 },
+      { transform: 'translateY(0) scale(1)', opacity: 1 },
+    ], { duration: 380, delay: offset + 90 + i * 90, easing: 'cubic-bezier(0.3, 1.4, 0.4, 1)', fill: 'backwards' });
+  });
+  const footer = wrap.querySelector('.mm-footer');
+  footer?.animate?.([{ opacity: 0 }, { opacity: 1 }], {
+    duration: 420, delay: offset + 90 + buttons.length * 90, fill: 'backwards',
+  });
+}
 
 function withTimeout(promise, ms, message) {
   return Promise.race([
@@ -109,12 +206,15 @@ export function createMainMenuScreen(ctx) {
           }
         }
       });
-      const session = createOfflineSession({
+      const cfg = {
         localPlayers: seats.map((s, i) => ({
           pid: `p${i + 1}`,
           name: s.name.trim() || `${t('generic.player')} ${i + 1}`,
         })),
-      });
+      };
+      const session = createOfflineSession(cfg);
+      // Remembered for the in-match package's rematch flow.
+      ctx.lastOfflineConfig = cfg;
       // Local humans are ready by definition (couch play).
       for (const seat of session.getLobby().seats) session.setReady(seat.pid, true);
       const boards = ctx.registries.boards.ids();
@@ -276,6 +376,23 @@ export function createMainMenuScreen(ctx) {
 
   /* ---------------- render ---------------- */
 
+  /** Extension menu items ({id, labelKey, screen, order}), deduped by id
+   *  and limited to screens that actually registered. Already sorted by
+   *  order in buildUI. */
+  function extensionMenuItems() {
+    const seen = new Set();
+    const out = [];
+    for (const item of ctx.menuItems ?? []) {
+      if (!item || typeof item.screen !== 'string') continue;
+      const key = item.id ?? item.screen;
+      if (seen.has(key)) continue;
+      if (typeof ctx.router.has === 'function' && !ctx.router.has(item.screen)) continue;
+      seen.add(key);
+      out.push(item);
+    }
+    return out;
+  }
+
   function render() {
     clearNode(root);
 
@@ -297,10 +414,17 @@ export function createMainMenuScreen(ctx) {
     root.appendChild(lang);
 
     const wrap = div('ui-screen');
-    wrap.append(
-      el('h1', 'ui-title', t('app.title')),
-      el('p', 'ui-subtitle', t('app.tagline')),
-    );
+
+    // Title as per-letter spans so the boot intro can stagger them.
+    const title = el('h1', 'ui-title');
+    title.setAttribute('aria-label', t('app.title'));
+    for (const ch of t('app.title')) {
+      const span = el('span', 'mm-title__letter', ch === ' ' ? '\u00a0' : ch);
+      span.style.display = 'inline-block';
+      span.setAttribute('aria-hidden', 'true');
+      title.appendChild(span);
+    }
+    wrap.append(title, el('p', 'ui-subtitle', t('app.tagline')));
 
     const buttons = div('mm-buttons');
     const mainBtn = (label, sub, cls, fn) => {
@@ -315,13 +439,38 @@ export function createMainMenuScreen(ctx) {
       button(t('menu.settings'), 'ui-btn--wood', () => ctx.router.go('settings')),
     );
     wrap.appendChild(buttons);
+
+    // Footer: How to Play / Credits / other extension buttons + version.
+    const footer = div('mm-footer');
+    footer.style.cssText = 'display:flex;flex-direction:column;align-items:center;gap:8px;margin-top:6px;';
+    const extRow = div('ui-row');
+    for (const item of extensionMenuItems()) {
+      extRow.appendChild(button(t(item.labelKey), 'ui-btn--small ui-btn--wood', () => ctx.router.go(item.screen)));
+    }
+    if (extRow.childNodes.length > 0) footer.appendChild(extRow);
+    const version = div('ui-dim mm-version', versionString);
+    version.style.cssText = 'font-size:0.72rem;letter-spacing:0.14em;';
+    footer.appendChild(version);
+    wrap.appendChild(footer);
+
     root.appendChild(wrap);
+    return wrap;
   }
 
   return {
     mount(elHost) {
       root = elHost;
-      render();
+      const wrap = render();
+      // Boot intro (logo drop-in + flourishes) once per boot; button/footer
+      // stagger on every menu mount. body.reduced-motion skips everything.
+      if (!reducedMotion()) {
+        animateEntrance(root, wrap, !introPlayed);
+      }
+      introPlayed = true; // consumed (or intentionally skipped) for this boot
+      versionReady.then(() => {
+        const node = root?.querySelector?.('.mm-version');
+        if (node) node.textContent = versionString;
+      });
       unsubLang = onLangChange(render);
       const charDefs = ctx.registries.characters.all();
       ctx.stage.menu(charDefs.slice(0, 3));

@@ -4,7 +4,8 @@
  * buildUI(app) is the single entry point (called from src/main.js). It
  * creates the UI event bus, the local input system, a lazy net client,
  * the shared 3D "stage" for menu/preview scenes, registers every screen
- * on the router and navigates to the main menu.
+ * on the router, loads optional UI extensions (help, net status,
+ * progression, tournament) and navigates to the main menu.
  *
  * Everything downstream talks through ISession (src/app/session.js), the
  * screen router, the settings/profile stores and the content registries.
@@ -26,6 +27,50 @@ import { createRulesEditorScreen } from './rulesEditor.js';
 import { createStatsScreen } from './statsScreen.js';
 import { createSettingsScreen } from './settingsScreen.js';
 import { createMatchScreen } from './matchController.js';
+
+/* ------------------------------------------------------------------ */
+/* Guarded dynamic imports (house style, see tryImport in src/main.js) */
+/* ------------------------------------------------------------------ */
+
+/**
+ * Optional UI extension modules. Each default-exports register(ctx) which
+ * may register screens on ctx.app.router and may return
+ * { menuItems: [{id, labelKey, screen, order}] } for extra main-menu
+ * buttons. Absent modules are tolerated silently.
+ *
+ * Same guarded-import idea as tryImport in src/main.js, but through
+ * import.meta.glob: Vite resolves the patterns at transform time, so a
+ * missing module is simply not in the map - no request, no devtools 404
+ * noise - while present ones stay lazy dynamic imports.
+ */
+const UI_EXTENSION_PATHS = [
+  './help/index.js',
+  './netStatus.js',
+  './progression/index.js',
+  './tournament/index.js',
+];
+const UI_EXTENSION_LOADERS = import.meta.glob([
+  './help/index.js',
+  './netStatus.js',
+  './progression/index.js',
+  './tournament/index.js',
+]);
+
+/** Optional accessibility package (owns reduced-motion/colorblind wiring). */
+const A11Y_PATH = '../app/a11y.js';
+const A11Y_LOADERS = import.meta.glob('../app/a11y.js');
+
+async function tryLoad(loaders, path) {
+  const loader = loaders[path];
+  if (typeof loader !== 'function') return null; // absent: stays silent
+  try {
+    return await loader();
+  } catch (err) {
+    // The module exists but failed to load - that is worth a warning.
+    console.warn(`[ui] optional module "${path}" failed to load:`, err);
+    return null;
+  }
+}
 
 /* ------------------------------------------------------------------ */
 /* UI event bus                                                        */
@@ -255,6 +300,18 @@ function createMusic() {
         mod?.duck?.(on);
       } catch { /* optional */ }
     },
+    /** Dynamic music intensity 0..1 (engine package implements it). */
+    setIntensity(v) {
+      try {
+        mod?.setIntensity?.(v);
+      } catch { /* optional */ }
+    },
+    /** One-shot musical stinger by name (engine package implements it). */
+    stinger(name) {
+      try {
+        mod?.stinger?.(name);
+      } catch { /* optional */ }
+    },
   };
 }
 
@@ -311,6 +368,14 @@ export async function buildUI(app) {
     ensureNet,
     getNetClient: () => netClient,
 
+    /** Extra main-menu buttons collected from optional UI extensions
+     *  ({id, labelKey, screen, order}[], sorted by order). */
+    menuItems: [],
+
+    /** The cfg of the most recent offline session created by the main
+     *  menu (the in-match package reads it for rematch). */
+    lastOfflineConfig: null,
+
     /** The live ISession (offline or online); also mirrored to app.session. */
     get session() {
       return app.session;
@@ -326,9 +391,22 @@ export async function buildUI(app) {
     },
   };
 
-  /* React to settings: engine quality + colorblind body class. */
+  /* Accessibility: the optional a11y package owns the body classes
+   * (reduced-motion, colorblind, ...). Without it, keep the built-in
+   * colorblind body-class logic as the fallback. */
+  const a11yMod = await tryLoad(A11Y_LOADERS, A11Y_PATH);
+  const hasA11y = typeof a11yMod?.initA11y === 'function';
+  if (hasA11y) {
+    try {
+      a11yMod.initA11y(app.settings);
+    } catch (err) {
+      console.warn('[ui] initA11y threw:', err);
+    }
+  }
+
+  /* React to settings: engine quality (+ colorblind fallback sans a11y). */
   let lastQuality = app.settings.get().quality;
-  document.body.classList.toggle('colorblind', !!app.settings.get().colorblind);
+  if (!hasA11y) document.body.classList.toggle('colorblind', !!app.settings.get().colorblind);
   app.settings.subscribe((s) => {
     if (s.quality !== lastQuality) {
       lastQuality = s.quality;
@@ -336,7 +414,7 @@ export async function buildUI(app) {
         app.engine?.setQuality?.(s.quality);
       } catch { /* engine optional */ }
     }
-    document.body.classList.toggle('colorblind', !!s.colorblind);
+    if (!hasA11y) document.body.classList.toggle('colorblind', !!s.colorblind);
   });
 
   /* Register every screen. */
@@ -348,6 +426,23 @@ export async function buildUI(app) {
   app.router.register('stats', createStatsScreen(ctx));
   app.router.register('settings', createSettingsScreen(ctx));
   app.router.register('match', createMatchScreen(ctx));
+
+  /* Optional UI extensions (help, net status, progression, tournament):
+   * each may register screens on ctx.app.router and contribute main-menu
+   * buttons. Missing modules stay silent; broken registrations must never
+   * take the whole UI down. */
+  for (const path of UI_EXTENSION_PATHS) {
+    const mod = await tryLoad(UI_EXTENSION_LOADERS, path);
+    const register = mod?.default ?? mod?.register;
+    if (typeof register !== 'function') continue;
+    try {
+      const result = await register(ctx);
+      if (Array.isArray(result?.menuItems)) ctx.menuItems.push(...result.menuItems);
+    } catch (err) {
+      console.warn(`[ui] extension "${path}" failed to register:`, err);
+    }
+  }
+  ctx.menuItems.sort((a, b) => (a?.order ?? 0) - (b?.order ?? 0));
 
   window.addEventListener('error', (e) => {
     // Surface unexpected errors to the player instead of failing silently.
