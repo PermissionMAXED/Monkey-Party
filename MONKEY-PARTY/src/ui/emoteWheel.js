@@ -1,7 +1,10 @@
 /**
- * Radial 6-emote wheel: hold Tab (keyboard) or two-finger long-press
- * (touch) to open, release over a wedge (or click it) to send
- * session.sendEmote(id). Usable in the lobby AND in-match.
+ * Radial 6-emote wheel: hold Tab (keyboard), two-finger long-press
+ * (touch, anywhere), or single-finger long-press on the RIGHT half of
+ * the screen (touch-friendly path; the left half belongs to the virtual
+ * joystick) to open, release over a wedge (or click/tap it) to send
+ * session.sendEmote(id). Tapping the backdrop dismisses the wheel.
+ * Usable in the lobby AND in-match.
  */
 
 import { el, div, playSfx } from './dom.js';
@@ -70,6 +73,10 @@ export function attachEmoteWheel(ctx, session, host) {
       hub.appendChild(btn);
     });
     wheel.appendChild(hub);
+    // Touch users have no Tab to release: tapping the backdrop dismisses.
+    wheel.addEventListener('pointerdown', (e) => {
+      if (e.target === wheel) close();
+    });
     host.appendChild(wheel);
   }
 
@@ -88,20 +95,49 @@ export function attachEmoteWheel(ctx, session, host) {
     close(true);
   }
 
-  function onTouchStart(e) {
-    if (e.touches?.length !== 2) return; // two-finger long-press
+  let pressStart = null;
+
+  function armPress(touch) {
+    pressStart = touch ? { x: touch.clientX, y: touch.clientY } : null;
+    clearTimeout(pressTimer);
     pressTimer = setTimeout(open, LONG_PRESS_MS);
+  }
+
+  function onTouchStart(e) {
+    if (e.touches?.length === 2) {
+      // Two-finger long-press anywhere (legacy gesture).
+      armPress(e.touches[0]);
+      return;
+    }
+    if (e.touches?.length !== 1) return;
+    // Single-finger long-press on the RIGHT half of the screen; skip
+    // interactive elements and the virtual touch controls.
+    const touch = e.touches[0];
+    if (touch.clientX < window.innerWidth / 2) return;
+    if (e.target?.closest?.('button, input, textarea, select, a, #mp-touch-controls')) return;
+    armPress(touch);
+  }
+
+  function onTouchMove(e) {
+    // A moving finger is a drag (camera/scroll), not a long-press.
+    if (pressTimer === null || !pressStart) return;
+    const touch = e.touches?.[0];
+    if (!touch) return;
+    if (Math.hypot(touch.clientX - pressStart.x, touch.clientY - pressStart.y) > 14) onTouchEnd();
   }
 
   function onTouchEnd() {
     clearTimeout(pressTimer);
     pressTimer = null;
+    pressStart = null;
   }
 
   window.addEventListener('keydown', onKeyDown);
   window.addEventListener('keyup', onKeyUp);
   window.addEventListener('touchstart', onTouchStart, { passive: true });
+  window.addEventListener('touchmove', onTouchMove, { passive: true });
   window.addEventListener('touchend', onTouchEnd);
+  window.addEventListener('touchcancel', onTouchEnd);
 
   return {
     open,
@@ -112,7 +148,9 @@ export function attachEmoteWheel(ctx, session, host) {
       window.removeEventListener('keydown', onKeyDown);
       window.removeEventListener('keyup', onKeyUp);
       window.removeEventListener('touchstart', onTouchStart);
+      window.removeEventListener('touchmove', onTouchMove);
       window.removeEventListener('touchend', onTouchEnd);
+      window.removeEventListener('touchcancel', onTouchEnd);
     },
   };
 }

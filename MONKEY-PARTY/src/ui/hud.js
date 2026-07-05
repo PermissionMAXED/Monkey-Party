@@ -1,6 +1,8 @@
 /**
  * In-match HUD: top bar with one chip per player (portrait, coins, golden
- * bananas, held-item icons), a round/turn indicator, and a quit button.
+ * bananas, held-item icons), a round/turn indicator, a pause button
+ * (opens the pause menu - quitting lives there now) and, online, a
+ * compact latency chip refreshed ~1/s off the diff-based update path.
  * createMatchHud(ctx, session) -> { root, update(state), dispose }.
  * update(state) is cheap and diff-based (no full re-render per frame).
  */
@@ -8,9 +10,14 @@
 import { characters as characterRegistry } from '#shared/registries.js';
 import { getItemIcon } from '../items/icons.js';
 import { t } from './i18n.js';
+import { tm } from './matchStrings.js';
 import { el, div, button, clearNode, portraitImg } from './dom.js';
 
-export function createMatchHud(ctx, session, { onQuit = null } = {}) {
+/** Own latency (ms) buckets for the ping chip tint. */
+const PING_WARN_MS = 200;
+const PING_BAD_MS = 500;
+
+export function createMatchHud(ctx, session, { onQuit = null, onPause = null } = {}) {
   const root = div('hud');
 
   const roundBox = div('hud-round');
@@ -22,11 +29,35 @@ export function createMatchHud(ctx, session, { onQuit = null } = {}) {
   const chipsWrap = div('hud-top');
   root.appendChild(chipsWrap);
 
-  const quitBtn = button('✕', 'ui-btn--ghost ui-btn--small hud-quit', () => {
-    if (window.confirm(t('hud.quitConfirm'))) onQuit?.();
+  const pauseBtn = button('⏸', 'ui-btn--ghost ui-btn--small hud-quit', () => {
+    // The pause menu replaces the old window.confirm quit flow; the
+    // confirm() path stays only as a fallback for callers without one.
+    if (onPause) onPause();
+    else if (window.confirm(t('hud.quitConfirm'))) onQuit?.();
   });
-  quitBtn.title = t('hud.quit');
-  root.appendChild(quitBtn);
+  pauseBtn.title = onPause ? tm('match.hud.pause') : t('hud.quit');
+  root.appendChild(pauseBtn);
+
+  /* Compact latency chip (online sessions only), refreshed ~1/s. */
+  let pingTimer = null;
+  if (session?.mode === 'online') {
+    const ping = div('hud-ping', '📶 —');
+    ping.title = tm('match.hud.latency');
+    root.appendChild(ping);
+    const refreshPing = () => {
+      const ms = ctx.getNetClient?.()?.latencyMs;
+      if (typeof ms === 'number' && Number.isFinite(ms)) {
+        ping.textContent = `📶 ${Math.round(ms)}ms`;
+        ping.classList.toggle('hud-ping--warn', ms >= PING_WARN_MS && ms < PING_BAD_MS);
+        ping.classList.toggle('hud-ping--bad', ms >= PING_BAD_MS);
+      } else {
+        ping.textContent = '📶 —';
+        ping.classList.remove('hud-ping--warn', 'hud-ping--bad');
+      }
+    };
+    refreshPing();
+    pingTimer = setInterval(refreshPing, 1000);
+  }
 
   const hint = div('hud-hint', t('lobby.emoteHint'));
   root.appendChild(hint);
@@ -137,6 +168,10 @@ export function createMatchHud(ctx, session, { onQuit = null } = {}) {
     root,
     update,
     dispose() {
+      if (pingTimer) {
+        clearInterval(pingTimer);
+        pingTimer = null;
+      }
       root.remove();
       chips.clear();
     },

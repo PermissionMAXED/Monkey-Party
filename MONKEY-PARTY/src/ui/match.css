@@ -1,0 +1,152 @@
+/* ==================================================================
+   In-match UX package: pause menu, in-match chat, HUD latency chip,
+   play-again offer. Builds on the ui.css tokens (see :root there).
+   ================================================================== */
+
+/* ------------------------------------------------------------------
+   Pause menu (overlay root gets .pause-layer so it stacks above the
+   bottom-docked decision prompts at z-index 40)
+   ------------------------------------------------------------------ */
+
+.ui-overlay.pause-layer { z-index: 55; }
+
+.pause-menu { min-width: min(420px, 92vw); }
+
+.pause-menu__buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.pause-menu__buttons > .ui-btn { width: 100%; }
+
+.pause-menu__note {
+  margin-top: 12px;
+  font-size: 0.82rem;
+  color: var(--ui-text-dim);
+  background: rgba(127, 196, 255, 0.12);
+  border: 1px solid rgba(127, 196, 255, 0.35);
+  border-radius: 10px;
+  padding: 8px 12px;
+}
+
+.pause-menu__settings {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 12px;
+  text-align: left;
+}
+
+.pause-menu__settings .ui-field { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.pause-menu__settings .ui-slider { flex: 1; max-width: 220px; }
+
+/* ------------------------------------------------------------------
+   HUD latency chip (online matches)
+   ------------------------------------------------------------------ */
+
+.hud-ping {
+  position: absolute;
+  top: 52px;
+  right: 12px;
+  pointer-events: none;
+  font-size: 0.72rem;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.06em;
+  color: var(--ui-green);
+  background: rgba(0, 0, 0, 0.4);
+  border-radius: 999px;
+  padding: 3px 10px;
+}
+.hud-ping--warn { color: #ffcf3d; }
+.hud-ping--bad { color: var(--ui-danger); }
+
+/* ------------------------------------------------------------------
+   In-match chat (collapsed feed + expandable input, online only)
+   ------------------------------------------------------------------ */
+
+.match-chat {
+  position: absolute;
+  left: 12px;
+  bottom: 56px;
+  width: min(320px, 60vw);
+  z-index: 30;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  pointer-events: none;
+  font-family: var(--ui-font);
+}
+
+.match-chat__feed {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  max-height: 180px;
+  overflow-y: auto;
+  scrollbar-width: none;
+}
+
+.match-chat__row {
+  align-self: flex-start;
+  max-width: 100%;
+  background: rgba(4, 12, 7, 0.72);
+  border-radius: 10px;
+  padding: 4px 10px;
+  font-size: 0.82rem;
+  line-height: 1.25;
+  color: var(--ui-text);
+  overflow-wrap: anywhere;
+  transition: opacity 0.6s ease;
+}
+
+.match-chat__row--faded { opacity: 0; }
+.match-chat--open .match-chat__row { opacity: 1; }
+
+.match-chat__row--system .match-chat__text { font-style: italic; opacity: 0.75; }
+.match-chat__name { margin-right: 6px; }
+
+.match-chat__bar {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.match-chat__toggle { pointer-events: auto; }
+
+.match-chat__input {
+  display: none;
+  flex: 1;
+  pointer-events: auto;
+  min-width: 0;
+}
+.match-chat--open .match-chat__input { display: block; }
+
+.match-chat__send { display: none; pointer-events: auto; }
+.match-chat--open .match-chat__send { display: inline-flex; }
+
+/* ------------------------------------------------------------------
+   Play-again offer (non-blocking panel over the stats screen)
+   ------------------------------------------------------------------ */
+
+.match-again {
+  position: absolute;
+  left: 50%;
+  bottom: 22px;
+  transform: translateX(-50%);
+  z-index: 45;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--ui-panel);
+  border: 2px solid var(--ui-line);
+  border-radius: 999px;
+  padding: 8px 10px 8px 20px;
+  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.6);
+  font-family: var(--ui-font);
+  color: var(--ui-text);
+}
+
+.match-again__title { font-weight: 900; color: var(--ui-yellow); white-space: nowrap; }

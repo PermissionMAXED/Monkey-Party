@@ -10,8 +10,15 @@
  *     that always auto-default (~20s) so the game never hangs,
  *   - orchestrates the minigame phase: intro roulette -> viewHarness
  *     runMinigame -> results overlay -> back to the board,
+ *   - mounts the pause menu (Esc / HUD button; never pauses the shared
+ *     sim - offline it only render-pauses the board) and the in-match
+ *     chat (online sessions),
+ *   - drives dynamic music (setIntensity ramp by round, star/gameover
+ *     stingers) and screen shake on boss hits / trap triggers,
  *   - on game_over: victory scene -> stats screen; folds the results into
- *     the profile store.
+ *     the profile store (or the optional progression package) and offers
+ *     a rematch (offline: recreate from ctx.lastOfflineConfig; online:
+ *     back to the lobby the server reopens).
  *
  * OFFLINE MINIGAME COORDINATION: src/app/session.js runs its own 30Hz
  * minigame stepper (bots + sendInput frames) and submits the results
@@ -26,7 +33,10 @@
  */
 
 import * as THREE from 'three';
+import './match.css';
+import { createOfflineSession } from '../app/session.js';
 import { t } from './i18n.js';
+import { tm } from './matchStrings.js';
 import { div, button, clearNode, toast, playSfx } from './dom.js';
 import { createMatchHud } from './hud.js';
 import { buildItemBar } from './itemBar.js';
@@ -36,15 +46,23 @@ import { showMinigameIntro } from './minigameIntro.js';
 import { showMinigameResults } from './resultsScreen.js';
 import { showVictoryScene, applyMatchToProfile } from './victoryScene.js';
 import { attachEmoteWheel } from './emoteWheel.js';
+import { attachPauseMenu } from './pauseMenu.js';
+import { attachMatchChat } from './matchChat.js';
 
 const BOARDPLAY_PATH = '../boardplay/boardPlayView.js';
 const HARNESS_PATH = '../minigames/viewHarness.js';
+/** Optional progression package: supersedes applyMatchToProfile if present. */
+const PROGRESSION_PATH = '../app/progression.js';
+
+/** How long the post-match "Play Again" offer stays up (dismissible). */
+const REMATCH_OFFER_TTL_MS = 45000;
 
 /* Minigame 3D views wire themselves into their sims via attachView() at
  * import time; the integration hub (this file) must load them once. */
 const VIEW_PACK_PATHS = [
   '../minigames/views/batch1/index.js',
   '../minigames/views/batch2/index.js',
+  '../minigames/views/batch3/index.js',
   '../minigames/views/templates/index.js',
 ];
 
@@ -87,10 +105,21 @@ export function createMatchScreen(ctx) {
   let minigamesPlayed = 0;
   let paused = false;
 
+  /* pause menu / chat */
+  let pauseMenu = null;
+  let chat = null;
+  /** Render-pause from the pause menu (offline only; the sim never stops). */
+  let menuPaused = false;
+
+  /* dynamic music state */
+  let lastIntensity = -1;
+
   /* end of match */
   let bonuses = [];
   let gameOverEvt = null;
   let victory = null;
+  /** Zombie-flow watchdog: game over arrived but a minigame flow hangs. */
+  let mgZombieTimer = null;
 
   const session = () => ctx.session;
 
@@ -286,6 +315,39 @@ export function createMatchScreen(ctx) {
   }
 
   /* ------------------------------------------------------------------ */
+  /* Music direction + screen-shake juice                                 */
+  /* ------------------------------------------------------------------ */
+
+  function setMusicIntensity(v) {
+    const clamped = Math.max(0, Math.min(1, v));
+    if (Math.abs(clamped - lastIntensity) < 0.001) return;
+    lastIntensity = clamped;
+    ctx.music.setIntensity?.(clamped);
+  }
+
+  /** 0.3 in the early rounds, ramping by round/rules.rounds up to 1.0 on
+   *  the final round; always 1.0 during minigames. */
+  function updateMusicIntensity(state = simState()) {
+    if (!state) return;
+    if (state.phase === 'minigame' || mgFlow) {
+      setMusicIntensity(1);
+      return;
+    }
+    const rounds = Math.max(1, Number(state.rules?.rounds) || 10);
+    const round = Math.max(1, Number(state.round) || 1);
+    setMusicIntensity(round >= rounds ? 1 : Math.max(0.3, Math.min(1, round / rounds)));
+  }
+
+  function shakeFx(intensity, durSec) {
+    try {
+      // The a11y package forwards screenShake to engine.fx.setEnabled;
+      // the settings check covers builds without it.
+      if (ctx.settings?.get?.()?.screenShake === false) return;
+      ctx.engine?.fx?.shake?.(intensity, durSec);
+    } catch { /* fx are optional juice */ }
+  }
+
+  /* ------------------------------------------------------------------ */
   /* Minigame flow                                                       */
   /* ------------------------------------------------------------------ */
 
@@ -300,6 +362,7 @@ export function createMatchScreen(ctx) {
     if (boardView?.group) boardView.group.visible = true;
     ctx.music.duck(false);
     ctx.music.play('board');
+    updateMusicIntensity();
   }
 
   function mgRoster(evt) {
@@ -378,6 +441,7 @@ export function createMatchScreen(ctx) {
     pauseBoard();
     closePrompt();
     ctx.music.play('minigame');
+    setMusicIntensity(1);
 
     if (!def) {
       // Unknown minigame: never strand the match.
@@ -493,6 +557,30 @@ export function createMatchScreen(ctx) {
     };
   }
 
+  /** First game_over sighting: remember it, fire the stinger once. */
+  function noteGameOver(evt) {
+    const first = !gameOverEvt;
+    gameOverEvt = evt;
+    if (first) ctx.music.stinger?.('gameover');
+    if (first && mgFlow && !mgFlow.results) {
+      // The match ended while a minigame flow is still waiting for results.
+      // Normally the harness finishes within a frame of mg_end and the flow
+      // proceeds results -> victory. But when the server's minigame ended
+      // BEFORE this client's net harness subscribed (idle client, long
+      // intro), mg_end was missed and the flow would gate the victory
+      // scene forever. Grace period, then drop the zombie and move on.
+      clearTimeout(mgZombieTimer);
+      mgZombieTimer = setTimeout(() => {
+        if (disposed || !mgFlow || mgFlow.results || victory) return;
+        console.warn('[match] minigame flow never finished after game over - dropping it');
+        disposeMgFlow();
+        resumeBoard();
+        maybeShowVictory();
+      }, 8000);
+    }
+    maybeShowVictory();
+  }
+
   function maybeShowVictory() {
     if (!gameOverEvt || victory || disposed || mgFlow) return;
     const over = gameOverEvt;
@@ -508,17 +596,120 @@ export function createMatchScreen(ctx) {
         state,
         bus: ctx.bus,
         onDone: () => {
-          const match = buildMatchSummary(state, over);
-          try {
-            applyMatchToProfile(ctx.profile, state, over, localPids(), minigamesPlayed);
-          } catch (err) {
-            console.warn('[match] profile update failed:', err);
-          }
-          ctx.setSession(null);
-          ctx.router.go('stats', { match });
+          concludeMatch(state, over);
         },
       });
     }, delayMs);
+  }
+
+  /**
+   * Victory scene finished: fold the match into the profile (progression
+   * package first, built-in fold otherwise), hand off to the stats screen
+   * and offer a rematch. Online sessions stay alive so "Play Again" can
+   * rejoin the lobby the server reopens after game over.
+   */
+  async function concludeMatch(state, over) {
+    const match = buildMatchSummary(state, over);
+    const pids = localPids();
+    const endedSession = session();
+    const mode = endedSession?.mode ?? null;
+    try {
+      const prog = await tryImport(PROGRESSION_PATH);
+      if (typeof prog?.applyMatchResults === 'function') {
+        prog.applyMatchResults(ctx.profile, { state, gameOver: over, bonuses, localPids: pids });
+      } else {
+        applyMatchToProfile(ctx.profile, state, over, pids, minigamesPlayed);
+      }
+    } catch (err) {
+      console.warn('[match] profile update failed:', err);
+    }
+    if (mode !== 'online') ctx.setSession(null);
+    ctx.router.go('stats', { match });
+    offerRematch({ mode, state, endedSession });
+  }
+
+  /**
+   * Non-blocking "Play Again" offer over the stats screen. Offline it
+   * recreates a session from ctx.lastOfflineConfig (hidden when the menu
+   * package never set one); online it returns to the lobby screen (the
+   * server keeps the room for a rematch window, then reopens the lobby).
+   * Always dismissible + self-expiring - it can never hang anything.
+   */
+  function offerRematch({ mode, state, endedSession }) {
+    const canOffline = mode === 'offline' && Boolean(ctx.lastOfflineConfig);
+    const canOnline = mode === 'online';
+    if (!canOffline && !canOnline) return;
+
+    const host = document.getElementById('ui-root') ?? document.body;
+    const panel = div('match-again');
+    let ttlTimer = null;
+    let pollTimer = null;
+    let done = false;
+
+    function cleanup() {
+      if (done) return;
+      done = true;
+      clearTimeout(ttlTimer);
+      clearInterval(pollTimer);
+      panel.remove();
+    }
+
+    function dismiss() {
+      if (done) return;
+      cleanup();
+      // Walking away from an online rematch releases the lobby seat.
+      if (mode === 'online' && ctx.session === endedSession) ctx.setSession(null);
+    }
+
+    panel.appendChild(div('match-again__title', `🔄 ${tm('match.again.title')}`));
+    const again = button(tm('match.again.play'), 'ui-btn--green', () => {
+      cleanup();
+      if (canOffline) playAgainOffline(state);
+      else ctx.router.go('lobby');
+    });
+    if (canOnline) again.title = tm('match.again.lobbyHint');
+    panel.appendChild(again);
+    panel.appendChild(button('✕', 'ui-btn--ghost ui-btn--small', dismiss));
+
+    ttlTimer = setTimeout(dismiss, REMATCH_OFFER_TTL_MS);
+    // Leaving the stats screen (any navigation) also dismisses the offer.
+    pollTimer = setInterval(() => {
+      const name = ctx.router.currentName?.();
+      if (name && name !== 'stats') dismiss();
+    }, 1000);
+    host.appendChild(panel);
+  }
+
+  /** Offline rematch: same seats (ctx.lastOfflineConfig), same board and
+   *  rules as the match that just ended, fresh seed. */
+  async function playAgainOffline(finalState) {
+    const base = ctx.lastOfflineConfig;
+    if (!base) return;
+    try {
+      const cfg = { ...base };
+      delete cfg.seed; // a rematch must not replay the identical match
+      if (finalState?.rules) cfg.rules = { ...finalState.rules };
+      if (finalState?.boardId) cfg.boardId = finalState.boardId;
+      const next = createOfflineSession(cfg);
+      for (const seat of next.getLobby().seats) next.setReady(seat.pid, true);
+      if (!cfg.boardId) {
+        const boards = ctx.registries.boards.ids();
+        if (boards.length > 0) next.setBoard(boards[0]);
+      }
+      // Undecided humans get a monkey (same trick as the lobby start).
+      const charIds = ctx.registries.characters.ids();
+      next.getLobby().seats.forEach((seat, i) => {
+        if (!seat.characterId && charIds.length > 0) {
+          next.selectCharacter(seat.pid, charIds[(i * 3) % charIds.length]);
+        }
+      });
+      await next.start();
+      ctx.setSession(next);
+      ctx.router.go('match');
+    } catch (err) {
+      console.error('[match] play again failed:', err);
+      toast(`${tm('match.again.failed')} ${err?.message ?? ''}`.trim(), 'error');
+    }
   }
 
   /* ------------------------------------------------------------------ */
@@ -537,15 +728,38 @@ export function createMatchScreen(ctx) {
     ctx.music.play('board');
     ensureViewPacks(); // minigame 3D views attach in the background
 
+    const quitToMenu = () => {
+      ctx.setSession(null);
+      ctx.router.go('mainMenu');
+    };
+
     /* HUD */
     hud = createMatchHud(ctx, s, {
-      onQuit: () => {
-        ctx.setSession(null);
-        ctx.router.go('mainMenu');
-      },
+      onQuit: quitToMenu,
+      onPause: () => pauseMenu?.open(),
     });
     root.appendChild(hud.root);
     hud.update(simState());
+    updateMusicIntensity();
+
+    /* In-match chat (online sessions only; returns null offline). */
+    chat = attachMatchChat(ctx, s, root);
+
+    /* Pause menu (Esc / HUD pause button). Pausing NEVER pauses the shared
+     * sim: online the server keeps running (the menu shows a note), and
+     * offline only the board RENDERING pauses (the existing render-pause
+     * pattern) - session timers, bot decisions and prompt auto-default
+     * countdowns keep ticking so the match can never hang. */
+    pauseMenu = attachPauseMenu(ctx, {
+      getSession: session,
+      isChatOpen: () => Boolean(chat?.isOpen?.()),
+      closeChat: () => chat?.close?.(),
+      onQuit: quitToMenu,
+      onPauseChange: (isPaused) => {
+        menuPaused = isPaused && session()?.mode === 'offline';
+        ctx.bus.emit(isPaused ? 'match:paused' : 'match:resumed', { mode: session()?.mode ?? null });
+      },
+    });
 
     /* Decision prompt handlers on the shared bus. */
     for (const name of ['roll', 'junction', 'buyStar', 'shop', 'itemTarget', 'dicePick']) {
@@ -560,7 +774,22 @@ export function createMatchScreen(ctx) {
       } catch { /* sessions without events */ }
     };
     sub('action_applied', () => {
-      if (!disposed) hud?.update(simState());
+      if (disposed) return;
+      const state = simState();
+      hud?.update(state);
+      updateMusicIntensity(state);
+    });
+    sub('star', (evt) => {
+      // Star (golden banana) purchase: musical sting.
+      if (evt?.kind === 'bought') ctx.music.stinger?.('star');
+    });
+    sub('boss', (evt) => {
+      if (!evt?.neutralized) shakeFx(1, 0.6);
+    });
+    sub('trap', (evt) => {
+      // Only actual trap TRIGGERS shake (not placements or disarms).
+      if (evt?.kind === 'placed' || evt?.cancelled || evt?.disarmed) return;
+      shakeFx(0.7, 0.45);
     });
     sub('minigame_start', (evt) => {
       // Fires synchronously BEFORE the session's runner creates the sim.
@@ -575,6 +804,7 @@ export function createMatchScreen(ctx) {
       if (disposed) return;
       const state = simState();
       hud?.update(state);
+      updateMusicIntensity(state);
       if (!state) return;
       if (mgFlow && !mgFlow.results) {
         const stillLive = state.phase === 'minigame'
@@ -599,16 +829,14 @@ export function createMatchScreen(ctx) {
         });
       }
       if (state.phase === 'game_over' && !gameOverEvt) {
-        gameOverEvt = { ranking: state.turnOrder.slice(), winner: state.turnOrder[0] };
-        maybeShowVictory();
+        noteGameOver({ ranking: state.turnOrder.slice(), winner: state.turnOrder[0] });
       }
     });
     sub('bonus', (evt) => {
       bonuses.push(evt);
     });
     sub('game_over', (evt) => {
-      gameOverEvt = evt;
-      maybeShowVictory();
+      noteGameOver(evt);
     });
     sub('error', (msg) => {
       // Server errors arrive as {code, msg} (see shared/protocol.js).
@@ -651,10 +879,11 @@ export function createMatchScreen(ctx) {
       console.warn('[match] boardPlayView unavailable - HUD-only match');
     }
 
-    /* Frame loop. */
+    /* Frame loop. menuPaused only ever render-pauses OFFLINE boards (the
+     * pause menu never touches the sim; online keeps rendering live). */
     if (ctx.engine?.onFrame && !disposed) {
       offFrame = ctx.engine.onFrame((dt) => {
-        if (!paused) boardView?.update(dt);
+        if (!paused && !menuPaused) boardView?.update(dt);
       });
     }
 
@@ -679,8 +908,7 @@ export function createMatchScreen(ctx) {
       }
     }
     if (state?.phase === 'game_over' && !gameOverEvt) {
-      gameOverEvt = { ranking: state.turnOrder, winner: state.turnOrder[0] };
-      maybeShowVictory();
+      noteGameOver({ ranking: state.turnOrder, winner: state.turnOrder[0] });
     }
   }
 
@@ -689,9 +917,13 @@ export function createMatchScreen(ctx) {
       root = elHost;
       disposed = false;
       paused = false;
+      menuPaused = false;
+      lastIntensity = -1;
       bonuses = [];
       gameOverEvt = null;
       victory = null;
+      clearTimeout(mgZombieTimer);
+      mgZombieTimer = null;
       mgFlow = null;
       capturedMgSim = null;
       minigamesPlayed = 0;
@@ -702,6 +934,8 @@ export function createMatchScreen(ctx) {
     unmount() {
       disposed = true;
       closePrompt();
+      clearTimeout(mgZombieTimer);
+      mgZombieTimer = null;
       try {
         mgFlow?.intro?.close?.();
         mgFlow?.harness?.dispose?.();
@@ -736,6 +970,11 @@ export function createMatchScreen(ctx) {
       hud = null;
       emoteWheel?.dispose();
       emoteWheel = null;
+      pauseMenu?.dispose();
+      pauseMenu = null;
+      chat?.dispose();
+      chat = null;
+      menuPaused = false;
       root?.classList.remove('screen--match');
       root = null;
     },
