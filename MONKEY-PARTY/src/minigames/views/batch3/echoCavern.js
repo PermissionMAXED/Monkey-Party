@@ -166,7 +166,7 @@ export function createView({ sim, engine }) {
       (curr.teams ?? []).forEach((team, ti) => {
         const qTeam = prev?.teams?.[ti];
         if (team.done && qTeam && !qTeam.done) {
-          base.sfx('ding', { vol: 0.8, pitch: 1.2 });
+          base.sfx('sparkle', { vol: 0.8, pitch: 1.2 });
           base.burst('starburst', { pos: { x: 0, y: 2, z: ti === 0 ? 1.2 : 4.6 }, count: 14 });
         }
       });

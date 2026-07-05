@@ -153,7 +153,7 @@ export function createView({ sim, engine }) {
         base.burst('smoke', { pos: { x: 0, y: 3.2, z: 1 }, count: 6 });
       }
       if (phase === 'stir' && prev && (prev.king?.phase ?? '') === 'warn') {
-        base.sfx('buzz', { vol: 0.5, pitch: 0.7 });
+        base.sfx('buzzer', { vol: 0.5, pitch: 0.7 });
       }
 
       // Wake-o-meter orbs.

@@ -109,7 +109,7 @@ export function createView({ sim, engine }) {
       }
       if (curr.lastPull && curr.lastPull.tick === curr.tick
         && (prev?.lastPull?.tick ?? -1) !== curr.tick) {
-        base.sfx('thud', { vol: 0.7, pitch: 1 - Math.min(0.35, curr.lastPull.eff * 0.1) });
+        base.sfx('impact_heavy', { vol: 0.7, pitch: 1 - Math.min(0.35, curr.lastPull.eff * 0.1) });
         const mesh = blockMeshes.get(curr.lastPull.id);
         if (mesh && tower) {
           base.burst('dust', {

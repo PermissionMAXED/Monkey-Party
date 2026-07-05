@@ -126,7 +126,7 @@ export function createView({ sim, engine }) {
           if (charging) {
             disposeObject(plume);
             warnPlumes.delete(boar.id);
-            base.sfx('woosh', { vol: 0.45, pitch: 0.7 });
+            base.sfx('whoosh', { vol: 0.45, pitch: 0.7 });
           } else {
             plume.scale.setScalar(1 + Math.abs(Math.sin(curr.tick * 0.3)) * 0.5);
           }
@@ -169,7 +169,7 @@ export function createView({ sim, engine }) {
           base.sfx('jump', { vol: 0.5 });
         }
         if (p.hitTick === curr.tick && p.hitTick !== (q.hitTick ?? -1)) {
-          base.sfx('thud', { vol: 0.85 });
+          base.sfx('impact_heavy', { vol: 0.85 });
           base.burst('dust', { pos: { x: p.x, y: 0.5, z: targetZ }, count: 14 });
         }
         if (!p.alive && (q.alive ?? true)) {

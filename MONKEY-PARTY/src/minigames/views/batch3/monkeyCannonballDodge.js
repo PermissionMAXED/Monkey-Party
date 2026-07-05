@@ -172,7 +172,7 @@ export function createView({ sim, engine }) {
           token.rotation.y = Math.atan2(p.vx, p.vz);
         }
         if (p.hitTick === curr.tick && p.hitTick !== (q.hitTick ?? -1)) {
-          base.sfx('thud', { vol: 0.8 });
+          base.sfx('impact_heavy', { vol: 0.8 });
           base.burst('dust', { pos: { x: p.x, y: 0.6, z: p.z }, count: 12 });
         }
         if (!p.alive && (q.alive ?? true)) {

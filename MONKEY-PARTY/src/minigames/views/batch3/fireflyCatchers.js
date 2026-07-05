@@ -141,7 +141,7 @@ export function createView({ sim, engine }) {
           if (swinging) net.rotation.y = (curr.tick - p.swingTick) * 0.5;
         }
         if (p.swingTick === curr.tick && p.swingTick !== (q.swingTick ?? -1)) {
-          base.sfx('woosh', { vol: 0.5, pitch: 1.2 });
+          base.sfx('whoosh', { vol: 0.5, pitch: 1.2 });
         }
         if (p.catchTick === curr.tick && p.catchTick !== (q.catchTick ?? -1)) {
           const gotGolden = (p.goldenCatches ?? 0) > (q.goldenCatches ?? 0);

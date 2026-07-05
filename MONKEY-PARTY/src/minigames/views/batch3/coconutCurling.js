@@ -145,7 +145,7 @@ export function createView({ sim, engine }) {
         }
         if (p.throwTick === curr.tick
           && p.throwTick !== (prev?.players?.[pid]?.throwTick ?? -1)) {
-          base.sfx('woosh', { vol: 0.6, pitch: 1.1 });
+          base.sfx('whoosh', { vol: 0.6, pitch: 1.1 });
         }
       }
 
@@ -184,7 +184,7 @@ export function createView({ sim, engine }) {
       }
 
       if (curr.phase === 'aim' && prev?.phase === 'slide') {
-        base.sfx('ding', { vol: 0.6 }); // Next wave.
+        base.sfx('sparkle', { vol: 0.6 }); // Next wave.
       }
       if (curr.finished && !(prev?.finished ?? false)) {
         base.sfx('fanfare', { vol: 0.9 });
