@@ -353,10 +353,13 @@ test('determinism: pinned seed replays byte-identically and reproduces the pinne
   // Pinned outcome for seed 0xBA7A2CE on jungle_ruins (REGENERATE this pin
   // if a future legitimate tuning change alters it - its job is to catch
   // ACCIDENTAL nondeterminism, e.g. an unseeded random sneaking in).
+  // Regenerated after minigame batch3 landed: 8 more registered minigames
+  // shift the seeded minigame-selection stream, which is a legitimate
+  // content change, not nondeterminism.
   assert.ok(a.finished);
   assert.equal(a.winner, 'p3');
-  assert.deepEqual(a.ranking, ['p3', 'p0', 'p1', 'p2']);
-  assert.equal(a.starBuys, 4);
+  assert.deepEqual(a.ranking, ['p3', 'p1', 'p0', 'p2']);
+  assert.equal(a.starBuys, 3);
 });
 
 /* ------------------------------------------------------------------ */
