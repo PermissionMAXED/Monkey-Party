@@ -10,13 +10,19 @@
 import './styles/main.css';
 import { registerAllContent } from '#shared/content/index.js';
 import { registries } from '#shared/registries.js';
+import { installErrorOverlay } from './app/errorOverlay.js';
 import { createScreenRouter } from './app/screenRouter.js';
 import { settingsStore } from './app/settingsStore.js';
 import { profileStore } from './app/profileStore.js';
 
+// Crash overlay first: its window handlers must already be armed when
+// content registration and the rest of boot run below.
+const errorOverlay = installErrorOverlay();
+
 // Optional sibling packages, resolved relative to /src/main.js at runtime.
 const ENGINE_PATH = './engine/renderer.js';
 const UI_PATH = './ui/index.js';
+const PERF_PATH = './engine/perfMonitor.js';
 
 async function tryImport(path) {
   try {
@@ -103,6 +109,16 @@ async function boot() {
     console.info('[boot] no engine package yet - canvas stays idle');
   }
 
+  // 2b. Perf monitor (optional stability package; needs the engine loop).
+  if (engine) {
+    const perfMod = await tryImport(PERF_PATH);
+    const createPerfMonitor = perfMod?.createPerfMonitor ?? perfMod?.default;
+    if (typeof createPerfMonitor === 'function') {
+      createPerfMonitor(engine, settingsStore);
+      console.info('[boot] perf monitor attached');
+    }
+  }
+
   // 3. UI (optional ui package; placeholder fallback).
   const uiRoot = document.getElementById('ui-root');
   const router = createScreenRouter(uiRoot);
@@ -132,11 +148,18 @@ async function boot() {
   return app;
 }
 
-boot().catch((err) => {
-  console.error('[boot] fatal error:', err);
-  const loading = document.getElementById('loading');
-  if (loading) {
-    const hint = loading.querySelector('.loading__hint');
-    if (hint) hint.textContent = 'Boot failed - see console';
-  }
-});
+boot()
+  .then((app) => {
+    // From here on only crash loops are fatal (single errors just toast).
+    errorOverlay.markBootComplete();
+    return app;
+  })
+  .catch((err) => {
+    console.error('[boot] fatal error:', err);
+    const loading = document.getElementById('loading');
+    if (loading) {
+      const hint = loading.querySelector('.loading__hint');
+      if (hint) hint.textContent = 'Boot failed - see console';
+    }
+    errorOverlay.showFatal(err);
+  });

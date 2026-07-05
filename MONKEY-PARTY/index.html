@@ -4,7 +4,24 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#0c1f12" />
+    <meta
+      name="description"
+      content="MONKEY-PARTY - a free browser party game. Monkeys, jungle boards, dice, items and 50+ minigames for 2-8 players, locally or online."
+    />
+    <meta property="og:title" content="MONKEY-PARTY" />
+    <meta
+      property="og:description"
+      content="Monkeys, jungle boards, dice, items and 50+ minigames for 2-8 players - right in your browser."
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="MONKEY-PARTY" />
     <title>MONKEY-PARTY</title>
+    <!-- Banana favicon as inline SVG data URL: no extra asset request. -->
+    <link
+      rel="icon"
+      type="image/svg+xml"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext x='50' y='58' font-size='78' text-anchor='middle' dominant-baseline='central'%3E%F0%9F%8D%8C%3C/text%3E%3C/svg%3E"
+    />
     <style>
       /* Critical styles so the loading screen looks right before main.css arrives. */
       html,
@@ -76,12 +93,28 @@
     </style>
   </head>
   <body>
+    <noscript>
+      <div
+        style="position: fixed; inset: 0; z-index: 200; display: flex; align-items: center; justify-content: center; padding: 24px; text-align: center; background: #0c1f12; color: #e8f5d8; font-family: 'Trebuchet MS', 'Segoe UI', Verdana, sans-serif;"
+      >
+        <p style="max-width: 32em; font-size: 1.1rem; line-height: 1.5;">
+          <strong style="color: #ffd94d;">MONKEY-PARTY</strong> needs JavaScript to swing.
+          Please enable JavaScript in your browser and reload the page.
+        </p>
+      </div>
+    </noscript>
     <canvas id="game"></canvas>
     <div id="ui-root"></div>
     <div id="loading" aria-hidden="true">
       <div class="loading__title">MONKEY&nbsp;PARTY</div>
       <div class="loading__vine"></div>
-      <div class="loading__hint">Swinging into the jungle&hellip;</div>
+      <!-- Hint string lives in data-hint so the i18n layer can swap it by
+           key (data-i18n-key) later; the text content is the English default. -->
+      <div
+        class="loading__hint"
+        data-i18n-key="loading.hint"
+        data-hint="Swinging into the jungle&hellip;"
+      >Swinging into the jungle&hellip;</div>
     </div>
     <script type="module" src="/src/main.js"></script>
   </body>

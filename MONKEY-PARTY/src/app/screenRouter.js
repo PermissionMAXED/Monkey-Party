@@ -5,12 +5,55 @@
  * gets its own container div inside the router root; transitions are driven
  * by the .screen / .screen--visible / .screen--exit CSS classes
  * (see src/styles/main.css).
+ *
+ * Hardening (stability package): a screen whose mount() throws must never
+ * brick navigation. The router catches the error, logs it, surfaces it via a
+ * window 'error' dispatch (so the crash overlay counts it and the ui package
+ * can toast it), and auto-navigates to 'mainMenu' - or 'placeholder' when
+ * mainMenu is unregistered. The DOM/scheduling globals are resolved through
+ * guards (rootEl.ownerDocument, typeof requestAnimationFrame) so the router
+ * also runs under node tests with a tiny fake element.
  */
 
 const FADE_MS = 260;
 
+/** Fallback chain for screens whose mount() throws. */
+const FALLBACK_SCREENS = ['mainMenu', 'placeholder'];
+/** Max chained fallback attempts before the router gives up. */
+const MAX_FALLBACK_DEPTH = 2;
+
 function wait(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+/** requestAnimationFrame with a headless-safe timeout fallback. */
+function raf(cb) {
+  if (typeof requestAnimationFrame === 'function') {
+    requestAnimationFrame(cb);
+  } else {
+    setTimeout(cb, 16);
+  }
+}
+
+/**
+ * Surface a screen-mount failure as a window 'error' event so the global
+ * error handlers (crash overlay counter, ui toast) see it. Guarded: silently
+ * skipped without a window, and dispatch problems never re-crash navigation.
+ */
+function dispatchMountError(name, err) {
+  if (typeof window === 'undefined' || typeof window.dispatchEvent !== 'function') return;
+  try {
+    const message = `[router] screen "${name}" failed to mount: ${err?.message ?? err}`;
+    let event;
+    if (typeof window.ErrorEvent === 'function') {
+      event = new window.ErrorEvent('error', { message, error: err });
+    } else {
+      event = new CustomEvent('error');
+      event.message = message;
+      event.error = err;
+    }
+    window.dispatchEvent(event);
+  } catch { /* surfacing must never break the router */ }
 }
 
 /**
@@ -18,6 +61,10 @@ function wait(ms) {
  */
 export function createScreenRouter(rootEl) {
   if (!rootEl) throw new Error('createScreenRouter: rootEl is required');
+
+  // Resolve the document through the root element so node tests can pass a
+  // fake element carrying its own ownerDocument.createElement.
+  const doc = rootEl.ownerDocument ?? (typeof document !== 'undefined' ? document : null);
 
   /** @type {Map<string, {mount: Function, unmount?: Function}>} */
   const screens = new Map();
@@ -38,6 +85,14 @@ export function createScreenRouter(rootEl) {
       throw new Error(`router.register("${name}"): screen must have a mount(el, params) function`);
     }
     screens.set(name, screen);
+  }
+
+  /** First registered fallback screen that isn't the one that just failed. */
+  function pickFallback(failedName) {
+    for (const candidate of FALLBACK_SCREENS) {
+      if (candidate !== failedName && screens.has(candidate)) return candidate;
+    }
+    return null;
   }
 
   /**
@@ -70,17 +125,32 @@ export function createScreenRouter(rootEl) {
     // A newer navigation started while we were fading out - let it win.
     if (token !== navToken) return;
 
-    const el = document.createElement('div');
+    const el = doc.createElement('div');
     el.className = 'screen';
     el.dataset.screen = name;
     rootEl.appendChild(el);
 
     current = { name, params, el, screen };
-    screen.mount(el, params);
+    try {
+      screen.mount(el, params);
+    } catch (err) {
+      // A throwing mount must not brick navigation: drop the broken screen,
+      // surface the error, and fall back to a known-good screen.
+      console.error(`[router] mount of "${name}" threw:`, err);
+      current = null;
+      el.remove();
+      dispatchMountError(name, err);
+      const depth = (opts._fallbackDepth ?? 0) + 1;
+      const fallback = depth <= MAX_FALLBACK_DEPTH ? pickFallback(name) : null;
+      if (fallback) {
+        await go(fallback, {}, { push: false, _fallbackDepth: depth });
+      }
+      return;
+    }
 
     // Double rAF so the initial (opacity 0) style is committed before the fade-in.
-    requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
+    raf(() => {
+      raf(() => {
         if (current?.el === el) el.classList.add('screen--visible');
       });
     });
@@ -98,10 +168,15 @@ export function createScreenRouter(rootEl) {
     return current?.name ?? null;
   }
 
+  /** @returns {string|null} Alias of currentName() for newer callers. */
+  function currentScreen() {
+    return currentName();
+  }
+
   /** @returns {boolean} */
   function has(name) {
     return screens.has(name);
   }
 
-  return { register, go, back, currentName, has };
+  return { register, go, back, currentName, current: currentScreen, has };
 }
