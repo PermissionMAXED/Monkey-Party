@@ -1,0 +1,267 @@
+/* ==================================================================
+   MONKEY-PARTY Solo Modes package (Tournament cups + Minigame Practice)
+   Builds on the ui package look (ui.css custom properties/classes).
+   ================================================================== */
+
+/* ---------------- shared shell ---------------- */
+
+.tour-screen {
+  width: min(960px, 94vw);
+  max-height: 88vh;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  text-align: left;
+}
+
+.tour-screen .ui-heading { text-align: center; }
+
+.tour-sub {
+  text-align: center;
+  color: var(--ui-text-dim);
+  font-size: 0.95rem;
+  margin: 0;
+}
+
+.tour-body {
+  overflow-y: auto;
+  min-height: 0;
+  padding-right: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.tour-body::-webkit-scrollbar { width: 10px; }
+.tour-body::-webkit-scrollbar-thumb { background: var(--ui-green-dark); border-radius: 5px; }
+
+/* ---------------- cup select ---------------- */
+
+.tour-cups {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px;
+}
+
+.tour-cup {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 14px;
+  border-radius: var(--ui-radius);
+  border: 2px solid var(--ui-line);
+  background: var(--ui-panel-soft);
+  cursor: pointer;
+  text-align: left;
+  color: var(--ui-text);
+  font: inherit;
+  transition: transform 0.15s ease, border-color 0.15s ease;
+}
+
+.tour-cup:hover:not(:disabled) { transform: translateY(-3px); border-color: var(--ui-yellow); }
+.tour-cup:focus-visible { outline: 3px solid #fff; outline-offset: 2px; }
+
+.tour-cup:disabled {
+  cursor: not-allowed;
+  filter: grayscale(0.85) brightness(0.75);
+}
+
+.tour-cup__icon { font-size: 2rem; line-height: 1; }
+
+.tour-cup__name {
+  font-weight: 900;
+  font-size: 1.05rem;
+  color: var(--ui-yellow);
+  letter-spacing: 0.03em;
+}
+
+.tour-cup__desc { font-size: 0.82rem; color: var(--ui-text-dim); line-height: 1.35; }
+
+.tour-cup__meta { font-size: 0.78rem; color: var(--ui-text-dim); }
+
+.tour-cup__badge {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  font-size: 0.72rem;
+  font-weight: 800;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.45);
+  border: 1px solid var(--ui-line);
+}
+
+.tour-cup__badge--won { color: var(--ui-yellow); border-color: var(--ui-yellow); }
+.tour-cup__badge--active { color: var(--ui-green); border-color: var(--ui-green); }
+
+/* ---------------- character picker ---------------- */
+
+.tour-chars {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+}
+
+.tour-char {
+  padding: 4px;
+  border-radius: 14px;
+  border: 2px solid transparent;
+  background: rgba(0, 0, 0, 0.25);
+  cursor: pointer;
+  line-height: 0;
+}
+
+.tour-char[aria-pressed='true'] { border-color: var(--ui-yellow); background: rgba(255, 217, 77, 0.15); }
+.tour-char:focus-visible { outline: 3px solid #fff; outline-offset: 2px; }
+
+/* ---------------- standings table ---------------- */
+
+.tour-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+}
+
+.tour-table th {
+  text-align: left;
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ui-text-dim);
+  padding: 6px 10px;
+  border-bottom: 2px solid var(--ui-line);
+}
+
+.tour-table td {
+  padding: 8px 10px;
+  border-bottom: 1px solid rgba(158, 215, 106, 0.14);
+}
+
+.tour-table td.tour-td--num, .tour-table th.tour-td--num { text-align: right; }
+
+.tour-row--you { background: rgba(255, 217, 77, 0.1); }
+.tour-row--you td:first-child { border-left: 3px solid var(--ui-yellow); }
+
+.tour-row__player { display: inline-flex; align-items: center; gap: 8px; }
+
+.tour-leg-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 16px;
+  border-radius: var(--ui-radius);
+  border: 2px solid var(--ui-line);
+  background: rgba(0, 0, 0, 0.28);
+}
+
+.tour-leg-card__board { font-weight: 900; font-size: 1.1rem; color: var(--ui-yellow); }
+.tour-leg-card__meta { font-size: 0.82rem; color: var(--ui-text-dim); }
+
+.tour-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+  margin-top: 4px;
+}
+
+.tour-hint { font-size: 0.78rem; color: var(--ui-text-dim); text-align: center; }
+
+.tour-banner {
+  text-align: center;
+  font-size: 1.3rem;
+  font-weight: 900;
+  color: var(--ui-yellow);
+  text-shadow: 0 3px 8px rgba(0, 0, 0, 0.6);
+}
+
+/* ---------------- practice picker ---------------- */
+
+.prac-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  justify-content: center;
+}
+
+.prac-filters .ui-input { max-width: 260px; }
+
+.prac-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 10px;
+}
+
+.prac-card {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 12px;
+  border-radius: 14px;
+  border: 2px solid var(--ui-line);
+  background: var(--ui-panel-soft);
+  cursor: pointer;
+  text-align: left;
+  color: var(--ui-text);
+  font: inherit;
+  transition: transform 0.12s ease, border-color 0.12s ease;
+}
+
+.prac-card:hover { transform: translateY(-2px); border-color: var(--ui-yellow); }
+.prac-card:focus-visible { outline: 3px solid #fff; outline-offset: 2px; }
+
+.prac-card__name { font-weight: 800; color: var(--ui-yellow); }
+.prac-card__desc {
+  font-size: 0.78rem;
+  color: var(--ui-text-dim);
+  line-height: 1.3;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.prac-card__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  font-size: 0.72rem;
+  color: var(--ui-text-dim);
+}
+
+.prac-chip {
+  padding: 1px 8px;
+  border-radius: 999px;
+  border: 1px solid var(--ui-line);
+  background: rgba(0, 0, 0, 0.3);
+}
+
+.prac-chip--cat { color: var(--ui-green); border-color: var(--ui-green-dark); }
+
+/* ---------------- practice run overlay bits ---------------- */
+
+.prac-run-bar {
+  position: fixed;
+  top: 12px;
+  left: 12px;
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  pointer-events: auto;
+}
+
+.prac-run-bar__label {
+  background: rgba(0, 0, 0, 0.55);
+  border-radius: 10px;
+  padding: 4px 12px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--ui-text);
+}
+
+.prac-results__list { margin: 10px 0 4px; display: flex; flex-direction: column; gap: 4px; }
+.prac-results__row { font-weight: 700; }
