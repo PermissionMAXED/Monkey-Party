@@ -22,6 +22,18 @@
   --ui-blue: #7fc4ff;
   --ui-radius: 18px;
   --ui-font: 'Trebuchet MS', 'Segoe UI', Verdana, sans-serif;
+
+  /* Per-seat player accent colors (P1..P8). Mirrors the default token
+     palette used by the 3D minigame views; the cb-* body classes below swap
+     these for colorblind-safe sets. */
+  --mp-p1: #ef5350;
+  --mp-p2: #42a5f5;
+  --mp-p3: #ffca28;
+  --mp-p4: #66bb6a;
+  --mp-p5: #ab47bc;
+  --mp-p6: #ff7043;
+  --mp-p7: #26c6da;
+  --mp-p8: #ec407a;
 }
 
 /* Colorblind assist: shift greens/reds to high-contrast blue/orange. */
@@ -29,6 +41,76 @@ body.colorblind {
   --ui-green: #8ecbff;
   --ui-green-deep: #4d95d8;
   --ui-danger: #ffb24d;
+}
+
+/* ------------------------------------------------------------------
+   Accessibility: colorblind player palettes (body.cb-*)
+   Okabe-Ito-based sets, reordered per deficiency so adjacent seats keep
+   hue + luminance separation. Black is swapped for near-white (dark bg).
+   ------------------------------------------------------------------ */
+
+body.cb-deuteranopia {
+  --mp-p1: #e69f00;
+  --mp-p2: #56b4e9;
+  --mp-p3: #f0e442;
+  --mp-p4: #0072b2;
+  --mp-p5: #cc79a7;
+  --mp-p6: #d55e00;
+  --mp-p7: #009e73;
+  --mp-p8: #f5f5f5;
+}
+
+body.cb-protanopia {
+  --mp-p1: #56b4e9;
+  --mp-p2: #e69f00;
+  --mp-p3: #0072b2;
+  --mp-p4: #f0e442;
+  --mp-p5: #d55e00;
+  --mp-p6: #cc79a7;
+  --mp-p7: #f5f5f5;
+  --mp-p8: #009e73;
+}
+
+body.cb-tritanopia {
+  --mp-p1: #ee3377;
+  --mp-p2: #33bbee;
+  --mp-p3: #cc3311;
+  --mp-p4: #009988;
+  --mp-p5: #f5f5f5;
+  --mp-p6: #ee7733;
+  --mp-p7: #0077bb;
+  --mp-p8: #bbbbbb;
+}
+
+/* ------------------------------------------------------------------
+   Accessibility: text scale (body.text-scale-*)
+   Nearly every ui.css font-size is rem-based, so the effective multiplier
+   must sit on the document root; the #ui-root fallback covers engines
+   without :has() support.
+   ------------------------------------------------------------------ */
+
+html:has(body.text-scale-115) { font-size: 115%; }
+html:has(body.text-scale-130) { font-size: 130%; }
+
+@supports not selector(html:has(body)) {
+  body.text-scale-115 #ui-root { font-size: 115%; }
+  body.text-scale-130 #ui-root { font-size: 130%; }
+}
+
+/* ------------------------------------------------------------------
+   Accessibility: reduced motion (body.reduced-motion)
+   Kills CSS animations/transitions for everything under #ui-root
+   (screens, HUD, overlays, toasts). WAAPI intros check the class in JS.
+   ------------------------------------------------------------------ */
+
+body.reduced-motion #ui-root,
+body.reduced-motion #ui-root *,
+body.reduced-motion #ui-root *::before,
+body.reduced-motion #ui-root *::after {
+  animation: none !important;
+  transition-duration: 0s !important;
+  transition-delay: 0s !important;
+  scroll-behavior: auto !important;
 }
 
 /* ------------------------------------------------------------------
@@ -619,6 +701,7 @@ body.colorblind {
   gap: 8px;
   background: var(--ui-panel);
   border: 2px solid transparent;
+  border-left: 6px solid var(--mp-pc, var(--ui-line));
   border-radius: 999px;
   padding: 4px 14px 4px 6px;
   min-width: 150px;
@@ -626,8 +709,20 @@ body.colorblind {
   transition: border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
 }
 
+/* Seat accent color per chip (turn order), driven by the --mp-p* palette
+   so the cb-* colorblind classes recolor the HUD live. */
+.hud-top > .hud-chip:nth-child(1) { --mp-pc: var(--mp-p1); }
+.hud-top > .hud-chip:nth-child(2) { --mp-pc: var(--mp-p2); }
+.hud-top > .hud-chip:nth-child(3) { --mp-pc: var(--mp-p3); }
+.hud-top > .hud-chip:nth-child(4) { --mp-pc: var(--mp-p4); }
+.hud-top > .hud-chip:nth-child(5) { --mp-pc: var(--mp-p5); }
+.hud-top > .hud-chip:nth-child(6) { --mp-pc: var(--mp-p6); }
+.hud-top > .hud-chip:nth-child(7) { --mp-pc: var(--mp-p7); }
+.hud-top > .hud-chip:nth-child(8) { --mp-pc: var(--mp-p8); }
+
 .hud-chip--current {
   border-color: var(--ui-yellow);
+  border-left-color: var(--mp-pc, var(--ui-yellow));
   transform: translateY(2px) scale(1.04);
   box-shadow: 0 0 22px rgba(255, 217, 77, 0.4);
 }
@@ -954,7 +1049,17 @@ body.colorblind {
 .mg-howto { text-align: left; background: rgba(0, 0, 0, 0.3); border-radius: 12px; padding: 12px 16px; font-size: 0.95rem; line-height: 1.5; }
 .mg-controls { display: flex; flex-direction: column; gap: 5px; text-align: left; }
 .mg-controls__row { display: flex; gap: 10px; align-items: center; font-size: 0.88rem; }
-.mg-controls__seat { font-weight: 900; color: var(--ui-green); min-width: 90px; }
+.mg-controls__seat { font-weight: 900; color: var(--mp-pc, var(--ui-green)); min-width: 90px; }
+
+/* Seat label colors follow the player palette (and its cb-* variants). */
+.mg-controls > .mg-controls__row:nth-child(1) { --mp-pc: var(--mp-p1); }
+.mg-controls > .mg-controls__row:nth-child(2) { --mp-pc: var(--mp-p2); }
+.mg-controls > .mg-controls__row:nth-child(3) { --mp-pc: var(--mp-p3); }
+.mg-controls > .mg-controls__row:nth-child(4) { --mp-pc: var(--mp-p4); }
+.mg-controls > .mg-controls__row:nth-child(5) { --mp-pc: var(--mp-p5); }
+.mg-controls > .mg-controls__row:nth-child(6) { --mp-pc: var(--mp-p6); }
+.mg-controls > .mg-controls__row:nth-child(7) { --mp-pc: var(--mp-p7); }
+.mg-controls > .mg-controls__row:nth-child(8) { --mp-pc: var(--mp-p8); }
 
 /* Suppress the harness' built-in freeze-frame results card: the ui package
    shows its own richer results screen on top. */
@@ -1108,6 +1213,106 @@ body.colorblind {
 .browser-row--head { background: transparent; border: none; font-size: 0.72rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ui-text-dim); padding: 0 16px; }
 
 /* ------------------------------------------------------------------
+   Settings screen
+   ------------------------------------------------------------------ */
+
+.settings-panel {
+  width: min(640px, 94vw);
+  max-height: 86vh;
+}
+
+.settings-section {
+  margin-top: 18px;
+  padding-top: 10px;
+  border-top: 1px solid var(--ui-line);
+}
+.settings-section:first-of-type { margin-top: 6px; border-top: none; padding-top: 0; }
+
+/* Live preview of the 8 player accent colors (recolors with cb-*). */
+.cb-preview {
+  display: flex;
+  gap: 6px;
+  flex: none;
+}
+.cb-preview__swatch {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.25);
+  flex: none;
+}
+.cb-preview__swatch:nth-child(1) { background: var(--mp-p1); }
+.cb-preview__swatch:nth-child(2) { background: var(--mp-p2); }
+.cb-preview__swatch:nth-child(3) { background: var(--mp-p3); }
+.cb-preview__swatch:nth-child(4) { background: var(--mp-p4); }
+.cb-preview__swatch:nth-child(5) { background: var(--mp-p5); }
+.cb-preview__swatch:nth-child(6) { background: var(--mp-p6); }
+.cb-preview__swatch:nth-child(7) { background: var(--mp-p7); }
+.cb-preview__swatch:nth-child(8) { background: var(--mp-p8); }
+
+/* Key rebinding grid: one block per keyboard device. */
+.rebind-device {
+  background: var(--ui-panel-soft);
+  border: 1px solid var(--ui-line);
+  border-radius: 12px;
+  padding: 10px 12px;
+  margin: 8px 0;
+}
+.rebind-device__title {
+  font-size: 0.82rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.rebind-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: 6px;
+}
+.rebind-cell {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 6px 10px;
+  border-radius: 10px;
+  border: 2px solid var(--ui-line);
+  background: rgba(0, 0, 0, 0.3);
+  color: var(--ui-text);
+  font-family: var(--ui-font);
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: border-color 0.12s ease, background 0.12s ease;
+}
+.rebind-cell:hover { border-color: var(--ui-yellow); }
+.rebind-cell:focus-visible { outline: 3px solid #fff; outline-offset: 2px; }
+.rebind-cell__key {
+  font-weight: 900;
+  color: var(--ui-yellow);
+  background: rgba(0, 0, 0, 0.4);
+  border-radius: 6px;
+  padding: 2px 8px;
+  min-width: 34px;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+.rebind-cell--listening {
+  border-color: var(--ui-yellow);
+  background: rgba(255, 217, 77, 0.14);
+  animation: rebind-blink 0.8s ease-in-out infinite alternate;
+}
+.rebind-cell--listening .rebind-cell__key { color: var(--ui-text-dim); }
+@keyframes rebind-blink {
+  from { box-shadow: 0 0 4px rgba(255, 217, 77, 0.25); }
+  to { box-shadow: 0 0 14px rgba(255, 217, 77, 0.6); }
+}
+
+/* ------------------------------------------------------------------
    Misc
    ------------------------------------------------------------------ */
 
@@ -1143,4 +1348,56 @@ body.colorblind {
 .browser-table::-webkit-scrollbar-thumb, .ui-overlay__panel::-webkit-scrollbar-thumb {
   background: var(--ui-green-dark);
   border-radius: 5px;
+}
+
+/* ------------------------------------------------------------------
+   Small viewports (phones / narrow windows)
+   ------------------------------------------------------------------ */
+
+@media (max-width: 700px) {
+  /* Panels: tighter padding, always scrollable within the viewport. */
+  .ui-panel {
+    padding: 14px 14px 18px;
+    max-height: 92vh;
+    overflow-y: auto;
+  }
+  .ui-screen { padding: 8px; gap: 8px; }
+  .settings-panel { width: 96vw; max-height: 92vh; }
+  .ui-overlay__panel { max-width: 96vw; max-height: 92vh; }
+  .rules-grid { grid-template-columns: 1fr; max-height: 62vh; }
+
+  /* Main menu: buttons stack full-width, language toggle stays reachable. */
+  .mm-buttons { min-width: 0; width: 94vw; }
+  .mm-buttons .ui-btn { width: 100%; }
+  .mm-lang { top: 8px; right: 8px; }
+  .mm-banana { display: none; }
+
+  /* Generic button rows wrap into a column instead of overflowing. */
+  .ui-row { flex-direction: column; align-items: stretch; }
+  .ui-row .ui-spacer { display: none; }
+
+  /* Field rows may wrap so wide controls drop below their label. */
+  .ui-field { flex-wrap: wrap; }
+  .ui-field > .ui-select, .ui-field > .ui-input { max-width: 100%; }
+  .ui-slider { min-width: 0; flex: 1 1 160px; }
+
+  /* HUD chips shrink so 4+ players still fit the top bar. */
+  .hud-chip {
+    min-width: 0;
+    gap: 5px;
+    padding: 3px 8px 3px 4px;
+    border-left-width: 4px;
+  }
+  .hud-chip img { width: 24px; height: 24px; }
+  .hud-chip__name { max-width: 64px; font-size: 0.68rem; }
+  .hud-chip__stats { gap: 5px; font-size: 0.7rem; }
+  .hud-chip__items img { width: 13px; height: 13px; }
+  .hud-round { padding: 5px 10px; }
+  .hud-round__big { font-size: 0.85rem; }
+
+  /* Local couch setup rows stack name/device vertically. */
+  .local-seat { grid-template-columns: auto 1fr; }
+  .local-seat .ui-select { grid-column: 1 / -1; }
+
+  .rebind-grid { grid-template-columns: repeat(2, 1fr); }
 }

@@ -8,9 +8,12 @@
  *  - silently ignores (and counts) malformed frames - it NEVER crashes on
  *    hostile input,
  *  - heartbeats each connection (ping every 5s, drop after 15s silence),
- *  - rate-limits per connection (warn at 30 msg/s, kick at 60).
+ *  - rate-limits per connection (warn at 30 msg/s, kick at 60),
+ *  - shuts down gracefully on SIGINT/SIGTERM (error{code:'shutdown'} to
+ *    every socket, rooms closed, then exit; see server.shutdown()).
  *
  * `npm run server` boots it; tests import createGameServer({port: 0}).
+ * Ops guide: docs/SERVER-OPS.md.
  */
 
 import process from 'node:process';
@@ -261,7 +264,34 @@ export async function createGameServer(opts = {}) {
     log.info('closed', { stats: JSON.stringify(stats) });
   }
 
-  return { port, wss, config, connections, lobbies, matchmaking, stats, close };
+  /**
+   * Graceful shutdown (SIGINT/SIGTERM in CLI mode): notify every socket
+   * with error{code:'shutdown'}, give the notice config.shutdownFlushMs to
+   * flush, then close rooms/lobbies and the ws server. Idempotent.
+   */
+  let shutdownPromise = null;
+  function shutdown() {
+    if (!shutdownPromise) shutdownPromise = doShutdown();
+    return shutdownPromise;
+  }
+
+  async function doShutdown() {
+    log.info('shutting_down', { conns: conns.size, lobbies: lobbies.all().length });
+    for (const conn of conns) {
+      connections.sendSocket(conn.socket, SRV.ERROR, { code: 'shutdown', msg: 'server is shutting down' });
+      try {
+        conn.socket.close(1001, 'server shutdown');
+      } catch { /* already gone */ }
+    }
+    // Let the notice + close frames flush before the hard teardown.
+    const deadline = Date.now() + config.shutdownFlushMs;
+    while (conns.size > 0 && Date.now() < deadline) {
+      await new Promise((resolve) => setTimeout(resolve, 10));
+    }
+    await close();
+  }
+
+  return { port, wss, config, connections, lobbies, matchmaking, stats, close, shutdown };
 }
 
 /* ------------------------------------------------------------------ */
@@ -278,8 +308,26 @@ const isMain = (() => {
 
 if (isMain) {
   const port = Number(process.env.PORT) > 0 ? Number(process.env.PORT) : undefined;
-  createGameServer({ port }).catch((err) => {
-    console.error('[mp:srv] fatal boot error:', err);
-    process.exit(1);
-  });
+  createGameServer({ port })
+    .then((server) => {
+      // Graceful shutdown: notify sockets (error{code:'shutdown'}), close
+      // rooms/lobbies, then exit. A watchdog force-exits if teardown hangs.
+      const onSignal = (signal) => {
+        console.log(`[mp:srv] ${signal} received - shutting down gracefully`);
+        const watchdog = setTimeout(() => process.exit(1), 5000);
+        watchdog.unref?.();
+        server.shutdown()
+          .then(() => process.exit(0))
+          .catch((err) => {
+            console.error('[mp:srv] shutdown error:', err);
+            process.exit(1);
+          });
+      };
+      process.once('SIGINT', () => onSignal('SIGINT'));
+      process.once('SIGTERM', () => onSignal('SIGTERM'));
+    })
+    .catch((err) => {
+      console.error('[mp:srv] fatal boot error:', err);
+      process.exit(1);
+    });
 }

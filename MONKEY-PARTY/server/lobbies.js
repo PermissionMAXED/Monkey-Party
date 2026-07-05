@@ -11,6 +11,15 @@
  *
  * Per-lobby isolation: every broadcast goes through the seat list of one
  * lobby only; nothing here can leak into another lobby.
+ *
+ * Hardening (Online Robustness package):
+ *  - config.maxLobbies caps total lobbies (create -> error{code:'full'});
+ *    a connection can only ever hold ONE lobby (create while seated fails),
+ *  - an idle reaper disposes lobbies with zero connected humans and no
+ *    running room after config.lobbyIdleMs,
+ *  - inbound codes/ids/rule lists are length-clamped (input sanity),
+ *  - a mid-match resume-grace expiry broadcasts a pid:'' system chat line
+ *    ("X left — bot takes over"; SRV.CHAT requires a string pid).
  */
 
 import crypto from 'node:crypto';
@@ -25,6 +34,15 @@ const BOT_NAMES = ['Bongo', 'Kiki', 'Mango', 'Chimpy', 'Nana', 'Tarzana', 'Coco'
 /** Cosmetic slots a client may set (see src/ui/charSelect.js). */
 const COSMETIC_SLOTS = ['hat', 'glasses', 'accessory', 'skin'];
 const COSMETIC_MAX_LEN = 32;
+
+/* Input sanity caps (client payloads are never trusted). */
+/** Longest join/lobby code accepted before lookup. */
+const CODE_MAX_LEN = 16;
+/** Longest board/character id echoed back in error messages. */
+const ID_ECHO_MAX_LEN = 64;
+/** Rules string-array caps (validateRules checks types, not sizes). */
+const RULES_LIST_MAX_ITEMS = 32;
+const RULES_LIST_MAX_LEN = 64;
 
 /**
  * @param {{config: Object, log: Object, connections: Object}} deps
@@ -41,6 +59,27 @@ export function createLobbyManager({ config, log, connections }) {
   }
 
   /* ---------------- helpers ---------------------------------------- */
+
+  /**
+   * Post-validateRules sanity caps: validateRules (shared/) checks types
+   * and numeric ranges but not string-array sizes; clamp them here so a
+   * hostile client cannot park huge blobs in every lobby_state broadcast.
+   * Runs BEFORE any broadcast/match_start, so replicas see identical rules.
+   */
+  function clampRules(rules) {
+    for (const key of ['minigameCategories', 'startItems']) {
+      if (Array.isArray(rules[key])) {
+        rules[key] = rules[key]
+          .slice(0, RULES_LIST_MAX_ITEMS)
+          .map((v) => String(v).slice(0, RULES_LIST_MAX_LEN));
+      }
+    }
+    return rules;
+  }
+
+  function cleanCode(raw) {
+    return String(raw ?? '').slice(0, CODE_MAX_LEN).trim().toUpperCase();
+  }
 
   function generateCode() {
     const alphabet = config.lobbyCodeAlphabet;
@@ -108,7 +147,13 @@ export function createLobbyManager({ config, log, connections }) {
    * @returns {Object|null} The lobby, or null (error already sent).
    */
   function create(player, payload, opts = {}) {
+    // Per-connection cap: one lobby at a time (also blocks create-spam
+    // from a connection that is already seated somewhere).
     if (player.lobby) return fail(player, 'lobby', 'already in a lobby - leave first');
+    // Global cap: reject once the server is at lobby capacity.
+    if (lobbies.size >= config.maxLobbies) {
+      return fail(player, 'full', 'server is at lobby capacity - try again later');
+    }
     const boardId = typeof payload?.boardId === 'string' && boards.get(payload.boardId)
       ? payload.boardId
       : defaultBoardId();
@@ -120,7 +165,7 @@ export function createLobbyManager({ config, log, connections }) {
       quickMatch: Boolean(opts.quickMatch),
       hostId: player.id,
       boardId,
-      rules: validateRules(payload?.rules ?? {}),
+      rules: clampRules(validateRules(payload?.rules ?? {})),
       seats: [],
       started: false,
       room: null,
@@ -128,6 +173,8 @@ export function createLobbyManager({ config, log, connections }) {
       countdownEndsAt: null,
       nextSeat: 0,
       botCounter: 0,
+      /** Set by the reaper when the lobby has zero connected humans. */
+      idleSince: null,
     };
     lobbies.set(lobby.code, lobby);
     addHumanSeat(lobby, player);
@@ -172,7 +219,7 @@ export function createLobbyManager({ config, log, connections }) {
   /** join_lobby{code}. */
   function join(player, payload) {
     if (player.lobby) return fail(player, 'lobby', 'already in a lobby - leave first');
-    const code = String(payload?.code ?? '').trim().toUpperCase();
+    const code = cleanCode(payload?.code);
     const lobby = lobbies.get(code);
     if (!lobby) return fail(player, 'join', `no lobby with code "${code}"`);
     if (lobby.started) return fail(player, 'join', 'that match already started');
@@ -242,14 +289,16 @@ export function createLobbyManager({ config, log, connections }) {
     const lobby = requireHost(player);
     if (!lobby) return;
     if (payload?.rules !== undefined) {
-      const merged = validateRules({ ...lobby.rules, ...payload.rules });
+      const merged = clampRules(validateRules({ ...lobby.rules, ...payload.rules }));
       if (merged.maxSeats < lobby.seats.length) {
         return fail(player, 'rules', `maxSeats ${merged.maxSeats} < ${lobby.seats.length} seated players`);
       }
       lobby.rules = merged;
     }
     if (payload?.boardId !== undefined) {
-      if (!boards.get(payload.boardId)) return fail(player, 'board', `unknown board "${payload.boardId}"`);
+      if (!boards.get(payload.boardId)) {
+        return fail(player, 'board', `unknown board "${String(payload.boardId).slice(0, ID_ECHO_MAX_LEN)}"`);
+      }
       lobby.boardId = payload.boardId;
     }
     seatsChanged(lobby);
@@ -451,10 +500,55 @@ export function createLobbyManager({ config, log, connections }) {
     if (!lobby.started) {
       leave(player);
     } else {
-      // Seat stays bot-driven for the rest of the match.
+      // Seat stays bot-driven for the rest of the match. Tell the
+      // survivors with a CHAT-style system notice. NOTE: the SRV.CHAT
+      // validator (shared/protocol.js SRV_VALIDATORS) requires pid to be
+      // a STRING, so system lines use pid:'' (never null) - clients render
+      // an empty pid as a system message.
+      const name = seatOf(lobby, player.id)?.name ?? player.name ?? 'A player';
       player.lobby = null;
+      log.info('grace_expired_midmatch', { code: lobby.code, pid: player.id });
+      broadcast(lobby, SRV.CHAT, { pid: '', text: `${name} left — bot takes over` });
     }
   }
+
+  /* ---------------- idle-lobby reaping -------------------------------- */
+
+  /**
+   * Backstop against leaked lobbies: any lobby that has had zero connected
+   * humans and no running room for config.lobbyIdleMs is disposed. The
+   * normal paths (leave / grace expiry / room disposal) already clean up;
+   * the reaper catches whatever slips through so memory cannot pin.
+   */
+  function reapIdleLobbies() {
+    const now = Date.now();
+    for (const lobby of [...lobbies.values()]) {
+      const active = Boolean(lobby.room) || humanSeats(lobby).some((s) => s.connected);
+      if (active) {
+        lobby.idleSince = null;
+        continue;
+      }
+      if (lobby.idleSince === null) {
+        lobby.idleSince = now;
+        continue;
+      }
+      if (now - lobby.idleSince < config.lobbyIdleMs) continue;
+      log.info('lobby_reaped', { code: lobby.code, idleMs: now - lobby.idleSince });
+      // Detach grace-window players still pointing here so a late resume
+      // lands them lobby-less instead of inside a zombie lobby.
+      for (const seat of humanSeats(lobby)) {
+        const member = connections.getPlayer(seat.pid);
+        if (member && member.lobby === lobby) member.lobby = null;
+      }
+      disposeLobby(lobby);
+    }
+  }
+
+  // Sweep cadence derives from the knob so tests with a tiny lobbyIdleMs
+  // still reap promptly; capped at 30s for production-sized values.
+  const reapSweepMs = Math.max(20, Math.min(Math.floor(config.lobbyIdleMs / 4), 30000));
+  const reapTimer = setInterval(reapIdleLobbies, reapSweepMs);
+  reapTimer.unref?.();
 
   /* ---------------- teardown ------------------------------------------ */
 
@@ -467,6 +561,7 @@ export function createLobbyManager({ config, log, connections }) {
   }
 
   function dispose() {
+    clearInterval(reapTimer);
     for (const lobby of [...lobbies.values()]) disposeLobby(lobby);
   }
 
@@ -490,7 +585,8 @@ export function createLobbyManager({ config, log, connections }) {
     handlePlayerResume,
     handleGraceExpired,
     all: () => [...lobbies.values()],
-    get: (code) => lobbies.get(String(code ?? '').toUpperCase()) ?? null,
+    get: (code) => lobbies.get(cleanCode(code)) ?? null,
+    reapIdleLobbies,
     dispose,
   };
 }

@@ -13,6 +13,10 @@
  *   kb1        WASD move, F = a, G = b
  *   kb2        Arrow keys move, K = a, L = b
  *   kb3        I/J/K/L move (I up, J left, K down, L right), H = a, N = b
+ *              (kb* defaults can be overridden per action through the
+ *              settings store `keyBindings`, e.g. { kb1: { a: 'Space' } };
+ *              overrides merge over KB_MAPS at frame-read time and update
+ *              live on store changes)
  *   gamepad0-3 Gamepad API (polled every getFrame): left stick + d-pad move,
  *              button 0 (A/cross) = a, button 1 (B/circle) = b,
  *              right stick = aim.
@@ -32,6 +36,13 @@ const KB_MAPS = {
   kb3: { up: 'KeyI', down: 'KeyK', left: 'KeyJ', right: 'KeyL', a: 'KeyH', b: 'KeyN' },
 };
 
+/** Read-only default keyboard maps (settings UI shows/rebinds against these). */
+export const KB_DEFAULT_MAPS = Object.freeze({
+  kb1: Object.freeze({ ...KB_MAPS.kb1 }),
+  kb2: Object.freeze({ ...KB_MAPS.kb2 }),
+  kb3: Object.freeze({ ...KB_MAPS.kb3 }),
+});
+
 const DEFAULT_BINDINGS = { 0: 'kb1', 1: 'kb2', 2: 'kb3', 3: 'gamepad0' };
 
 function neutralFrame() {
@@ -50,10 +61,28 @@ function applyDeadzone(x, y) {
   return { x: (x / magnitude) * scaled, y: (y / magnitude) * scaled };
 }
 
+/** Pick only well-formed per-device key overrides ({kb1:{up:'KeyW',...}}). */
+function readKeyOverrides(settings) {
+  const raw = settings?.keyBindings;
+  if (!raw || typeof raw !== 'object') return {};
+  const out = {};
+  for (const device of Object.keys(KB_MAPS)) {
+    const map = raw[device];
+    if (!map || typeof map !== 'object') continue;
+    const clean = {};
+    for (const action of Object.keys(KB_MAPS[device])) {
+      if (typeof map[action] === 'string' && map[action]) clean[action] = map[action];
+    }
+    if (Object.keys(clean).length > 0) out[device] = clean;
+  }
+  return out;
+}
+
 /**
- * @param {{ get: () => Object, set: (patch: Object) => Object }} [settingsStore]
+ * @param {{ get: () => Object, set: (patch: Object) => Object, subscribe?: (cb: Function) => Function }} [settingsStore]
  *   Optional settings store; seat bindings are read from and persisted to its
- *   `seatBindings` value.
+ *   `seatBindings` value, and per-device key overrides come from its
+ *   `keyBindings` value (kept live via subscribe).
  * @returns {{
  *   getFrame: (seat: number) => import('#shared/types.js').InputFrame,
  *   bindSeat: (seat: number, deviceId: string) => void,
@@ -74,6 +103,19 @@ export function createInput(settingsStore = null) {
       const idx = Number(seat);
       if (idx >= 0 && idx < MAX_LOCAL_SEATS && typeof deviceId === 'string') bindings[idx] = deviceId;
     }
+  }
+
+  /* Per-device key overrides, merged over KB_MAPS at frame-read time and
+     kept live by subscribing to the settings store. */
+  let keyOverrides = readKeyOverrides(settingsStore?.get?.());
+  const unsubscribeSettings = settingsStore?.subscribe?.((s) => {
+    keyOverrides = readKeyOverrides(s);
+  }) ?? null;
+
+  /** Effective key map for a keyboard device (defaults + user overrides). */
+  function keyMapFor(deviceId) {
+    const overrides = keyOverrides[deviceId];
+    return overrides ? { ...KB_MAPS[deviceId], ...overrides } : KB_MAPS[deviceId];
   }
 
   /* ---------------- keyboard ---------------- */
@@ -229,7 +271,7 @@ export function createInput(settingsStore = null) {
   function getFrame(seat) {
     const deviceId = bindings[seat];
     let frame;
-    if (deviceId && KB_MAPS[deviceId]) frame = keyboardFrame(KB_MAPS[deviceId]);
+    if (deviceId && KB_MAPS[deviceId]) frame = keyboardFrame(keyMapFor(deviceId));
     else if (deviceId?.startsWith('gamepad')) frame = gamepadFrame(Number(deviceId.slice(7)) || 0);
     else if (deviceId === 'touch') frame = touchFrame();
     else frame = neutralFrame();
@@ -312,6 +354,7 @@ export function createInput(settingsStore = null) {
       window.removeEventListener('gamepadconnected', onPadChange);
       window.removeEventListener('gamepaddisconnected', onPadChange);
     }
+    unsubscribeSettings?.();
     touch.root?.remove();
     deviceListeners.clear();
     pressed.clear();

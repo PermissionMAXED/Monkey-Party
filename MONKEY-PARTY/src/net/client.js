@@ -33,7 +33,32 @@ function nowMs() {
   return typeof performance !== 'undefined' ? performance.now() : Date.now();
 }
 
+/**
+ * Resolve the default server URL. Priority order:
+ *  (a) `?server=` query param - a full ws:// or wss:// URL. Lets testers
+ *      point one tab at any server without rebuilding.
+ *  (b) `VITE_MP_SERVER` build-time env (Vite injects import.meta.env).
+ *  (c) Same-origin default: on https pages use `wss://<host>/ws` (a path
+ *      so a reverse proxy can route it; see docs/SERVER-OPS.md), otherwise
+ *      the dev default `ws://<hostname>:8081`.
+ */
 function defaultUrl() {
+  // (a) explicit override via query param.
+  try {
+    if (typeof location !== 'undefined' && location.search) {
+      const fromQuery = new URLSearchParams(location.search).get('server');
+      if (fromQuery && /^wss?:\/\//i.test(fromQuery)) return fromQuery;
+    }
+  } catch { /* no usable location/URLSearchParams: fall through */ }
+
+  // (b) build-time env (undefined outside a Vite build).
+  const fromEnv = import.meta.env?.VITE_MP_SERVER;
+  if (typeof fromEnv === 'string' && /^wss?:\/\//i.test(fromEnv)) return fromEnv;
+
+  // (c) same-origin default.
+  if (typeof location !== 'undefined' && location.protocol === 'https:') {
+    return `wss://${location.host}/ws`;
+  }
   const host = typeof location !== 'undefined' && location.hostname ? location.hostname : 'localhost';
   return `ws://${host}:8081`;
 }
@@ -65,7 +90,9 @@ export class NetClientError extends Error {
 }
 
 /**
- * @param {string} [url] ws endpoint; defaults to ws://<location.hostname>:8081.
+ * @param {string} [url] ws endpoint; defaults to defaultUrl() resolution
+ *   (?server= param -> VITE_MP_SERVER env -> same-origin wss /ws or
+ *   ws://<hostname>:8081).
  */
 export function createNetClient(url = defaultUrl()) {
   let ws = null;

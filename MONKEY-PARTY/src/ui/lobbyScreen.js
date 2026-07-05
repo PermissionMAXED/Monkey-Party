@@ -2,16 +2,28 @@
  * Lobby screen (offline couch + online, via ISession): seat list with
  * ready states / bot management, board carousel, rules summary + editor
  * link, private lobby code, chat (online) and the start button.
+ *
+ * Online robustness extras: per-player connection quality dots (from
+ * player_conn + own latency), a "Copy code" button, a rule-preset name
+ * chip, system chat lines (pid '' / null), and a "lobby reopened - ready
+ * up for rematch" notice when the server reopens the lobby after a match.
  */
 
 import { MSG } from '#shared/protocol.js';
+import { PRESETS } from '#shared/rules.js';
 import { t, localized, onLangChange } from './i18n.js';
+import { tNet } from './netStrings.js';
 import {
   el, div, button, clearNode, portraitImg, starRow, select, toast, playSfx,
 } from './dom.js';
 import { attachEmoteWheel } from './emoteWheel.js';
 
 const DIFFICULTIES = ['easy', 'normal', 'hard', 'wild'];
+
+/** Connection dot colors by quality bucket. */
+const CONN_COLORS = { good: '#3ddc68', warn: '#ffcf3d', bad: '#ff5e4d' };
+/** Own latency (ms) above this shows the yellow "warn" dot. */
+const LATENCY_WARN_MS = 200;
 
 export function createLobbyScreen(ctx) {
   let root = null;
@@ -21,6 +33,11 @@ export function createLobbyScreen(ctx) {
   let emoteWheel = null;
   let countdownTimer = null;
   const chatLog = [];
+  /** pid -> connected (live player_conn overrides on top of lobby_state). */
+  const connState = new Map();
+  /** Tracks started->reopened transitions for the rematch notice. */
+  let wasStarted = false;
+  let rematchNotice = false;
 
   const session = () => ctx.session;
 
@@ -37,12 +54,48 @@ export function createLobbyScreen(ctx) {
 
   /* ---------------- seats ---------------- */
 
+  /**
+   * Connection quality for a seat: 'good' | 'warn' | 'bad' | null (no dot,
+   * offline mode). Derived from PLAYER_CONN events (connState overrides the
+   * last lobby_state snapshot) plus our own measured latency for the local
+   * seat.
+   */
+  function connQuality(seat) {
+    const s = session();
+    if (!s || s.mode !== 'online') return null;
+    if (seat.isBot) return 'good'; // bots live on the server
+    const connected = connState.has(seat.pid)
+      ? connState.get(seat.pid)
+      : seat.connected !== false;
+    if (!connected) return 'bad';
+    if (s.localSeats().has(seat.pid)) {
+      const latency = ctx.getNetClient?.()?.latencyMs;
+      if (typeof latency === 'number' && latency >= LATENCY_WARN_MS) return 'warn';
+    }
+    return 'good';
+  }
+
+  function connDot(seat) {
+    const quality = connQuality(seat);
+    if (!quality) return null;
+    const dot = el('span', 'lobby-seat__conn');
+    dot.style.cssText = 'width:10px;height:10px;border-radius:50%;flex:none;'
+      + `background:${CONN_COLORS[quality]};box-shadow:0 0 6px ${CONN_COLORS[quality]};`;
+    const latency = ctx.getNetClient?.()?.latencyMs;
+    dot.title = quality === 'warn'
+      ? tNet('net.conn.warn', { ms: latency ?? '?' })
+      : tNet(`net.conn.${quality}`);
+    return dot;
+  }
+
   function seatRow(seat) {
     const s = session();
     const locals = s.localSeats();
     const row = div('lobby-seat');
     const def = seat.characterId ? ctx.registries.characters.get(seat.characterId) : null;
     row.appendChild(portraitImg(def, 40));
+    const dot = connDot(seat);
+    if (dot) row.appendChild(dot);
     row.appendChild(div('lobby-seat__name', seat.name));
 
     if (seat.isBot) {
@@ -122,8 +175,23 @@ export function createLobbyScreen(ctx) {
 
   /* ---------------- rules summary ---------------- */
 
+  /**
+   * Localized preset name when the rules exactly match one of the shared
+   * PRESETS, else "Custom". Both sides of the comparison are validateRules
+   * outputs (identical key order), so JSON equality is reliable.
+   */
+  function presetName(rules) {
+    for (const [id, preset] of Object.entries(PRESETS)) {
+      if (JSON.stringify(preset) === JSON.stringify(rules)) return t(`rules.preset.${id}`);
+    }
+    return tNet('net.presetCustom');
+  }
+
   function rulesSummary(rules) {
     const wrap = div('rules-summary');
+    const preset = div('rules-chip', `★ ${tNet('net.preset', { name: presetName(rules) })}`);
+    preset.style.cssText = 'background:rgba(255,225,53,0.16);color:#ffe135;font-weight:800;';
+    wrap.appendChild(preset);
     const chips = [
       `${rules.rounds} ${t('rules.rounds')}`,
       `${t('rules.starPrice')}: ${rules.starPrice}`,
@@ -150,7 +218,14 @@ export function createLobbyScreen(ctx) {
     const log = div('lobby-chat__log');
     for (const entry of chatLog) {
       const row = div('lobby-chat__row');
-      row.append(el('b', '', `${entry.from}:`), el('span', '', entry.text));
+      if (entry.system) {
+        // System notice (server sends pid '' / null): no author, dim italics.
+        const line = el('span', '', entry.text);
+        line.style.cssText = 'font-style:italic;opacity:0.75;';
+        row.appendChild(line);
+      } else {
+        row.append(el('b', '', `${entry.from}:`), el('span', '', entry.text));
+      }
       log.appendChild(row);
     }
     log.scrollTop = log.scrollHeight;
@@ -197,6 +272,31 @@ export function createLobbyScreen(ctx) {
       starting = false;
       toast(err?.message ?? String(err), 'error');
       render();
+    }
+  }
+
+  /* ---------------- copy code ---------------- */
+
+  async function copyCode() {
+    const code = session()?.getLobby?.()?.code;
+    if (!code) return;
+    try {
+      await navigator.clipboard.writeText(code);
+      toast(tNet('net.codeCopied'), 'info');
+    } catch {
+      // Clipboard API unavailable (http origin / permissions): legacy path.
+      try {
+        const ta = el('textarea');
+        ta.value = code;
+        ta.style.cssText = 'position:fixed;opacity:0;';
+        document.body.appendChild(ta);
+        ta.select();
+        const ok = document.execCommand('copy');
+        ta.remove();
+        toast(ok ? tNet('net.codeCopied') : tNet('net.copyFailed', { code }), ok ? 'info' : 'error');
+      } catch {
+        toast(tNet('net.copyFailed', { code }), 'error');
+      }
     }
   }
 
@@ -275,12 +375,25 @@ export function createLobbyScreen(ctx) {
     }
     if (s.mode === 'online' && lobby.code) {
       right.appendChild(el('div', 'ui-section-label', t('lobby.code')));
-      right.appendChild(div('lobby-code', lobby.code));
+      const codeRow = div('ui-row');
+      codeRow.append(
+        div('lobby-code', lobby.code),
+        button(`📋 ${tNet('net.copyCode')}`, 'ui-btn--small ui-btn--wood', copyCode),
+      );
+      right.appendChild(codeRow);
     }
     if (s.mode === 'online') right.appendChild(chatPanel());
 
     layout.append(left, right);
     wrap.appendChild(layout);
+
+    /* Post-game: the server reopened this lobby - prompt a rematch. */
+    if (rematchNotice && !lobby.started) {
+      const banner = div('lobby-rematch', `🔄 ${tNet('net.rematch')}`);
+      banner.style.cssText = 'text-align:center;font-size:1.05rem;font-weight:800;'
+        + 'color:#9ed76a;background:rgba(0,0,0,0.35);border-radius:10px;padding:8px 14px;margin:8px 0;';
+      wrap.appendChild(banner);
+    }
 
     /* Quick-match auto-start countdown (server sets countdownEndsAt). */
     if (typeof lobby.countdownEndsAt === 'number' && lobby.countdownEndsAt > Date.now()) {
@@ -315,11 +428,33 @@ export function createLobbyScreen(ctx) {
     mount(elHost) {
       root = elHost;
       starting = false;
+      rematchNotice = false;
+      connState.clear();
       const s = session();
+      wasStarted = Boolean(s?.getLobby?.()?.started);
       render();
       if (s) {
-        unsubs.push(s.on('lobby_state', () => render()));
+        unsubs.push(s.on('lobby_state', (lobby) => {
+          // started -> reopened means the room ended and the server
+          // reopened this lobby for a rematch: unstick Start, notify.
+          if (lobby && wasStarted && !lobby.started) {
+            starting = false;
+            rematchNotice = true;
+            connState.clear(); // seats were pruned; stale overrides too
+            toast(tNet('net.rematch'), 'info');
+          }
+          wasStarted = Boolean(lobby?.started ?? s.getLobby?.()?.started);
+          render();
+        }));
+        unsubs.push(s.on('player_conn', (msg) => {
+          if (typeof msg?.pid === 'string' && msg.pid.length > 0) {
+            connState.set(msg.pid, Boolean(msg.connected));
+            render();
+          }
+        }));
         unsubs.push(s.on('match_start', () => {
+          rematchNotice = false;
+          wasStarted = true;
           if (ctx.router.currentName() === 'lobby') ctx.router.go('match');
         }));
         unsubs.push(s.on('error', (msg) => {
@@ -333,13 +468,22 @@ export function createLobbyScreen(ctx) {
           }
         }));
         unsubs.push(s.on('chat', (msg) => {
-          const lobby = s.getLobby();
-          const from = lobby?.seats?.find((seat) => seat.pid === msg?.pid)?.name ?? msg?.pid ?? '?';
-          chatLog.push({ from, text: msg?.text ?? '' });
+          // pid '' / null marks a server system notice ("X left — bot
+          // takes over"); render it as an authorless system line.
+          if (!msg?.pid) {
+            chatLog.push({ system: true, from: tNet('net.system'), text: msg?.text ?? '' });
+          } else {
+            const lobby = s.getLobby();
+            const from = lobby?.seats?.find((seat) => seat.pid === msg.pid)?.name ?? msg.pid;
+            chatLog.push({ from, text: msg?.text ?? '' });
+          }
           if (chatLog.length > 60) chatLog.shift();
           render();
         }));
         if (s.mode === 'online') {
+          // The UI hub guard-loads netStatus at boot; loading it here too
+          // keeps the banner alive even without that hook (idempotent).
+          import('./netStatus.js').then((m) => m.default?.(ctx)).catch(() => {});
           const net = ctx.getNetClient?.();
           if (net?.on) {
             let reconnectFailed = false;

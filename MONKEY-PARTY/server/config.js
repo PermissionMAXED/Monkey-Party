@@ -37,6 +37,17 @@ export const DEFAULT_CONFIG = Object.freeze({
   lobbyCodeLength: 4,
   /** Quick-match auto-start countdown once >= 2 humans are seated. */
   quickMatchCountdownMs: 30000,
+  /** Reap lobbies with zero connected humans and no running room after
+   *  this long (backstop against leaked lobbies pinning memory). */
+  lobbyIdleMs: 600000,
+  /** Hard cap on concurrently existing lobbies; create_lobby beyond it is
+   *  rejected with error{code:'full'}. */
+  maxLobbies: 500,
+
+  /* -------- shutdown -------- */
+  /** Graceful shutdown: how long to wait for the error{code:'shutdown'}
+   *  notice to flush before sockets are torn down. */
+  shutdownFlushMs: 250,
 
   /* -------- match rooms -------- */
   /** A human gets this long to answer an awaited decision. */

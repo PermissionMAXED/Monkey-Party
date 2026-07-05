@@ -1,6 +1,8 @@
 /**
  * Public lobby browser (online): table of open lobbies with join/refresh.
  * Creates the online session lazily on join so lobby_state is captured.
+ * The list auto-refreshes every 10s while the screen is open (silently -
+ * no loading flash, no error toasts for transient outages).
  */
 
 import { MSG } from '#shared/protocol.js';
@@ -8,11 +10,15 @@ import { createOnlineSession } from '../app/session.js';
 import { t, onLangChange } from './i18n.js';
 import { el, div, button, clearNode, toast } from './dom.js';
 
+/** Auto-refresh cadence while the browser screen is open. */
+const AUTO_REFRESH_MS = 10000;
+
 export function createLobbyBrowserScreen(ctx) {
   let root = null;
   let unsubs = [];
   let lobbies = [];
   let loading = false;
+  let autoTimer = null;
 
   async function connect() {
     const client = await ctx.ensureNet();
@@ -20,16 +26,25 @@ export function createLobbyBrowserScreen(ctx) {
     return client;
   }
 
-  async function refresh() {
-    loading = true;
-    render();
+  /**
+   * @param {{silent?: boolean}} [opts] silent = background auto-refresh:
+   *   keep the current list on screen and swallow connect errors (the
+   *   netStatus banner already reports outages).
+   */
+  async function refresh({ silent = false } = {}) {
+    if (!silent) {
+      loading = true;
+      render();
+    }
     try {
       const client = await connect();
       client.send(MSG.LIST_LOBBIES, {});
     } catch (err) {
       loading = false;
-      toast(err?.message ?? t('menu.connectFail'), 'error');
-      render();
+      if (!silent) {
+        toast(err?.message ?? t('menu.connectFail'), 'error');
+        render();
+      }
     }
   }
 
@@ -93,6 +108,9 @@ export function createLobbyBrowserScreen(ctx) {
       root = elHost;
       render();
       unsubs.push(onLangChange(render));
+      // The UI hub guard-loads netStatus at boot; loading it here too
+      // keeps the banner alive even without that hook (idempotent).
+      import('./netStatus.js').then((m) => m.default?.(ctx)).catch(() => {});
       // Listen for lobby lists on the raw client (available after connect).
       refresh().then(() => {
         const client = ctx.getNetClient();
@@ -105,9 +123,15 @@ export function createLobbyBrowserScreen(ctx) {
           if (typeof off === 'function') unsubs.push(off);
         }
       });
+      // Keep the list fresh while the screen is open.
+      autoTimer = setInterval(() => refresh({ silent: true }), AUTO_REFRESH_MS);
       ctx.stage.menu(ctx.registries.characters.all().slice(0, 3));
     },
     unmount() {
+      if (autoTimer) {
+        clearInterval(autoTimer);
+        autoTimer = null;
+      }
       for (const off of unsubs) {
         try {
           off();
