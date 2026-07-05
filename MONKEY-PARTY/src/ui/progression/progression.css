@@ -1,0 +1,158 @@
+/* ==================================================================
+   MONKEY-PARTY progression package (Achievements + Match History +
+   stats-screen XP/level widgets). Builds on the ui package look
+   (ui.css custom properties/classes).
+   ================================================================== */
+
+.prog-screen {
+  width: min(880px, 94vw);
+  max-height: 86vh;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  text-align: left;
+}
+
+.prog-body {
+  overflow-y: auto;
+  min-height: 0;
+  padding-right: 6px;
+}
+
+.prog-body::-webkit-scrollbar { width: 10px; }
+.prog-body::-webkit-scrollbar-thumb { background: var(--ui-green-dark); border-radius: 5px; }
+
+/* ---------------- achievements grid ---------------- */
+
+.prog-ach-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  gap: 10px;
+}
+
+.prog-ach-card {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  padding: 12px;
+  border-radius: 14px;
+  border: 2px solid var(--ui-line);
+  background: rgba(0, 0, 0, 0.3);
+}
+
+.prog-ach-card--unlocked {
+  border-color: var(--ui-yellow);
+  background: rgba(255, 217, 77, 0.1);
+  box-shadow: 0 0 14px rgba(255, 217, 77, 0.18);
+}
+
+.prog-ach-card--locked { filter: grayscale(0.6); opacity: 0.75; }
+
+.prog-ach-card__icon {
+  font-size: 1.7rem;
+  line-height: 1;
+  filter: drop-shadow(0 3px 5px rgba(0, 0, 0, 0.5));
+}
+
+.prog-ach-card--locked .prog-ach-card__icon { filter: grayscale(1) brightness(0.7); }
+
+.prog-ach-card__name { font-weight: 900; letter-spacing: 0.02em; }
+.prog-ach-card--unlocked .prog-ach-card__name { color: var(--ui-yellow); }
+
+.prog-ach-card__desc {
+  font-size: 0.8rem;
+  color: var(--ui-text-dim);
+  line-height: 1.35;
+  margin-top: 2px;
+}
+
+.prog-ach-card__hint {
+  font-size: 0.74rem;
+  font-weight: 800;
+  margin-top: 6px;
+  color: var(--ui-text-dim);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Tiny progress bar on locked counter-achievements. */
+.prog-mini-bar {
+  height: 6px;
+  border-radius: 3px;
+  background: rgba(0, 0, 0, 0.45);
+  overflow: hidden;
+  margin-top: 5px;
+}
+
+.prog-mini-bar__fill {
+  height: 100%;
+  border-radius: 3px;
+  background: linear-gradient(90deg, #f5a623, #ffd23f);
+}
+
+/* ---------------- history list ---------------- */
+
+.prog-hist-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.prog-hist-row {
+  border: 2px solid var(--ui-line);
+  border-radius: 14px;
+  background: rgba(0, 0, 0, 0.3);
+  overflow: hidden;
+}
+
+.prog-hist-row__head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 10px 14px;
+  background: none;
+  border: none;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.prog-hist-row__head:hover { background: rgba(255, 255, 255, 0.05); }
+
+.prog-hist-row__place {
+  font-weight: 900;
+  font-size: 1.05rem;
+  color: var(--ui-yellow);
+  min-width: 2.4em;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+.prog-hist-row__board { font-weight: 800; }
+
+.prog-hist-row__meta {
+  font-size: 0.76rem;
+  color: var(--ui-text-dim);
+  margin-top: 1px;
+}
+
+.prog-hist-row__chevron {
+  margin-left: auto;
+  color: var(--ui-text-dim);
+  transition: transform 0.18s ease;
+}
+
+.prog-hist-row--open .prog-hist-row__chevron { transform: rotate(90deg); }
+
+.prog-hist-row__body { padding: 0 14px 12px; }
+
+.prog-hist-row__body .stats-table { font-size: 0.86rem; }
+
+/* ---------------- mobile ---------------- */
+
+@media (max-width: 600px) {
+  .prog-ach-grid { grid-template-columns: 1fr; }
+  .prog-hist-row__head { padding: 9px 10px; }
+  .prog-hist-row__body { padding: 0 8px 10px; }
+}

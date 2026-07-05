@@ -3,6 +3,12 @@
  * live 3D turntable preview (buildCharacterPreview rendered by ONE shared
  * small renderer), perk panel, cosmetics drawer with banana unlocks, and
  * per-local-seat selection tabs for couch mode.
+ *
+ * Banana economy: locked characters/cosmetics show their cost; unlocking
+ * deducts from profile.goldenBananas (tracked in profile.bananasSpent) and
+ * appends to unlockedCharacters/unlockedCosmetics. Unlocks only gate what
+ * LOCAL players can pick - bots and remote players are unaffected. An
+ * unaffordable tap shakes the item and plays the buzzer.
  */
 
 import * as THREE from 'three';
@@ -90,6 +96,13 @@ function getPreviewRenderer() {
 /* Screen                                                              */
 /* ------------------------------------------------------------------ */
 
+const FILTERS = ['all', 'owned', 'locked'];
+const FILTER_LABEL_KEYS = {
+  all: 'char.filter.all',
+  owned: 'char.filter.owned',
+  locked: 'char.filter.locked',
+};
+
 export function createCharSelectScreen(ctx) {
   let root = null;
   let unsubs = [];
@@ -97,6 +110,8 @@ export function createCharSelectScreen(ctx) {
   let picks = new Map();
   let humanPids = [];
   let activePid = null;
+  /** Character-grid ownership filter: 'all' | 'owned' | 'locked'. */
+  let gridFilter = 'all';
 
   const session = () => ctx.session;
 
@@ -113,16 +128,35 @@ export function createCharSelectScreen(ctx) {
     return ctx.profile.get().unlockedCosmetics.includes(c.id);
   }
 
-  function tryUnlock(kind, id, cost) {
+  /** Shake an unaffordable item (WAAPI, so no extra CSS is needed). */
+  function shake(node) {
+    node?.animate?.([
+      { transform: 'translateX(0)' },
+      { transform: 'translateX(-7px)' },
+      { transform: 'translateX(6px)' },
+      { transform: 'translateX(-4px)' },
+      { transform: 'translateX(3px)' },
+      { transform: 'translateX(0)' },
+    ], { duration: 320, easing: 'ease-out' });
+  }
+
+  /**
+   * Spend bananas on an unlock. Deducts from the bank into bananasSpent
+   * and appends to the matching unlocked list. On an unaffordable tap the
+   * tapped element shakes and the buzzer plays.
+   */
+  function tryUnlock(kind, id, cost, node = null) {
     const profile = ctx.profile.get();
     if (profile.goldenBananas < cost) {
       toast(`🔒 ${t('char.cost', { n: cost })}`, 'error');
-      playSfx('error', { vol: 0.5 });
+      playSfx('buzzer', { vol: 0.5 });
+      shake(node);
       return false;
     }
     const listKey = kind === 'char' ? 'unlockedCharacters' : 'unlockedCosmetics';
     ctx.profile.set({
       goldenBananas: profile.goldenBananas - cost,
+      bananasSpent: profile.bananasSpent + cost,
       [listKey]: [...profile[listKey], id],
     });
     playSfx('fanfare', { vol: 0.6 });
@@ -208,7 +242,7 @@ export function createCharSelectScreen(ctx) {
     cell.title = `${def.name} — ${localized(def.perk?.description)}`;
 
     cell.addEventListener('click', () => {
-      if (!unlocked && !tryUnlock('char', def.id, cost)) return;
+      if (!unlocked && !tryUnlock('char', def.id, cost, cell)) return;
       p.charId = def.id;
       commit(activePid);
       playSfx('pop');
@@ -252,7 +286,7 @@ export function createCharSelectScreen(ctx) {
         }
         chip.addEventListener('click', () => {
           playSfx('click');
-          if (!unlocked && !tryUnlock('cosmetic', c.id, c.unlock.bananas)) return;
+          if (!unlocked && !tryUnlock('cosmetic', c.id, c.unlock.bananas, chip)) return;
           setSlot(on ? null : c.id);
         });
         row.appendChild(chip);
@@ -280,11 +314,21 @@ export function createCharSelectScreen(ctx) {
     head.style.width = 'min(1220px, 96vw)';
     head.style.justifyContent = 'space-between';
     const seat = lobby.seats.find((x) => x.pid === activePid);
+
+    /* Prominent banana-bank balance (the unlock currency wallet). */
+    const bank = div('shop-wallet');
+    bank.style.cssText = 'display:flex;flex-direction:column;align-items:flex-end;gap:2px;margin-bottom:0;';
+    const bankValue = el('b', '', `🍌 ${ctx.profile.get().goldenBananas}`);
+    bankValue.style.cssText = 'font-size:1.35rem;line-height:1;text-shadow:0 2px 6px rgba(0,0,0,0.55);';
+    const bankLabel = el('span', 'ui-dim', t('char.bank'));
+    bankLabel.style.cssText = 'font-size:0.66rem;letter-spacing:0.14em;text-transform:uppercase;';
+    bank.append(bankValue, bankLabel);
+
     head.append(
       el('h1', 'ui-heading', humanPids.length > 1 && seat
         ? t('char.seatPicks', { name: seat.name })
         : t('char.title')),
-      div('shop-wallet', `🍌 ${ctx.profile.get().goldenBananas}`),
+      bank,
     );
     wrap.appendChild(head);
     const tabs = seatTabs(lobby);
@@ -292,10 +336,31 @@ export function createCharSelectScreen(ctx) {
 
     const layout = div('char-layout');
 
-    /* Left: the 16-grid. */
+    /* Left: the 16-grid with an owned/locked filter. */
     const left = div('ui-panel');
+    const filterRow = div('ui-row');
+    filterRow.style.cssText = 'justify-content:flex-start;gap:6px;margin-bottom:8px;';
+    for (const f of FILTERS) {
+      const chip = el('button', `preset-chip${gridFilter === f ? ' preset-chip--on' : ''}`, t(FILTER_LABEL_KEYS[f]));
+      chip.type = 'button';
+      chip.setAttribute('aria-pressed', String(gridFilter === f));
+      chip.addEventListener('click', () => {
+        if (gridFilter === f) return;
+        playSfx('click');
+        gridFilter = f;
+        render();
+      });
+      filterRow.appendChild(chip);
+    }
+    left.appendChild(filterRow);
     const grid = div('char-grid');
-    for (const def of ctx.registries.characters.all()) grid.appendChild(charCell(def, lobby));
+    const defs = ctx.registries.characters.all().filter((def) => {
+      if (gridFilter === 'owned') return charUnlocked(def);
+      if (gridFilter === 'locked') return !charUnlocked(def);
+      return true;
+    });
+    for (const def of defs) grid.appendChild(charCell(def, lobby));
+    if (defs.length === 0) grid.appendChild(div('ui-dim', t('char.filterEmpty')));
     left.appendChild(grid);
     layout.appendChild(left);
 
@@ -351,6 +416,7 @@ export function createCharSelectScreen(ctx) {
   return {
     mount(elHost) {
       root = elHost;
+      gridFilter = 'all';
       const s = session();
       const lobby = s?.getLobby();
       if (!s || !lobby) {
