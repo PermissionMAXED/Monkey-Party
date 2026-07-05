@@ -10,6 +10,15 @@
  */
 
 import { graph, seq, circle, alongPath, cycle, loc, makeNav, allPlayers } from './index.js';
+import { registerEffectDef } from '../../sim/effects.js';
+
+/** Spirit lantern: trap immunity while it burns (ghost fields check it too). */
+registerEffectDef({
+  id: 'lantern_light',
+  hooks: {
+    onTrapTriggered: (chain) => ({ ...chain, cancelled: true }),
+  },
+});
 
 const g = graph();
 

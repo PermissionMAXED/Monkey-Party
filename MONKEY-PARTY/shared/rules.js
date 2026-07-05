@@ -3,6 +3,20 @@
  *
  * Pure ESM. No DOM, no three.js, no Math.random, no Date.now.
  * See the Rules typedef in shared/types.js.
+ *
+ * Toggle semantics inside the sim:
+ *  - traps: false disarms built-in board 'trap' hazards entirely (placed
+ *    trap ITEMS are excluded separately via itemAllowed's trapPlace check).
+ *  - randomEvents: false skips board 'event' node handlers.
+ *  - fastMode: shop prompts the player could only decline are skipped
+ *    (pass-by AND landing), and MatchState.fastMode is set so views can
+ *    shorten decision timers / choreography.
+ *  - hardcore: red fields cost -5 instead of -3 and NO end-game bonus
+ *    bananas are awarded (state.bonusCategories is empty).
+ *  - competitive: forces randomEvents off / items 'allSame' / chaosMode
+ *    off, uses the dice draft, neutralizes boss coin swings (fixed -3 on
+ *    boss fields, round-cadence boss handlers skipped) and awards no bonus
+ *    bananas.
  */
 
 import { BANANA_MULTIPLIERS, BOT_DIFFICULTIES, ITEM_MODES, MAX_SEATS, MIN_PLAYERS } from './constants.js';
@@ -111,7 +125,7 @@ export const PRESETS = Object.freeze({
   /** The classic party experience - the defaults. */
   party: validateRules({}),
 
-  /** Shorter match, snappier pacing. */
+  /** Shorter match, snappier pacing (skips can't-buy shop prompts, views shorten timers). */
   fast: validateRules({
     rounds: 5,
     fastMode: true,
@@ -119,7 +133,11 @@ export const PRESETS = Object.freeze({
     minigameEvery: 1,
   }),
 
-  /** Maximum mayhem: chaos mechanics, infinite items, double bananas. */
+  /**
+   * Maximum mayhem: chaos mechanics, infinite items, double bananas, and
+   * the erratic 'wild' bot profile (deep reads, loud gambles - NOT a
+   * difficulty above 'hard'; see shared/ai/difficulty.js).
+   */
   chaos: validateRules({
     chaosMode: true,
     randomEvents: true,
@@ -129,7 +147,7 @@ export const PRESETS = Object.freeze({
     botDifficulty: 'wild',
   }),
 
-  /** Punishing economy and tougher bots. */
+  /** Punishing economy (red fields -5, no bonus bananas) and tougher bots. */
   hardcore: validateRules({
     hardcore: true,
     startCoins: 0,

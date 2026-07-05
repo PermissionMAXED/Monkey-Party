@@ -117,20 +117,44 @@ export const BONUS_CATEGORIES = [
 ];
 
 /**
- * Award the end-game bonus bananas: 3 seeded picks out of the 5 categories,
- * one banana per category to the leading player. Skipped entirely in
- * competitive rules. Categories where every score is 0 award nothing.
+ * Pick the bonus categories for a match: Minigame King always, plus ONE
+ * seeded pick from the remaining categories (2 bonus bananas total, so the
+ * hidden end-game swing can never outweigh the board game). Returns [] for
+ * competitive and hardcore rules (no bonus bananas there).
+ *
+ * Called at match start so the active categories can be announced up front
+ * (MatchState.bonusCategories).
+ *
+ * @param {Object} rng Seeded RNG (shared/rng.js).
+ * @param {import('../types.js').Rules} rules
+ * @returns {string[]} Category ids.
+ */
+export function pickBonusCategoryIds(rng, rules) {
+  if (rules.competitive || rules.hardcore) return [];
+  const others = BONUS_CATEGORIES.filter((c) => c.id !== 'minigame_king');
+  return ['minigame_king', rng.pick(others).id];
+}
+
+/**
+ * Award the end-game bonus bananas: one banana per announced category
+ * (state.bonusCategories - Minigame King + 1 random) to the leading player.
+ * Skipped entirely in competitive AND hardcore rules. Categories where
+ * every score is 0 award nothing. Ties break by turn order.
  *
  * @param {Object} sim
  * @returns {{category: string, playerId: string, score: number}[]} Awards given.
  */
 export function awardBonuses(sim) {
   const { state } = sim;
-  if (state.rules.competitive) return [];
+  if (state.rules.competitive || state.rules.hardcore) return [];
 
-  const picked = sim.rng.shuffle(BONUS_CATEGORIES).slice(0, 3);
+  const ids = Array.isArray(state.bonusCategories) && state.bonusCategories.length > 0
+    ? state.bonusCategories
+    : pickBonusCategoryIds(sim.rng, state.rules);
   const awards = [];
-  for (const category of picked) {
+  for (const id of ids) {
+    const category = BONUS_CATEGORIES.find((c) => c.id === id);
+    if (!category) continue;
     let best = null;
     let bestScore = 0;
     for (const pid of state.turnOrder) {
@@ -153,25 +177,37 @@ export function awardBonuses(sim) {
 /* ------------------------------------------------------------------ */
 
 /**
- * Rank all players: bananas desc -> coins desc -> minigame wins desc ->
- * seeded coin flip. Deterministic for a given RNG state.
+ * Rank all players with the ANNOUNCED deterministic tiebreak chain:
+ * bananas desc -> coins desc -> minigame wins desc -> turn order.
+ *
+ * When the winner was decided by anything other than bananas (i.e. the top
+ * two players are tied on golden bananas) the result records which rule
+ * broke the tie so the UI can surface it.
  *
  * @param {Object} sim
- * @returns {string[]} Player ids, winner first.
+ * @returns {{ranking: string[], tiebreak: 'coins'|'minigameWins'|'turnOrder'|null}}
  */
 export function evaluateWinner(sim) {
   const { state } = sim;
-  // One seeded tiebreak draw per player, in turn order, so full ties resolve
-  // by a reproducible "coin flip".
-  const flip = new Map();
-  for (const pid of state.turnOrder) flip.set(pid, sim.rng.next());
-
-  return [...state.turnOrder].sort((a, b) => {
+  const order = state.turnOrder;
+  const ranking = [...order].sort((a, b) => {
     const pa = state.players[a];
     const pb = state.players[b];
     if (pb.goldenBananas !== pa.goldenBananas) return pb.goldenBananas - pa.goldenBananas;
     if (pb.coins !== pa.coins) return pb.coins - pa.coins;
     if (pb.stats.minigameWins !== pa.stats.minigameWins) return pb.stats.minigameWins - pa.stats.minigameWins;
-    return flip.get(b) - flip.get(a);
+    return order.indexOf(a) - order.indexOf(b);
   });
+
+  let tiebreak = null;
+  if (ranking.length > 1) {
+    const first = state.players[ranking[0]];
+    const second = state.players[ranking[1]];
+    if (second.goldenBananas === first.goldenBananas) {
+      if (first.coins !== second.coins) tiebreak = 'coins';
+      else if (first.stats.minigameWins !== second.stats.minigameWins) tiebreak = 'minigameWins';
+      else tiebreak = 'turnOrder';
+    }
+  }
+  return { ranking, tiebreak };
 }

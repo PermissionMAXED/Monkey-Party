@@ -12,7 +12,7 @@
 import { createRng } from '../../../rng.js';
 import { clampFrame, emptyFrame } from '../../inputs.js';
 import {
-  defineMinigame, coinsForRanking, MINIGAME_HZ, COUNTDOWN_TICKS,
+  defineMinigame, rankByScoreGrouped, coinsForRanking, MINIGAME_HZ, COUNTDOWN_TICKS,
 } from '../../framework.js';
 import { minigames } from '../../../registries.js';
 
@@ -21,6 +21,7 @@ const DT = 1 / MINIGAME_HZ;
 
 const DEFAULTS = {
   raftRadius: 7,
+  raftEndRadius: 4.8, // The raft shrinks so monkeys cannot kite forever.
   gorillaSpeed: 3.8,
   monkeySpeed: 5.4,
   gorillaDash: 12,
@@ -106,6 +107,12 @@ function createSim({ seed, players, params = {}, rules = {} } = {}) {
     const playing = t > state.countdownTicks;
 
     if (playing) {
+      // The raft shrinks over the match (like barrel_blast_arena) so faster
+      // monkeys cannot kite the slow gorilla forever.
+      const k = Math.max(0, Math.min(1, (t - state.countdownTicks)
+        / (state.durationTicks - state.countdownTicks)));
+      state.raftRadius = cfg.raftRadius + (cfg.raftEndRadius - cfg.raftRadius) * k;
+
       for (const pid of state.order) {
         const p = state.players[pid];
         if (!p.alive) continue;
@@ -197,18 +204,23 @@ function createSim({ seed, players, params = {}, rules = {} } = {}) {
 
   function getResults() {
     const monkeys = state.order.filter((pid) => pid !== state.gorillaId);
-    const byElimDesc = (a, b) => (state.players[b].elimTick - state.players[a].elimTick);
+    const gorilla = state.players[state.gorillaId];
     const gorillaWins = monkeys.every((pid) => !state.players[pid].alive);
+    const splashed = monkeys.filter((pid) => !state.players[pid].alive).length;
 
-    let ranking;
-    if (gorillaWins) {
-      ranking = [state.gorillaId, ...monkeys.slice().sort(byElimDesc)];
-    } else {
-      const aliveM = monkeys.filter((pid) => state.players[pid].alive)
-        .sort((a, b) => state.players[b].shoves - state.players[a].shoves);
-      const deadM = monkeys.filter((pid) => !state.players[pid].alive).sort(byElimDesc);
-      ranking = [...aliveM, ...deadM, state.gorillaId];
+    // Tiered like ghost_maze_escape: a full sweep tops the podium, a
+    // partially successful gorilla (still afloat, >=1 splash) ranks above
+    // the monkeys it splashed but below the survivors, and a shut-out or
+    // dunked gorilla ranks last. Equal scores tie into one payout group.
+    const scores = {};
+    scores[state.gorillaId] = gorillaWins
+      ? 3000000
+      : (gorilla.alive && splashed > 0 ? 1500000 : -1);
+    for (const pid of monkeys) {
+      const p = state.players[pid];
+      scores[pid] = p.alive ? 2000000 + p.shoves : p.elimTick;
     }
+    const ranking = rankByScoreGrouped(scores);
     const coins = coinsForRanking(ranking, { chaos });
     const stats = {};
     for (const pid of state.order) {
@@ -292,8 +304,8 @@ export function register() {
       de: 'Ein riesiger Gorilla gegen drei flinke Affen auf einem wackligen Floss.',
     },
     howTo: {
-      en: 'Gorilla: shove (A) all three monkeys into the water. Monkeys: dodge, brace (B), and survive until time runs out!',
-      de: 'Gorilla: schubse (A) alle drei Affen ins Wasser. Affen: ausweichen, abstuetzen (B) und bis zum Ende ueberleben!',
+      en: 'Gorilla: shove (A) all three monkeys into the water. Monkeys: dodge, brace (B), and survive until time runs out - the raft shrinks, so keep moving!',
+      de: 'Gorilla: schubse (A) alle drei Affen ins Wasser. Affen: ausweichen, abstuetzen (B) und bis zum Ende ueberleben - das Floss schrumpft, also bleib in Bewegung!',
     },
     category: '1v3',
     tags: ['fight'],

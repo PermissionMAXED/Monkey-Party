@@ -17,6 +17,7 @@ import assert from 'node:assert/strict';
 import WebSocket from 'ws';
 
 import { MSG, SRV, encode, decode, PROTOCOL_VERSION } from '#shared/protocol.js';
+import { characters } from '#shared/registries.js';
 import { createMatchSim } from '#shared/sim/match.js';
 import { legalActionsFromState } from '#shared/sim/actions.js';
 import { decideBoardAction } from '#shared/ai/boardBot.js';
@@ -132,7 +133,8 @@ class TestClient {
           this.checkReplica();
         }
         break;
-      case SRV.STATE_SYNC:
+      case SRV.STATE_SYNC: {
+        const snap = payload.snapshot;
         if (this.matchStart) {
           this.replica = createMatchSim({
             seed: this.matchStart.seed,
@@ -140,11 +142,25 @@ class TestClient {
             boardId: this.matchStart.boardId,
             players: this.matchStart.players,
           });
-          this.replica.restore(payload.snapshot);
-          this.lastAnswered = -1;
-          this.checkReplica();
+        } else if (snap?.state) {
+          // Reload path: no match_start in memory - rebuild the sim purely
+          // from the snapshot (exactly what src/app/session.js does after a
+          // page reload resumes straight into a running match).
+          const st = snap.state;
+          this.replica = createMatchSim({
+            seed: st.seed,
+            rules: st.rules,
+            boardId: st.boardId,
+            players: (st.turnOrder ?? []).map((pid) => ({ ...st.players[pid] })),
+          });
+        } else {
+          break;
         }
+        this.replica.restore(snap);
+        this.lastAnswered = -1;
+        this.checkReplica();
         break;
+      }
       case SRV.MG_START:
         this.startMgInputs();
         break;
@@ -188,12 +204,14 @@ class TestClient {
 
   startMgInputs() {
     this.stopMgInputs();
+    // 20Hz mirrors the real client (src/minigames/viewHarness.js
+    // NET_SEND_HZ): a legit input stream must NEVER trip the rate limiter.
     this.mgInputTimer = setInterval(() => {
       this.send(MSG.MG_INPUT, {
         seq: ++this.mgSeq,
         frame: { move: { x: 1, y: 0 }, a: true, b: false },
       });
-    }, 150);
+    }, 50);
   }
 
   stopMgInputs() {
@@ -309,6 +327,17 @@ test('full online match: 2 humans + 2 bots, identical replication, resume via to
     assert.equal(ms1.boardId, 'jungle_ruins');
     assert.equal(ms1.players.length, 4);
 
+    // Bots must start with a real (registered, non-null) character so they
+    // get perks and a distinct look.
+    const botPlayers = ms1.players.filter((p) => p.isBot);
+    assert.equal(botPlayers.length, 2);
+    for (const bot of botPlayers) {
+      assert.ok(typeof bot.characterId === 'string' && bot.characterId.length > 0,
+        `bot ${bot.id} got a character (${bot.characterId})`);
+    }
+    assert.notEqual(botPlayers[0].characterId, botPlayers[1].characterId,
+      'bots got DISTINCT characters');
+
     // Chat relay: 200-char cap + 1/s rate limit.
     const chatP = c2.next(SRV.CHAT, 10000);
     c1.send(MSG.CHAT, { text: 'B'.repeat(300) });
@@ -363,6 +392,13 @@ test('full online match: 2 humans + 2 bots, identical replication, resume via to
     assert.ok(c1.count(SRV.MG_STATE) > 20, `mg_state streamed (got ${c1.count(SRV.MG_STATE)})`);
     assert.ok(c2.count(SRV.MG_STATE) > 0, 'resumed client also gets mg_state');
 
+    // TWO humans streaming 20Hz minigame input (+ pings/actions) must never
+    // trip the connection rate limiter - neither a warning nor a kick.
+    assert.equal(server.stats.rateKicked, 0, 'no connection was rate-kicked');
+    const rateErrors = [...c1.msgs, ...c2.msgs]
+      .filter((m) => m.t === SRV.ERROR && m.payload?.code === 'rate');
+    assert.deepEqual(rateErrors, [], 'no rate warnings/kicks were sent to the clients');
+
     // No replica ever failed to apply a broadcast action.
     assert.deepEqual(c1.replicaErrors, []);
     assert.deepEqual(c2.replicaErrors, []);
@@ -383,6 +419,148 @@ test('full online match: 2 humans + 2 bots, identical replication, resume via to
   } finally {
     c1.dispose();
     c2.dispose();
+    await server.close();
+  }
+});
+
+/* ------------------------------------------------------------------ */
+/* Page reload mid-match: resume rebuilds the replica from the snapshot */
+/* ------------------------------------------------------------------ */
+
+test('reload mid-match: a fresh client (no match_start in memory) rebuilds its replica from state_sync alone', { timeout: 120000 }, async () => {
+  const server = await createGameServer({ port: 0, silent: true, config: FAST_CONFIG });
+  const url = `ws://127.0.0.1:${server.port}`;
+  const c1 = new TestClient(url, 'Host', 51);
+  const c2 = new TestClient(url, 'Reloader', 52);
+  let c2b = null;
+
+  try {
+    await c1.connect();
+    await c2.connect();
+
+    // Short match without a minigame so the test stays fast.
+    c1.send(MSG.CREATE_LOBBY, {
+      isPublic: false,
+      rules: { rounds: 2, minigameEvery: 3, fastMode: true, botsFill: false, maxSeats: 4, items: 'off' },
+      boardId: 'jungle_ruins',
+    });
+    const lobby = (await c1.next(SRV.LOBBY_STATE)).lobby;
+    c2.send(MSG.JOIN_LOBBY, { code: lobby.code });
+    await c2.once(SRV.LOBBY_STATE);
+    c1.send(MSG.ADD_BOT, { difficulty: 'normal' });
+    await waitUntil(() => c1.lastLobby?.seats.length === 3, 10000, '3 seats');
+    c1.send(MSG.READY, { ready: true });
+    c2.send(MSG.READY, { ready: true });
+    await waitUntil(
+      () => c1.lastLobby?.seats.filter((s) => !s.isBot).every((s) => s.ready),
+      10000,
+      'humans ready',
+    );
+    c1.send(MSG.START_GAME, {});
+    await c1.once(SRV.MATCH_START, 15000);
+    await c2.once(SRV.MATCH_START, 15000);
+
+    // Let the match progress, then "reload" c2: the socket dies and a FRESH
+    // client - with the resume token but WITHOUT the match_start payload -
+    // takes over (exactly what a browser page reload does).
+    await waitUntil(() => c2.appliedCount >= 4, 60000, 'match under way');
+    c2.closeSocket();
+    await c1.next(SRV.PLAYER_CONN, 15000, '(reload disconnect)');
+
+    c2b = new TestClient(url, 'Reloader-2', 53);
+    c2b.token = c2.token;
+    const syncP = c2b.next(SRV.STATE_SYNC, 15000);
+    await c2b.resume();
+    const sync = await syncP;
+    assert.equal(c2b.matchStart, null, 'reloaded client never saw match_start');
+    assert.ok(sync.snapshot?.state?.seed !== undefined, 'snapshot carries the seed');
+    assert.ok(sync.snapshot?.state?.boardId, 'snapshot carries the boardId');
+    assert.ok(c2b.replica, 'replica was rebuilt purely from the snapshot');
+
+    // The rebuilt replica must stay in perfect lockstep to game_over.
+    await waitUntil(() => c1.gameOver && c2b.gameOver, 90000, 'match reaches game_over', 100);
+    assert.deepEqual(c2b.replicaErrors, [], 'rebuilt replica applied every action cleanly');
+    assert.deepEqual(
+      c2b.replica.getEventLog(),
+      c1.replica.getEventLog(),
+      'rebuilt replica produced the identical full event log',
+    );
+  } finally {
+    c1.dispose();
+    c2.dispose();
+    c2b?.dispose();
+    await server.close();
+  }
+});
+
+/* ------------------------------------------------------------------ */
+/* Grace expiry mid-match: the post-match lobby must stay usable       */
+/* ------------------------------------------------------------------ */
+
+test('host grace-expires mid-match: post-match lobby prunes the zombie seat and hands host to a live player', { timeout: 120000 }, async () => {
+  const server = await createGameServer({
+    port: 0,
+    silent: true,
+    config: { ...FAST_CONFIG, resumeGraceMs: 250, rematchKeepMs: 250 },
+  });
+  const url = `ws://127.0.0.1:${server.port}`;
+  const host = new TestClient(url, 'Ghost-Host', 61);
+  const stayer = new TestClient(url, 'Stayer', 62);
+
+  try {
+    await host.connect();
+    await stayer.connect();
+
+    host.send(MSG.CREATE_LOBBY, {
+      isPublic: false,
+      rules: { rounds: 2, minigameEvery: 3, fastMode: true, botsFill: false, maxSeats: 4, items: 'off' },
+      boardId: 'jungle_ruins',
+    });
+    const lobby = (await host.next(SRV.LOBBY_STATE)).lobby;
+    stayer.send(MSG.JOIN_LOBBY, { code: lobby.code });
+    await stayer.once(SRV.LOBBY_STATE);
+    host.send(MSG.READY, { ready: true });
+    stayer.send(MSG.READY, { ready: true });
+    await waitUntil(
+      () => host.lastLobby?.seats.filter((s) => !s.isBot).every((s) => s.ready),
+      10000,
+      'humans ready',
+    );
+    host.send(MSG.START_GAME, {});
+    await host.once(SRV.MATCH_START, 15000);
+    await stayer.once(SRV.MATCH_START, 15000);
+
+    // Host vanishes mid-match and never comes back; the 250ms grace expires
+    // long before game_over, so its player record is forgotten server-side.
+    await waitUntil(() => stayer.appliedCount >= 4, 60000, 'match under way');
+    const hostPid = host.pid;
+    host.closeSocket();
+    await stayer.next(SRV.PLAYER_CONN, 15000, '(host gone)');
+
+    // The bot host finishes the match for the empty seat.
+    await waitUntil(() => stayer.gameOver, 90000, 'match reaches game_over', 100);
+
+    // After the rematch window the room disposes and reopens the lobby:
+    // the zombie seat must be gone and the survivor must be the new host.
+    await waitUntil(
+      () => stayer.lastLobby && stayer.lastLobby.started === false
+        && !stayer.lastLobby.seats.some((s) => s.pid === hostPid),
+      15000,
+      'post-match lobby pruned the zombie seat',
+    );
+    assert.equal(stayer.lastLobby.hostId, stayer.pid, 'host was handed to the surviving player');
+
+    // The new host actually holds host powers (add_bot succeeds).
+    const before = stayer.lastLobby.seats.length;
+    stayer.send(MSG.ADD_BOT, { difficulty: 'easy' });
+    await waitUntil(
+      () => (stayer.lastLobby?.seats.length ?? 0) === before + 1,
+      10000,
+      'new host can add a bot',
+    );
+  } finally {
+    host.dispose();
+    stayer.dispose();
     await server.close();
   }
 });
@@ -430,6 +608,53 @@ test('quick_match pairs two humans into one public lobby and auto-starts', { tim
   } finally {
     a.dispose();
     b.dispose();
+    c.dispose();
+    await server.close();
+  }
+});
+
+/* ------------------------------------------------------------------ */
+/* select_character validation                                          */
+/* ------------------------------------------------------------------ */
+
+test('select_character rejects unknown characters and whitelists cosmetic slots', { timeout: 30000 }, async () => {
+  const server = await createGameServer({ port: 0, silent: true, config: FAST_CONFIG });
+  const url = `ws://127.0.0.1:${server.port}`;
+  const c = new TestClient(url, 'Picky', 71);
+
+  try {
+    await c.connect();
+    c.send(MSG.CREATE_LOBBY, { isPublic: false, rules: {}, boardId: 'jungle_ruins' });
+    await c.next(SRV.LOBBY_STATE);
+
+    // Unknown character: typed error, seat unchanged.
+    const errP = c.next(SRV.ERROR, 10000);
+    c.send(MSG.SELECT_CHARACTER, { characterId: 'totally_fake_monkey', cosmetics: {} });
+    const err = await errP;
+    assert.equal(err.code, 'character');
+    assert.equal(c.lastLobby.seats[0].characterId, null, 'fake character was not applied');
+
+    // Valid character + hostile cosmetics: junk keys dropped, values capped.
+    const validId = characters.ids()[0];
+    assert.ok(validId, 'characters registry is populated');
+    const lobbyP = c.next(SRV.LOBBY_STATE, 10000);
+    c.send(MSG.SELECT_CHARACTER, {
+      characterId: validId,
+      cosmetics: {
+        hat: 'straw_hat',
+        skin: 'x'.repeat(500), // over-long value: capped
+        __proto__injection: 'evil', // unknown slot: dropped
+        nested: { deep: true }, // non-string value: dropped
+      },
+    });
+    const updated = (await lobbyP).lobby;
+    const seat = updated.seats[0];
+    assert.equal(seat.characterId, validId);
+    assert.equal(seat.cosmetics.hat, 'straw_hat');
+    assert.ok(seat.cosmetics.skin.length <= 32, 'cosmetic value length capped');
+    assert.ok(!('__proto__injection' in seat.cosmetics), 'unknown cosmetic keys dropped');
+    assert.ok(!('nested' in seat.cosmetics), 'non-string cosmetic values dropped');
+  } finally {
     c.dispose();
     await server.close();
   }

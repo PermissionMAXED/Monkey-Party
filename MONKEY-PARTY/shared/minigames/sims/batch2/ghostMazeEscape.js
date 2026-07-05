@@ -16,7 +16,7 @@
 import { createRng } from '../../../rng.js';
 import { clampFrame, emptyFrame } from '../../inputs.js';
 import {
-  defineMinigame, rankByScore, coinsForRanking, MINIGAME_HZ, COUNTDOWN_TICKS,
+  defineMinigame, rankByScoreGrouped, coinsForRanking, MINIGAME_HZ, COUNTDOWN_TICKS,
 } from '../../framework.js';
 import { minigames } from '../../../registries.js';
 
@@ -123,11 +123,14 @@ function createSim({ seed, players, params = {}, rules = {} } = {}) {
     const w = cfg.mazeW;
     const h = cfg.mazeH;
     const walls = carveMaze(w, h, rng);
+    // Escapees start at the midpoints of the left/right/near edges: all
+    // three are the same straight-line distance from the exit (center of
+    // the far edge) AND from the ghost, so no seat gets a shorter run.
     const starts = [
       [Math.floor(w / 2), Math.floor(h / 2)], // Ghost in the middle.
-      [0, 0],
-      [w - 1, 0],
-      [0, h - 1],
+      [0, Math.floor(h / 2)],
+      [w - 1, Math.floor(h / 2)],
+      [Math.floor(w / 2), 0],
     ];
     const ps = {};
     pids.forEach((pid, i) => {
@@ -157,7 +160,7 @@ function createSim({ seed, players, params = {}, rules = {} } = {}) {
       mazeW: w,
       mazeH: h,
       walls,
-      exit: { x: w - 1, y: h - 1 },
+      exit: { x: Math.floor(w / 2), y: h - 1 }, // Center of the far edge.
       players: ps,
       order: pids.slice(),
       rngState: rng.state(),
@@ -255,7 +258,9 @@ function createSim({ seed, players, params = {}, rules = {} } = {}) {
         scores[pid] = 1000000 - (d < 0 ? 999 : d) * 100;
       }
     }
-    const ranking = rankByScore(scores);
+    // Grouped: co-escapees on the same tick (and equal-distance survivors)
+    // share a payout place instead of resolving by seat order.
+    const ranking = rankByScoreGrouped(scores);
     const coins = coinsForRanking(ranking, { chaos });
     const stats = {};
     for (const pid of state.order) {

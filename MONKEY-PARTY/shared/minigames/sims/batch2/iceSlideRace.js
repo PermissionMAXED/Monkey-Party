@@ -13,7 +13,7 @@
 import { createRng } from '../../../rng.js';
 import { clampFrame, emptyFrame } from '../../inputs.js';
 import {
-  defineMinigame, rankByScore, coinsForRanking, MINIGAME_HZ, COUNTDOWN_TICKS,
+  defineMinigame, rankByScoreGrouped, coinsForRanking, MINIGAME_HZ, COUNTDOWN_TICKS,
 } from '../../framework.js';
 import { minigames } from '../../../registries.js';
 
@@ -58,7 +58,9 @@ function createSim({ seed, players, params = {}, rules = {} } = {}) {
     pids.forEach((pid, i) => {
       ps[pid] = {
         slot: i,
-        x: ((i + 0.5) / pids.length - 0.5) * cfg.trackHalfWidth * 1.6,
+        // Everyone launches from the center line: with a randomly placed
+        // first gate, spread-out lanes would hand some seats a head start.
+        x: 0,
         z: 0,
         vx: 0,
         vz: 0,
@@ -164,7 +166,7 @@ function createSim({ seed, players, params = {}, rules = {} } = {}) {
       const p = state.players[pid];
       scores[pid] = p.finished ? 1000000 - p.finishTick : p.nextGate * 1000 + p.z;
     }
-    const ranking = rankByScore(scores);
+    const ranking = rankByScoreGrouped(scores);
     const coins = coinsForRanking(ranking, { chaos });
     const stats = {};
     for (const pid of state.order) {

@@ -76,6 +76,7 @@ export function createMatchScreen(ctx) {
   let hud = null;
   let offFrame = null;
   let unsubs = [];
+  let netOffs = [];
   let emoteWheel = null;
   let activePrompt = null;
   let requestOffs = [];
@@ -349,8 +350,28 @@ export function createMatchScreen(ctx) {
     }
   }
 
+  /** Tear down whatever part of the minigame flow is currently live. */
+  function disposeMgFlow() {
+    const flow = mgFlow;
+    if (!flow) return;
+    mgFlow = null;
+    try {
+      flow.intro?.close?.();
+      flow.harness?.dispose?.();
+      flow.results?.close?.();
+    } catch { /* teardown is best-effort */ }
+  }
+
   async function startMinigame(evt) {
-    if (disposed || mgFlow) return;
+    if (disposed) return;
+    if (mgFlow) {
+      // Duplicate mg_start for the SAME minigame (the server re-sends it on
+      // resume): keep the running flow. A DIFFERENT minigame means the old
+      // flow is a zombie left over from a reconnect gap - replace it.
+      if (mgFlow.minigameId === evt?.minigameId) return;
+      console.warn('[match] replacing a stale minigame flow with', evt?.minigameId);
+      disposeMgFlow();
+    }
     const minigameId = evt?.minigameId;
     const def = ctx.registries.minigames.get(minigameId);
     minigamesPlayed += 1;
@@ -365,7 +386,7 @@ export function createMatchScreen(ctx) {
       return;
     }
 
-    const flow = {};
+    const flow = { minigameId };
     mgFlow = flow;
 
     flow.intro = showMinigameIntro({
@@ -548,6 +569,40 @@ export function createMatchScreen(ctx) {
     sub('mg_start', (evt) => {
       startMinigame(evt);
     });
+    sub('state_sync', () => {
+      // A state_sync means we (re)joined the authoritative timeline; the
+      // replica may have skipped events (missed mg_end, phase changes).
+      if (disposed) return;
+      const state = simState();
+      hud?.update(state);
+      if (!state) return;
+      if (mgFlow && !mgFlow.results) {
+        const stillLive = state.phase === 'minigame'
+          && state.minigame?.pendingId === mgFlow.minigameId
+          && !state.minigame?.results;
+        if (!stillLive) {
+          // The reconnect straddled the minigame's end: treat the gap as an
+          // implicit mg_end - drop the zombie overlay, resume the board.
+          console.warn('[match] minigame flow is stale after state_sync - resuming the board');
+          disposeMgFlow();
+          resumeBoard();
+        }
+      }
+      if (!mgFlow && state.phase === 'minigame' && state.minigame?.pendingId && !state.minigame.results
+        && session()?.mode === 'online') {
+        // Resumed INTO a live minigame; the server re-sends mg_start too,
+        // but don't depend on message ordering.
+        startMinigame({
+          minigameId: state.minigame.pendingId,
+          teams: state.minigame.teams,
+          params: state.minigame.params,
+        });
+      }
+      if (state.phase === 'game_over' && !gameOverEvt) {
+        gameOverEvt = { ranking: state.turnOrder.slice(), winner: state.turnOrder[0] };
+        maybeShowVictory();
+      }
+    });
     sub('bonus', (evt) => {
       bonuses.push(evt);
     });
@@ -556,8 +611,30 @@ export function createMatchScreen(ctx) {
       maybeShowVictory();
     });
     sub('error', (msg) => {
-      toast(msg?.message ?? 'Server error', 'error');
+      // Server errors arrive as {code, msg} (see shared/protocol.js).
+      const text = msg?.msg ?? msg?.message ?? 'Server error';
+      toast(msg?.code ? `${text} (${msg.code})` : text, 'error');
     });
+
+    /* Connection feedback (online sessions only). */
+    const net = s.mode === 'online' ? ctx.getNetClient?.() : null;
+    if (net?.on) {
+      let reconnectFailed = false;
+      const nsub = (evt, cb) => {
+        const off = net.on(evt, cb);
+        if (typeof off === 'function') netOffs.push(off);
+      };
+      nsub('reconnecting', (info) => {
+        if (!disposed && (info?.attempt ?? 1) === 1) toast('Connection lost – reconnecting…', 'info');
+      });
+      nsub('reconnect_failed', () => {
+        reconnectFailed = true;
+        if (!disposed) toast('Could not reconnect to the server. Check your connection and reload the page.', 'error');
+      });
+      nsub('close', () => {
+        if (!disposed && !reconnectFailed) toast('Connection to the server was closed.', 'error');
+      });
+    }
 
     /* Board view. */
     const boardMod = await tryImport(BOARDPLAY_PATH);
@@ -584,12 +661,16 @@ export function createMatchScreen(ctx) {
     /* Emote wheel (hold Tab). */
     emoteWheel = attachEmoteWheel(ctx, s, root);
 
-    /* If we mounted into an already-pending minigame (e.g. hot reload). */
+    /* If we mounted into an already-pending minigame (e.g. hot reload, or
+     * a page reload that resumed straight into a live online minigame). */
     const state = simState();
     if (state?.phase === 'minigame' && state.minigame?.pendingId && !state.minigame.results && !mgFlow) {
-      // The session runner already owns the real sim; run the fallback so
-      // the match cannot hang if the runner never started.
-      if (session()?.mode === 'offline' && !capturedMgSim) {
+      const mode = session()?.mode;
+      // Offline: the session runner already owns the real sim; run the
+      // fallback so the match cannot hang if the runner never started.
+      // Online: spectate/rejoin the server-driven minigame via the net
+      // driver (mg_state snapshots keep the display sim honest).
+      if ((mode === 'offline' && !capturedMgSim) || mode === 'online') {
         startMinigame({
           minigameId: state.minigame.pendingId,
           teams: state.minigame.teams,
@@ -641,6 +722,12 @@ export function createMatchScreen(ctx) {
         } catch { /* gone */ }
       }
       unsubs = [];
+      for (const off of netOffs) {
+        try {
+          off();
+        } catch { /* gone */ }
+      }
+      netOffs = [];
       offFrame?.();
       offFrame = null;
       boardView?.dispose();

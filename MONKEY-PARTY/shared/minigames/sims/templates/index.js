@@ -32,7 +32,10 @@ export const TEMPLATE_FACTORIES = {
 export const TEMPLATE_VARIANT_IDS = VARIANTS.map((v) => v.id);
 
 /**
- * Register every template variant.
+ * Register every template variant. Each def is stamped with its
+ * `family` (the templateId) so selection can treat re-skins of the same
+ * template as one family for anti-repeat and weighting.
+ *
  * @returns {import('../../../types.js').MinigameDef[]}
  */
 export default function registerTemplates() {
@@ -41,6 +44,8 @@ export default function registerTemplates() {
     if (typeof factory !== 'function') {
       throw new Error(`[minigames] unknown template "${variant.templateId}" for variant "${variant.id}"`);
     }
-    return factory(variant);
+    const def = factory(variant);
+    if (def && def.family === undefined) def.family = variant.templateId;
+    return def;
   });
 }

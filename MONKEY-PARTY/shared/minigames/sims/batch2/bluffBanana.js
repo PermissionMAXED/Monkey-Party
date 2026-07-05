@@ -16,7 +16,7 @@
 import { createRng } from '../../../rng.js';
 import { clampFrame, emptyFrame } from '../../inputs.js';
 import {
-  defineMinigame, rankByScore, coinsForRanking, MINIGAME_HZ, COUNTDOWN_TICKS,
+  defineMinigame, rankByScoreGrouped, coinsForRanking, MINIGAME_HZ, COUNTDOWN_TICKS,
 } from '../../framework.js';
 import { minigames } from '../../../registries.js';
 
@@ -175,7 +175,7 @@ function createSim({ seed, players, params = {}, rules = {} } = {}) {
       const p = state.players[pid];
       scores[pid] = p.score * 100 + p.goldenHits;
     }
-    const ranking = rankByScore(scores);
+    const ranking = rankByScoreGrouped(scores);
     const coins = coinsForRanking(ranking, { chaos });
     const stats = {};
     for (const pid of state.order) {

@@ -7,7 +7,15 @@
  * registry down to the games that fit the current table (player count,
  * rules.minigameCategories, competitiveSafe under competitive rules, and
  * the category pool implied by the players' lastFieldColor team split),
- * applies anti-repeat against the recent history, and weighted-picks one.
+ * applies FAMILY-aware anti-repeat against the recent history (template
+ * re-skins share a family, so three dodge games cannot play back-to-back),
+ * down-weights template variants by family size so each family competes
+ * as roughly one game against unique customs, and weighted-picks one.
+ *
+ * `history` is the list of recently played minigame ids, most-recent-last.
+ * An optional category preference (opts.preferCategory / opts.category, or
+ * the shorthand opts.boss === true for 'boss') narrows the pool to that
+ * category when possible - used by the match sim for boss rounds.
  *
  * Also compatible with the match sim's caller shape
  * ({ state, rng, minigames, rules } - see shared/sim/match.js), and the
@@ -18,8 +26,20 @@ import { createRng } from '../rng.js';
 import { minigames as defaultRegistry } from '../registries.js';
 import { makeTeams } from './framework.js';
 
-/** How many recent minigame ids are hard-excluded (unless pool exhausts). */
+/** How many recent minigame ids/families are hard-excluded (unless pool exhausts). */
 export const ANTI_REPEAT_WINDOW = 8;
+
+/**
+ * Family of a def: the template it was stamped from (def.family, set by
+ * the template registrar), or its own id for unique custom games.
+ *
+ * @param {{id?: string, family?: string}|null} def
+ * @returns {string|undefined}
+ */
+export function familyOf(def) {
+  if (!def) return undefined;
+  return typeof def.family === 'string' && def.family.length > 0 ? def.family : def.id;
+}
 
 const clone = (v) => (v === undefined ? v : JSON.parse(JSON.stringify(v)));
 
@@ -95,7 +115,12 @@ function buildTeams(def, roster, split, rng) {
  *   rng?: ReturnType<typeof createRng>,
  *   state?: Object,
  *   minigames?: typeof defaultRegistry,
- * }} opts
+ *   preferCategory?: string,
+ *   category?: string,
+ *   boss?: boolean,
+ * }} opts `history` = recently played ids, most-recent-last. The optional
+ *   category preference (preferCategory/category, or boss: true) narrows
+ *   the pool to that category when any eligible game matches it.
  * @returns {{minigameId: string, id: string, teams: string[][]|null, params: Object}|null}
  */
 export function selectMinigame(opts = {}) {
@@ -103,6 +128,11 @@ export function selectMinigame(opts = {}) {
   const rules = opts.rules ?? opts.state?.rules ?? {};
   const rng = opts.rng ?? createRng(0xb4a4a);
   const history = Array.isArray(opts.history) ? opts.history : [];
+  const preferred = typeof opts.preferCategory === 'string' && opts.preferCategory.length > 0
+    ? opts.preferCategory
+    : (typeof opts.category === 'string' && opts.category.length > 0
+      ? opts.category
+      : (opts.boss === true ? 'boss' : null));
 
   const roster = resolveRoster(opts);
   const count = roster.length;
@@ -123,22 +153,43 @@ export function selectMinigame(opts = {}) {
     return true;
   }
 
-  // Preferred pool from the color split, relaxed to any category if empty.
-  let pool = registry.all().filter((def) => eligible(def, split.pool));
+  // Explicit category preference (e.g. a boss round) narrows the pool
+  // first; otherwise the color split drives it, relaxed to any category.
+  let pool = [];
+  if (preferred) pool = registry.all().filter((def) => eligible(def, [preferred]));
+  if (pool.length === 0) pool = registry.all().filter((def) => eligible(def, split.pool));
   if (pool.length === 0) pool = registry.all().filter((def) => eligible(def, null));
   if (pool.length === 0) return null;
 
-  // Anti-repeat: hard-exclude the last ANTI_REPEAT_WINDOW ids unless that
-  // would exhaust the pool.
-  const recent = new Set(history.slice(-ANTI_REPEAT_WINDOW));
-  const fresh = pool.filter((def) => !recent.has(def.id));
-  if (fresh.length > 0) pool = fresh;
+  // Anti-repeat: hard-exclude the last ANTI_REPEAT_WINDOW ids AND their
+  // families (template siblings), relaxing to id-only exclusion and then
+  // to the full pool rather than exhausting it.
+  const recentIds = new Set(history.slice(-ANTI_REPEAT_WINDOW));
+  const recentFamilies = new Set(
+    [...recentIds].map((id) => familyOf(registry.get(id)) ?? id),
+  );
+  const freshFamilies = pool.filter(
+    (def) => !recentIds.has(def.id) && !recentFamilies.has(familyOf(def)),
+  );
+  if (freshFamilies.length > 0) {
+    pool = freshFamilies;
+  } else {
+    const freshIds = pool.filter((def) => !recentIds.has(def.id));
+    if (freshIds.length > 0) pool = freshIds;
+  }
 
-  // Weighted pick: chaos rules boost chaos-tagged games; anything already
-  // seen in the (full) history is softly de-weighted.
+  // Weighted pick: template variants split one share per family present in
+  // the pool (so "one dodge game" competes fairly against a unique custom
+  // game), chaos rules boost chaos-tagged games, and anything already seen
+  // in the (full) history is softly de-weighted.
+  const familyCounts = new Map();
+  for (const def of pool) {
+    const fam = familyOf(def);
+    familyCounts.set(fam, (familyCounts.get(fam) ?? 0) + 1);
+  }
   const seen = new Set(history);
   const weights = pool.map((def) => {
-    let w = 1;
+    let w = 1 / (familyCounts.get(familyOf(def)) ?? 1);
     if (rules.chaosMode && Array.isArray(def.tags) && def.tags.includes('chaos')) w *= 2;
     if (seen.has(def.id)) w *= 0.5;
     return w;

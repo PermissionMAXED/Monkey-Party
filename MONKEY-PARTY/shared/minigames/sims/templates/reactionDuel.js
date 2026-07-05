@@ -17,7 +17,7 @@
 import { createRng } from '../../../rng.js';
 import { clampFrame, emptyFrame } from '../../inputs.js';
 import {
-  defineMinigame, rankByScore, coinsForRanking, MINIGAME_HZ, COUNTDOWN_TICKS,
+  defineMinigame, rankByScoreGrouped, coinsForRanking, MINIGAME_HZ, COUNTDOWN_TICKS,
 } from '../../framework.js';
 import { minigames } from '../../../registries.js';
 
@@ -130,17 +130,26 @@ function createTemplateSim({ id, seed, players, params = {}, rules = {} } = {}) 
           state.phaseTick = t;
         }
       } else if (state.phase === 'window') {
+        // Same-tick presses share one bracket (equal points, shared round
+        // win) instead of resolving by seat order.
+        const pressers = [];
         for (const pid of state.order) {
           const p = state.players[pid];
-          if (edges[pid] && !p.locked && p.pressedTick < 0) {
+          if (edges[pid] && !p.locked && p.pressedTick < 0) pressers.push(pid);
+        }
+        if (pressers.length > 0) {
+          const bracketStart = state.pressCount;
+          const points = PRESS_POINTS[Math.min(bracketStart, PRESS_POINTS.length - 1)];
+          for (const pid of pressers) {
+            const p = state.players[pid];
             p.pressedTick = t;
             const react = t - state.signalAt;
             p.reactSum += react;
             p.bestReact = p.bestReact < 0 ? react : Math.min(p.bestReact, react);
-            p.score += PRESS_POINTS[Math.min(state.pressCount, PRESS_POINTS.length - 1)];
-            if (state.pressCount === 0) p.wins += 1;
-            state.pressCount += 1;
+            p.score += points;
+            if (bracketStart === 0) p.wins += 1;
           }
+          state.pressCount += pressers.length;
         }
         const allDone = state.order.every((pid) => {
           const p = state.players[pid];
@@ -170,9 +179,12 @@ function createTemplateSim({ id, seed, players, params = {}, rules = {} } = {}) 
     const scores = {};
     for (const pid of state.order) {
       const p = state.players[pid];
-      scores[pid] = p.score * 10000 - p.reactSum;
+      // Tie-break equal point totals on the single best reaction, not the
+      // accumulated total (which punished players for pressing more often).
+      const tieBreak = p.bestReact >= 0 ? p.bestReact : 5000;
+      scores[pid] = p.score * 10000 - tieBreak;
     }
-    const ranking = rankByScore(scores);
+    const ranking = rankByScoreGrouped(scores);
     const coins = coinsForRanking(ranking, { chaos });
     const stats = {};
     for (const pid of state.order) {
@@ -190,7 +202,9 @@ function createTemplateSim({ id, seed, players, params = {}, rules = {} } = {}) 
   return { init, step, getState, applyState, isFinished, getResults };
 }
 
-const REACT = { easy: 11, normal: 7, hard: 4, wild: 2 };
+// Wild is floored at 5 ticks (~167ms) - superhuman 67ms reactions made it
+// literally unbeatable. A frame-perfect human (~150ms) can now steal rounds.
+const REACT = { easy: 11, normal: 7, hard: 6, wild: 5 };
 const FAKE_FALL_PCT = { easy: 50, normal: 28, hard: 10, wild: 3 };
 
 function ihash(a, b) {

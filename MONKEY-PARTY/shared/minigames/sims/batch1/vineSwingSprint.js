@@ -170,9 +170,16 @@ function createSim({ seed, players, params = {}, rules = {} } = {}) {
 }
 
 const REACT = { easy: 14, normal: 9, hard: 6, wild: 4 };
-const MISS_CHANCE = { easy: 0.012, normal: 0.005, hard: 0.0015, wild: 0.0003 };
+/** Per-window whiff chance in per-mille (12% / 5% / 1.5% / 0.3%). */
+const WHIFF_PER_MILLE = { easy: 120, normal: 50, hard: 15, wild: 3 };
 
-function bot(publicState, playerId, difficulty, rng) {
+function ihash(a, b) {
+  let h = (Math.imul(a | 0, 374761393) + Math.imul(b | 0, 668265263)) >>> 0;
+  h = Math.imul(h ^ (h >>> 13), 1274126177) >>> 0;
+  return (h ^ (h >>> 16)) >>> 0;
+}
+
+function bot(publicState, playerId, difficulty, _rng) {
   const frame = emptyFrame();
   const s = publicState;
   const me = s?.players?.[playerId];
@@ -181,11 +188,13 @@ function bot(publicState, playerId, difficulty, rng) {
   const react = REACT[difficulty] ?? REACT.normal;
 
   if (me.mode === 'window') {
-    // Press A after the reaction delay; occasional decision noise = a miss.
+    // Decide ONCE per timing window (hashed on the tick it opened) whether
+    // this swing whiffs; re-rolling per tick meant bots ~never dropped.
+    const whiff = ihash(me.modeTick * 31 + 7, me.lane * 13 + 5) % 1000
+      < (WHIFF_PER_MILLE[difficulty] ?? WHIFF_PER_MILLE.normal);
+    if (whiff) return frame; // Let the window lapse: a real miss.
     const waited = s.tick - me.modeTick;
-    if (waited >= react && rng.next() > (MISS_CHANCE[difficulty] ?? 0.005) * waited) {
-      frame.a = true;
-    }
+    if (waited >= react) frame.a = true;
     return frame;
   }
 

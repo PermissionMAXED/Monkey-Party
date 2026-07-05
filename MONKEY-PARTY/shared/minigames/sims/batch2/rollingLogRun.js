@@ -73,6 +73,10 @@ function createSim({ seed, players, params = {}, rules = {} } = {}) {
       logHalfLength: cfg.logHalfLength,
       logRadius: cfg.logRadius,
       fallAngle: cfg.fallAngle,
+      // Public sim constants: bots read these instead of hardcoding, so
+      // param overrides (variant tuning) do not break bot balance/jumps.
+      runPower: cfg.runPower,
+      branchTelegraphTicks: cfg.branchTelegraphTicks,
       spin: cfg.spinStart,
       nextBranchTick: COUNTDOWN_TICKS + cfg.branchEveryStart,
       branches: [], // { id, x0, x1, hitTick }
@@ -212,9 +216,11 @@ function bot(publicState, playerId, difficulty, rng) {
   const react = REACT[difficulty] ?? REACT.normal;
   const noise = NOISE[difficulty] ?? NOISE.normal;
   const freezePct = FREEZE_PCT[difficulty] ?? FREEZE_PCT.normal;
+  const runPower = s.runPower ?? 2.6;
+  const telegraph = s.branchTelegraphTicks ?? 42;
 
   // Hold against the roll, correcting the current offset.
-  const hold = (s.spin ?? 1) / 2.6 + me.off * 3;
+  const hold = (s.spin ?? 1) / runPower + me.off * 3;
   frame.move.y = Math.max(-1, Math.min(1, hold + (rng.next() - 0.5) * noise));
   // Drift gently back toward the middle of the log.
   frame.move.x = Math.max(-1, Math.min(1, -me.x * 0.25 + (rng.next() - 0.5) * noise));
@@ -223,7 +229,7 @@ function bot(publicState, playerId, difficulty, rng) {
   for (const branch of s.branches ?? []) {
     if (me.x < branch.x0 - 0.5 || me.x > branch.x1 + 0.5) continue;
     const untilHit = branch.hitTick - s.tick;
-    const telegraphAge = s.tick - (branch.hitTick - 42);
+    const telegraphAge = s.tick - (branch.hitTick - telegraph);
     if (telegraphAge < react) continue; // Have not noticed it yet.
     if (ihash(branch.id * 31 + 7, me.slot) % 100 < freezePct) continue; // Panic freeze.
     const lead = 7 + (ihash(branch.id, me.slot) % 4);

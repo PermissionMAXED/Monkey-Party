@@ -10,6 +10,15 @@
  */
 
 import { graph, seq, circle, alongPath, cycle, loc, makeNav, allPlayers, takeItem } from './index.js';
+import { registerEffectDef } from '../../sim/effects.js';
+
+/** Foreman overclock: everyone rolls a d8 while the effect lasts. */
+registerEffectDef({
+  id: 'dice_d8',
+  hooks: {
+    onDicePool: (pool) => ({ ...pool, sides: 8 }),
+  },
+});
 
 const g = graph();
 

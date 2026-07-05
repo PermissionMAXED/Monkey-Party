@@ -14,7 +14,7 @@
 import { createRng } from '../../../rng.js';
 import { clampFrame, emptyFrame } from '../../inputs.js';
 import {
-  defineMinigame, rankByScore, coinsForRanking, MINIGAME_HZ, COUNTDOWN_TICKS,
+  defineMinigame, rankByScoreGrouped, coinsForRanking, MINIGAME_HZ, COUNTDOWN_TICKS,
 } from '../../framework.js';
 import { minigames } from '../../../registries.js';
 
@@ -95,6 +95,11 @@ function createSim({ seed, players, params = {}, rules = {} } = {}) {
       countdownTicks: COUNTDOWN_TICKS,
       finished: false,
       arenaRadius: cfg.arenaRadius,
+      // Public sim constants: bots read these instead of hardcoding, so
+      // param overrides (variant tuning) do not break bot dodging/aiming.
+      bossRadius: cfg.bossRadius,
+      ringSpeed: cfg.ringSpeed,
+      throwRange: cfg.throwRange,
       boss: {
         maxHp: cfg.hpBase + cfg.hpPerPlayer * pids.length,
         hp: cfg.hpBase + cfg.hpPerPlayer * pids.length,
@@ -256,8 +261,13 @@ function createSim({ seed, players, params = {}, rules = {} } = {}) {
       const p = state.players[pid];
       scores[pid] = p.damage * 1000 - p.hitsTaken * 150;
     }
-    const ranking = rankByScore(scores);
+    const ranking = rankByScoreGrouped(scores);
+    // Co-op stakes: actually toppling the boss doubles every payout
+    // (chaos-style), so winning the fight matters beyond the podium order.
     const coins = coinsForRanking(ranking, { chaos });
+    if (state.boss.defeated) {
+      for (const pid of Object.keys(coins)) coins[pid] *= 2;
+    }
     const stats = {};
     for (const pid of state.order) {
       const p = state.players[pid];
@@ -291,13 +301,16 @@ function bot(publicState, playerId, difficulty, rng) {
 
   const react = REACT[difficulty] ?? REACT.normal;
   const noise = NOISE[difficulty] ?? NOISE.normal;
+  const bossRadius = s.bossRadius ?? 2.2;
+  const ringSpeed = s.ringSpeed ?? 7.5;
+  const throwRange = s.throwRange ?? 7;
 
   // Jump over incoming shockwaves (noticing them takes `react` ticks).
   const myDist = Math.hypot(me.x, me.z);
   for (const ring of s.rings ?? []) {
-    const ringAge = Math.round((ring.r - 2.2) / (7.5 / MINIGAME_HZ));
+    const ringAge = Math.round((ring.r - bossRadius) / (ringSpeed / MINIGAME_HZ));
     if (ringAge < react) continue;
-    const ticksToHit = ((myDist - ring.r) / 7.5) * MINIGAME_HZ;
+    const ticksToHit = ((myDist - ring.r) / ringSpeed) * MINIGAME_HZ;
     if (ticksToHit >= 0 && ticksToHit <= 7 + (ihash(ring.id, me.slot) % 3)) {
       frame.a = true;
       break;
@@ -308,7 +321,7 @@ function bot(publicState, playerId, difficulty, rng) {
   let tz;
   if (me.carrying) {
     // Close to throwing range, then let fly (patience depends on skill).
-    if (myDist <= 6.2) {
+    if (myDist <= throwRange - 0.8) {
       const weakOpen = s.tick < (s.boss?.weakUntil ?? -1);
       const impatient = ihash(Math.floor(s.tick / 30), me.slot * 17 + 3) % 100
         < (IMPATIENCE_PCT[difficulty] ?? IMPATIENCE_PCT.normal);

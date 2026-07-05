@@ -26,11 +26,11 @@ import { MIN_PLAYERS, MAX_SEATS } from '../constants.js';
 import { boards, items as itemsRegistry, minigames as minigamesRegistry } from '../registries.js';
 import { assertActionShape, legalActionsFromState } from './actions.js';
 import { rollDice, drawDiceDraft, resolveDraftPick } from './dice.js';
-import { nodeById, openNextIds, forwardTargets, beginMove, continueMove, performStep } from './movement.js';
+import { nodeById, openNextIds, forwardTargets, predecessorIds, beginMove, continueMove, performStep } from './movement.js';
 import { applyField, triggerPlacedTrap } from './fields.js';
-import { computeStock, executeBuy, grantItem, pickRandomItemId, itemAllowed } from './shop.js';
+import { computeStock, canBuyAny, executeBuy, grantItem, pickRandomItemId, itemAllowed } from './shop.js';
 import { runHook, addEffect as fxAddEffect, removeEffect as fxRemoveEffect, tickEffects } from './effects.js';
-import { addCoins, addBananas, addMinigameCoins, awardBonuses, evaluateWinner } from './scoring.js';
+import { addCoins, addBananas, addMinigameCoins, awardBonuses, evaluateWinner, pickBonusCategoryIds } from './scoring.js';
 import { initStats, bumpStat } from './stats.js';
 import { deepClone, deepFreeze, createSnapshot, restoreSnapshot } from './serialize.js';
 
@@ -102,9 +102,13 @@ export function createMatchSim({ seed, rules: rawRules, boardId, players: player
       shopStockOverrides: {},
     },
     minigame: null,
+    minigameHistory: [], // ids of minigames already played (anti-repeat)
+    bonusCategories: [], // end-game bonus categories, announced up front
+    fastMode: rules.fastMode, // surfaced top-level so views can shorten timers
     awaiting: null,
     rngState: 0,
   };
+  state.bonusCategories = pickBonusCategoryIds(rng, rules);
   for (const cfg of playerCfgs) {
     state.players[cfg.id] = {
       id: cfg.id,
@@ -267,8 +271,19 @@ export function createMatchSim({ seed, rules: rawRules, boardId, players: player
     emit('mechanic', { kind: 'blocked', nodes: [...nodeIds], rounds });
   }
 
+  /** A star spawn is reachable when it is open and has an open predecessor. */
+  function starSpawnReachable(id) {
+    const blocked = state.board.blockedNodes;
+    if (blocked.includes(id)) return false;
+    return predecessorIds(board, id).some((pred) => !blocked.includes(pred));
+  }
+
   function relocateStar() {
-    const candidates = starSpawns.filter((id) => id !== state.board.starNode);
+    let candidates = starSpawns.filter((id) => id !== state.board.starNode && starSpawnReachable(id));
+    if (candidates.length === 0) {
+      // Everything else is walled off: allow re-picking the current node too.
+      candidates = starSpawns.filter((id) => starSpawnReachable(id));
+    }
     const next = candidates.length > 0 ? rng.pick(candidates) : state.board.starNode;
     state.board.starNode = next;
     emit('star', { kind: 'relocated', node: next });
@@ -297,6 +312,13 @@ export function createMatchSim({ seed, rules: rawRules, boardId, players: player
     const stock = computeStock(sim, pid, nodeId);
     if (stock.length === 0) {
       emit('shop', { kind: 'closed', playerId: pid, node: nodeId });
+      return false;
+    }
+    // fastMode: never stop the game for a shop the player cannot buy from
+    // anyway (no affordable item / bag full) - the only answer would be
+    // "leave".
+    if (rules.fastMode && !canBuyAny(sim, pid, nodeId)) {
+      emit('shop', { kind: 'skipped', playerId: pid, node: nodeId, reason: 'fast_mode' });
       return false;
     }
     emit('shop', { kind: 'open', playerId: pid, node: nodeId });
@@ -384,6 +406,9 @@ export function createMatchSim({ seed, rules: rawRules, boardId, players: player
 
   function endTurn() {
     const pid = currentPlayerId();
+    // Effects tick at the END of their OWNER's turn (per-owner turn
+    // semantics): an effect with turnsLeft N affects exactly N of the
+    // owner's rolls/turns, no matter where in the turn order it was applied.
     tickEffects(sim, pid);
     clearAwaiting();
     if (state.currentTurn + 1 < state.turnOrder.length) {
@@ -406,8 +431,13 @@ export function createMatchSim({ seed, rules: rawRules, boardId, players: player
     }
     const boss = board.bossEvent;
     if (boss && boss.everyRounds > 0 && state.round % boss.everyRounds === 0) {
-      emit('boss', { kind: 'event', id: boss.id, round: state.round });
-      boss.handler?.(sim);
+      if (rules.competitive) {
+        // Competitive: boss coin swings are pure RNG - announce, don't run.
+        emit('boss', { kind: 'event', id: boss.id, round: state.round, neutralized: true });
+      } else {
+        emit('boss', { kind: 'event', id: boss.id, round: state.round });
+        boss.handler?.(sim);
+      }
     }
     // Expire node blocks whose time is up.
     state.board.blockedNodes = state.board.blockedNodes.filter((id) => {
@@ -418,6 +448,8 @@ export function createMatchSim({ seed, rules: rawRules, boardId, players: player
       }
       return true;
     });
+    // A mechanic may have walled the star in - move it somewhere buyable.
+    if (!starSpawnReachable(state.board.starNode)) relocateStar();
     enterMinigameSelect();
   }
 
@@ -438,33 +470,73 @@ export function createMatchSim({ seed, rules: rawRules, boardId, players: player
     }
   }
 
-  function pickMinigame() {
-    if (externalSelect) {
-      try {
-        const picked = externalSelect({ state: getState(), rng, minigames: minigamesRegistry, rules });
-        if (picked && typeof picked.id === 'string' && minigamesRegistry.get(picked.id)) {
-          const def = minigamesRegistry.get(picked.id);
-          return {
-            id: picked.id,
-            teams: picked.teams ?? buildTeams(def.category),
-            params: deepClone(picked.params ?? def.params ?? {}),
-          };
-        }
-      } catch {
-        // fall through to the built-in picker
+  /** Every Nth minigame (and the final round) forces a boss game. */
+  const BOSS_MINIGAME_EVERY = 4;
+  /** Recent minigame ids hard-excluded by the built-in fallback picker. */
+  const ANTI_REPEAT_WINDOW = 8;
+
+  /** Run the external selector under (possibly overridden) rules. */
+  function selectViaExternal(effectiveRules) {
+    if (!externalSelect) return null;
+    try {
+      const picked = externalSelect({
+        state: getState(),
+        rng,
+        minigames: minigamesRegistry,
+        rules: effectiveRules,
+        history: state.minigameHistory.slice(),
+      });
+      if (picked && typeof picked.id === 'string' && minigamesRegistry.get(picked.id)) {
+        const def = minigamesRegistry.get(picked.id);
+        return {
+          id: picked.id,
+          teams: picked.teams ?? buildTeams(def.category),
+          params: deepClone(picked.params ?? def.params ?? {}),
+        };
       }
+    } catch {
+      // fall through to the built-in picker
     }
+    return null;
+  }
+
+  /** Built-in registry picker (anti-repeat + soft duel guard at >2 players). */
+  function pickFromRegistry(categories) {
     const count = state.turnOrder.length;
-    const pool = minigamesRegistry.all().filter((def) => {
+    let pool = minigamesRegistry.all().filter((def) => {
       if (rules.competitive && !def.competitiveSafe) return false;
-      if (!(rules.minigameCategories.includes('*') || rules.minigameCategories.includes(def.category))) return false;
+      if (!(categories.includes('*') || categories.includes(def.category))) return false;
       const min = def.players?.min ?? 1;
       const max = def.players?.max ?? MAX_SEATS;
       return min <= count && count <= max;
     });
+    // Duel games sideline everyone but 2 players - avoid them at >2 players
+    // whenever anything else is available.
+    if (count > 2) {
+      const nonDuel = pool.filter((def) => def.category !== 'duel');
+      if (nonDuel.length > 0) pool = nonDuel;
+    }
+    // Anti-repeat: exclude recently played ids unless that empties the pool.
+    const recent = new Set(state.minigameHistory.slice(-ANTI_REPEAT_WINDOW));
+    const fresh = pool.filter((def) => !recent.has(def.id));
+    if (fresh.length > 0) pool = fresh;
     const def = rng.pick(pool);
     if (!def) return null;
     return { id: def.id, teams: buildTeams(def.category), params: deepClone(def.params ?? {}) };
+  }
+
+  function pickMinigame() {
+    // Boss cadence: every BOSS_MINIGAME_EVERY-th minigame - and the final
+    // round - forces a boss-category game when the rules allow one and any
+    // fits the table. Selection preference is passed via minigameCategories.
+    const bossAllowed = rules.minigameCategories.includes('*') || rules.minigameCategories.includes('boss');
+    const bossDue = bossAllowed
+      && ((state.minigameHistory.length + 1) % BOSS_MINIGAME_EVERY === 0 || state.round >= rules.rounds);
+    if (bossDue) {
+      const boss = selectViaExternal({ ...rules, minigameCategories: ['boss'] }) ?? pickFromRegistry(['boss']);
+      if (boss) return boss;
+    }
+    return selectViaExternal(rules) ?? pickFromRegistry(rules.minigameCategories);
   }
 
   function enterMinigameSelect() {
@@ -499,13 +571,15 @@ export function createMatchSim({ seed, rules: rawRules, boardId, players: player
 
   function enterBonus() {
     setPhase('bonus');
-    awardBonuses(sim); // no-op in competitive
-    const ranking = evaluateWinner(sim);
+    awardBonuses(sim); // no-op in competitive/hardcore
+    const { ranking, tiebreak } = evaluateWinner(sim);
     setPhase('game_over');
     clearAwaiting();
     emit('game_over', {
       ranking,
       winner: ranking[0],
+      tiebreak: tiebreak !== null, // true when bananas alone did not decide it
+      tiebreakBy: tiebreak, // 'coins' | 'minigameWins' | 'turnOrder' | null
       standings: ranking.map((pid) => ({
         playerId: pid,
         goldenBananas: state.players[pid].goldenBananas,
@@ -586,15 +660,31 @@ export function createMatchSim({ seed, rules: rawRules, boardId, players: player
     }
     state.minigame.results = deepClone(results);
     const coinsMap = results.coins ?? {};
+    // Endgame crescendo: minigame payouts double in the final 2 rounds so
+    // late games stay winnable.
+    const crescendo = state.round >= rules.rounds - 1 ? 2 : 1;
     for (const p of state.turnOrder) {
-      const n = Number(coinsMap[p] ?? 0);
+      const n = Number(coinsMap[p] ?? 0) * crescendo;
       if (n !== 0) addMinigameCoins(sim, p, n);
+    }
+    // Consolation for players a team split sidelined entirely (duel with
+    // more than 2 players at the table).
+    if (Array.isArray(state.minigame.teams)) {
+      const participants = new Set(state.minigame.teams.flat());
+      for (const p of state.turnOrder) {
+        if (!participants.has(p)) addCoins(sim, p, 3, 'minigame_consolation');
+      }
     }
     const first = results.ranking[0];
     for (const w of Array.isArray(first) ? first : [first]) {
       if (state.players[w]) bumpStat(sim, w, 'minigameWins');
     }
-    emit('minigame_result', { minigameId: state.minigame.pendingId, results: deepClone(results) });
+    emit('minigame_result', {
+      minigameId: state.minigame.pendingId,
+      results: deepClone(results),
+      crescendo: crescendo > 1,
+    });
+    state.minigameHistory.push(state.minigame.pendingId);
     nextRound();
   }
 

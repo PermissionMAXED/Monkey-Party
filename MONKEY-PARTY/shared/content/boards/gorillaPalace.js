@@ -112,8 +112,14 @@ const STORM_CANDIDATES = nodes
   .filter((n) => n.type === 'blue' || n.type === 'red')
   .map((n) => n.id);
 
-/** Star bought at the throne costs starPrice + 10 (royal markup). */
-function onStarPrice(price) {
+/**
+ * Star bought at the throne costs starPrice + 10 (royal markup). The sim
+ * resolves this via the board-mechanic hook chain (effects.collectHooks);
+ * the markup only applies while the star sits on a throne-ascent node.
+ */
+function onStarPrice(price, ctx) {
+  const starNode = ctx?.sim?.state?.board?.starNode;
+  if (typeof starNode === 'string' && !starNode.startsWith('gp_t')) return price;
   return price + 10;
 }
 

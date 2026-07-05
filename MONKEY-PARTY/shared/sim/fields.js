@@ -10,8 +10,10 @@
  *   item    rarity-weighted item grant ('off' item mode: +2 coins instead)
  *   event   board event handler (skipped when rules.randomEvents is false)
  *   boss    BoardDef.bossEvent.handler, or a default seeded coin loss
+ *           (competitive: fixed small -3 instead of the RNG-heavy handler)
  *   shop    opens the shop (handled by the caller via openShop)
- *   trap    built-in board trap: seeded coin loss
+ *   trap    built-in board trap: seeded coin loss (disarmed entirely when
+ *           rules.traps is false)
  *   star / start / junction / special: neutral (star buying happens on pass)
  */
 
@@ -52,7 +54,8 @@ export function applyField(sim, pid, node) {
       addCoins(sim, pid, 3 * multiplier, 'field_blue');
       break;
     case 'red':
-      addCoins(sim, pid, -3, 'field_red');
+      // Hardcore economy bites harder on red fields.
+      addCoins(sim, pid, sim.state.rules.hardcore ? -5 : -3, 'field_red');
       break;
     case 'item': {
       if (sim.state.rules.items === 'off') {
@@ -72,6 +75,13 @@ export function applyField(sim, pid, node) {
       break;
     }
     case 'boss': {
+      // Competitive keeps the swings low: a fixed small toll replaces the
+      // RNG-heavy board boss handler.
+      if (sim.state.rules.competitive) {
+        sim.emit('boss', { kind: 'field', playerId: pid, node: node.id, neutralized: true });
+        addCoins(sim, pid, -3, 'boss');
+        break;
+      }
       sim.emit('boss', { kind: 'field', playerId: pid, node: node.id });
       if (sim.board.bossEvent?.handler) {
         sim.board.bossEvent.handler(sim);
@@ -85,6 +95,11 @@ export function applyField(sim, pid, node) {
       break;
     case 'trap': {
       // A built-in board hazard (distinct from placed item traps).
+      // rules.traps: false disarms every board hazard (competitive preset).
+      if (!sim.state.rules.traps) {
+        sim.emit('trap', { playerId: pid, node: node.id, builtin: true, disarmed: true });
+        break;
+      }
       const blocked = runHook(sim, 'onTrapTriggered', pid, { cancelled: false }, { node: node.id, builtin: true });
       if (blocked?.cancelled || sim.tryBlockWithShield(pid, 'board_trap')) {
         sim.emit('trap', { playerId: pid, node: node.id, builtin: true, cancelled: true });

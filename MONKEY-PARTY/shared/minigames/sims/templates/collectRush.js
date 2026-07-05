@@ -18,7 +18,7 @@
 import { createRng } from '../../../rng.js';
 import { clampFrame, emptyFrame } from '../../inputs.js';
 import {
-  defineMinigame, rankByScore, coinsForRanking, MINIGAME_HZ, COUNTDOWN_TICKS,
+  defineMinigame, rankByScoreGrouped, coinsForRanking, MINIGAME_HZ, COUNTDOWN_TICKS,
 } from '../../framework.js';
 import { minigames } from '../../../registries.js';
 
@@ -209,11 +209,13 @@ function createTemplateSim({ id, seed, players, params = {}, rules = {} } = {}) 
     const scores = {};
     for (const pid of state.order) {
       const p = state.players[pid];
+      // Teams: the team haul decides the tier and teammates tie within it
+      // (shared payout) instead of splitting places by seat order.
       scores[pid] = state.mode === 'teams'
-        ? state.teams[p.team].score * 10000 + p.score * 10 + p.grabs
+        ? state.teams[p.team].score
         : p.score * 100 + p.grabs;
     }
-    const ranking = rankByScore(scores);
+    const ranking = rankByScoreGrouped(scores);
     const coins = coinsForRanking(ranking, { chaos });
     const stats = {};
     for (const pid of state.order) {

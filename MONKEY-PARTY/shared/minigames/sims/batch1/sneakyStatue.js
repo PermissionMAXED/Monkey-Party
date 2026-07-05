@@ -157,7 +157,16 @@ function createSim({ seed, players, params = {}, rules = {} } = {}) {
   return { init, step, getState, applyState, isFinished, getResults };
 }
 
-const REACT = { easy: 15, normal: 9, hard: 5, wild: 3 };
+// Base reaction, jittered +/-4 ticks per phase (see bot below) around the
+// 12-tick telegraph: easy is caught on most red lights but sometimes sneaks
+// through, normal gets clipped occasionally, hard/wild always stop in time.
+const REACT = { easy: 13, normal: 8, hard: 5, wild: 3 };
+
+function ihash(a, b) {
+  let h = (Math.imul(a | 0, 374761393) + Math.imul(b | 0, 668265263)) >>> 0;
+  h = Math.imul(h ^ (h >>> 13), 1274126177) >>> 0;
+  return (h ^ (h >>> 16)) >>> 0;
+}
 
 function bot(publicState, playerId, difficulty, rng) {
   const frame = emptyFrame();
@@ -165,7 +174,14 @@ function bot(publicState, playerId, difficulty, rng) {
   const me = s?.players?.[playerId];
   if (!me || me.finished || s.tick <= s.countdownTicks) return frame;
 
-  const react = REACT[difficulty] ?? REACT.normal;
+  // Deterministic per-phase jitter: reaction varies with each light change
+  // so the same bot is sometimes sharp and sometimes sluggish. The anchor
+  // is the tick the telegraph began, so one roll covers a whole turn+red
+  // cycle (no mid-light re-roll).
+  const slot = s.order?.indexOf?.(playerId) ?? 0;
+  const anchor = s.phase === 'red' ? s.phaseTick - (s.turnTicks ?? 12) : s.phaseTick;
+  const react = (REACT[difficulty] ?? REACT.normal)
+    + (ihash(anchor, slot) % 9) - 4;
   const sincePhase = s.tick - s.phaseTick;
 
   if (s.phase === 'red') {

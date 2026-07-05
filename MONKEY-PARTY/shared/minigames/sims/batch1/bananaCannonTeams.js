@@ -3,7 +3,8 @@
  *
  * Two teams, two banana cannons. On each team one player loads (pump A
  * three times) while the other aims and fires at moving targets; roles
- * swap every 15 seconds. Highest team score wins.
+ * swap on an even 4-phase schedule so both teammates shoot for the same
+ * total time. Highest team score wins.
  *
  * Team convention: team A = players[0..1], team B = players[2..3]
  * (the launcher passes teams in this flat order - see makeTeams('2v2')).
@@ -15,7 +16,7 @@
 import { createRng } from '../../../rng.js';
 import { clampFrame, emptyFrame } from '../../inputs.js';
 import {
-  defineMinigame, coinsForRanking, MINIGAME_HZ, COUNTDOWN_TICKS,
+  defineMinigame, rankByScoreGrouped, coinsForRanking, MINIGAME_HZ, COUNTDOWN_TICKS,
 } from '../../framework.js';
 import { minigames } from '../../../registries.js';
 
@@ -24,7 +25,9 @@ const DT = 1 / MINIGAME_HZ;
 
 const DEFAULTS = {
   pumpsToLoad: 3,
-  roleSwapTicks: 450, // 15s.
+  // 10.5s -> exactly 4 role phases in the 42s of play after the countdown,
+  // so both teammates shoot for the same total time (no seat-0 advantage).
+  roleSwapTicks: 315,
   aimSpeed: 1.6, // Radians/sec of cannon rotation.
   maxAim: 1.05, // ~60 degrees each way.
   projectileSpeed: 26,
@@ -189,13 +192,13 @@ function createSim({ seed, players, params = {}, rules = {} } = {}) {
 
   function getResults() {
     // Team score dominates; personal contribution orders within the team.
-    const scored = state.order.map((pid, index) => {
+    // Equal contributions tie into one payout group instead of seat order.
+    const scores = {};
+    for (const pid of state.order) {
       const p = state.players[pid];
-      const team = state.teams[p.team];
-      return { pid, index, score: team.score * 10000 + p.hits * 10 + p.pumps };
-    });
-    scored.sort((a, b) => (b.score - a.score) || (a.index - b.index));
-    const ranking = scored.map((e) => e.pid);
+      scores[pid] = state.teams[p.team].score * 10000 + p.hits * 10 + p.pumps;
+    }
+    const ranking = rankByScoreGrouped(scores);
     const coins = coinsForRanking(ranking, { chaos });
     const stats = {};
     for (const pid of state.order) {
@@ -263,8 +266,8 @@ export function register() {
       de: 'Ladet und feuert die Bananenkanone eures Teams auf fliegende Ziele.',
     },
     howTo: {
-      en: 'Loader: pump A three times. Shooter: steer the cannon and press A to fire at targets. Roles swap every 15s!',
-      de: 'Lader: dreimal A pumpen. Schuetze: Kanone ausrichten und mit A auf Ziele feuern. Rollen wechseln alle 15s!',
+      en: 'Loader: pump A three times. Shooter: steer the cannon and press A to fire at targets. Roles swap four times, so everyone shoots equally long!',
+      de: 'Lader: dreimal A pumpen. Schuetze: Kanone ausrichten und mit A auf Ziele feuern. Rollen wechseln viermal - jeder schiesst gleich lang!',
     },
     category: '2v2',
     tags: ['skill', 'aim'],

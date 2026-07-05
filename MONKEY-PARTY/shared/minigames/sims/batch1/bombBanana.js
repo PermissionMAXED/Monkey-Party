@@ -14,7 +14,7 @@
 import { createRng } from '../../../rng.js';
 import { clampFrame, emptyFrame } from '../../inputs.js';
 import {
-  defineMinigame, rankByScore, coinsForRanking, MINIGAME_HZ, COUNTDOWN_TICKS,
+  defineMinigame, rankByScoreGrouped, coinsForRanking, MINIGAME_HZ, COUNTDOWN_TICKS,
 } from '../../framework.js';
 import { minigames } from '../../../registries.js';
 
@@ -161,11 +161,13 @@ function createSim({ seed, players, params = {}, rules = {} } = {}) {
     const scores = {};
     for (const pid of state.order) {
       const p = state.players[pid];
-      // Survivors first (shorter total holding = braver bluffing), then the
-      // later you blew up, the better.
-      scores[pid] = p.alive ? 1000000 - p.holdTicks : p.elimTick;
+      // Survivors who actually passed the bomb rank by engagement (more
+      // successful passes = better); survivors the bomb never reached tie
+      // as one group BEHIND them (dumb luck is not a win). Eliminated
+      // players rank below all survivors - the later the boom, the better.
+      scores[pid] = p.alive ? 2000000 + p.passes * 100 : p.elimTick;
     }
-    const ranking = rankByScore(scores);
+    const ranking = rankByScoreGrouped(scores);
     const coins = coinsForRanking(ranking, { chaos });
     const stats = {};
     for (const pid of state.order) {

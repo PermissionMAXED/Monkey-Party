@@ -16,8 +16,8 @@ import { minigames } from '#shared/registries.js';
 import { createRng } from '#shared/rng.js';
 import { DEFAULT_RULES } from '#shared/rules.js';
 import {
-  defineMinigame, createFixedStepper, rankByScore, coinsForRanking, makeTeams,
-  standardCountdown, MINIGAME_HZ, CATEGORIES,
+  defineMinigame, createFixedStepper, rankByScore, rankByScoreGrouped, coinsForRanking,
+  makeTeams, standardCountdown, MINIGAME_HZ, CATEGORIES,
 } from '#shared/minigames/framework.js';
 import { emptyFrame, clampFrame, packFrame, unpackFrame } from '#shared/minigames/inputs.js';
 import { selectMinigame, categoryPoolFromColors } from '#shared/minigames/select.js';
@@ -28,9 +28,15 @@ const report = await registerAllMinigames();
 /* Headless helpers                                                    */
 /* ------------------------------------------------------------------ */
 
-function makePlayers(def) {
-  const n = Math.min(Math.max(4, def.players.min), def.players.max);
+function makePlayers(def, count = null) {
+  const n = count ?? Math.min(Math.max(4, def.players.min), def.players.max);
   return Array.from({ length: n }, (_, i) => `p${i + 1}`);
+}
+
+/** Unique player counts every def is gauntleted at: default, min, and max. */
+function gauntletCounts(def) {
+  const dflt = Math.min(Math.max(4, def.players.min), def.players.max);
+  return [...new Set([dflt, def.players.min, def.players.max])];
 }
 
 function freshBotRngs(players, seed) {
@@ -60,8 +66,8 @@ function makeSim(def, seed, players) {
   return sim;
 }
 
-function runToCompletion(def, seed, { idleSet = null } = {}) {
-  const players = makePlayers(def);
+function runToCompletion(def, seed, { idleSet = null, count = null } = {}) {
+  const players = makePlayers(def, count);
   const sim = makeSim(def, seed, players);
   const rngs = freshBotRngs(players, seed ^ 0x5eed);
   const cap = def.durationSec * MINIGAME_HZ + 300;
@@ -78,8 +84,10 @@ function runToCompletion(def, seed, { idleSet = null } = {}) {
 /* Registration                                                        */
 /* ------------------------------------------------------------------ */
 
-test('registerAll: batch1 loads and at least 8 minigames are registered', () => {
-  assert.ok(report.loaded.includes('batch1'), 'batch1 must load');
+test('registerAll: batch1, batch2 AND templates all load (no silent drops)', () => {
+  for (const batch of ['batch1', 'batch2', 'templates']) {
+    assert.ok(report.loaded.includes(batch), `${batch} must load, got ${JSON.stringify(report)}`);
+  }
   assert.ok(minigames.count() >= 8, `expected >= 8 minigames, got ${minigames.count()}`);
   for (const id of [
     'banana_scramble', 'vine_swing_sprint', 'barrel_blast_arena', 'sneaky_statue',
@@ -187,6 +195,18 @@ test('rankByScore: descending with stable ties', () => {
   assert.deepEqual(rankByScore({ a: 1, b: 5, c: 3 }), ['b', 'c', 'a']);
   assert.deepEqual(rankByScore({ a: 2, b: 2, c: 9 }), ['c', 'a', 'b']);
   assert.deepEqual(rankByScore({}), []);
+});
+
+test('rankByScoreGrouped: equal scores cluster into tie groups', () => {
+  assert.deepEqual(rankByScoreGrouped({ a: 1, b: 5, c: 3 }), ['b', 'c', 'a']);
+  assert.deepEqual(rankByScoreGrouped({ a: 2, b: 9, c: 2, d: 1 }), ['b', ['a', 'c'], 'd']);
+  assert.deepEqual(rankByScoreGrouped({ a: 4, b: 4 }), [['a', 'b']]);
+  assert.deepEqual(rankByScoreGrouped({}), []);
+  // Groups flatten to full coverage and coinsForRanking pays them equally.
+  assert.deepEqual(
+    coinsForRanking(rankByScoreGrouped({ a: 2, b: 2, c: 1 })),
+    { a: 10, b: 10, c: 5 },
+  );
 });
 
 test('coinsForRanking: base payouts, tie groups, chaos doubling', () => {
@@ -336,6 +356,37 @@ test('selectMinigame: anti-repeat excludes the last 8 unless the pool exhausts',
   assert.ok(picked, 'exhausted pool must still pick something');
 });
 
+test('selectMinigame: anti-repeat is family-aware (template siblings blocked)', () => {
+  const dodgeIds = minigames.all()
+    .filter((d) => d.family === 'dodgeRain').map((d) => d.id);
+  assert.ok(dodgeIds.length >= 3, 'expected several dodgeRain variants');
+  const rng = createRng(23);
+  const players = roster(['neutral', 'neutral', 'neutral', 'neutral']);
+  // One recently played dodge variant must block ALL of its siblings.
+  for (let i = 0; i < 60; i += 1) {
+    const picked = selectMinigame({
+      rules: { ...DEFAULT_RULES }, players, history: [dodgeIds[0]], rng,
+    });
+    assert.ok(picked);
+    assert.ok(!dodgeIds.includes(picked.minigameId),
+      `picked family sibling ${picked.minigameId} right after ${dodgeIds[0]}`);
+  }
+});
+
+test('selectMinigame: honors an explicit boss/category preference', () => {
+  const players = roster(['neutral', 'neutral', 'neutral', 'neutral']);
+  const viaBoss = selectMinigame({
+    rules: { ...DEFAULT_RULES }, players, history: [], rng: createRng(29), boss: true,
+  });
+  assert.ok(viaBoss);
+  assert.equal(minigames.get(viaBoss.minigameId).category, 'boss');
+  const viaCategory = selectMinigame({
+    rules: { ...DEFAULT_RULES }, players, history: [], rng: createRng(31), category: 'team',
+  });
+  assert.ok(viaCategory);
+  assert.equal(minigames.get(viaCategory.minigameId).category, 'team');
+});
+
 test('selectMinigame: compatible with the match-sim caller shape (state/minigames)', () => {
   const state = {
     turnOrder: ['p1', 'p2', 'p3', 'p4'],
@@ -361,62 +412,66 @@ const SEED = 0xc0ffee;
 const realDefs = minigames.all().filter((d) => !d.id.startsWith('__mg_'));
 
 for (const def of realDefs) {
-  test(`${def.id}: bots finish within the duration cap`, () => {
-    const { sim, ticks, cap } = runToCompletion(def, SEED);
-    assert.ok(sim.isFinished(), `${def.id} did not finish within ${cap} ticks`);
-    assert.ok(ticks <= cap);
-  });
+  // Every def runs the gauntlet at its default (4-ish), min, AND max
+  // player counts, so roster-size edge cases cannot slip through.
+  for (const count of gauntletCounts(def)) {
+    test(`${def.id} @${count}p: bots finish within the duration cap`, () => {
+      const { sim, ticks, cap } = runToCompletion(def, SEED, { count });
+      assert.ok(sim.isFinished(), `${def.id} did not finish within ${cap} ticks`);
+      assert.ok(ticks <= cap);
+    });
 
-  test(`${def.id}: results carry a full ranking, coin map, and stats`, () => {
-    const { sim, players } = runToCompletion(def, SEED);
-    const results = sim.getResults();
-    assert.ok(Array.isArray(results.ranking), 'ranking array');
-    const flat = results.ranking.flat();
-    assert.deepEqual([...flat].sort(), [...players].sort(), 'ranking covers every player exactly once');
-    for (const pid of players) {
-      assert.equal(typeof results.coins[pid], 'number', `coins for ${pid}`);
-      assert.ok(Number.isFinite(results.coins[pid]));
-      assert.equal(typeof results.stats[pid], 'object', `stats for ${pid}`);
-    }
-  });
+    test(`${def.id} @${count}p: results carry a full ranking, coin map, and stats`, () => {
+      const { sim, players } = runToCompletion(def, SEED, { count });
+      const results = sim.getResults();
+      assert.ok(Array.isArray(results.ranking), 'ranking array');
+      const flat = results.ranking.flat();
+      assert.deepEqual([...flat].sort(), [...players].sort(), 'ranking covers every player exactly once');
+      for (const pid of players) {
+        assert.equal(typeof results.coins[pid], 'number', `coins for ${pid}`);
+        assert.ok(Number.isFinite(results.coins[pid]));
+        assert.equal(typeof results.stats[pid], 'object', `stats for ${pid}`);
+      }
+    });
 
-  test(`${def.id}: determinism - same seed, same bots, identical outcome`, () => {
-    const a = runToCompletion(def, SEED);
-    const b = runToCompletion(def, SEED);
-    assert.equal(a.ticks, b.ticks, 'tick counts match');
-    assert.deepEqual(a.sim.getState(), b.sim.getState(), 'final states match');
-    assert.deepEqual(a.sim.getResults(), b.sim.getResults(), 'results match');
-  });
+    test(`${def.id} @${count}p: determinism - same seed, same bots, identical outcome`, () => {
+      const a = runToCompletion(def, SEED, { count });
+      const b = runToCompletion(def, SEED, { count });
+      assert.equal(a.ticks, b.ticks, 'tick counts match');
+      assert.deepEqual(a.sim.getState(), b.sim.getState(), 'final states match');
+      assert.deepEqual(a.sim.getResults(), b.sim.getResults(), 'results match');
+    });
 
-  test(`${def.id}: getState -> applyState round-trip mid-game stays in lockstep`, () => {
-    const players = makePlayers(def);
-    const rngs = freshBotRngs(players, SEED ^ 0x5eed);
-    const simA = makeSim(def, SEED, players);
+    test(`${def.id} @${count}p: getState -> applyState round-trip mid-game stays in lockstep`, () => {
+      const players = makePlayers(def, count);
+      const rngs = freshBotRngs(players, SEED ^ 0x5eed);
+      const simA = makeSim(def, SEED, players);
 
-    const midpoint = Math.floor((def.durationSec * MINIGAME_HZ) / 2);
-    for (let i = 0; i < midpoint && !simA.isFinished(); i += 1) {
-      const state = simA.getState();
-      simA.step(botInputs(def, state, players, rngs));
-    }
+      const midpoint = Math.floor((def.durationSec * MINIGAME_HZ) / 2);
+      for (let i = 0; i < midpoint && !simA.isFinished(); i += 1) {
+        const state = simA.getState();
+        simA.step(botInputs(def, state, players, rngs));
+      }
 
-    const snap = simA.getState();
-    const simB = makeSim(def, SEED ^ 0xdead, players); // Different seed on purpose.
-    simB.applyState(snap);
-    assert.deepEqual(simB.getState(), snap, 'applyState restores the snapshot exactly');
+      const snap = simA.getState();
+      const simB = makeSim(def, SEED ^ 0xdead, players); // Different seed on purpose.
+      simB.applyState(snap);
+      assert.deepEqual(simB.getState(), snap, 'applyState restores the snapshot exactly');
 
-    for (let i = 0; i < 120; i += 1) {
-      if (simA.isFinished()) break;
-      const state = simA.getState();
-      const inputs = botInputs(def, state, players, rngs);
-      simA.step(inputs);
-      simB.step(inputs);
-    }
-    assert.deepEqual(simB.getState(), simA.getState(), 'restored sim stays in lockstep');
-    assert.equal(simB.isFinished(), simA.isFinished());
-    if (simA.isFinished()) {
-      assert.deepEqual(simB.getResults(), simA.getResults());
-    }
-  });
+      for (let i = 0; i < 120; i += 1) {
+        if (simA.isFinished()) break;
+        const state = simA.getState();
+        const inputs = botInputs(def, state, players, rngs);
+        simA.step(inputs);
+        simB.step(inputs);
+      }
+      assert.deepEqual(simB.getState(), simA.getState(), 'restored sim stays in lockstep');
+      assert.equal(simB.isFinished(), simA.isFinished());
+      if (simA.isFinished()) {
+        assert.deepEqual(simB.getResults(), simA.getResults());
+      }
+    });
+  }
 }
 
 /* ------------------------------------------------------------------ */
@@ -432,3 +487,61 @@ for (const id of ['banana_scramble', 'vine_swing_sprint', 'sneaky_statue']) {
     assert.equal(flat[flat.length - 1], 'p4', `idle p4 should rank last, got ${flat.join(',')}`);
   });
 }
+
+/* ------------------------------------------------------------------ */
+/* A skilled human beats hard bots (reaction / rhythm)                 */
+/* ------------------------------------------------------------------ */
+
+function runWithHuman(def, seed, humanFn, difficulty = 'hard') {
+  const players = makePlayers(def, 4);
+  const humanPid = players[0];
+  const sim = makeSim(def, seed, players);
+  const rngs = freshBotRngs(players, seed ^ 0x5eed);
+  const cap = def.durationSec * MINIGAME_HZ + 300;
+  let ticks = 0;
+  while (!sim.isFinished() && ticks < cap) {
+    const state = sim.getState();
+    const inputs = {};
+    for (const pid of players) {
+      inputs[pid] = pid === humanPid
+        ? humanFn(state, pid)
+        : def.bot(state, pid, difficulty, rngs.get(pid));
+    }
+    sim.step(inputs);
+    ticks += 1;
+  }
+  return { sim, humanPid };
+}
+
+test('reaction duel: a sharp (~167ms) human beats hard bots', () => {
+  const def = minigames.get('firework_flinch');
+  assert.ok(def, 'firework_flinch registered');
+  // Presses 5 ticks after the signal, never falls for fakes.
+  const { sim, humanPid } = runWithHuman(def, SEED, (s, pid) => {
+    const frame = emptyFrame();
+    const me = s.players[pid];
+    if (s.phase === 'window' && !me.locked && me.pressedTick < 0
+      && s.tick - s.signalAt >= 4) frame.a = true;
+    return frame;
+  });
+  assert.ok(sim.isFinished());
+  const flat = sim.getResults().ranking.flat();
+  assert.equal(flat[0], humanPid, `human should win, ranking: ${flat.join(',')}`);
+});
+
+test('rhythm_drums: a frame-perfect human beats hard bots', () => {
+  const def = minigames.get('rhythm_drums');
+  const { sim, humanPid } = runWithHuman(def, SEED, (s, pid) => {
+    const frame = emptyFrame();
+    const me = s.players[pid];
+    const beat = s.beats[me.next];
+    if (beat && s.tick === beat.tick - 1) {
+      if (beat.lane === 0) frame.a = true;
+      else frame.b = true;
+    }
+    return frame;
+  });
+  assert.ok(sim.isFinished());
+  const flat = sim.getResults().ranking.flat();
+  assert.equal(flat[0], humanPid, `human should win, ranking: ${flat.join(',')}`);
+});

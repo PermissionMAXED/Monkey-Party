@@ -9,7 +9,9 @@
  *    (at the onStarPrice-hooked price)
  *  - passing a shop node pauses with awaiting 'shop'
  *  - blocked nodes are never entered; when every next node is blocked the
- *    player lands where they stand (remaining steps are lost)
+ *    player is rescued: teleported to the nearest open node (BFS across the
+ *    raw graph) and lands there (remaining steps are lost). This prevents
+ *    permanent stranding by rising-lava-style board mechanics.
  *  - placed traps trigger on pass or land and may cancel the move
  *    (e.g. banana_peel skids the victim and ends their movement)
  */
@@ -97,6 +99,23 @@ export function predecessorIds(board, nodeId) {
   return board.nodes.filter((n) => (n.next ?? []).includes(nodeId)).map((n) => n.id).sort();
 }
 
+/**
+ * Nearest node that is NOT blocked, found by a deterministic forward BFS
+ * that walks the raw graph (crossing blocked nodes is allowed while
+ * searching). Used to rescue players whose every exit is blocked.
+ *
+ * @param {Object} sim
+ * @param {string} fromId
+ * @returns {string|null} Nearest open node id, or null when none exists.
+ */
+export function nearestOpenNode(sim, fromId) {
+  const blocked = sim.state.board.blockedNodes;
+  for (const { id } of forwardTargets(sim.board, fromId, sim.board.nodes.length)) {
+    if (!blocked.includes(id)) return id;
+  }
+  return null;
+}
+
 /* ------------------------------------------------------------------ */
 /* The walk                                                            */
 /* ------------------------------------------------------------------ */
@@ -132,8 +151,16 @@ export function continueMove(sim) {
     }
     const options = openNextIds(sim, player.node);
     if (options.length === 0) {
-      // Dead end or everything ahead is blocked: land here.
+      // Every exit is blocked: rescue to the nearest open node (BFS) so a
+      // board mechanic (rising lava, tides, ...) can never strand a player
+      // in place forever. Remaining steps are lost either way.
+      const rescue = nearestOpenNode(sim, player.node);
       sim.emit('move_step', { kind: 'blocked', playerId: pid, node: player.node, stepsLost: sim.internal.moveSteps });
+      if (rescue !== null && rescue !== player.node) {
+        sim.emit('move_step', { kind: 'rescued', playerId: pid, from: player.node, to: rescue });
+        player.node = rescue;
+        player.facingNext = openNextIds(sim, rescue)[0] ?? nodeById(sim.board, rescue).next?.[0] ?? null;
+      }
       sim.internal.moveSteps = 0;
       sim.land();
       return;

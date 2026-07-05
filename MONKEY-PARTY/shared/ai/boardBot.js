@@ -8,7 +8,13 @@
  * star, shop desire, hazard avoidance, item value) and returns one of the
  * given legal actions - ALWAYS, for every possible awaiting state. The
  * difficulty profile adds seeded decision noise and occasional random picks
- * among the top-K actions (easy = 35% among top-3, wild = optimal).
+ * among the top-K actions (easy = 35% among top-3, hard = near-optimal,
+ * wild = erratic chaos-monkey; see shared/ai/difficulty.js).
+ *
+ * Scoring note: plain 'roll' scores a flat 10, so situationally-STRONG item
+ * plays must score above 10 (12 for star-race boosters and leader curses,
+ * 11 for traps aimed at high-traffic nodes) or low-noise bots would never
+ * use items at all.
  */
 
 import { createRng } from '../rng.js';
@@ -103,18 +109,22 @@ function itemUseScore(state, board, pid, itemId, profile) {
       return canAffordStar ? 100 : 1;
     case 'double_dice':
     case 'turbo_banana':
-      // Extra reach is great when the star is beyond a normal roll.
+      // Decisive when the star is affordable AND within a boosted roll's
+      // reach this turn (>10 so it beats a plain roll); merely nice when
+      // the star is further out.
+      if (canAffordStar && Number.isFinite(dist) && dist > 6 && dist <= 12) return 12;
       return canAffordStar && dist > 6 ? 9 : 5;
     case 'lucky_mask':
       return 6;
     case 'dice_curse':
-      return leader && state.players[leader].goldenBananas >= me.goldenBananas ? 9 : 4;
+      // Hexing the banana leader is a top play (>10 beats a plain roll).
+      return leader && state.players[leader].goldenBananas >= me.goldenBananas ? 12 : 4;
     case 'ghost_banana':
       return richest && state.players[richest].coins >= 10 ? 9 : 3;
     case 'swap_totem': {
       if (!leader) return 2;
       const theirDist = distToStar(board, state, state.players[leader].node, profile.lookahead * 2);
-      return Number.isFinite(theirDist) && theirDist + 3 < dist && canAffordStar ? 10 : 2;
+      return Number.isFinite(theirDist) && theirDist + 3 < dist && canAffordStar ? 12 : 2;
     }
     case 'mini_gorilla': {
       if (!leader) return 2;
@@ -122,8 +132,13 @@ function itemUseScore(state, board, pid, itemId, profile) {
       return Number.isFinite(theirDist) && theirDist <= 6 ? 8 : 3;
     }
     case 'coconut_trap':
-    case 'banana_peel':
-      return 6;
+    case 'banana_peel': {
+      // Worth the turn when a high-traffic node (>=2 inbound edges) is in
+      // placement range; otherwise a modest hold.
+      const hot = board && forwardTargets(board, me.node, 5)
+        .some(({ id }) => trafficScore(board, id) >= 2);
+      return hot ? 11 : 6;
+    }
     case 'chaos_box':
       // Gambling appeals less the smarter the bot is.
       return profile.randomChance > 0.2 ? 6 : 3;

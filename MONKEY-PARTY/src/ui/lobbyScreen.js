@@ -19,6 +19,7 @@ export function createLobbyScreen(ctx) {
   let boardIndex = 0;
   let starting = false;
   let emoteWheel = null;
+  let countdownTimer = null;
   const chatLog = [];
 
   const session = () => ctx.session;
@@ -199,11 +200,38 @@ export function createLobbyScreen(ctx) {
     }
   }
 
+  /* ---------------- quick-match countdown ---------------- */
+
+  function countdownBanner(lobby) {
+    const banner = div('lobby-countdown');
+    banner.style.cssText = 'text-align:center;font-size:1.1rem;font-weight:800;'
+      + 'color:#ffe135;background:rgba(0,0,0,0.35);border-radius:10px;padding:8px 14px;margin:8px 0;';
+    const update = () => {
+      const remain = Math.max(0, Math.ceil((lobby.countdownEndsAt - Date.now()) / 1000));
+      banner.textContent = `🚀 ${t('lobby.start')} · ${remain}s`;
+    };
+    update();
+    if (countdownTimer) clearInterval(countdownTimer);
+    countdownTimer = setInterval(() => {
+      if (!banner.isConnected || !session()?.getLobby?.()?.countdownEndsAt) {
+        clearInterval(countdownTimer);
+        countdownTimer = null;
+        return;
+      }
+      update();
+    }, 250);
+    return banner;
+  }
+
   /* ---------------- render ---------------- */
 
   function render() {
     if (!root) return;
     clearNode(root);
+    if (countdownTimer) {
+      clearInterval(countdownTimer);
+      countdownTimer = null;
+    }
     const s = session();
     if (!s) {
       ctx.router.go('mainMenu');
@@ -254,6 +282,11 @@ export function createLobbyScreen(ctx) {
     layout.append(left, right);
     wrap.appendChild(layout);
 
+    /* Quick-match auto-start countdown (server sets countdownEndsAt). */
+    if (typeof lobby.countdownEndsAt === 'number' && lobby.countdownEndsAt > Date.now()) {
+      wrap.appendChild(countdownBanner(lobby));
+    }
+
     /* Bottom actions */
     const actions = div('ui-row');
     actions.append(
@@ -264,7 +297,14 @@ export function createLobbyScreen(ctx) {
       button(t('lobby.chooseChar'), 'ui-btn--wood', () => ctx.router.go('charSelect')),
     );
     const startBtn = button(starting ? t('lobby.starting') : t('lobby.start'), 'ui-btn--green ui-btn--big', startMatch);
-    startBtn.disabled = starting || !isHost() || lobby.started;
+    // Online: the server refuses start_game until every connected human is
+    // ready - grey the button out instead of provoking that error.
+    const humansReady = lobby.seats
+      .filter((seat) => !seat.isBot && seat.connected !== false)
+      .every((seat) => seat.ready);
+    startBtn.disabled = starting || !isHost() || lobby.started
+      || (s.mode === 'online' && !humansReady);
+    if (s.mode === 'online' && !humansReady && !lobby.started) startBtn.title = t('lobby.notReady');
     actions.appendChild(startBtn);
     wrap.appendChild(actions);
 
@@ -282,6 +322,16 @@ export function createLobbyScreen(ctx) {
         unsubs.push(s.on('match_start', () => {
           if (ctx.router.currentName() === 'lobby') ctx.router.go('match');
         }));
+        unsubs.push(s.on('error', (msg) => {
+          // Server refusals (failed start_game, bad rules, ...) must be
+          // visible AND unstick the Start button.
+          const text = msg?.msg ?? msg?.message ?? 'Server error';
+          toast(msg?.code ? `${text} (${msg.code})` : text, 'error');
+          if (starting) {
+            starting = false;
+            render();
+          }
+        }));
         unsubs.push(s.on('chat', (msg) => {
           const lobby = s.getLobby();
           const from = lobby?.seats?.find((seat) => seat.pid === msg?.pid)?.name ?? msg?.pid ?? '?';
@@ -289,6 +339,26 @@ export function createLobbyScreen(ctx) {
           if (chatLog.length > 60) chatLog.shift();
           render();
         }));
+        if (s.mode === 'online') {
+          const net = ctx.getNetClient?.();
+          if (net?.on) {
+            let reconnectFailed = false;
+            const nsub = (evt, cb) => {
+              const off = net.on(evt, cb);
+              if (typeof off === 'function') unsubs.push(off);
+            };
+            nsub('reconnecting', (info) => {
+              if ((info?.attempt ?? 1) === 1) toast('Connection lost – reconnecting…', 'info');
+            });
+            nsub('reconnect_failed', () => {
+              reconnectFailed = true;
+              toast('Could not reconnect to the server. Check your connection and reload the page.', 'error');
+            });
+            nsub('close', () => {
+              if (!reconnectFailed) toast('Connection to the server was closed.', 'error');
+            });
+          }
+        }
         emoteWheel = attachEmoteWheel(ctx, s, root);
       }
       unsubs.push(onLangChange(render));
@@ -302,6 +372,10 @@ export function createLobbyScreen(ctx) {
         } catch { /* gone */ }
       }
       unsubs = [];
+      if (countdownTimer) {
+        clearInterval(countdownTimer);
+        countdownTimer = null;
+      }
       emoteWheel?.dispose();
       emoteWheel = null;
       root = null;

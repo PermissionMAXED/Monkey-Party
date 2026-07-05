@@ -17,10 +17,14 @@ import crypto from 'node:crypto';
 import { SRV } from '#shared/protocol.js';
 import { validateRules } from '#shared/rules.js';
 import { MIN_PLAYERS, BOT_DIFFICULTIES } from '#shared/constants.js';
-import { boards } from '#shared/registries.js';
+import { boards, characters } from '#shared/registries.js';
 import { createRoom } from './room.js';
 
 const BOT_NAMES = ['Bongo', 'Kiki', 'Mango', 'Chimpy', 'Nana', 'Tarzana', 'Coco', 'Peel'];
+
+/** Cosmetic slots a client may set (see src/ui/charSelect.js). */
+const COSMETIC_SLOTS = ['hat', 'glasses', 'accessory', 'skin'];
+const COSMETIC_MAX_LEN = 32;
 
 /**
  * @param {{config: Object, log: Object, connections: Object}} deps
@@ -272,15 +276,30 @@ export function createLobbyManager({ config, log, connections }) {
 
   /* ---------------- member state ------------------------------------- */
 
-  /** select_character{characterId, cosmetics}. */
+  /** select_character{characterId, cosmetics} - fully validated, nothing a
+   * client sends is trusted (unknown characters/slots are dropped). */
   function selectCharacter(player, payload) {
     const lobby = player.lobby;
     const seat = lobby ? seatOf(lobby, player.id) : null;
     if (!seat || lobby.started) return;
-    seat.characterId = String(payload?.characterId ?? '') || null;
-    seat.cosmetics = payload?.cosmetics && typeof payload.cosmetics === 'object'
-      ? { ...payload.cosmetics }
-      : {};
+    const charId = String(payload?.characterId ?? '').slice(0, 64);
+    if (charId && !characters.get(charId)) {
+      return fail(player, 'character', `unknown character "${charId}"`);
+    }
+    seat.characterId = charId || null;
+    const cosmetics = {};
+    const raw = payload?.cosmetics;
+    if (raw !== null && typeof raw === 'object' && !Array.isArray(raw)) {
+      for (const slot of COSMETIC_SLOTS) {
+        const value = raw[slot];
+        if (typeof value === 'string' && value.length > 0) {
+          cosmetics[slot] = value.slice(0, COSMETIC_MAX_LEN);
+        } else if (value === null) {
+          cosmetics[slot] = null;
+        }
+      }
+    }
+    seat.cosmetics = cosmetics;
     broadcastState(lobby);
   }
 
@@ -325,6 +344,7 @@ export function createLobbyManager({ config, log, connections }) {
       if (starter) fail(starter, 'start', `need at least ${MIN_PLAYERS} seats filled`);
       return;
     }
+    assignBotCharacters(lobby);
     cancelCountdown(lobby);
     lobby.started = true;
     broadcastState(lobby);
@@ -340,14 +360,48 @@ export function createLobbyManager({ config, log, connections }) {
     lobby.room.start();
   }
 
+  /** Give every character-less bot a random UNUSED character (perks +
+   * distinct look) right before the match starts. */
+  function assignBotCharacters(lobby) {
+    const allIds = characters.ids();
+    if (allIds.length === 0) return;
+    const used = new Set(lobby.seats.map((s) => s.characterId).filter(Boolean));
+    for (const seat of lobby.seats) {
+      if (!seat.isBot || seat.characterId) continue;
+      let pool = allIds.filter((id) => !used.has(id));
+      if (pool.length === 0) pool = allIds; // more bots than characters: reuse
+      const pick = pool[crypto.randomInt(pool.length)];
+      seat.characterId = pick;
+      used.add(pick);
+    }
+  }
+
   /** Room finished + rematch window elapsed: reopen the lobby. */
   function onRoomDisposed(lobby) {
     lobby.room = null;
     lobby.started = false;
-    for (const seat of lobby.seats) {
-      if (!seat.isBot) seat.ready = false;
+    // Prune zombie human seats: their grace expired mid-match (player record
+    // forgotten or re-homed), so nobody can ever reclaim them. Keeping them
+    // would leave phantom seats and could pin hostId on a dead player.
+    for (let i = lobby.seats.length - 1; i >= 0; i -= 1) {
+      const seat = lobby.seats[i];
+      if (seat.isBot) continue;
+      const player = connections.getPlayer(seat.pid);
+      if (!player || player.lobby !== lobby) {
+        lobby.seats.splice(i, 1);
+        log.info('seat_pruned', { code: lobby.code, pid: seat.pid });
+      } else {
+        seat.ready = false;
+      }
     }
-    if (humanSeats(lobby).every((s) => !s.connected)) {
+    // Mirror the pre-start leave logic: a gone host hands off to the first
+    // remaining human, otherwise the lobby would soft-lock (nobody could
+    // start, kick bots or edit rules).
+    if (!humanSeats(lobby).some((s) => s.pid === lobby.hostId)) {
+      lobby.hostId = humanSeats(lobby)[0]?.pid ?? null;
+      if (lobby.hostId) log.info('host_reassigned', { code: lobby.code, host: lobby.hostId });
+    }
+    if (humanSeats(lobby).length === 0 || humanSeats(lobby).every((s) => !s.connected)) {
       disposeLobby(lobby);
       return;
     }

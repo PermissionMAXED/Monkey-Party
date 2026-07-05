@@ -59,7 +59,12 @@ export const VARIANTS = [
     templateId: 'reactionDuel',
     id: 'drum_duel',
     name: { en: 'Drum Duel', de: 'Trommel-Duell' },
-    params: { theme: THEMES.jungle, fakeChance: 0.15, waitMinTicks: 32, waitMaxTicks: 90 },
+    // Rapid-fire and honest: many short rounds, almost no fake-outs -
+    // the polar opposite of gong_gambit's long, bluff-heavy waits.
+    params: {
+      theme: THEMES.jungle, fakeChance: 0.05, waitMinTicks: 25, waitMaxTicks: 70,
+      windowTicks: 45, rounds: 7,
+    },
   },
   {
     templateId: 'reactionDuel',
@@ -77,7 +82,12 @@ export const VARIANTS = [
     templateId: 'reactionDuel',
     id: 'gong_gambit',
     name: { en: 'Gong Gambit', de: 'Gong-Gambit' },
-    params: { theme: THEMES.ghost, rounds: 6, waitMaxTicks: 130, fakeChance: 0.25 },
+    // Few long, nerve-racking rounds where half the flashes are fake -
+    // patience and discipline, versus drum_duel's rapid honest volleys.
+    params: {
+      theme: THEMES.ghost, rounds: 4, waitMinTicks: 60, waitMaxTicks: 160,
+      fakeChance: 0.5, windowTicks: 80,
+    },
   },
   {
     templateId: 'reactionDuel',
@@ -121,7 +131,12 @@ export const VARIANTS = [
     templateId: 'dodgeRain',
     id: 'gear_storm',
     name: { en: 'Gear Storm', de: 'Zahnrad-Sturm' },
-    params: { theme: THEMES.factory, hazardRadius: 1.8, spawnEveryStart: 26, spawnEveryEnd: 8 },
+    // Heavy machinery: huge slow-telegraphed gears crash down in pairs and
+    // you can survive one hit - unlike coconut_rain's quick small drops.
+    params: {
+      theme: THEMES.factory, hazardRadius: 2.6, telegraphTicks: 60,
+      spawnEveryStart: 36, spawnEveryEnd: 14, spawnBurst: 2, lives: 2,
+    },
   },
   {
     templateId: 'dodgeRain',
@@ -180,7 +195,13 @@ export const VARIANTS = [
     templateId: 'mashRace',
     id: 'drawbridge_dash',
     name: { en: 'Drawbridge Dash', de: 'Zugbruecken-Sprint' },
-    params: { theme: THEMES.ghost, goal: 46, decayPerSec: 0.6 },
+    // Distinct mechanic vs wall_climbers: the haunted winch periodically
+    // locks (freeze windows) - mashing during the lock does nothing, so
+    // burst timing matters, and the chain slips faster in between.
+    params: {
+      theme: THEMES.ghost, goal: 46, decayPerSec: 0.6,
+      freezeEveryTicks: 150, freezeTicks: 45,
+    },
   },
 
   /* ----------------------------- memoryPath ----------------------------- */

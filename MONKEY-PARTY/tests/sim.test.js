@@ -101,22 +101,28 @@ const TEST_BOARD = {
 
 boards.register(TEST_BOARD);
 
-// A dummy minigame so the round loop exercises minigame_select/minigame.
-minigames.register({
-  id: 'mg_test_race',
-  name: { en: 'Test Race', de: 'Test-Rennen' },
-  description: { en: '', de: '' },
-  howTo: { en: '', de: '' },
-  category: 'ffa',
-  tags: [],
-  players: { min: 2, max: 8 },
-  durationSec: 30,
-  competitiveSafe: true,
-  params: {},
-  createSim: () => { throw new Error('not used by the match sim'); },
-  createView: () => { throw new Error('not used by the match sim'); },
-  bot: () => ({ move: { x: 0, y: 0 }, a: false, b: false }),
-});
+// Dummy minigames so the round loop exercises minigame_select/minigame,
+// anti-repeat (2 ffa games) and the boss cadence (1 boss game).
+function registerTestMinigame(id, category) {
+  minigames.register({
+    id,
+    name: { en: id, de: id },
+    description: { en: '', de: '' },
+    howTo: { en: '', de: '' },
+    category,
+    tags: [],
+    players: { min: 2, max: 8 },
+    durationSec: 30,
+    competitiveSafe: true,
+    params: {},
+    createSim: () => { throw new Error('not used by the match sim'); },
+    createView: () => { throw new Error('not used by the match sim'); },
+    bot: () => ({ move: { x: 0, y: 0 }, a: false, b: false }),
+  });
+}
+registerTestMinigame('mg_test_race', 'ffa');
+registerTestMinigame('mg_test_climb', 'ffa');
+registerTestMinigame('mg_test_boss', 'boss');
 
 /* ------------------------------------------------------------------ */
 /* Harness                                                             */
@@ -291,14 +297,23 @@ test('full 10-round match with 4 bots runs to game_over with no illegal actions'
       'ranking must follow bananas -> coins',
     );
   }
-  // 10 rounds with minigameEvery=1 -> 10 minigames played.
+  // 10 rounds with minigameEvery=1 -> 10 minigames played (and recorded).
   assert.equal(log.filter((e) => e.type === 'minigame_start').length, 10);
   assert.equal(log.filter((e) => e.type === 'minigame_result').length, 10);
+  assert.equal(state.minigameHistory.length, 10, 'played minigames are recorded in state');
   // Board mechanics fired on their cadence (rounds 3,6,9 / 4,8).
   assert.equal(log.filter((e) => e.type === 'mechanic' && e.id === 'jungle_wind').length, 3);
   assert.equal(log.filter((e) => e.type === 'boss' && e.id === 'kong').length, 2);
-  // Bonus phase awarded bananas (non-competitive).
-  assert.equal(log.filter((e) => e.type === 'bonus').length, 3);
+  // Bonus phase: 2 announced categories (minigame_king + 1 random), at most
+  // one banana each.
+  assert.equal(state.bonusCategories.length, 2);
+  assert.equal(state.bonusCategories[0], 'minigame_king');
+  const bonuses = log.filter((e) => e.type === 'bonus');
+  assert.ok(bonuses.length >= 1 && bonuses.length <= 2, `1-2 bonus bananas (got ${bonuses.length})`);
+  for (const b of bonuses) assert.ok(state.bonusCategories.includes(b.category), 'bonus matches an announced category');
+  // The winner decision records whether a tiebreak decided it.
+  assert.equal(typeof over[0].tiebreak, 'boolean');
+  assert.ok(over[0].tiebreakBy === null || ['coins', 'minigameWins', 'turnOrder'].includes(over[0].tiebreakBy));
   // Coins never went negative anywhere along the way.
   for (const evt of log.filter((e) => e.type === 'coins')) {
     assert.ok(evt.total >= 0, 'coin totals must be clamped >= 0');
@@ -403,7 +418,247 @@ test('board bot returns a legal action for every awaiting state at every difficu
     }
     assert.equal(sim.getState().phase, 'game_over', `bot(${difficulty}) finished the match`);
   }
-  assert.equal(getDifficultyProfile('wild').randomChance, 0, 'wild is optimal');
+  assert.ok(getDifficultyProfile('wild').randomChance >= 0.3, 'wild is the erratic chaos profile');
+  assert.ok(getDifficultyProfile('wild').noise > getDifficultyProfile('hard').noise, 'wild gambles louder than hard');
+  assert.ok(
+    getDifficultyProfile('hard').randomChance < getDifficultyProfile('normal').randomChance,
+    'hard is the most consistent (strongest) profile',
+  );
   assert.equal(getDifficultyProfile('easy').randomChance, 0.35);
   assert.equal(getDifficultyProfile('easy').topK, 3);
+});
+
+/* ------------------------------------------------------------------ */
+/* Rules toggles: traps off, competitive neutralization, hardcore,     */
+/* fastMode                                                            */
+/* ------------------------------------------------------------------ */
+
+test('rules.traps=false disarms built-in board traps; competitive neutralizes boss swings', () => {
+  const sim = makeSim(0xACE, { competitive: true, traps: false });
+  drive(sim, createRng(31));
+  const log = sim.getEventLog();
+  assert.equal(sim.getState().phase, 'game_over');
+
+  const builtinTraps = log.filter((e) => e.type === 'trap' && e.builtin);
+  for (const t of builtinTraps) assert.equal(t.disarmed, true, 'board trap fired despite traps:false');
+  assert.ok(!log.some((e) => e.type === 'coins' && e.reason === 'board_trap'), 'no board-trap coin losses');
+
+  // Round-cadence boss handler is announced but not run; boss FIELDS are a
+  // fixed small -3 instead of the RNG handler.
+  for (const b of log.filter((e) => e.type === 'boss')) {
+    assert.equal(b.neutralized, true, `boss event not neutralized in competitive: ${JSON.stringify(b)}`);
+  }
+  assert.ok(!log.some((e) => e.type === 'coins' && e.reason === 'boss:kong'), 'kong handler never ran');
+  for (const c of log.filter((e) => e.type === 'coins' && e.reason === 'boss')) {
+    assert.ok(c.delta >= -3 && c.delta < 0, `boss field is a fixed small toll (got ${c.delta})`);
+  }
+  // No bonus bananas in competitive; categories announced as empty.
+  assert.equal(log.filter((e) => e.type === 'bonus').length, 0);
+  assert.deepEqual(sim.getState().bonusCategories, []);
+});
+
+test('hardcore: red fields cost -5 and no end-game bonus bananas', () => {
+  const sim = makeSim(0xBEEF, { hardcore: true });
+  drive(sim, createRng(32));
+  const log = sim.getEventLog();
+  assert.equal(sim.getState().phase, 'game_over');
+
+  const reds = log.filter((e) => e.type === 'coins' && e.reason === 'field_red');
+  assert.ok(reds.length > 0, 'someone landed on a red field');
+  for (const c of reds) assert.ok(c.delta >= -5 && c.delta < 0, `red field delta -5..-1 (got ${c.delta})`);
+  assert.ok(reds.some((c) => c.delta === -5), 'unclamped red field losses are -5 in hardcore');
+
+  assert.equal(log.filter((e) => e.type === 'bonus').length, 0, 'no bonus bananas in hardcore');
+  assert.deepEqual(sim.getState().bonusCategories, []);
+
+  // Sanity: the same seed WITHOUT hardcore loses only -3 on red fields.
+  const soft = makeSim(0xBEEF, {});
+  drive(soft, createRng(32));
+  const softReds = soft.getEventLog().filter((e) => e.type === 'coins' && e.reason === 'field_red');
+  for (const c of softReds) assert.ok(c.delta >= -3, `normal red field delta >= -3 (got ${c.delta})`);
+});
+
+test('fastMode: state flag set, shop prompts the player cannot buy from are skipped', () => {
+  const fast = makeSim(2024, { fastMode: true, startCoins: 0 });
+  assert.equal(fast.getState().fastMode, true, 'views can read state.fastMode');
+  // b1 has 0 coins: opening the shop must NOT stop the game in fastMode.
+  assert.equal(fast.openShop('b1', 'n05', 'field'), false);
+  assert.ok(fast.getEventLog().some((e) => e.type === 'shop' && e.kind === 'skipped' && e.reason === 'fast_mode'));
+  assert.equal(fast.getState().awaiting.decision, 'roll', 'awaiting untouched by the skipped shop');
+
+  // Without fastMode the same broke player still gets the (leave-only) prompt.
+  const slow = makeSim(2024, { startCoins: 0 });
+  assert.equal(slow.getState().fastMode, false);
+  assert.equal(slow.openShop('b1', 'n05', 'field'), true);
+  assert.equal(slow.getState().awaiting.decision, 'shop');
+});
+
+/* ------------------------------------------------------------------ */
+/* Minigame selection: anti-repeat, boss cadence, crescendo, duel comp */
+/* ------------------------------------------------------------------ */
+
+test('minigame anti-repeat + boss cadence (every 4th and the final round)', () => {
+  const sim = makeSim(0xFACE);
+  drive(sim, createRng(41));
+  const ids = sim.getEventLog().filter((e) => e.type === 'minigame_start').map((e) => e.minigameId);
+  assert.equal(ids.length, 10);
+  assert.deepEqual(sim.getState().minigameHistory, ids, 'history matches the played sequence');
+  // Anti-repeat: the selector sees the history now, so the second pick must
+  // differ from the first (2 ffa games rotate; boss only enters via cadence).
+  assert.notEqual(ids[1], ids[0], 'anti-repeat forces a different second minigame');
+  // Boss cadence: minigames #4 and #8, plus the final round, are boss games.
+  assert.equal(ids[3], 'mg_test_boss', '4th minigame is a boss game');
+  assert.equal(ids[7], 'mg_test_boss', '8th minigame is a boss game');
+  assert.equal(ids[9], 'mg_test_boss', 'final-round minigame is a boss game');
+});
+
+test('endgame crescendo: minigame payouts double in the final 2 rounds', () => {
+  const sim = makeSim(0xD1CE);
+  drive(sim, createRng(42));
+  const log = sim.getEventLog();
+  const results = log.filter((e) => e.type === 'minigame_result');
+  assert.equal(results.length, 10);
+  results.forEach((r, i) => {
+    assert.equal(r.crescendo, i >= 8, `minigame ${i + 1} crescendo flag`);
+  });
+  // The drive harness always reports coins {10,7,4,1}; the applied deltas
+  // must be doubled for the last two minigames only.
+  const starts = [];
+  log.forEach((e, idx) => { if (e.type === 'minigame_start') starts.push(idx); });
+  const deltasAfter = (idx) => log.slice(idx).filter((e) => e.type === 'coins' && e.reason === 'minigame')
+    .slice(0, 4).map((e) => e.delta);
+  for (const d of deltasAfter(starts[0])) assert.ok([10, 7, 4, 1].includes(d), `round-1 minigame delta ${d}`);
+  for (const d of deltasAfter(starts[9])) assert.ok([20, 14, 8, 2].includes(d), `final-round minigame delta ${d}`);
+});
+
+test('duel minigames with >2 players pay sidelined players a consolation', () => {
+  const sim = makeSim(0xD0E1);
+  // Force a pending duel between b1 and b2 (b3/b4 sidelined).
+  sim.state.phase = 'minigame';
+  sim.state.minigame = { pendingId: 'mg_fake_duel', teams: [['b1'], ['b2']], params: {}, results: null };
+  const before3 = sim.state.players.b3.coins;
+  const before4 = sim.state.players.b4.coins;
+  sim.apply({
+    type: 'minigameResults',
+    playerId: 'b1',
+    payload: { results: { ranking: ['b1', 'b2'], coins: { b1: 10, b2: 3 }, stats: {} } },
+  });
+  assert.equal(sim.state.players.b3.coins, before3 + 3, 'sidelined b3 got 3 consolation coins');
+  assert.equal(sim.state.players.b4.coins, before4 + 3, 'sidelined b4 got 3 consolation coins');
+  const consolations = sim.getEventLog().filter((e) => e.type === 'coins' && e.reason === 'minigame_consolation');
+  assert.deepEqual(consolations.map((e) => e.playerId).sort(), ['b3', 'b4']);
+});
+
+/* ------------------------------------------------------------------ */
+/* Effect ticking semantics                                            */
+/* ------------------------------------------------------------------ */
+
+test('timed effects last exactly turnsLeft of the OWNER\'s turns, whenever applied', () => {
+  const diceOf = (sim, pid) => sim.getEventLog().filter((e) => e.type === 'dice' && e.playerId === pid);
+
+  // Case A: cursed BEFORE the victim's turn this round (items off = no
+  // other effect sources interfere).
+  const simA = makeSim(0xE1, { items: 'off' });
+  simA.addEffect('b2', { id: 'dice_curse', turnsLeft: 1 });
+  const rngA = createRng(51);
+  let guard = 0;
+  while (diceOf(simA, 'b2').length < 2 && guard++ < 3000) drive(simA, rngA, { stopAfterApplies: 1 });
+  const rollsA = diceOf(simA, 'b2');
+  assert.equal(rollsA[0].sides, 3, 'the very next roll is cursed (d3)');
+  assert.equal(rollsA[1].sides, 6, 'the curse expired after exactly one of the owner\'s turns');
+
+  // Case B: cursed AFTER the victim already moved this round - it must
+  // still bite exactly one (the next) roll.
+  const simB = makeSim(0xE2, { items: 'off' });
+  const rngB = createRng(52);
+  guard = 0;
+  while (diceOf(simB, 'b2').length < 1 && guard++ < 3000) drive(simB, rngB, { stopAfterApplies: 1 });
+  // b2 has rolled, so b1's turn is definitely over: curse b1 now.
+  simB.addEffect('b1', { id: 'dice_curse', turnsLeft: 1 });
+  guard = 0;
+  while (diceOf(simB, 'b1').length < 3 && guard++ < 3000) drive(simB, rngB, { stopAfterApplies: 1 });
+  const rollsB = diceOf(simB, 'b1');
+  assert.equal(rollsB[0].sides, 6, 'roll before the curse was normal');
+  assert.equal(rollsB[1].sides, 3, 'the next roll (following round) is cursed');
+  assert.equal(rollsB[2].sides, 6, 'exactly one cursed roll, then back to a d6');
+});
+
+/* ------------------------------------------------------------------ */
+/* Bot item usage                                                      */
+/* ------------------------------------------------------------------ */
+
+test('bots use double_dice when the star is affordable and within boosted reach', () => {
+  // Constructed state: p1 on n00, star on n07 (distance 7 - beyond a d6,
+  // within a boosted roll), 25 coins vs starPrice 20, holding double_dice.
+  const initLikeStats = () => (
+    { fieldsMoved: 0, coinsLost: 0, itemsUsed: 0, minigameWins: 0, minigameCoins: 0, eventsHit: 0 }
+  );
+  const state = {
+    matchId: 'm_fix', seed: 1, boardId: 'test_jungle',
+    rules: { starPrice: 20 },
+    protocolVersion: 1,
+    round: 1,
+    phase: 'item',
+    turnOrder: ['p1', 'p2'],
+    currentTurn: 0,
+    players: {
+      p1: {
+        id: 'p1', name: 'P1', characterId: null, cosmetics: {}, isBot: true, difficulty: 'wild',
+        node: 'n00', facingNext: 'n01', coins: 25, goldenBananas: 0, items: ['double_dice'],
+        effects: [], lastFieldColor: null, connected: true, stats: initLikeStats(),
+      },
+      p2: {
+        id: 'p2', name: 'P2', characterId: null, cosmetics: {}, isBot: true, difficulty: 'wild',
+        node: 'n12', facingNext: 'n13', coins: 5, goldenBananas: 1, items: [],
+        effects: [], lastFieldColor: null, connected: true, stats: initLikeStats(),
+      },
+    },
+    board: { starNode: 'n07', traps: {}, mechanics: {}, blockedNodes: [], shopStockOverrides: {} },
+    minigame: null,
+    awaiting: { playerId: 'p1', decision: 'roll', options: { usableItems: ['double_dice'] } },
+    rngState: 0,
+  };
+  const legal = [
+    { type: 'useItem', playerId: 'p1', payload: { itemId: 'double_dice' } },
+    { type: 'skipItem', playerId: 'p1', payload: {} },
+    { type: 'roll', playerId: 'p1', payload: {} },
+  ];
+
+  const usage = (difficulty) => {
+    let used = 0;
+    for (let seed = 1; seed <= 50; seed += 1) {
+      const action = decideBoardAction(state, legal, 'p1', difficulty, createRng(seed));
+      if (action.type === 'useItem' && action.payload.itemId === 'double_dice') used += 1;
+    }
+    return used;
+  };
+  assert.ok(usage('hard') >= 45, `hard bots almost always boost the star race (got ${usage('hard')}/50)`);
+  assert.ok(usage('wild') >= 15, `erratic wild bots still use items regularly (got ${usage('wild')}/50)`);
+  assert.ok(usage('normal') >= 30, `normal bots usually boost (got ${usage('normal')}/50)`);
+});
+
+/* ------------------------------------------------------------------ */
+/* Stranding rescue + star reachability                                */
+/* ------------------------------------------------------------------ */
+
+test('a player whose every exit is blocked is rescued to the nearest open node', () => {
+  const sim = makeSim(0x0B57);
+  sim.blockNodes(['n13'], 1); // n12's only exit
+  sim.state.players.b1.node = 'n12';
+  sim.apply({ type: 'roll', playerId: 'b1', payload: {} });
+  const log = sim.getEventLog();
+  assert.ok(
+    log.some((e) => e.type === 'move_step' && e.kind === 'rescued' && e.playerId === 'b1' && e.to === 'n14'),
+    'b1 was teleported past the blockade to the nearest open node',
+  );
+  assert.equal(sim.state.players.b1.node, 'n14', 'b1 landed on the rescue node');
+  assert.ok(!sim.state.board.blockedNodes.includes(sim.state.players.b1.node));
+});
+
+test('relocateStar only picks star spawns that are open and enterable', () => {
+  const sim = makeSim(0x57A2);
+  sim.state.board.starNode = 'n01';
+  sim.blockNodes(['n07'], 3); // wall off one of the three spawns
+  assert.equal(sim.relocateStar(), 'n19', 'the only reachable other spawn is chosen');
+  assert.equal(sim.relocateStar(), 'n01', 'and back - n07 is never picked while blocked');
 });

@@ -13,7 +13,7 @@
 import { createRng } from '../../../rng.js';
 import { clampFrame, emptyFrame } from '../../inputs.js';
 import {
-  defineMinigame, rankByScore, coinsForRanking, MINIGAME_HZ, COUNTDOWN_TICKS,
+  defineMinigame, rankByScoreGrouped, coinsForRanking, MINIGAME_HZ, COUNTDOWN_TICKS,
 } from '../../framework.js';
 import { minigames } from '../../../registries.js';
 
@@ -143,7 +143,7 @@ function createSim({ seed, players, params = {}, rules = {} } = {}) {
       const p = state.players[pid];
       scores[pid] = p.score * 1000 + p.maxCombo;
     }
-    const ranking = rankByScore(scores);
+    const ranking = rankByScoreGrouped(scores);
     const coins = coinsForRanking(ranking, { chaos });
     const stats = {};
     for (const pid of state.order) {
@@ -158,8 +158,12 @@ function createSim({ seed, players, params = {}, rules = {} } = {}) {
   return { init, step, getState, applyState, isFinished, getResults };
 }
 
-const TIMING_ERR = { easy: 5, normal: 3, hard: 1, wild: 0 };
-const MISS_PCT = { easy: 22, normal: 10, hard: 3, wild: 0 };
+// Timing error spans BEYOND the 3-tick perfect window for every tier below
+// wild, so bots land a human-like mix of perfects and goods (easy ~54%
+// perfect, normal ~64%, hard ~78%) instead of 100% frame-perfect hits.
+const TIMING_ERR = { easy: 6, normal: 5, hard: 4, wild: 1 };
+// Even wild whiffs ~2% of beats: a flawless human can beat every tier.
+const MISS_PCT = { easy: 22, normal: 10, hard: 4, wild: 2 };
 
 function ihash(a, b) {
   let h = (Math.imul(a | 0, 374761393) + Math.imul(b | 0, 668265263)) >>> 0;

@@ -171,6 +171,28 @@ export function rankByScore(scores) {
 }
 
 /**
+ * Rank player ids by score, descending, clustering EQUAL scores into tie
+ * groups (nested arrays) that coinsForRanking pays out equally. Singleton
+ * places stay plain pids, so `ranking.flat()` always covers every player
+ * exactly once. Group member order follows the map's insertion order.
+ *
+ * @param {Object<string, number>} scores pid -> score.
+ * @returns {Array<string|string[]>} ranking, best first; ties grouped.
+ */
+export function rankByScoreGrouped(scores) {
+  const entries = Object.entries(scores ?? {})
+    .map(([pid, score], index) => ({ pid, score: Number(score) || 0, index }))
+    .sort((a, b) => (b.score - a.score) || (a.index - b.index));
+  const groups = [];
+  for (const e of entries) {
+    const last = groups[groups.length - 1];
+    if (last && last.score === e.score) last.pids.push(e.pid);
+    else groups.push({ score: e.score, pids: [e.pid] });
+  }
+  return groups.map((g) => (g.pids.length === 1 ? g.pids[0] : g.pids));
+}
+
+/**
  * Coin payouts for a ranking. Ranking entries may be plain pids or arrays
  * of tied pids (every member of a tied group earns that place's payout).
  * Places beyond base.length earn 1 consolation coin (0 with an empty base).

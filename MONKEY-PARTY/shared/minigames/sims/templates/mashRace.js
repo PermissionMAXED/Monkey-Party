@@ -17,7 +17,7 @@
 
 import { clampFrame, emptyFrame } from '../../inputs.js';
 import {
-  defineMinigame, rankByScore, coinsForRanking, MINIGAME_HZ, COUNTDOWN_TICKS,
+  defineMinigame, rankByScoreGrouped, coinsForRanking, MINIGAME_HZ, COUNTDOWN_TICKS,
 } from '../../framework.js';
 import { minigames } from '../../../registries.js';
 
@@ -29,6 +29,8 @@ export const MASH_RACE_DEFAULTS = {
   decayPerSec: 0.35,
   ropeGoal: 9,
   pullPower: 0.45,
+  freezeEveryTicks: 0, // >0: mash for this long, then a freeze window...
+  freezeTicks: 0, // ...of this length where presses do nothing.
   durationSec: 40,
   theme: {
     palette: { primary: '#2e7d32', secondary: '#8d6e63', accent: '#ffe135' },
@@ -74,6 +76,9 @@ function createTemplateSim({ id, seed, players, params = {}, rules = {} } = {}) 
       mode: cfg.mode,
       goal: cfg.goal,
       ropeGoal: cfg.ropeGoal,
+      freezeEveryTicks: cfg.freezeEveryTicks,
+      freezeTicks: cfg.freezeTicks,
+      frozen: false, // True during a freeze window (presses do nothing).
       rope: 0,
       winnerTeam: -1,
       teams: cfg.mode === 'solo' ? null : [{ score: 0 }, { score: 0 }],
@@ -94,6 +99,12 @@ function createTemplateSim({ id, seed, players, params = {}, rules = {} } = {}) 
     const playing = t > state.countdownTicks;
 
     if (playing) {
+      // Freeze-window variants (e.g. drawbridge_dash): the mechanism locks
+      // on a fixed cadence and presses during the lock are simply ignored.
+      if (cfg.freezeEveryTicks > 0 && cfg.freezeTicks > 0) {
+        const cycle = cfg.freezeEveryTicks + cfg.freezeTicks;
+        state.frozen = ((t - state.countdownTicks) % cycle) >= cfg.freezeEveryTicks;
+      }
       for (const pid of state.order) {
         const p = state.players[pid];
         if (p.finished) continue;
@@ -102,6 +113,7 @@ function createTemplateSim({ id, seed, players, params = {}, rules = {} } = {}) 
         const edgeB = frame.b && !p.prevB;
         p.prevA = frame.a;
         p.prevB = frame.b;
+        if (state.frozen) continue; // Locked: presses neither help nor hurt.
 
         let hits = 0;
         if (edgeA) {
@@ -184,11 +196,12 @@ function createTemplateSim({ id, seed, players, params = {}, rules = {} } = {}) 
       if (state.mode === 'solo') {
         scores[pid] = p.finished ? 1000000 - p.finishTick : p.progress * 100;
       } else {
-        const won = state.winnerTeam >= 0 && p.team === state.winnerTeam ? 100000 : 0;
-        scores[pid] = won + p.presses;
+        // Team modes: teammates win or lose together, so they share one
+        // payout tier instead of splitting it by individual mash count.
+        scores[pid] = state.winnerTeam >= 0 && p.team === state.winnerTeam ? 1 : 0;
       }
     }
-    const ranking = rankByScore(scores);
+    const ranking = rankByScoreGrouped(scores);
     const coins = coinsForRanking(ranking, { chaos });
     const stats = {};
     for (const pid of state.order) {

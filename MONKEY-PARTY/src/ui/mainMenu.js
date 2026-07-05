@@ -134,22 +134,74 @@ export function createMainMenuScreen(ctx) {
     return client;
   }
 
+  /**
+   * A reload/reopen with a live resume token can drop us straight back into
+   * a lobby or a RUNNING match (the transport resumes on open; the server
+   * replies with lobby_state or a mid-match state_sync). Wait briefly for
+   * that outcome so e.g. quick_match doesn't silently abandon the seat.
+   *
+   * @returns {Promise<'match'|'lobby'|null>} where the resume landed us.
+   */
+  function waitForResumeOutcome(client, session, timeoutMs = 1500) {
+    if (!client.resumeToken) return Promise.resolve(null);
+    return new Promise((resolve) => {
+      const offs = [];
+      let timer = null;
+      const done = (outcome) => {
+        clearTimeout(timer);
+        for (const off of offs.splice(0)) {
+          try {
+            off?.();
+          } catch { /* gone */ }
+        }
+        resolve(outcome);
+      };
+      timer = setTimeout(() => done(null), timeoutMs);
+      // Mid-match resume: the session rebuilds its sim from the snapshot
+      // and only then emits state_sync.
+      offs.push(session.on('state_sync', (msg) => done(msg?.snapshot ? 'match' : null)));
+      offs.push(session.on('lobby_state', (lobby) => {
+        if (lobby) done(lobby.started ? 'match' : 'lobby');
+      }));
+      // Dead/unknown token: the server answers the resume with an error.
+      offs.push(client.on('error', (msg) => {
+        if (msg?.code === 'resume') done(null);
+      }));
+    });
+  }
+
   async function startOnline(afterConnect) {
     const info = toastOnce(t('menu.connecting'));
     try {
+      // A resume (and thus a mid-match rejoin) only happens when the socket
+      // (re)opens; if it is already open and identified, don't wait for one.
+      const wasOpen = ctx.getNetClient()?.state === 'open';
       const client = await connectOnline();
       const session = createOnlineSession(client);
       ctx.setSession(session);
 
       // Navigate to the lobby as soon as the server confirms one.
       const offLobby = session.on('lobby_state', (lobby) => {
+        if (!lobby) return;
         offLobby();
-        if (lobby) ctx.router.go('lobby');
+        if (ctx.router.currentName() !== 'lobby' && ctx.router.currentName() !== 'match') {
+          ctx.router.go(lobby.started ? 'match' : 'lobby');
+        }
       });
       const offErr = client.on('error', (msg) => {
+        if (msg?.code === 'resume') return; // stale token: harmless, hello follows
         offErr();
         toast(msg?.msg ?? 'Server error', 'error');
       });
+
+      const resumed = wasOpen ? null : await waitForResumeOutcome(client, session);
+      if (resumed === 'match') {
+        // Rejoin the running match instead of abandoning the seat.
+        toast('Rejoining your running match…', 'info');
+        ctx.router.go('match');
+        return;
+      }
+      if (resumed === 'lobby') return; // offLobby already navigated
       afterConnect(client, session);
     } catch (err) {
       try {

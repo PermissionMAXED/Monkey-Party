@@ -11,6 +11,15 @@
  */
 
 import { graph, seq, circle, alongPath, cycle, loc, makeNav, allPlayers } from './index.js';
+import { registerEffectDef } from '../../sim/effects.js';
+
+/** Hot-spring buff: full trap immunity (board hazards + placed traps). */
+registerEffectDef({
+  id: 'cozy_warmth',
+  hooks: {
+    onTrapTriggered: (chain) => ({ ...chain, cancelled: true }),
+  },
+});
 
 const g = graph();
 

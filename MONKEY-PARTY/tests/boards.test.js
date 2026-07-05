@@ -250,3 +250,70 @@ test('gorilla_palace exposes the onStarPrice mechanic hook (+10)', () => {
   const hook = mech.onStarPrice ?? mech.hooks.onStarPrice;
   assert.equal(hook(20), 30, 'starPrice 20 -> 30 at the throne');
 });
+
+test('board mechanic hooks + effect defs are live in the sim (throne +10, d8, trap immunity)', async () => {
+  const { createMatchSim } = await import('#shared/sim/match.js');
+  const { buildDicePool } = await import('#shared/sim/dice.js');
+  const { applyField } = await import('#shared/sim/fields.js');
+  const players = [{ id: 'p1' }, { id: 'p2' }];
+
+  // 1. gorilla_palace: the throne markup flows through the mechanic hook chain.
+  const gp = createMatchSim({ seed: 5, boardId: 'gorilla_palace', players });
+  gp.state.board.starNode = 'gp_t03';
+  assert.equal(gp.starPriceFor('p1'), 30, 'throne star costs starPrice + 10');
+  gp.state.board.starNode = 'gp_t05';
+  assert.equal(gp.starPriceFor('p1'), 30, 'both throne-ascent spawns carry the markup');
+  gp.state.board.starNode = 'gp_b03';
+  assert.equal(gp.starPriceFor('p1'), 20, 'the gallery star has no royal markup');
+
+  // 2. robo_banana_factory: the overclock dice_d8 effect changes the pool.
+  const rf = createMatchSim({ seed: 5, boardId: 'robo_banana_factory', players });
+  assert.equal(buildDicePool(rf, 'p1').sides, 6);
+  rf.addEffect('p1', { id: 'dice_d8', turnsLeft: 1 });
+  assert.equal(buildDicePool(rf, 'p1').sides, 8, 'overclocked players roll a d8');
+
+  // 3. icy_coconut_peak: cozy_warmth cancels built-in trap fields.
+  const ip = createMatchSim({ seed: 5, boardId: 'icy_coconut_peak', players });
+  const ipTrap = ip.board.nodes.find((n) => n.type === 'trap');
+  ip.addEffect('p1', { id: 'cozy_warmth', turnsLeft: 2 });
+  const warmBefore = ip.state.players.p1.coins;
+  applyField(ip, 'p1', ipTrap);
+  assert.equal(ip.state.players.p1.coins, warmBefore, 'cozy_warmth cancels the trap');
+  const coldBefore = ip.state.players.p2.coins;
+  applyField(ip, 'p2', ipTrap);
+  assert.ok(ip.state.players.p2.coins < coldBefore, 'without the effect the trap still bites');
+
+  // 4. ghost_jungle: lantern_light gives the same immunity (checked against
+  // a placed trap - the board has no built-in trap fields).
+  const { triggerPlacedTrap } = await import('#shared/sim/fields.js');
+  const gj = createMatchSim({ seed: 5, boardId: 'ghost_jungle', players });
+  gj.placeTrap('p2', 'gj_m01', 'banana_peel');
+  gj.addEffect('p1', { id: 'lantern_light', turnsLeft: 3 });
+  const out = triggerPlacedTrap(gj, 'p1', 'gj_m01');
+  assert.equal(out.triggered, true, 'the trap sprang');
+  assert.equal(out.cancelMove, false, 'lantern_light neutralized it');
+  const trapEvt = gj.getEventLog().filter((e) => e.type === 'trap').pop();
+  assert.equal(trapEvt.cancelled, true, 'trap trigger was cancelled by lantern_light');
+});
+
+test('volcano_island: rising lava never strands a player and the star stays reachable', async () => {
+  const { createMatchSim } = await import('#shared/sim/match.js');
+  const sim = createMatchSim({ seed: 11, boardId: 'volcano_island', players: [{ id: 'p1' }, { id: 'p2' }] });
+
+  // Simulate lava level 2: the caldera floor plus vi_o10 - every exit of
+  // junction vi_o09 - is flooded.
+  sim.blockNodes(['vi_c00', 'vi_c01', 'vi_c02', 'vi_c03', 'vi_c04', 'vi_o10'], 3);
+  sim.state.players.p1.node = 'vi_o09';
+  sim.apply({ type: 'roll', playerId: 'p1', payload: {} });
+  const rescued = sim.getEventLog().find((e) => e.type === 'move_step' && e.kind === 'rescued' && e.playerId === 'p1');
+  assert.ok(rescued, 'the walled-in player was rescued instead of stranded');
+  assert.ok(!sim.state.board.blockedNodes.includes(sim.state.players.p1.node), 'rescue node is open');
+  assert.notEqual(sim.state.players.p1.node, 'vi_o09', 'the player actually moved');
+
+  // Star relocation skips spawns swallowed by the lava.
+  sim.state.board.starNode = 'vi_o22';
+  sim.blockNodes(['vi_a05'], 3);
+  for (let i = 0; i < 5; i += 1) {
+    assert.notEqual(sim.relocateStar(), 'vi_a05', 'a blocked spawn is never chosen');
+  }
+});

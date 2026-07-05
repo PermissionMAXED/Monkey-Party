@@ -17,7 +17,7 @@
 import { createRng } from '../../../rng.js';
 import { clampFrame, emptyFrame } from '../../inputs.js';
 import {
-  defineMinigame, rankByScore, coinsForRanking, MINIGAME_HZ, COUNTDOWN_TICKS,
+  defineMinigame, rankByScoreGrouped, coinsForRanking, MINIGAME_HZ, COUNTDOWN_TICKS,
 } from '../../framework.js';
 import { minigames } from '../../../registries.js';
 
@@ -177,7 +177,9 @@ function createTemplateSim({ id, seed, players, params = {}, rules = {} } = {}) 
       const p = state.players[pid];
       scores[pid] = (p.alive ? 1000000 : p.elimTick) + p.dodges;
     }
-    const ranking = rankByScore(scores);
+    // Grouped: players eliminated by the same blast (same tick, same
+    // near-miss count) tie for the place instead of paying by seat order.
+    const ranking = rankByScoreGrouped(scores);
     const coins = coinsForRanking(ranking, { chaos });
     const stats = {};
     for (const pid of state.order) {

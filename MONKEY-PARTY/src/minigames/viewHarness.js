@@ -610,9 +610,13 @@ export function runMinigame({ engine, input, def, driver, localSeats, players, o
   const stepper = createFixedStepper(sim, { hz: MINIGAME_HZ, maxCatchUpSec: 0.5 });
 
   /* --------------------------- net driver ---------------------------- */
+  // The server broadcasts mg_state at ~15Hz (see server/config.js
+  // mgBroadcastHz); measure the actual cadence for interpolation.
+  const NET_SNAPSHOT_MS = 1000 / 15;
   const unsubs = [];
   let netAlpha = 0;
   let lastSnapshotAt = 0;
+  let snapshotIntervalMs = NET_SNAPSHOT_MS;
   let netResults = null;
   if (isNet) {
     const now = () => (typeof performance !== 'undefined' ? performance.now() : 0);
@@ -622,7 +626,16 @@ export function runMinigame({ engine, input, def, driver, localSeats, players, o
         if (!snapshot) return;
         try {
           sim.applyState(snapshot);
-          lastSnapshotAt = now();
+          const t = now();
+          if (lastSnapshotAt > 0) {
+            const delta = t - lastSnapshotAt;
+            // Smooth the measured cadence; clamp so a burst/stall after a
+            // reconnect can't produce a degenerate interval.
+            if (delta > 5 && delta < 1000) {
+              snapshotIntervalMs = snapshotIntervalMs * 0.7 + delta * 0.3;
+            }
+          }
+          lastSnapshotAt = t;
         } catch {
           /* keep the previous display state */
         }
@@ -635,16 +648,25 @@ export function runMinigame({ engine, input, def, driver, localSeats, players, o
     }
   }
 
+  // Send local input upstream at ~20Hz, NOT the 30Hz sim rate: the server
+  // only keeps the latest frame per tick, and the connection rate limiter
+  // (server/config.js rateWarnPerSec 30 / rateKickPerSec 60) must never be
+  // tripped by a legitimate input stream.
+  const NET_SEND_HZ = 20;
   let netSendAcc = 0;
   function forwardLocalFrames(dt) {
     if (!isNet || typeof driver.sendInput !== 'function') return;
     netSendAcc += dt;
-    const interval = 1 / MINIGAME_HZ;
+    const interval = 1 / NET_SEND_HZ;
     if (netSendAcc < interval) return;
     netSendAcc %= interval;
     for (const p of roster) {
       if (p.isBot) continue;
-      const seat = localSeats?.get?.(p.id);
+      // Only LOCAL seats: remote humans send their own frames. Looping the
+      // whole roster would multiply the send rate per extra human and get
+      // this client rate-kicked.
+      if (!localSeats?.has?.(p.id)) continue;
+      const seat = localSeats.get(p.id);
       const frame = clampFrame(input?.getFrame ? input.getFrame(seat ?? 0) : emptyFrame());
       try {
         driver.sendInput(frame, p.id);
@@ -736,10 +758,12 @@ export function runMinigame({ engine, input, def, driver, localSeats, players, o
     if (phase === 'playing') {
       if (isNet) {
         forwardLocalFrames(dt);
-        // Interpolate between snapshots (assume snapshot cadence = tick rate).
+        // Interpolate between snapshots using the measured broadcast cadence
+        // (~15Hz, NOT the 30Hz sim tick rate - dividing by 1000/30 would
+        // saturate alpha halfway between snapshots and judder).
         const now = typeof performance !== 'undefined' ? performance.now() : 0;
         netAlpha = lastSnapshotAt > 0
-          ? Math.min(1, (now - lastSnapshotAt) / (1000 / MINIGAME_HZ))
+          ? Math.min(1, (now - lastSnapshotAt) / snapshotIntervalMs)
           : 0;
         alpha = netAlpha;
         if (netResults) {

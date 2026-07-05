@@ -15,7 +15,7 @@
 
 import { clampFrame, emptyFrame } from '../../inputs.js';
 import {
-  defineMinigame, rankByScore, coinsForRanking, MINIGAME_HZ, COUNTDOWN_TICKS,
+  defineMinigame, rankByScoreGrouped, coinsForRanking, MINIGAME_HZ, COUNTDOWN_TICKS,
 } from '../../framework.js';
 import { minigames } from '../../../registries.js';
 
@@ -146,12 +146,17 @@ function createSim({ players, params = {}, rules = {} } = {}) {
   const isFinished = () => Boolean(state?.finished);
 
   function getResults() {
+    // Teams are ranked by tiles-per-player so an odd split (3v2) does not
+    // hand the bigger team the win by headcount alone; teammates share the
+    // team outcome and tie into one payout group.
+    const teamSizes = [0, 0];
+    for (const pid of state.order) teamSizes[state.players[pid].team] += 1;
     const scores = {};
     for (const pid of state.order) {
       const p = state.players[pid];
-      scores[pid] = state.teams[p.team].score * 10000 + p.painted;
+      scores[pid] = state.teams[p.team].score / Math.max(1, teamSizes[p.team]);
     }
-    const ranking = rankByScore(scores);
+    const ranking = rankByScoreGrouped(scores);
     const coins = coinsForRanking(ranking, { chaos });
     const stats = {};
     for (const pid of state.order) {
@@ -166,6 +171,14 @@ function createSim({ players, params = {}, rules = {} } = {}) {
 
 const REACT = { easy: 16, normal: 10, hard: 6, wild: 4 };
 const NOISE = { easy: 1.6, normal: 0.9, hard: 0.4, wild: 0.12 };
+/** How many nearest candidate tiles a bot dithers between (1 = optimal). */
+const PICK_SPREAD = { easy: 7, normal: 4, hard: 2, wild: 1 };
+
+function ihash(a, b) {
+  let h = (Math.imul(a | 0, 374761393) + Math.imul(b | 0, 668265263)) >>> 0;
+  h = Math.imul(h ^ (h >>> 13), 1274126177) >>> 0;
+  return (h ^ (h >>> 16)) >>> 0;
+}
 
 function bot(publicState, playerId, difficulty, rng) {
   const frame = emptyFrame();
@@ -175,26 +188,27 @@ function bot(publicState, playerId, difficulty, rng) {
 
   const react = REACT[difficulty] ?? REACT.normal;
   const noise = NOISE[difficulty] ?? NOISE.normal;
+  const spread = PICK_SPREAD[difficulty] ?? PICK_SPREAD.normal;
   const grid = s.gridSize;
   const tile = s.tileSize;
   const half = grid * tile * 0.5;
 
-  // Head for the closest tile that is not ours yet; re-aim only every
-  // `react` ticks so slower bots wobble on stale targets.
+  // Freeze the target for a whole `react` bucket: the bucket hash picks a
+  // fixed rank among the `spread` nearest paintable tiles, so slow bots
+  // commit to (possibly suboptimal) targets instead of re-aiming per tick.
   const bucket = Math.floor(s.tick / react);
-  let best = -1;
-  let bestD = Infinity;
+  const candidates = [];
   for (let i = 0; i < s.tiles.length; i += 1) {
     if (s.tiles[i] === me.team) continue;
     const tx = -half + ((i % grid) + 0.5) * tile;
     const tz = -half + (Math.floor(i / grid) + 0.5) * tile;
     const d = Math.hypot(tx - me.x, tz - me.z) + (s.tiles[i] === -1 ? 0 : 0.4);
-    if (d < bestD) {
-      bestD = d;
-      best = i;
-    }
+    candidates.push({ i, d });
   }
-  if (best < 0) return frame;
+  if (candidates.length === 0) return frame;
+  candidates.sort((a, b) => (a.d - b.d) || (a.i - b.i));
+  const rank = ihash(bucket, me.slot * 13 + 1) % Math.min(spread, candidates.length);
+  const best = candidates[rank].i;
 
   const tx = -half + ((best % grid) + 0.5) * tile + (rng.next() - 0.5) * noise;
   const tz = -half + (Math.floor(best / grid) + 0.5) * tile + (rng.next() - 0.5) * noise;

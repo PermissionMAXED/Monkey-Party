@@ -18,7 +18,7 @@ import { TICK_RATE, MIN_PLAYERS } from '#shared/constants.js';
 import { createEmitter } from '#shared/events.js';
 import { createRng } from '#shared/rng.js';
 import { validateRules } from '#shared/rules.js';
-import { minigames as minigameRegistry } from '#shared/registries.js';
+import { minigames as minigameRegistry, characters as characterRegistry } from '#shared/registries.js';
 import { MSG, SRV } from '#shared/protocol.js';
 
 /* ------------------------------------------------------------------ */
@@ -61,6 +61,27 @@ function createMissingSimStub() {
 }
 
 const BOT_NAMES = ['Bongo', 'Kiki', 'Mango', 'Chimpy', 'Nana', 'Tarzana', 'Coco', 'Peel'];
+
+/**
+ * Give every character-less bot seat a random UNUSED character so bots get
+ * perks + a distinct look instead of the generic fallback monkey.
+ *
+ * @param {{isBot: boolean, characterId: string|null}[]} seats
+ * @param {{next: () => number}} rng
+ */
+function assignBotCharacters(seats, rng) {
+  const allIds = characterRegistry.ids();
+  if (allIds.length === 0) return;
+  const used = new Set(seats.map((s) => s.characterId).filter(Boolean));
+  for (const seat of seats) {
+    if (!seat.isBot || seat.characterId) continue;
+    let pool = allIds.filter((id) => !used.has(id));
+    if (pool.length === 0) pool = allIds; // more bots than characters: reuse
+    const pick = pool[Math.floor(rng.next() * pool.length) % pool.length];
+    seat.characterId = pick;
+    used.add(pick);
+  }
+}
 
 /* ------------------------------------------------------------------ */
 /* Offline session                                                     */
@@ -156,7 +177,8 @@ export function createOfflineSession(cfg = {}) {
       case 'buyStar': return { type: 'buyStar', playerId: awaiting.playerId, payload: {} };
       case 'shop': return { type: 'shopLeave', playerId: awaiting.playerId, payload: {} };
       case 'itemTarget': return { type: 'itemTarget', playerId: awaiting.playerId, payload: { target: first } };
-      case 'dicePick': return { type: 'dicePick', playerId: awaiting.playerId, payload: { pick: first } };
+      // dicePick expects the INDEX of the drafted die, not the option value.
+      case 'dicePick': return { type: 'dicePick', playerId: awaiting.playerId, payload: { index: 0 } };
       default: return null;
     }
   }
@@ -195,7 +217,22 @@ export function createOfflineSession(cfg = {}) {
         console.warn('[session] board bot threw, using fallback decision:', err);
       }
       if (!action) action = fallbackDecision(awaiting);
-      if (action) submit(action);
+      if (!action) return;
+      // This runs inside a setTimeout: an uncaught throw would hang the
+      // match with no visible error. Fall back to a safe default and
+      // re-check so the game always keeps moving.
+      try {
+        submit(action);
+      } catch (err) {
+        console.warn('[session] bot decision rejected by the sim:', err);
+        const fb = fallbackDecision(awaiting);
+        try {
+          if (fb && JSON.stringify(fb) !== JSON.stringify(action)) submit(fb);
+        } catch (err2) {
+          console.warn('[session] fallback decision also rejected:', err2);
+        }
+        checkAwaiting();
+      }
     }, ms);
   }
 
@@ -222,8 +259,25 @@ export function createOfflineSession(cfg = {}) {
     }
     stopMinigameRunner();
 
-    const mgSim = def.createSim({ seed, players, params: { ...def.params, ...params }, rules });
-    mgSim.init();
+    let mgSim;
+    try {
+      mgSim = def.createSim({ seed, players, params: { ...def.params, ...params }, rules });
+      mgSim.init();
+    } catch (err) {
+      // A broken minigame must never hang the match: award neutral results
+      // and let the board move on.
+      console.error(`[session] minigame "${minigameId}" failed to create:`, err);
+      try {
+        submit({
+          type: 'minigameResults',
+          playerId: players[0],
+          payload: { results: { ranking: players.slice(), coins: {}, stats: {} } },
+        });
+      } catch (err2) {
+        console.error('[session] fallback minigame results rejected:', err2);
+      }
+      return;
+    }
     minigameRunner.sim = mgSim;
     emitter.emit('mg_start', { minigameId, seed, params, teams });
 
@@ -346,6 +400,9 @@ export function createOfflineSession(cfg = {}) {
     }
     started = true;
 
+    // Bots without a chosen character get a random unused one (perks + look).
+    assignBotCharacters(seats, rng.fork('botChars'));
+
     const seed = rng.fork('match').state();
     const players = seats.map((s) => ({
       id: s.pid,
@@ -467,13 +524,49 @@ export function createOnlineSession(netClient) {
   let lobby = null;
   let sim = null;
   let localPid = netClient.playerId ?? null;
-  let localSeat = netClient.seat ?? 0;
   let inputSeq = 0;
+  /** True while a sim replica build (dynamic import) is in flight. */
+  let simBuilding = false;
+  /** Guards overlapping async builds: the newest one wins. */
+  let buildToken = 0;
+  /** @type {Object[]} action_applied received while the sim module loads. */
+  const pendingActions = [];
   /** @type {Object|null} Snapshot received before the sim replica was ready. */
   let pendingSnapshot = null;
+  let resyncRequested = false;
 
   function forward(type, payload) {
     netClient.send(type, payload);
+  }
+
+  /**
+   * The replica diverged from the authoritative sim (an apply() threw).
+   * Re-identifying via the resume token on the live socket makes the server
+   * send a fresh state_sync (plus live minigame context) that we rebuild
+   * from - no reconnect needed.
+   */
+  function requestResync(reason) {
+    if (resyncRequested) return;
+    resyncRequested = true;
+    console.warn(`[session:online] replica desync (${reason}) - requesting a state_sync`);
+    sim = null; // stop applying further actions onto a corrupt replica
+    const token = netClient.resumeToken;
+    if (token) {
+      forward(MSG.RESUME, { token });
+    } else if (typeof netClient.close === 'function' && typeof netClient.connect === 'function') {
+      // No token to resync with: bounce the socket, resume happens on open.
+      try {
+        netClient.close();
+      } catch { /* already closed */ }
+      netClient.connect?.().catch?.(() => {});
+    }
+  }
+
+  async function buildReplica(cfg) {
+    const simMod = await tryImport(MATCH_SIM_PATH);
+    const createMatchSim = simMod?.createMatchSim ?? simMod?.default;
+    if (typeof createMatchSim !== 'function') return null;
+    return createMatchSim(cfg);
   }
 
   netClient.on(SRV.WELCOME, (msg) => {
@@ -483,40 +576,66 @@ export function createOnlineSession(netClient) {
 
   netClient.on(SRV.LOBBY_STATE, (msg) => {
     lobby = msg?.lobby ?? null;
-    const mySeat = lobby?.seats?.find?.((s) => s.pid === localPid);
-    if (mySeat && typeof mySeat.seat === 'number') localSeat = mySeat.seat;
     emitter.emit('lobby_state', lobby);
   });
 
   netClient.on(SRV.MATCH_START, async (msg) => {
-    const simMod = await tryImport(MATCH_SIM_PATH);
-    const createMatchSim = simMod?.createMatchSim ?? simMod?.default;
-    if (typeof createMatchSim === 'function') {
-      sim = createMatchSim({
+    const token = ++buildToken;
+    sim = null;
+    simBuilding = true;
+    pendingActions.length = 0;
+    let replica = null;
+    try {
+      replica = await buildReplica({
         seed: msg.seed,
         boardId: msg.boardId,
         rules: msg.rules,
         players: msg.players,
       });
-      if (pendingSnapshot) {
-        sim.applyState?.(pendingSnapshot);
-        pendingSnapshot = null;
-      }
-    } else {
+    } catch (err) {
+      console.error('[session:online] failed to build the sim replica:', err);
+    }
+    if (token !== buildToken) return; // superseded by a newer build
+    simBuilding = false;
+    if (!replica) {
       sim = createMissingSimStub();
       console.warn('[session:online] match started without a local sim replica (shared/sim/match.js missing)');
+      emitter.emit('match_start', msg);
+      return;
+    }
+    try {
+      if (pendingSnapshot) {
+        replica.applyState?.(pendingSnapshot);
+        pendingSnapshot = null;
+      }
+      // Replay actions broadcast while the module import was in flight;
+      // dropping them would permanently desync the replica.
+      for (const action of pendingActions.splice(0)) {
+        const apply = replica.apply ?? replica.submit;
+        apply.call(replica, action);
+      }
+      sim = replica;
+    } catch (err) {
+      console.warn('[session:online] replica catch-up failed:', err);
+      sim = replica;
+      requestResync('startup catch-up failed');
     }
     emitter.emit('match_start', msg);
   });
 
   netClient.on(SRV.ACTION_APPLIED, (msg) => {
     // Keep the replica in lockstep with the authoritative server sim.
-    if (sim && !sim.__missing && msg?.action) {
-      try {
-        const apply = sim.apply ?? sim.submit;
-        apply.call(sim, msg.action);
-      } catch (err) {
-        console.warn('[session:online] replica failed to apply action, awaiting state_sync:', err);
+    if (msg?.action) {
+      if (sim && !sim.__missing) {
+        try {
+          const apply = sim.apply ?? sim.submit;
+          apply.call(sim, msg.action);
+        } catch (err) {
+          console.warn('[session:online] replica failed to apply action:', err);
+          requestResync(`apply(${msg.action?.type}) failed`);
+        }
+      } else if (simBuilding) {
+        pendingActions.push(msg.action);
       }
     }
     emitter.emit('action_applied', msg);
@@ -525,11 +644,70 @@ export function createOnlineSession(netClient) {
     }
   });
 
-  netClient.on(SRV.STATE_SYNC, (msg) => {
+  netClient.on(SRV.STATE_SYNC, async (msg) => {
+    const snapshot = msg?.snapshot ?? null;
+    resyncRequested = false;
     if (sim && !sim.__missing) {
-      sim.applyState?.(msg.snapshot);
+      try {
+        sim.applyState?.(snapshot);
+      } catch (err) {
+        console.warn('[session:online] state_sync failed to apply:', err);
+      }
+      emitter.emit('state_sync', msg);
+      return;
+    }
+    if (simBuilding || !snapshot?.state) {
+      // A match_start build is in flight - it applies this snapshot when
+      // it finishes (or the snapshot is unusable).
+      pendingSnapshot = snapshot;
+      emitter.emit('state_sync', msg);
+      return;
+    }
+    // No replica at all (page reload resumed straight into a running match):
+    // the snapshot carries everything needed to rebuild the sim from scratch
+    // (seed / rules / boardId / players + full internal state).
+    const token = ++buildToken;
+    simBuilding = true;
+    pendingActions.length = 0;
+    const st = snapshot.state;
+    const players = (st.turnOrder ?? Object.keys(st.players ?? {})).map((pid) => {
+      const p = st.players?.[pid] ?? {};
+      return {
+        id: pid,
+        name: p.name ?? pid,
+        characterId: p.characterId ?? null,
+        cosmetics: p.cosmetics ?? {},
+        isBot: !!p.isBot,
+        difficulty: p.difficulty ?? null,
+      };
+    });
+    let replica = null;
+    try {
+      replica = await buildReplica({
+        seed: st.seed,
+        boardId: st.boardId,
+        rules: st.rules,
+        players,
+      });
+    } catch (err) {
+      console.error('[session:online] failed to rebuild the sim from state_sync:', err);
+    }
+    if (token !== buildToken) return; // superseded by a newer build
+    simBuilding = false;
+    if (replica) {
+      try {
+        replica.applyState?.(snapshot);
+        for (const action of pendingActions.splice(0)) {
+          const apply = replica.apply ?? replica.submit;
+          apply.call(replica, action);
+        }
+        sim = replica;
+      } catch (err) {
+        console.warn('[session:online] snapshot restore failed:', err);
+        pendingSnapshot = snapshot;
+      }
     } else {
-      pendingSnapshot = msg?.snapshot ?? null;
+      pendingSnapshot = snapshot;
     }
     emitter.emit('state_sync', msg);
   });
@@ -547,7 +725,8 @@ export function createOnlineSession(netClient) {
     netClient.on(srvType, (msg) => emitter.emit(evtName, msg));
   }
 
-  netClient.on(SRV.PING, () => forward(MSG.PONG, {}));
+  // NOTE: no PING handler here - the transport (src/net/client.js) owns the
+  // keepalive and already answers every server ping with a single pong.
 
   return {
     mode: 'online',
@@ -564,13 +743,19 @@ export function createOnlineSession(netClient) {
     sendInput: (frame) => forward(MSG.MG_INPUT, { seq: ++inputSeq, frame }),
     sendEmote: (id) => forward(MSG.EMOTE, { emoteId: id }),
     on: emitter.on,
-    localSeats: () => (localPid ? new Map([[localPid, localSeat]]) : new Map()),
+    // Online play has exactly ONE local human; they always drive DEVICE
+    // seat 0 (WASD / first bound device). The lobby seat index is a
+    // different concept - using it here gave non-host players wrong or no
+    // controls (device seats >= 4 read no input at all).
+    localSeats: () => (localPid ? new Map([[localPid, 0]]) : new Map()),
     leave: () => {
       forward(MSG.LEAVE_LOBBY, {});
       emitter.emit('left', {});
       emitter.clear();
       sim = null;
       lobby = null;
+      pendingActions.length = 0;
+      pendingSnapshot = null;
     },
   };
 }

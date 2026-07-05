@@ -9,6 +9,8 @@
  *   1. character perk hooks   (characters registry, CharacterDef.perk.hooks)
  *   2. passive item hooks     (held items whose ItemDef has .passiveHooks)
  *   3. active effect hooks    (player.effects -> registered effect defs)
+ *   4. board mechanic hooks   (BoardDef.mechanics[].hooks - apply to every
+ *      player on the board, e.g. gorilla_palace's throne star markup)
  *
  * Every hook has the signature (value, ctx) => newValue|undefined, where
  * returning undefined keeps the incoming value. ctx always carries
@@ -131,8 +133,13 @@ export function removeEffect(sim, pid, effectId) {
 }
 
 /**
- * Tick down every timed effect on a player (called at the end of that
- * player's turn). Effects with turnsLeft < 0 never expire by time.
+ * Tick down every timed effect on a player. Called ONCE at the end of the
+ * OWNING player's turn (per-owner turn semantics): an effect with
+ * turnsLeft N affects exactly N of the owner's turns regardless of where
+ * in the turn order it was applied. E.g. dice_curse (turnsLeft 1) applied
+ * during any rival's turn curses exactly the victim's next roll, whether
+ * the victim moves right after the curser or a full round later.
+ * Effects with turnsLeft < 0 never expire by time.
  *
  * @param {Object} sim
  * @param {string} pid
@@ -162,7 +169,8 @@ export function tickEffects(sim, pid) {
 
 /**
  * Collect every hook function of `hookName` that applies to `pid`, in
- * canonical source order (perk -> passive items -> active effects).
+ * canonical source order (perk -> passive items -> active effects ->
+ * board mechanics).
  *
  * @param {Object} sim
  * @param {string} hookName
@@ -190,6 +198,13 @@ function collectHooks(sim, hookName, pid) {
   for (const effect of player.effects) {
     const def = effectDefs.get(effect.id);
     const hook = def?.hooks?.[hookName];
+    if (typeof hook === 'function') chain.push(hook);
+  }
+
+  // 4. Board mechanic hooks (BoardDef.mechanics[].hooks), applying to every
+  // player, in mechanic declaration order.
+  for (const mech of sim.board?.mechanics ?? []) {
+    const hook = mech?.hooks?.[hookName];
     if (typeof hook === 'function') chain.push(hook);
   }
 

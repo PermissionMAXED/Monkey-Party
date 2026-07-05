@@ -58,6 +58,22 @@ export function computeStock(sim, pid, nodeId) {
 }
 
 /**
+ * Could the shopper actually buy at least one stock entry right now
+ * (affordable price + a free bag slot)? Used by fastMode to skip shop
+ * prompts that could only be answered with "leave".
+ *
+ * @param {Object} sim
+ * @param {string} pid
+ * @param {string} nodeId
+ * @returns {boolean}
+ */
+export function canBuyAny(sim, pid, nodeId) {
+  const player = sim.state.players[pid];
+  if (!player || player.items.length >= ITEM_CAP) return false;
+  return computeStock(sim, pid, nodeId).some((entry) => player.coins >= entry.price);
+}
+
+/**
  * Hooked price of one item for one shopper (clamped to >= 0 integer).
  * @param {Object} sim
  * @param {string} pid
