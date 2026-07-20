@@ -7,7 +7,9 @@ import de.aetherklang.registry.ModEntities;
 import de.aetherklang.registry.ModParticles;
 import java.util.List;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.block.FenceGateBlock;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -16,6 +18,7 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
+import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
 
 /**
@@ -142,9 +145,11 @@ public final class KlangmeerLandmarks {
     }
 
     private static void placeGrossePauke(ServerWorld world, BlockPos center) {
+        clearArenaAir(world, center, 20, 14);
         BlockPos floor = center.down();
         placeDisc(world, floor, 18, ModBlocks.BASSSCHIEFER_POLIERT, ModBlocks.BASSSCHIEFER_ZIEGEL);
         placeRing(world, floor, 17, ModBlocks.BASSSCHIEFER_ZIEGEL);
+        placeArenaWall(world, floor, 17, Blocks.POLISHED_DEEPSLATE_WALL, Blocks.DARK_OAK_FENCE_GATE);
         placeRing(world, floor.up(), 6, Blocks.GOLD_BLOCK);
         placeDisc(world, floor.up(), 5, Blocks.SMOOTH_QUARTZ, Blocks.BONE_BLOCK);
 
@@ -158,9 +163,11 @@ public final class KlangmeerLandmarks {
     }
 
     private static void placeSaitenbruecken(ServerWorld world, BlockPos center) {
+        clearArenaAir(world, center, 20, 14);
         BlockPos floor = center.down();
         placeDisc(world, floor, 18, Blocks.CALCITE, Blocks.MOSS_BLOCK);
         placeRing(world, floor, 17, ModBlocks.RESONANZHOLZ_PLANKEN);
+        placeArenaWall(world, floor, 17, Blocks.MOSSY_COBBLESTONE_WALL, Blocks.OAK_FENCE_GATE);
 
         for (int z = -13; z <= 13; z++) {
             int height = 3 + Math.floorMod(z, 4);
@@ -186,9 +193,11 @@ public final class KlangmeerLandmarks {
     }
 
     private static void placeSchwarmthron(ServerWorld world, BlockPos center) {
+        clearArenaAir(world, center, 20, 14);
         BlockPos floor = center.down();
         placeDisc(world, floor, 18, Blocks.POLISHED_BLACKSTONE, Blocks.MAGMA_BLOCK);
         placeRing(world, floor, 17, Blocks.CRYING_OBSIDIAN);
+        placeArenaWall(world, floor, 17, Blocks.BLACKSTONE_WALL, Blocks.CRIMSON_FENCE_GATE);
         placeRing(world, floor.up(), 9, Blocks.GILDED_BLACKSTONE);
 
         for (int index = 0; index < 12; index++) {
@@ -210,9 +219,11 @@ public final class KlangmeerLandmarks {
     }
 
     private static void placeLeeresPodium(ServerWorld world, BlockPos center) {
+        clearArenaAir(world, center, 21, 14);
         BlockPos floor = center.down();
         placeDisc(world, floor, 19, Blocks.SMOOTH_BASALT, Blocks.WHITE_CONCRETE);
         placeRing(world, floor, 18, Blocks.CALCITE);
+        placeArenaWall(world, floor, 18, Blocks.DIORITE_WALL, Blocks.BIRCH_FENCE_GATE);
         placeRing(world, floor.up(), 11, Blocks.WHITE_CONCRETE);
         placeDisc(world, floor.up(), 8, Blocks.SMOOTH_QUARTZ, Blocks.CALCITE);
 
@@ -242,12 +253,46 @@ public final class KlangmeerLandmarks {
         }
     }
 
+    private static void clearArenaAir(ServerWorld world, BlockPos center, int radius, int height) {
+        int radiusSquared = radius * radius;
+        for (int x = -radius; x <= radius; x++) {
+            for (int z = -radius; z <= radius; z++) {
+                if (x * x + z * z > radiusSquared) {
+                    continue;
+                }
+                for (int y = 0; y <= height; y++) {
+                    set(world, center.add(x, y, z), Blocks.AIR);
+                }
+            }
+        }
+    }
+
     private static void placeRing(ServerWorld world, BlockPos center, int radius, Block block) {
         int samples = radius * 10;
         for (int index = 0; index < samples; index++) {
             double angle = Math.PI * 2.0D * index / samples;
             set(world, offset(center, angle, radius), block);
         }
+    }
+
+    private static void placeArenaWall(
+            ServerWorld world,
+            BlockPos floor,
+            int radius,
+            Block wall,
+            Block gate
+    ) {
+        placeRing(world, floor.up(), radius, wall);
+        placeRing(world, floor.up(2), radius, wall);
+        placeGate(world, floor.add(0, 1, -radius), gate, Direction.NORTH);
+        placeGate(world, floor.add(0, 1, radius), gate, Direction.SOUTH);
+        placeGate(world, floor.add(-radius, 1, 0), gate, Direction.WEST);
+        placeGate(world, floor.add(radius, 1, 0), gate, Direction.EAST);
+    }
+
+    private static void placeGate(ServerWorld world, BlockPos position, Block gate, Direction facing) {
+        setState(world, position, gate.getDefaultState().with(FenceGateBlock.FACING, facing));
+        set(world, position.up(), Blocks.AIR);
     }
 
     private static void placeStimmpfeiler(ServerWorld world, BlockPos base, Block crystal) {
@@ -280,7 +325,11 @@ public final class KlangmeerLandmarks {
     }
 
     private static BlockPos bossSpawn(KlangmeerRegion region) {
-        return region.anker().up(region == KlangmeerRegion.GENERALPAUSE_OEDE ? 4 : 6);
+        return switch (region) {
+            case ARPEGGIENMEER -> region.anker().add(0, 3, 4);
+            case GENERALPAUSE_OEDE -> region.anker().up(4);
+            default -> region.anker().up(6);
+        };
     }
 
     private static EntityType<BosswerkBossEntity> bossType(KlangmeerRegion region) {
@@ -302,6 +351,10 @@ public final class KlangmeerLandmarks {
     }
 
     private static void set(ServerWorld world, BlockPos position, Block block) {
-        world.setBlockState(position, block.getDefaultState(), UPDATE_FLAGS);
+        setState(world, position, block.getDefaultState());
+    }
+
+    private static void setState(ServerWorld world, BlockPos position, BlockState state) {
+        world.setBlockState(position, state, UPDATE_FLAGS);
     }
 }

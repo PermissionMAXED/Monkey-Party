@@ -82,7 +82,7 @@ Für wiederholbare Bosswerk-Tests nach dem verbrauchten Annäherungstrigger:
 
 ```mcfunction
 /execute in aetherklang:kammerton run summon aetherklang:boss_tremolo -899.5 135 0.5
-/execute in aetherklang:kammerton run summon aetherklang:boss_glissanda 900.5 135 0.5
+/execute in aetherklang:kammerton run summon aetherklang:boss_glissanda 900.5 132 4.5
 /execute in aetherklang:kammerton run summon aetherklang:boss_kakophon 0.5 135 900.5
 /execute in aetherklang:kammerton run summon aetherklang:boss_generalpause 0.5 133 1600.5
 ```
