@@ -13,10 +13,12 @@
   "environment": "*",
   "entrypoints": {
     "main": [
-      "de.aetherklang.Aetherklang"
+      "de.aetherklang.Aetherklang",
+      "de.aetherklang.insel.InselServerInitializer"
     ],
     "client": [
-      "de.aetherklang.client.AetherklangClient"
+      "de.aetherklang.client.AetherklangClient",
+      "de.aetherklang.insel.client.InselClientInitializer"
     ]
   },
   "mixins": [
