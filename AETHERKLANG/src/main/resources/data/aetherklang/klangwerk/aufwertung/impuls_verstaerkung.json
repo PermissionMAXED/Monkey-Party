@@ -1,0 +1,8 @@
+{
+  "id": "impuls_verstaerkung",
+  "type": "aufwertung",
+  "parameters": {
+    "operation": "impuls",
+    "rank": "1"
+  }
+}

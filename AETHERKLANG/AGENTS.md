@@ -35,3 +35,7 @@
   mod initialization; restart the client/server after edits. The type map,
   strict validation rules, and the extra registry work required for mob/boss
   definitions are documented in `docs/CONTENT_PIPELINE.md`.
+- Klangwerk JSON under `data/aetherklang/klangwerk` is a separate, atomic
+  server-data reload catalog. Use `/aetherklang klangwerk reload` for a focused
+  reload and `/aetherklang klangwerk dump` to inspect the installed snapshot;
+  schema and path validation rules are documented in `docs/CONTENT_PIPELINE.md`.

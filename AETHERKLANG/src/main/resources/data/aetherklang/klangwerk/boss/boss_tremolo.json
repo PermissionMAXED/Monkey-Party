@@ -1,0 +1,10 @@
+{
+  "id": "boss_tremolo",
+  "type": "boss",
+  "parameters": {
+    "health": "240",
+    "phase_67": "4;notenring,1,7,10|schockwelle,1,8,9",
+    "phase_34": "3;notenring,1,8,11|gleitstoss,1,9,7|beschwoere_motiv,2,0,8",
+    "phase_0": "2;notenring,1,10,12|kakophonie,1,9,10|fermate,2,5,7"
+  }
+}

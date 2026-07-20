@@ -1,0 +1,8 @@
+{
+  "id": "motiv_laeufer",
+  "type": "motiv",
+  "parameters": {
+    "operation": "bewegung",
+    "tempo": "120"
+  }
+}

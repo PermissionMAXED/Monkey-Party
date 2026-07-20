@@ -41,12 +41,18 @@ ungültigen IDs und offensichtlich ungültigen Werten ab. Das ist absichtlich
 strikt, damit ein fehlerhafter Content-Paketstand nicht teilweise geladen
 wird.
 
-Der Katalog ist in Wave 0 ein Startup-Katalog, kein Minecraft-Datapack-Reload.
-Nach JSON-Änderungen ist deshalb ein Neustart nötig. Die generischen
-Klangwerk-Reloadverträge für `motiv`, `affix`, `relikt`, `insel`, `boss`,
-`auftrag` und `aufwertung` liegen in
-`de.aetherklang.klangwerk.KlangwerkReloadDef`; spätere Wellen können daraus
-einen echten Resource-Reload-Listener bauen, ohne die JSON-Typnamen zu ändern.
+Der Sinfonie-Katalog unter `content` ist ein Startup-Katalog; nach Änderungen
+dort ist deshalb ein Neustart nötig. Klangwerk-Definitionen unter
+`data/aetherklang/klangwerk/<typ>/<id>.json` werden dagegen bei jedem
+Server-Datapack-Reload atomar neu geladen. Unterstützt werden `motiv`, `affix`,
+`relikt`, `insel`, `boss`, `auftrag` und `aufwertung`. Der Codec erwartet
+`id`, `type` und optional eine String-Map `parameters`. Ordner, Typ, Dateiname
+und ID müssen übereinstimmen; fehlerhafte oder doppelte Definitionen lassen den
+Reload scheitern, ohne den zuletzt gültigen Klangwerk-Katalog zu ersetzen.
+
+`/aetherklang klangwerk reload` lädt nur den Klangwerk-Teil aus dem aktuellen
+Resource Manager neu. `/aetherklang klangwerk dump` zeigt Anzahl und IDs der
+aktuell installierten Definitionen.
 
 ## Zugriff aus Code
 

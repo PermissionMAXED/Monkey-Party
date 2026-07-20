@@ -1,0 +1,8 @@
+{
+  "id": "hallend",
+  "type": "affix",
+  "parameters": {
+    "attribute": "echo_chance",
+    "modifier": "0.15"
+  }
+}

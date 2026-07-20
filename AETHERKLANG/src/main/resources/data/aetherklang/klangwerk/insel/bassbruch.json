@@ -1,0 +1,8 @@
+{
+  "id": "bassbruch",
+  "type": "insel",
+  "parameters": {
+    "region": "bassbruch",
+    "resonance": "bass"
+  }
+}

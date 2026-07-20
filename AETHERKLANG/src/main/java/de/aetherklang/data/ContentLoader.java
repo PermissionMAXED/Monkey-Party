@@ -124,7 +124,8 @@ public final class ContentLoader {
                 lootTiers,
                 fxSpecs,
                 bosses,
-                relics
+                relics,
+                Map.of()
         );
     }
 }

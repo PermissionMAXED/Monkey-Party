@@ -1,0 +1,8 @@
+{
+  "id": "relikt_metronom",
+  "type": "relikt",
+  "parameters": {
+    "cooldown_ticks": "80",
+    "effect": "beat_window"
+  }
+}
