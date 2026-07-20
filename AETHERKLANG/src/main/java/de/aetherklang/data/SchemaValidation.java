@@ -10,6 +10,15 @@ import net.minecraft.registry.Registries;
 import net.minecraft.util.Identifier;
 
 public final class SchemaValidation {
+    private static final Set<String> MOTIV_ARCHETYPES = Set.of(
+            "laeufer",
+            "schwinge",
+            "pulser",
+            "koloss",
+            "weber",
+            "schuetze"
+    );
+
     private SchemaValidation() {
     }
 
@@ -60,7 +69,7 @@ public final class SchemaValidation {
             Set<String> variantIds
     ) {
         require(
-                archetype.equals("laeufer") || archetype.equals("schwinge") || archetype.equals("pulser"),
+                MOTIV_ARCHETYPES.contains(archetype),
                 "Mob '" + mobId + "' has unknown Motiv archetype '" + archetype + "'"
         );
         require(Identifier.tryParse(variant.id()) != null && !variant.id().contains(":"),
