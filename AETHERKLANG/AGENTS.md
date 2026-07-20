@@ -19,11 +19,11 @@
 - If switching run targets leaves Loom reporting a missing
   `build/loom-cache/argFiles/runServer` (or `runClient`), rerun that target with
   `--no-configuration-cache`; a clean build is not required.
-- Kammerton's authored arrival islands and first Choral approach trigger are
-  persisted in the dimension itself. Use a fresh development world (or reset
-  only `run/world/dimensions/aetherklang/kammerton`) when validating first-entry
-  generation or the one-shot arena trigger again; quick test commands are in
-  `README.md`.
+- Kammerton's authored arrival islands and all one-shot boss approach triggers
+  are persisted in the dimension itself. Use a fresh development world (or
+  reset only `run/world/dimensions/aetherklang/kammerton`) when validating
+  first-entry generation or the arena triggers again; landmark teleport and
+  summon commands are in `README.md`.
 - In Cursor Cloud the offline development client can log Mojang/Realms 401s and
   disable OpenAL because no account or audio device is attached. Those host
   limitations do not block rendering; use the client-ready and atlas-load log
@@ -39,3 +39,11 @@
   server-data reload catalog. Use `/aetherklang klangwerk reload` for a focused
   reload and `/aetherklang klangwerk dump` to inspect the installed snapshot;
   schema and path validation rules are documented in `docs/CONTENT_PIPELINE.md`.
+- Sinfonie smoke commands are `/aetherklang partitur`,
+  `/aetherklang kaskade start|status`, and `/aetherklang klangwerk dump|reload`.
+  The fixed Klangmeer anchors are Bassgewölbe `-900/129/0`, Arpeggienmeer
+  `900/129/0`, Kakophonie-Riff `0/129/900`, and Generalpause-Öde
+  `0/129/1600` in `aetherklang:kammerton`.
+- The client Kodex still loads the single
+  `assets/aetherklang/kodex/pages.json`; preserve existing order because list
+  indices are persisted folio IDs, and add matching keys to both language files.

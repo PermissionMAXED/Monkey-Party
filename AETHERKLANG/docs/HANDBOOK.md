@@ -1,13 +1,14 @@
-# Aetherklang — English Handbook Summary
+# Aetherklang — English Opus Handbook
 
 > **“The world has a voice. You are learning to play it.”**
 
-The complete primary handbook is available in German at
-[`HANDBUCH.md`](HANDBUCH.md). This summary covers the essential systems,
-content, controls, and progression. The core loop and Crescendo expansion are
-playable: the original items, blocks, creatures, HUD, Kammerton, and Choral
-encounter now connect to ensembles, chords, lifetime grades, new instruments,
-Klangweaver armor, Tonarium landmarks, and two additional creatures.
+The primary opus bible is available in German at
+[`HANDBUCH.md`](HANDBUCH.md). This English companion covers the complete
+playable core, Crescendo, and SINFONIE: original items, blocks, creatures,
+HUD, Kammerton, and Choral connect to ensembles, chords, lifetime grades,
+Klangweaver armor, a 48-island outer Klangmeer, Motif creatures, four new
+boss scores, daily contracts, the Leitmotiv tree, Sound Forge, World Chord,
+and Dissonance Cascades.
 
 ## Premise
 
@@ -92,7 +93,7 @@ Silence triples and perfect streaks double the decay.
 - **Echo Boots:** iron-tier boots; press **R** while wearing them (or
   sneak + right-click holding them) for the Resonance Dash — 8 RP, 3 s
   cooldown, ~5 blocks with a mood-colored trail. Durability 429.
-- **Codex of Resonance:** custom Tonarium handbook (35 folios, 15
+- **Codex of Resonance:** custom Tonarium handbook (81 folios, 22
   categories); carrying it grants free portal passage.
 
 ### Blocks (all playable)
@@ -154,24 +155,24 @@ ensemble size.
 
 ## Codex
 
-Open the Codex with **K** or right-click the Codex item. It has 35 folios in
-15 categories: the original nine plus Ensembles & Chords, Tonarium
-Expansion, Resonance Grades, New Instruments, Klangweaver Armor, and New
-Creatures. New folios visibly label content as PLAYABLE, FOUNDATION, or
-VISION. Survival players see synced unlock state; Creative mode opens every
-page.
+Open the Codex with **K** or right-click the Codex item. It has 81 folios in
+22 categories: nine original registers, six Crescendo registers, and seven
+SINFONIE registers — Regions, Bosses, Leitmotiv, Score, Forge, Cascade, and
+Motifs. New folios visibly label content as PLAYABLE, FOUNDATION, or VISION.
+Survival players see synced unlock state; Creative mode opens every page.
 
 ## Controls
 
 | Action | Default | Note |
 | --- | --- | --- |
 | Open Codex | **K** | also right-click with the Codex |
+| Open Leitmotiv | **L** | 24 permanent nodes across three branches |
 | Resonance Dash | **R** | requires worn Echo Boots; 8 RP, 3 s cooldown |
 | Cycle mood | **M** | 2 RP (free in Creative) |
 | Toggle adaptive music | **N** | local audio only; no server-side effect |
 | Close Codex | **Esc** | game keeps running |
 
-**K**, **R**, and **M** are rebindable under the Aetherklang controls
+**K**, **L**, **R**, and **M** are rebindable under the Aetherklang controls
 category. The **N** music toggle is listed under **Miscellaneous (MISC)**.
 
 ## Advancements
@@ -193,6 +194,10 @@ Sealed Memory (unseal an Archive folio).
 - `/aetherklang beat info`
 - `/aetherklang codex unlock <0..255>` (permission level 2)
 - `/aetherklang codex list`
+- `/aetherklang partitur` or `/aetherklang partitur open`
+- `/aetherklang klangwerk dump`
+- `/aetherklang klangwerk reload` (permission level 2)
+- `/aetherklang kaskade start|status` (permission level 2)
 
 Codex numeric IDs match the zero-based order in
 `assets/aetherklang/kodex/pages.json`. Quick dev-test commands for the
@@ -389,9 +394,262 @@ The **Choir Heart** itself has no recipe; a Siren drops one. Drinking an
 elixir restores 12 RP, applies Speed I and Luck I for 30 seconds, and returns
 its Glass Bottle.
 
+## SINFONIE: the outer opus
+
+SINFONIE turns the systems learned in the core and Crescendo into a
+long-term score. Explore the Klangmeer, hunt data-driven Motifs, wake four
+regional bosses, claim daily Score contracts, spend Leitmotiv Keys, and
+forge four instruments from Base through Master to Virtuoso.
+
+The repeatable loop is:
+
+**Score → explore → Motifs → regional Bosswerk → keys and materials →
+Leitmotiv or Forge → World Chord and Cascade**
+
+| System | Playable scope |
+| --- | --- |
+| Klangmeer | 48 deterministic islands, eight archetypes, four fixed regions |
+| Motifs | Runner, Wing, Pulser; eight stat/color/loot variants |
+| Bosswerk | Tremolo, Glissanda, Kakophon, General Pause |
+| Leitmotiv | 24 permanent nodes in Combat, Harmony, World |
+| Score | Three contracts per 24,000-tick world day from eleven definitions |
+| Forge | Four instruments, three tiers, twelve one-slot relics |
+| Cascades | Five-mood World Chord and three-wave rift event |
+
+## Klangmeer atlas
+
+The authored center remains the prelude:
+
+| Place | Coordinates |
+| --- | ---: |
+| Arrival | `0 / 129 / 0` |
+| Choral arena | `0 / 140 / 96` |
+| Resonance Gardens | near `0 / 129 / 272` |
+| Crystal Archives | near `-68 / 137 / 342`, `0 / 142 / 394`, `68 / 137 / 342` |
+
+The world seed deterministically composes 48 outer islands from Bass Vault,
+Arpeggio Garden, Cacophony Reef, Crystal Crown, Resonance Grove, General
+Pause Shelf, Echo Terrace, and Beat Roundel archetypes. Persistent lodestone
+markers prevent duplicate generation.
+
+### Four regions and landmarks
+
+| Region | Anchor | Landmark | Boss |
+| --- | ---: | --- | --- |
+| Bassgewölbe / Bass Vault | `-900 / 129 / 0` | Great Timpani | Tremolo |
+| Arpeggienmeer / Arpeggio Sea | `900 / 129 / 0` | String Bridges | Glissanda |
+| Kakophonie-Riff / Cacophony Reef | `0 / 129 / 900` | Swarm Throne | Kakophon |
+| Generalpause-Öde / General Pause Wastes | `0 / 129 / 1600` | Empty Podium | General Pause |
+
+Entering within 420 blocks of an anchor sends `region_sync`, updates the
+regional presentation, and triggers its one-time advancement. Approaching
+within 24 blocks of an armed landmark summons its boss once; separate
+generation and encounter markers prevent duplicate arenas and encounters.
+
+Bring a spare instrument, blocks, food, and at least 24 RP. The farthest
+region is 1,600 blocks south of the center, so mark a return route.
+
+## Motif bestiary
+
+Motif creatures select a data-driven variant when spawned. Variant ID
+persists and controls name, health, attack, speed, visual scale, two render
+colors, and direct loot. Every Motif takes **1.75× damage from an on-beat
+player hit**.
+
+| Archetype / variant | Health | Attack | Speed | Loot |
+| --- | ---: | ---: | ---: | --- |
+| Runner · Presto | 20 | 4 | 0.34 | 1–3 Sound Dust |
+| Runner · Ostinato | 34 | 6 | 0.23 | 1–2 Resonance Ingots |
+| Runner · Syncopation | 26 | 7 | 0.29 | 1 Leitmotiv Key |
+| Wing · Legato | 18 | 3 | 0.30 | 1–2 String Hearts |
+| Wing · Staccato | 14 | 5 | 0.38 | 1 Swarm Eye |
+| Wing · Nocturne | 30 | 6 | 0.26 | 1–2 Silence Shards |
+| Pulser · Bass | 42 | 8 | 0.19 | 1–2 Cascade Cores |
+| Pulser · Triplet | 24 | 5 | 0.31 | 1 Tremolo Core |
+
+In mixed groups, remove fast Wings first, then dangerous Runners, then
+heavy Pulsers. Score contracts count exact archetypes or any Motif, so one
+hunt can feed contracts, Forge materials, and Leitmotiv currency.
+
+## Bosswerk scores
+
+All four bosses execute validated three-phase JSON scores on the ten-tick
+world beat. An attack begins on its interval, telegraphs for one or two
+beats, then executes server-side. Phase changes reset the phrase and update
+the boss bar.
+
+| Boss | Health | Guaranteed drop | Leitmotiv Keys | Phase rhythm |
+| --- | ---: | --- | ---: | --- |
+| Tremolo | 240 | Tremolo Core | 2 | 4 → 3 → 2 beats |
+| Glissanda | 260 | String Heart | 2 | 4 → 3 → 2 beats |
+| Kakophon | 300 | Swarm Eye | 2 | 5 → 3 → 2 beats |
+| General Pause | 340 | Silence Shard | 3 | 5 → 3 → 2 beats |
+
+### Phase scripts
+
+- **Tremolo:** Note Ring/Shockwave; Note Ring/Glide Strike/Summon;
+  Note Ring/Cacophony/Fermata.
+- **Glissanda:** Glide Strike/Beam Line; Glide Strike/Shockwave/Note Ring;
+  Beam Line/Glide Strike/Fermata.
+- **Kakophon:** Cacophony/Summon; Cacophony/Note Ring/Shockwave;
+  Cacophony/Beam Line/Summon.
+- **General Pause:** Silence Zone/Fermata; Silence Zone/Beam Line/Summon;
+  Fermata/Silence Zone/Shockwave.
+
+Read the particles rather than the body: leave Shockwave radii, stand
+between Note Ring spokes, step across Beam Lines and Glide Strikes, exit
+Silence Zones early, and clear summoned Motifs before the next phrase.
+
+## Leitmotiv tree
+
+Press **L** to open the tree. Combat, Harmony, and World each have eight
+linear nodes. Costs rise from one key in the first four nodes, to two in the
+next two, to three in the final two. A node requires its predecessor.
+
+| Branch | Eight-node arc |
+| --- | --- |
+| Combat | +5% damage → PERFECT +0.01 → +5% damage → +1 RP gain → +7.5% damage → PERFECT +0.01 → +1 RP gain → +10% damage |
+| Harmony | +10% healing → +25% dissonance decay → GOOD +0.015 → +15% healing → +35% decay → +10 RP cap → GOOD +0.015 → +25% healing |
+| World | dash −1 RP → +10 RP cap → +1 RP gain → GOOD +0.015 → dash −1 RP → +15 RP cap → +1 RP gain → dash −2 RP |
+
+Advancements, Score rewards, and boss kills grant keys. Choral and General
+Pause grant three; Siren and the other Sinfonie bosses grant two. Creative
+players do not consume keys. Unlocks and claimed advancement rewards persist
+in resonance player data.
+
+Window modifiers stack with armor and Beatling but cap at 0.5 phase. Dash
+cost can never fall below one RP. The tree supports mixed builds; World
+capacity plus Harmony timing often matters more than rushing one capstone.
+
+## Daily Score and Music Stand
+
+Use `aetherklang:notenpult` or `/aetherklang partitur`. The server selects
+three contracts for each 24,000-tick world-day rotation and tracks progress
+for Motif kills, chords, region visits, sealed rifts, and credited RP gains.
+
+| Contract family | Examples | Rewards |
+| --- | --- | --- |
+| Resonance | earn 20 RP | 8 RP, key, Sound Dust |
+| Motif hunt | four Runners, three Wings, six any | RP, keys, Dust/Ingot/Shards |
+| Chord | any two, Healing Triad, Stellar Fortissimo | RP, keys, Amethyst/Core |
+| Region | Kammerton, Resonance Garden | RP, key, Dust/Ingot |
+| Rift | seal two or four | 18–24 RP, 2–3 keys, Shards/Ingots |
+
+Completed contracts must be claimed in the Score screen. If inventory is
+full, excess item rewards drop safely beside the player. Rotation replaces
+the active set and its progress.
+
+Contract data comes from the atomically reloadable Klangwerk catalog:
+
+- `/aetherklang klangwerk dump` lists counts and IDs.
+- `/aetherklang klangwerk reload` validates and installs a complete
+  snapshot; on failure, the previous valid snapshot remains active.
+
+## Sound Forge
+
+Hold one Sinfonie instrument in the main hand and use
+`aetherklang:klangamboss`. Upgrade ingredients come from inventory. A relic
+in the offhand performs a socket operation instead.
+
+| Instrument | Cost and base use | Master cost | Virtuoso cost |
+| --- | --- | --- | --- |
+| Timpani | 8 RP; Strength I; 3 magic damage and knockback to hostiles within 6 blocks | 2 Ingots, 8 Dust, Tremolo Core | 4 Ingots, 16 Dust, Silence Shard |
+| Soprano Flute | 5 RP; heals allies within 8 blocks for 1.5 hearts, grants Regeneration I, clears Poison | 2 Ingots, 8 Dust, Cascade Core | 4 Ingots, 16 Dust, Leitmotiv Key |
+| Double Bass | 7 RP; Resistance I; Slowness II and Weakness I to hostiles within 8 blocks | 2 Ingots, 8 Dust, String Heart | 4 Ingots, 16 Dust, 2 Tremolo Cores |
+| Triangle | 4 RP; Speed I; reveals hostiles within 16 blocks with Glowing | 2 Ingots, 8 Dust, Swarm Eye | 4 Ingots, 16 Dust, 2 Silence Shards |
+
+Base lasts five seconds with a nine-second cooldown. Master lasts seven
+seconds with a 7.25-second cooldown. Virtuoso lasts nine seconds, shortens
+cooldown to 5.5 seconds, and raises the status-effect amplifier. Timpani
+damage and Flute healing also rise by 1.5 points per tier; Virtuoso raises
+Double Bass Slowness to III. Every successful use is an on-beat action, can
+grant normal Perfect-timing RP, and costs one durability.
+
+Each instrument has one permanent relic socket:
+
+| Relic | Added effect |
+| --- | --- |
+| Metronome | Haste |
+| Echo | Absorption |
+| Fermata | Slow Falling |
+| Crescendo | Strength |
+| Ostinato | Regeneration |
+| Cadence | Luck |
+| Legato | Health Boost |
+| Staccato | Jump Boost |
+| Fortissimo | Fire Resistance |
+| Pianissimo | Invisibility |
+| Harmony | Resistance |
+| Dissonance | Night Vision and clears Darkness |
+
+Upgrade consumption is atomic; missing materials consume nothing. A filled
+socket cannot be replaced in this release. Socket effects last nine seconds
+at Base, eleven at Master, and thirteen at Virtuoso; Virtuoso raises their
+amplifier too. Loose relics can be used directly for a 15-second effect with
+a 30-second cooldown.
+
+## World Chord and Dissonance Cascades
+
+The complete World Chord is:
+
+**Silence → Joy → Wonder → Sorrow → Wrath**
+
+An ensemble may share the five on-beat inputs. Progress times out after
+twelve seconds; success applies a 25-second cooldown. More members and more
+distinct voice parts increase radius, healing, Absorption, hostile damage,
+and knockback. A tamed Beatling supplies the second voice for a solo player;
+without one, the three-note reduced form remains available.
+
+Voice assignment follows held instruments:
+
+- **Soprano:** Tuning Fork, Soprano Flute, Triangle
+- **Alto:** Echo Harp, Fermata Bell
+- **Tenor:** Resonance Blade, Organ Horn
+- **Bass:** Bass Hammer, Double Bass, Timpani
+
+Uninstrumented members fill the least represented part.
+
+### Cascade event
+
+After an initial eight-minute quiet period, a world may test every 30
+seconds for a rift 18–32 blocks from a player. One Cascade can run per world:
+
+1. three Motif Runners + one Pulser,
+2. two Runners + two Wings + one Pulser,
+3. two Wings + the Dissonance Herald.
+
+The Herald is a glowing Pulser with 90 health, ten attack, and eight armor.
+The next wave waits for all tracked creatures to die, then begins after
+three seconds. Participants within 48 blocks receive one Cascade Core; with
+three or more participants, each receives two. The rift closes on resolution.
+
+Operators can use `/aetherklang kaskade start` and
+`/aetherklang kaskade status`.
+
+## Codex and data contracts
+
+The first 35 Codex entries remain in their original order, preserving
+numeric unlock IDs. SINFONIE appends 46 folios for a total of **81**, and
+adds seven registers without changing the original fifteen.
+
+Two content lifecycles matter:
+
+| Catalog | Lifecycle |
+| --- | --- |
+| `data/aetherklang/content` | decoded and frozen at mod initialization |
+| `data/aetherklang/klangwerk` | validated and atomically reloadable |
+| Bosswerk boss files | loaded at startup; all four scores required |
+| `assets/aetherklang/kodex/pages.json` | loaded from client resources |
+
+Registry IDs, 16 serialized Klang operations, region anchors, numeric Codex
+order, and `boss_fx` / `region_sync` / `leitmotiv_sync` payloads are stable
+integration contracts.
+
 ## Quick reference
 
-- **Codex:** K or use `aetherklang:kodex`; 35 folios / 15 categories
+- **Codex:** K or use `aetherklang:kodex`; 81 folios / 22 categories
+- **Leitmotiv:** L; 24 nodes / 3 branches; keys from contracts, progress,
+  and bosses
 - **Dash:** R; Echo Boots 8 RP, Klangweaver Boots 6 RP
 - **Mood:** M; 2 RP, free at a Mood Altar
 - **Adaptive music:** N; local only
@@ -403,6 +661,10 @@ its Glass Bottle.
 - **Chord:** three on-beat moods, effect within 8 blocks
 - **Crescendo route:** Organ Tower → Siren → ensembles/chords → Gardens →
   Archives → Maestro
+- **SINFONIE route:** Score → Motifs → four regions → Bosswerk → Leitmotiv
+  → Sound Forge → World Chord/Cascade
+- **Region anchors:** `-900/129/0`, `900/129/0`, `0/129/900`,
+  `0/129/1600`
 
 ## Credits
 

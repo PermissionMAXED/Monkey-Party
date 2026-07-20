@@ -17,7 +17,14 @@ public enum KodexCategory {
     RANKS("ranks", "✧", 0xFFF5C95F),
     CRESCENDO_INSTRUMENTS("crescendo_instruments", "♬", 0xFFFFB45F),
     ARMOR("armor", "◇", 0xFFBFA7FF),
-    CRESCENDO_CREATURES("crescendo_creatures", "◉", 0xFFFF87BD);
+    CRESCENDO_CREATURES("crescendo_creatures", "◉", 0xFFFF87BD),
+    REGIONEN("regionen", "⌘", 0xFF8CE7D7),
+    BOSSE("bosse", "♛", 0xFFFF759F),
+    LEITMOTIV("leitmotiv", "♭", 0xFFBFA7FF),
+    PARTITUR("partitur", "▤", 0xFFF5C95F),
+    SCHMIEDE("schmiede", "⚒", 0xFFFFB45F),
+    KASKADE("kaskade", "≋", 0xFFE03A8C),
+    MOTIVE("motive", "◌", 0xFF5FF5E0);
 
     private final String id;
     private final String glyph;

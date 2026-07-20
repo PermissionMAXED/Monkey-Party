@@ -14,13 +14,14 @@ Resonanz** und erscheint als indigo-goldenes Tonarium.
 - **Fundament** – registriert, sichtbar und für weitere Mechanik vorbereitet.
 - **Vision** – geplanter Ausbau; wichtig für Balancing und Progression.
 
-Der Kern von Aetherklang und das Crescendo sind **spielbar**: zu den sechs
-Grundgegenständen, sieben Grundblöcken und vier ursprünglichen Kreaturen
-kommen Ensembles, Akkorde, vier Resonanzgrade, zwei Instrumente, die
-Klangweber-Rüstung, vier Tonarium-Blöcke und zwei Kreaturen. Das
-Resonanz-HUD, der erweiterte Kodex, die Kammerton-Dimension und die
-Choral-Begegnung sind vollständig verdrahtet. Statusangaben markieren
-weiterhin ehrlich, wenn ein Folio nur Fundament oder Vision beschreibt.
+Der Kern von Aetherklang, **Crescendo** und **SINFONIE** ist spielbar: zu
+Instrumenten, Ensembles, Akkorden, Resonanzgraden und Tonarium treten das
+48-Insel-Klangmeer, vier Außenregionen, datengetriebene Motivwesen, vier
+Bosswerke, ein 24-Knoten-Leitmotiv, Tagespartituren, Klangschmiede,
+Weltakkord und Dissonanz-Kaskaden. Das Resonanz-HUD, der Kodex mit
+**81 Folios in 22 Registern**, die Kammerton-Dimension und alle beschriebenen
+Kernpfade sind verdrahtet. Statusangaben markieren weiterhin ehrlich, wenn
+ein Folio nur Fundament oder Vision beschreibt.
 
 ---
 
@@ -337,16 +338,16 @@ mit stimmungsgefärbter Notenspur.
 
 ### Kodex der Resonanz — `aetherklang:kodex` · Spielbar
 
-Das Tonarium mit fünfzehn Registern, 35 Folios und versiegelten Einträgen. Im
+Das Tonarium mit 22 Registern, 81 Folios und versiegelten Einträgen. Im
 Kreativmodus sind alle Seiten offen. Im Überlebensmodus liest der Kodex die
 freigeschalteten Seiten aus deinen synchronisierten Resonanzdaten.
 
 - Rechtsklick mit dem Gegenstand: öffnen (zählt für den Fortschritt
   „Eine Welt mit Stimme“)
 - Standardtaste: **K**
-- Register: die neun Grundregister plus Ensemble & Akkorde,
-  Tonarium-Erweiterung, Resonanzgrade, neue Instrumente,
-  Klangweber-Rüstung und neue Kreaturen
+- Register: neun Grundregister, sechs Crescendo-Register und die sieben
+  Sinfonie-Register **Regionen, Bosse, Leitmotiv, Partitur, Schmiede,
+  Kaskade und Motive**
 - In beiden Händen wirksam: Wer den Kodex trägt, durchschreitet das
   Glockenspiel-Portal **kostenlos**
 
@@ -666,6 +667,7 @@ Glück I; nach dem Trinken bleibt die Glasflasche zurück.
 | Aktion | Standard | Hinweis |
 | --- | --- | --- |
 | Kodex öffnen | **K** | Jederzeit; Rechtsklick mit dem Kodex ebenfalls |
+| Leitmotiv öffnen | **L** | 24 Knoten in Kampf, Harmonie und Welt |
 | Resonanzschritt | **R** | Echostiefel müssen getragen werden; kostet 8 RP, 3 s Abklingzeit |
 | Stimmung wechseln | **M** | Zyklisch; kostet 2 RP (Kreativmodus: kostenlos) |
 | Adaptive Musik an/aus | **N** | Lokale Crescendo-Musik; beeinflusst keine Servermechanik |
@@ -673,7 +675,7 @@ Glück I; nach dem Trinken bleibt die Glasflasche zurück.
 | Vorige/nächste Seite | `‹` / `›` | Innerhalb des gewählten Registers |
 | Kodex schließen | **Esc** oder `×` | Das Spiel läuft im Hintergrund weiter |
 
-**K**, **R** und **M** findest du unter
+**K**, **L**, **R** und **M** findest du unter
 **Optionen → Steuerung → Tastenbelegung → Aetherklang**. Der Musikschalter
 **N** steht stattdessen in der Kategorie **MISC (Sonstiges)**.
 
@@ -698,6 +700,12 @@ Testkommandos benötigen Berechtigungsstufe 2.
 | `/aetherklang beat info` | Beatphase und Wertung anzeigen |
 | `/aetherklang codex unlock <0..255>` | Kodex-Folio freischalten (Admin) |
 | `/aetherklang codex list` | Freigeschaltete Folio-IDs anzeigen |
+| `/aetherklang partitur` | Tagespartitur öffnen |
+| `/aetherklang partitur open` | Tagespartitur ausdrücklich öffnen |
+| `/aetherklang klangwerk dump` | Installierten reloadbaren Katalog ausgeben |
+| `/aetherklang klangwerk reload` | Klangwerk-Katalog atomar neu laden |
+| `/aetherklang kaskade start` | Kaskade am aktuellen Ort starten (Admin) |
+| `/aetherklang kaskade status` | Kaskadenstatus der aktuellen Welt prüfen (Admin) |
 
 Die Kodexdaten verwenden ihre Reihenfolge in
 `assets/aetherklang/kodex/pages.json` als Folio-ID, beginnend bei `0`.
@@ -713,7 +721,7 @@ Für schnelle Entwicklungstests in den Kammerton:
 
 ## 17. Kodex-Freischaltungen
 
-Der Kodex umfasst **35 Folios** in fünfzehn Registern. Einträge können drei
+Der Kodex umfasst **81 Folios** in 22 Registern. Einträge können drei
 Zustände haben:
 
 - **Grundwissen:** immer offen – die Willkommensseite, die Tipps-Folios und
@@ -758,7 +766,7 @@ Seine Systeme greifen in Takt, Stimmung, RP und Kodex ein:
 | Tonarium | Acht Resonanzgärten, drei Archive, Taktbrücken | **Spielbar** |
 | Kreaturen | Sirene am Orgelturm und zähmbare Taktlinge | **Spielbar** |
 | Präsentation | Aurora, Akkord-/Rang-HUD, adaptive Musik | **Spielbar** |
-| Kodex | Zwölf neue, ausdrücklich markierte Folios | **Spielbar** |
+| Kodex | Zwölf ausdrücklich markierte Crescendo-Folios | **Spielbar** |
 
 Die Bezeichnung **Spielbar** meint: Die Mechanik besitzt einen
 serverautoritativen Auslöser, sicht- oder hörbares Feedback und einen
@@ -1019,11 +1027,14 @@ Beatwertung und andere Spielende bleiben unverändert.
   eine goldene Lichtsäule hinzu. Jeder Phasenwechsel bricht in Glyphenringen
   und einem spiralförmigen Lichtaufstieg auf.
 
-### Zwölf neue Kodex-Folios
+### Zwölf Crescendo-Folios
 
-Der Kodex wächst von 23 auf **35 Folios** und von neun auf **15 Register**.
-Die neuen Register heißen Ensemble & Akkorde, Tonarium-Erweiterung,
+Mit Crescendo wuchs der Kodex von 23 auf **35 Folios** und von neun auf
+**15 Register**. Diese sechs Register heißen Ensemble & Akkorde, Tonarium-Erweiterung,
 Resonanzgrade, neue Instrumente, Klangweber-Rüstung und neue Kreaturen.
+SINFONIE erweitert diesen Bestand append-only auf **81 Folios** und
+**22 Register**; seine sieben Register werden in Kapitel 27 vollständig
+beschrieben.
 
 Jedes neue Folio trägt rechts oben ausdrücklich **SPIELBAR**,
 **FUNDAMENT** oder **VISION**. In der aktuellen Crescendo-Fassung sind alle
@@ -1033,7 +1044,670 @@ automatisch Rezeptverfügbarkeit.
 
 ---
 
-## 27. Credits
+## 27. SINFONIE: Die Welt wird zur Partitur
+
+SINFONIE ist der große Außenbogen von Aetherklang. Wo der Kern das Hören
+lehrt und Crescendo Stimmen miteinander verbindet, komponiert SINFONIE aus
+der gesamten Reise eine Partitur: Regionen liefern Begegnungen, Begegnungen
+liefern Material und Notenschlüssel, Partituraufträge geben Richtung,
+Leitmotive formen einen eigenen Spielstil und die Klangschmiede führt
+Instrumente von **Basis** über **Meister** zu **Virtuos**.
+
+| Stimme | Spielbarer Kern | Dauerhafter Ertrag |
+| --- | --- | --- |
+| **Regionen** | 48 deterministische Klangmeer-Inseln, vier Großregionen, Landmarken | Erkundungsfortschritte, Bosszugang |
+| **Motive** | Drei Archetypen mit acht Datenvarianten | Staub, Barren, Kerne, Schlüssel |
+| **Bosse** | Vier Drei-Phasen-Partituren | Bossmaterial, zwei bis drei Notenschlüssel |
+| **Partitur** | Drei Tagesaufträge aus elf Definitionen | RP, Schlüssel, Schmiedematerial |
+| **Leitmotiv** | 24 Knoten in drei Zweigen | Permanente Resonanzmodifikatoren |
+| **Schmiede** | Vier Instrumente, drei Stufen, zwölf Relikte | Längere/stärkere Effekte, Reliktbonus |
+| **Kaskade** | Weltakkord und dreistufiger Risssturm | Kaskadenkerne, Gruppenmacht |
+| **Kodex** | 46 additive Sinfonie-Folios | Vollständiges Nachschlagewerk |
+
+### Der Sinfonie-Zyklus
+
+1. Nimm am Notenpult drei Aufgaben an.
+2. Reise aus dem gestimmten Zentrum in den äußeren Inselring.
+3. Besiege Motivwesen im Takt und sammle ihre spezialisierten Materialien.
+4. Betritt eine Großregion; der Regionsruf synchronisiert Name und Anker.
+5. Nähere dich der Landmarke, um das einmal bewaffnete Bosswerk zu wecken.
+6. Lies die Telegraph-Beats, besiege den Boss und sichere Drop plus
+   Notenschlüssel.
+7. Löse Partiturbelohnungen ein und wähle einen Leitmotiv-Knoten.
+8. Werte ein Sinfonie-Instrument am Klangamboss auf oder sockele ein Relikt.
+9. Kehre mit einer stärkeren eigenen Stimme in die nächste Region zurück.
+10. Nutze Ensembles, Weltakkord und Kaskaden als große Prüfungen des
+    zusammengesetzten Builds.
+
+Die Systeme bilden keinen linearen Questschlauch. Ein Resonant kann zuerst
+Erkundung, Schmiede, Aufträge oder Leitmotiv vertiefen. Nur die Zutaten
+erzeugen eine natürliche Reihenfolge: Ein Bossdrop verlangt eine
+Bossbegegnung; ein Leitmotiv-Finale verlangt seine sieben Vorgängerknoten.
+
+---
+
+## 28. Atlas des Kammertons und Klangmeers
+
+### Das gestimmte Zentrum
+
+| Ort | Koordinaten | Funktion |
+| --- | ---: | --- |
+| Ankunftsinsel | `0 / 129 / 0` | Rückportal, Altar, erster sicherer Halt |
+| Choral-Arena | `0 / 140 / 96` | Kernfinale und Übergang nach Süden |
+| Resonanzgärten | etwa `0 / 129 / 272` | Acht Garteninseln und Taktbrücken |
+| Westarchiv | etwa `-68 / 137 / 342` | Ortsgebundenes Kodex-Folio |
+| Südarchiv | etwa `0 / 142 / 394` | Ortsgebundenes Kodex-Folio |
+| Ostarchiv | etwa `68 / 137 / 342` | Ortsgebundenes Kodex-Folio |
+
+### Der äußere Inselring
+
+Der Klangmeer-Komponist erzeugt **48 Inseln** aus dem Welt-Seed. Vier
+Großregionen sind feste Stimmen, die übrigen Inseln bilden Archipele aus
+acht Material- und Formfamilien:
+
+- **Bassgewölbe:** Bassschiefer und tiefe Körper.
+- **Arpeggien-Garten:** Kalzit, Moos und ansteigende Melodiebögen.
+- **Kakophonie-Riff:** Magma, Schwarzstein und Weinender Obsidian.
+- **Kristallkranz:** Amethyst, Kalzit und kristalline Spitzen.
+- **Resonanzhain:** Resonanzholz und moosige Ruheinseln.
+- **Generalpause-Scholle:** weißer Beton, Basalt und breite Leerräume.
+- **Echo-Terrassen:** Purpur und Endstein in gestaffelten Ebenen.
+- **Takt-Rondell:** Gold, Schwarzstein und kreisförmige Akzente.
+
+Leitsteinmarker verhindern, dass Inseln oder Landmarken bei erneutem Laden
+doppelt erzeugt werden. Der Seed bestimmt die Nebeninseln reproduzierbar;
+die vier Hauptanker bleiben unabhängig vom Seed stabil.
+
+### Vier Großregionen
+
+| Region | Hauptanker | Landmarke | Boss | Lesart |
+| --- | ---: | --- | --- | --- |
+| **Bassgewölbe** | `-900 / 129 / 0` | Die Große Pauke | Tremolo | schwer, ringförmig, tiefer Puls |
+| **Arpeggienmeer** | `900 / 129 / 0` | Saitenbrücken | Glissanda | vertikal, beweglich, cyan |
+| **Kakophonie-Riff** | `0 / 129 / 900` | Schwarmthron | Kakophon | dicht, magenta, überlagerte Stimmen |
+| **Generalpause-Öde** | `0 / 129 / 1600` | Leeres Podium | Generalpause | weit, weiß-gold, kontrollierte Stille |
+
+Im Umkreis von **420 Blöcken** um einen Hauptanker gilt die entsprechende
+Region. Beim ersten Eintritt sendet der Server `region_sync`, blendet den
+Regionsnamen ein und löst den zugehörigen Welt-Fortschritt aus. Jede
+Fortschrittsauslösung schenkt einmalig einen Notenschlüssel.
+
+### Landmarken und Bossweckung
+
+Jede Landmarke besitzt zwei getrennte Marker:
+
+- Der **Generierungsmarker** hält den Bau einmalig fest.
+- Der **Begegnungsmarker** ist anfangs bewaffnet. Kommt ein nicht
+  zuschauender Spieler auf 24 Blöcke an den Regionsanker heran, erscheint
+  der passende Boss und der Marker wird dauerhaft entschärft.
+
+Ein bereits lebender passender Boss in 42 Blöcken Radius zählt als geweckt;
+so entstehen durch erneutes Laden keine Doppelbegegnungen. Für
+Entwicklungstests können die Entitäten weiterhin direkt beschworen werden:
+
+```mcfunction
+/execute in aetherklang:kammerton run summon aetherklang:boss_tremolo -899.5 135 0.5
+/execute in aetherklang:kammerton run summon aetherklang:boss_glissanda 900.5 135 0.5
+/execute in aetherklang:kammerton run summon aetherklang:boss_kakophon 0.5 135 900.5
+/execute in aetherklang:kammerton run summon aetherklang:boss_generalpause 0.5 133 1600.5
+```
+
+### Reisevorbereitung
+
+- Setze sichtbare Rückwegmarken; die Generalpause-Öde liegt 1.600 Blöcke
+  südlich des Zentrums.
+- Nimm mindestens ein Ersatzinstrument, Nahrung, Blöcke und eine
+  RP-Reserve von 24 mit.
+- Öffne vor dem Aufbruch die Tagespartitur. Region-, Motiv- und
+  Bossaktivitäten können mehrere Aufgaben zugleich erfüllen.
+- Nutze die Welt-Stimme des Leitmotivs für Vorrat und günstigere Schritte,
+  wenn Erkundung dein Schwerpunkt ist.
+
+---
+
+## 29. Motivwesen: die wandernden Figuren
+
+Motivwesen sind keine einzelnen fest verdrahteten Mobs, sondern drei
+Archetypen mit datengetriebenen Varianten. Beim Erscheinen wählt der Server
+eine Variante, synchronisiert ihre ID und speichert sie dauerhaft. Name,
+Lebenspunkte, Angriff, Tempo, Maßstab, zwei Farben und Beute stammen aus der
+Sinfonie-Definition.
+
+Alle Motive teilen eine entscheidende Schwäche: Ein On-Beat-Treffer richtet
+**×1,75 Schaden** an. Beat-Ring und heller Tick bestätigen den Treffer.
+
+### Variantenkatalog
+
+| Archetyp / Variante | Leben | Angriff | Tempo | Beute |
+| --- | ---: | ---: | ---: | --- |
+| Läufer · **Presto-Läufer** | 20 | 4 | 0,34 | 1–3 Klangstaub |
+| Läufer · **Ostinato-Hüter** | 34 | 6 | 0,23 | 1–2 Resonanzbarren |
+| Läufer · **Synkopenjäger** | 26 | 7 | 0,29 | 1 Notenschlüssel |
+| Schwinge · **Legato-Schwinge** | 18 | 3 | 0,30 | 1–2 Saitenherzen |
+| Schwinge · **Staccato-Falter** | 14 | 5 | 0,38 | 1 Schwarmauge |
+| Schwinge · **Nocturne-Schwinge** | 30 | 6 | 0,26 | 1–2 Stillesplitter |
+| Pulser · **Bass-Pulser** | 42 | 8 | 0,19 | 1–2 Kaskadenkerne |
+| Pulser · **Triolen-Pulser** | 24 | 5 | 0,31 | 1 Tremolokern |
+
+### Rollen im Gefecht
+
+- **Läufer** binden die Front. Presto schließt Lücken, Ostinato hält Raum,
+  Synkope bestraft Unachtsamkeit.
+- **Schwingen** erzeugen seitlichen Druck. Staccato ist die erste Priorität;
+  Nocturne darf wegen Lebenspool und Schaden nicht unbeobachtet bleiben.
+- **Pulser** sind Anker einer Gruppe. Bass hält lange aus, Triole verschiebt
+  schnell die Linie.
+
+In gemischten Gruppen gilt: schnelle Schwinge → gefährlicher Läufer →
+Pulser. Fermate-Felder, Basshammer und Weltakkord schaffen Raum. Ein Kampf
+direkt im Dissonanzriss einer Kaskade ist fast immer ein Fehler.
+
+### Motivjagd und Ökonomie
+
+Partituraufträge unterscheiden zwischen konkreten Typen und `any`. Vier
+Läufer, drei Schwingen oder sechs beliebige Motive sind typische Ziele.
+Beute bedient mehrere Systeme:
+
+- Klangstaub und Resonanzbarren finanzieren jede Instrumentaufwertung.
+- Tremolokern, Saitenherz, Schwarmauge und Stillesplitter sind
+  bossbezogene Schmiedestimmen.
+- Kaskadenkerne verbinden Motivjagd mit Flächenereignissen.
+- Notenschlüssel treiben den Leitmotivbaum voran.
+
+---
+
+## 30. Bosswerk: vier Partituren des Außenrings
+
+Bosswerk liest vier validierte JSON-Partituren beim Mod-Start. Jede
+Partitur besitzt drei Lebensphasen, ein Beatintervall und eine zyklische
+Angriffsliste. Ein Angriff wird auf dem Weltbeat vorbereitet, ein bis zwei
+Beats telegraphiert und danach serverautoritativ ausgeführt.
+
+### Übersicht
+
+| Boss | Leben | Regionslandmarke | Garantierter Drop | Schlüssel |
+| --- | ---: | --- | --- | ---: |
+| **Tremolo** | 240 | Die Große Pauke | Tremolokern | 2 |
+| **Glissanda** | 260 | Saitenbrücken | Saitenherz | 2 |
+| **Kakophon** | 300 | Schwarmthron | Schwarmauge | 2 |
+| **Generalpause** | 340 | Leeres Podium | Stillesplitter | 3 |
+
+### Tremolo
+
+| Phase | Intervall | Folge |
+| --- | ---: | --- |
+| über 67 % | 4 Beats | Notenring → Schockwelle |
+| 67–34 % | 3 Beats | Notenring → Gleitstoß → Motivbeschwörung |
+| unter 34 % | 2 Beats | Notenring → Kakophonie → Fermate |
+
+Tremolo ist die Schule des wiederholten Akzents. Kreisförmige Gefahren
+werden immer dichter; in Phase drei ist ein freier Ausgang wichtiger als
+eine vollständige Angriffskombo.
+
+### Glissanda
+
+| Phase | Intervall | Folge |
+| --- | ---: | --- |
+| über 67 % | 4 Beats | Gleitstoß → Strahllinie |
+| 67–34 % | 3 Beats | Gleitstoß → Schockwelle → Notenring |
+| unter 34 % | 2 Beats | Strahllinie → Gleitstoß → Fermate |
+
+Glissanda prüft Querbewegung. Tritt aus Linien, statt rückwärts in ihrer
+Achse zu laufen. Der Resonanzschritt bleibt für überlappende Markierungen
+reserviert.
+
+### Kakophon
+
+| Phase | Intervall | Folge |
+| --- | ---: | --- |
+| über 67 % | 5 Beats | Kakophonie → Motivbeschwörung |
+| 67–34 % | 3 Beats | Kakophonie → Notenring → Schockwelle |
+| unter 34 % | 2 Beats | Kakophonie → Strahllinie → Motivbeschwörung |
+
+Kakophon ist ein Prioritätstest. Beschworene Motive verkleinern den
+Bewegungsraum; räume sie auf, bevor die nächste dichte Phrase beginnt.
+
+### Generalpause
+
+| Phase | Intervall | Folge |
+| --- | ---: | --- |
+| über 67 % | 5 Beats | Stille-Zone → Fermate |
+| 67–34 % | 3 Beats | Stille-Zone → Strahllinie → Motivbeschwörung |
+| unter 34 % | 2 Beats | Fermate → Stille-Zone → Schockwelle |
+
+Generalpause ist die Prüfung des Nicht-Handelns. Ihre Zonen nehmen Raum und
+Tempo. Bleibe außerhalb der Telegraphie, akzeptiere ausgelassene
+Angriffsfenster und antworte erst nach der Entladung.
+
+### Die acht Bossoperationen
+
+| Operation | Lesbare Antwort |
+| --- | --- |
+| Schockwelle | Radius verlassen oder kontrolliert überspringen |
+| Notenring | Lücke zwischen den Speichen suchen |
+| Strahllinie | Quer zur markierten Achse treten |
+| Stille-Zone | Feld früh verlassen, keine lange Aktion beginnen |
+| Motivbeschwörung | Adds priorisieren und Arena aufräumen |
+| Kakophonie | Abstand und Flächenkontrolle verbinden |
+| Gleitstoß | Seitlich aus der Bewegungsbahn |
+| Fermate | Bewegung vor der Verlangsamung abschließen |
+
+Jeder Phasenwechsel erzeugt eigene Ringe und Klangzeichen. Die Bossleiste
+wechselt spätestens in Phase drei zu Rot. Der Weltbeat bleibt dabei
+120 BPM; nur das Intervall der Partitur verdichtet sich.
+
+---
+
+## 31. Leitmotiv: deine dauerhafte Melodie
+
+Mit **L** öffnest du den Leitmotivschirm. Der Baum besitzt exakt
+**24 Knoten**: acht in **Kampf**, acht in **Harmonie**, acht in **Welt**.
+Jeder Zweig ist linear. Ein Knoten verlangt seinen direkten Vorgänger und
+kostet je nach Stufe einen bis drei Notenschlüssel.
+
+### Kampf
+
+| Knoten | Kosten | Effekt |
+| --- | ---: | --- |
+| Scharfer Auftakt | 1 | +5 % Resonanzschaden |
+| Goldener Schlag | 1 | PERFEKT-Fenster +0,01 Phase |
+| Druckwelle | 1 | weitere +5 % Resonanzschaden |
+| Jagdmotiv | 1 | +1 auf positiven RP-Gewinn |
+| Fortissimo | 2 | weitere +7,5 % Resonanzschaden |
+| Präzision | 2 | PERFEKT-Fenster weitere +0,01 |
+| Heldenkadenz | 3 | weiterer +1 RP-Gewinn |
+| Finale | 3 | weitere +10 % Resonanzschaden |
+
+### Harmonie
+
+| Knoten | Kosten | Effekt |
+| --- | ---: | --- |
+| Sanfter Auftakt | 1 | +10 % Resonanzheilung |
+| Ruhiger Puls | 1 | +25 % Dissonanzabbau |
+| Offenes Ohr | 1 | GUT-Fenster +0,015 Phase |
+| Heilender Refrain | 1 | weitere +15 % Heilung |
+| Klare Stimme | 2 | weitere +35 % Dissonanzabbau |
+| Tiefer Vorrat | 2 | RP-Limit +10 |
+| Gemeinsamer Takt | 3 | GUT-Fenster weitere +0,015 |
+| Lebenslied | 3 | weitere +25 % Heilung |
+
+### Welt
+
+| Knoten | Kosten | Effekt |
+| --- | ---: | --- |
+| Leichter Schritt | 1 | Schritt kostet 1 RP weniger |
+| Resonanzraum | 1 | RP-Limit +10 |
+| Fundmelodie | 1 | +1 auf positiven RP-Gewinn |
+| Weiter Horizont | 1 | GUT-Fenster +0,015 Phase |
+| Echopfad | 2 | Schritt kostet weiteren 1 RP weniger |
+| Klangspeicher | 2 | RP-Limit weitere +15 |
+| Weltchor | 3 | weiterer +1 RP-Gewinn |
+| Meisterreise | 3 | Schritt kostet weitere 2 RP weniger |
+
+### Schlüsselquellen und Regeln
+
+- Die meisten Sinfonie-Fortschritte vergeben beim ersten Abschluss
+  **einen** Schlüssel.
+- Choral gibt drei, Sirene zwei, die ersten drei Sinfonie-Bosse zwei und
+  Generalpause drei Schlüssel bei einem Spielertodesschlag.
+- Partituraufträge geben je nach Schwierigkeit ein bis drei Schlüssel.
+- Kreativspielende müssen den Bestand nicht bezahlen.
+- Freigeschaltete Knoten und bereits beanspruchte Fortschrittsbelohnungen
+  werden im Resonanz-Attachment gespeichert und synchronisiert.
+
+### Build-Archetypen
+
+- **Solokampf:** Kampf bis Fortissimo, dann Welt bis Resonanzraum. Mehr
+  Schaden bleibt nur nützlich, wenn Schritt und Vorrat den nächsten Treffer
+  ermöglichen.
+- **Ensemble-Heilung:** Harmonie bis Lebenslied, danach Welt für Vorrat.
+- **Klangmeer-Reise:** Welt bis Meisterreise, anschließend Harmonie bis
+  Offenes Ohr.
+- **Taktmeister:** Kampf bis Präzision plus Harmonie bis Gemeinsamer Takt;
+  verbindet breitere GUT- und PERFEKT-Fenster.
+
+Fensterwerte werden bei 0,5 Phase gedeckelt, Resonanzschritte kosten
+mindestens einen RP. Dadurch können Ausrüstung, Taktling und Leitmotiv
+stapeln, ohne den Beat oder die Ressource vollständig zu entfernen.
+
+---
+
+## 32. Partitur: Aufträge im Welttakt
+
+Die **Partitur des Tages** wählt pro Welttag drei Aufträge aus dem
+reloadbaren Klangwerk-Katalog. Eine Rotation dauert `24.000` Ticks. Auswahl,
+Fortschritt und Belohnung sind serverautoritativ; das Notenpult zeigt nur
+den synchronisierten Snapshot.
+
+Öffnen:
+
+- Rechtsklick auf `aetherklang:notenpult`
+- `/aetherklang partitur`
+- `/aetherklang partitur open`
+
+### Fünf Zieltypen
+
+| Zieltyp | Was gezählt wird |
+| --- | --- |
+| `kill_motiv` | Spielertötungen von Motiv-Läufer, -Schwinge oder -Pulser |
+| `play_akkord` | serverseitig aufgelöste Akkorde |
+| `visit_region` | Kammerton und Resonanzgarten |
+| `seal_rift` | erfolgreich versiegelte Dissonanzrisse |
+| `earn_resonance` | tatsächlich gutgeschriebener positiver RP-Gewinn |
+
+### Die elf Aufträge
+
+| Auftrag | Ziel | Belohnung |
+| --- | --- | --- |
+| Erste Resonanz | 20 RP sammeln | 8 RP, 1 Schlüssel, 2 Klangstaub |
+| Läufer im Takt | 4 Motiv-Läufer | 12 RP, 1 Schlüssel, 3 Klangstaub |
+| Gebrochene Schwingen | 3 Motiv-Schwingen | 14 RP, 1 Schlüssel, 2 Stillesplitter |
+| Motiv-Refrain | 6 beliebige Motive | 18 RP, 2 Schlüssel, 1 Resonanzbarren |
+| Doppelte Kadenz | 2 beliebige Akkorde | 16 RP, 1 Schlüssel, 4 Amethystscherben |
+| Heilender Dreiklang | 1 Heilender Dreiklang | 14 RP, 1 Schlüssel, 4 Klangstaub |
+| Sternenfortissimo | 1 Sternenfortissimo | 20 RP, 2 Schlüssel, 1 Kaskadenkern |
+| Jenseits des Glockenspiels | Kammerton betreten | 12 RP, 1 Schlüssel, 2 Klangstaub |
+| Resonanzgarten | Gartenring besuchen | 16 RP, 1 Schlüssel, 1 Resonanzbarren |
+| Stille Nähte | 2 Risse versiegeln | 18 RP, 2 Schlüssel, 3 Stillesplitter |
+| Große Risskadenz | 4 Risse versiegeln | 24 RP, 3 Schlüssel, 2 Resonanzbarren |
+
+Ein vollendeter Auftrag ist noch nicht ausgezahlt. Klicke im
+Partiturschirm auf **Belohnung nehmen**. Volle Inventare lassen Reststapel
+neben dem Spieler fallen. Der Fortschritt „Unterzeichnete Partitur“ folgt
+dem ersten beanspruchten Auftrag; alle drei Aufträge einer Rotation ergeben
+„Tagesprogramm“.
+
+### Reload-Vertrag
+
+Aufträge liegen als `klangwerk/auftrag`-Definitionen vor. Ein Reload ist
+atomar: Scheitert ID-, Pfad-, Typ-, Parameter- oder Materialprüfung, bleibt
+der letzte gültige Katalog aktiv.
+
+```mcfunction
+/aetherklang klangwerk dump
+/aetherklang klangwerk reload
+```
+
+`dump` nennt Anzahl und IDs pro Typ. `reload` verlangt Berechtigungsstufe 2
+und ersetzt nur bei vollständigem Erfolg den Snapshot.
+
+---
+
+## 33. Klangschmiede und Sinfonie-Instrumente
+
+### Vier Grundstimmen
+
+| Instrument | Kosten | Rechtsklick-Effekt auf Basis | Rolle |
+| --- | ---: | --- | --- |
+| **Pauke** | 8 RP | Stärke I; 3 Magieschaden und Rückstoß gegen Gegner in 6 Blöcken | Angriff |
+| **Sopranflöte** | 5 RP | heilt Verbündete in 8 Blöcken um 1,5 Herzen, gibt Regeneration I und entfernt Gift | Heilung |
+| **Kontrabass** | 7 RP | Resistenz I; Langsamkeit II und Schwäche I gegen Gegner in 8 Blöcken | Haltung |
+| **Triangel** | 4 RP | Schnelligkeit I; lässt Gegner in 16 Blöcken leuchten | Bewegung |
+
+Basis besitzt neun Sekunden Abklingzeit. Meister verlängert die Wirkung auf
+sieben Sekunden und verkürzt die Abklingzeit auf 7,25 Sekunden. Virtuos
+verlängert auf neun Sekunden, verkürzt auf 5,5 Sekunden und erhöht den
+Effektverstärker um eine Stufe. Pauke und Flöte skalieren außerdem je Stufe
+ihren Schaden beziehungsweise ihre Heilung um 1,5 Punkte; Virtuos erhöht die
+Kontrabass-Langsamkeit auf Stufe III. Jeder erfolgreiche Einsatz zählt als
+On-Beat-Aktion, kann den normalen Perfekt-RP-Gewinn auslösen und kostet einen
+Haltbarkeitspunkt.
+
+### Bedienung des Klangambosses
+
+1. Halte das Sinfonie-Instrument in der **Haupthand**.
+2. Lege Aufwertungsmaterial ins Inventar.
+3. Halte die Nebenhand leer, wenn du die nächste Klangstufe willst.
+4. Rechtsklicke `aetherklang:klangamboss`.
+5. Für ein Relikt halte stattdessen das Relikt in der **Nebenhand**.
+
+Die Operation ist atomar. Fehlt auch nur eine Zutat, wird nichts
+verbraucht. Ein Relikt hat Vorrang vor einer Aufwertung, wenn es in der
+Nebenhand liegt.
+
+### Aufwertungsmatrix
+
+| Instrument | Basis → Meister | Meister → Virtuos |
+| --- | --- | --- |
+| Pauke | 2 Barren, 8 Staub, 1 Tremolokern | 4 Barren, 16 Staub, 1 Stillesplitter |
+| Sopranflöte | 2 Barren, 8 Staub, 1 Kaskadenkern | 4 Barren, 16 Staub, 1 Notenschlüssel |
+| Kontrabass | 2 Barren, 8 Staub, 1 Saitenherz | 4 Barren, 16 Staub, 2 Tremolokerne |
+| Triangel | 2 Barren, 8 Staub, 1 Schwarmauge | 4 Barren, 16 Staub, 2 Stillesplitter |
+
+### Zwölf Relikte
+
+| Relikt | Zusatzeffekt beim Spielen |
+| --- | --- |
+| Metronom | Eile |
+| Echo | Absorption |
+| Fermate | Sanfter Fall |
+| Crescendo | Stärke |
+| Ostinato | Regeneration |
+| Kadenz | Glück |
+| Legato | Zusatzleben |
+| Staccato | Sprungkraft |
+| Fortissimo | Feuerresistenz |
+| Pianissimo | Unsichtbarkeit |
+| Harmonie | Resistenz |
+| Dissonanz | Nachtsicht und entfernt Dunkelheit |
+
+Jedes Instrument besitzt **einen** dauerhaften Sockel. Ein belegter Sockel
+kann nicht überschrieben werden. Außerhalb des Kreativmodus wird das Relikt
+beim Sockeln verbraucht. Ein gesockelter Effekt hält auf Basis neun Sekunden,
+auf Meister elf und auf Virtuos dreizehn Sekunden; Virtuos erhöht auch hier
+den Verstärker um eine Stufe. Lose Relikte lassen sich direkt benutzen und
+wirken 15 Sekunden bei 30 Sekunden Abklingzeit.
+
+### Schmiedestrategie
+
+- Werte nicht alle Instrumente parallel auf. Eine frühe Meisterstimme ist
+  stärker als vier halbfertige Materiallager.
+- Sockele erst, wenn die spätere Rolle klar ist. Echo auf Kontrabass ergibt
+  ein robustes Frontinstrument; Ostinato auf Sopranflöte verdichtet Heilung;
+  Metronom oder Kadenz passen zu Erkundung und Partitur.
+- Bossdrops sind nicht nur Trophäen. Prüfe vor der Reise, welche nächste
+  Aufwertung genau diesen Drop benötigt.
+
+---
+
+## 34. Weltakkord und Dissonanz-Kaskaden
+
+### Der vollständige Weltakkord
+
+Die Folge lautet:
+
+**Stille → Freude → Wunder → Trauer → Zorn**
+
+Ein aktives Ensemble darf die fünf On-Beat-Aktionen gemeinsam beitragen.
+Der Fortschritt verfällt nach zwölf Sekunden ohne passende Fortsetzung.
+Nach erfolgreicher Auflösung gilt für die Beteiligten 25 Sekunden
+Abklingzeit.
+
+Die Stärke berücksichtigt:
+
+- Zahl der beteiligten Resonanten,
+- einen gezähmten Taktling als zweite Solostimme,
+- Anzahl verschiedener Stimmlagen,
+- reduzierte Solo- oder vollständige Ensembleform.
+
+Der Effekt heilt Spieler, gibt Regeneration oder Absorption und fügt
+feindlichen Wesen Flächenschaden plus Rückstoß zu. Die vollständige Form
+reicht mit steigender Kraft über 14 Blöcke hinaus.
+
+### Stimmlagen
+
+| Lage | Bevorzugte Instrumente |
+| --- | --- |
+| Sopran | Stimmgabel, Sopranflöte, Triangel |
+| Alt | Hallharfe, Fermatenglocke |
+| Tenor | Resonanzklinge, Orgelhorn |
+| Bass | Basshammer, Kontrabass, Pauke |
+
+Mitglieder ohne zuordenbares Instrument füllen deterministisch die am
+wenigsten vertretene Lage. Das macht ein vollständiges Ensemble möglich,
+ohne Ausrüstung vorzuschreiben.
+
+### Natürliche Kaskaden
+
+Nach einer anfänglichen Ruhe von acht Minuten prüft jede Welt alle
+30 Sekunden einen Start. Bei geeigneten Spielern und einem Zufallstreffer
+öffnet sich 18 bis 32 Blöcke entfernt ein Oberflächenriss. Nach Abschluss
+ruht die Welt zwölf Minuten; ein fehlgeschlagener Versuch wird nach einer
+Minute erneut geprüft.
+
+### Wellenpartitur
+
+1. **Welle I:** drei Motiv-Läufer, ein Motiv-Pulser.
+2. **Welle II:** zwei Läufer, zwei Schwingen, ein Pulser.
+3. **Welle III:** zwei Schwingen, ein **Dissonanzherold**.
+
+Der Herold ist ein verstärkter Pulser mit 90 Leben, zehn Angriffsschaden,
+acht Rüstung, Leuchteffekt und sichtbarem Namen. Eine Welle endet erst,
+wenn alle zugehörigen Wesen tot oder entfernt sind; drei Sekunden später
+beginnt die nächste.
+
+### Teilnahme und Belohnung
+
+Jeder lebende Resonant innerhalb von 48 Blöcken wird als Teilnehmer
+gespeichert. Nach Welle III:
+
+- schließt sich der Kaskadenriss,
+- erhalten ein oder zwei Beteiligte je **einen Kaskadenkern**,
+- erhalten drei oder mehr Beteiligte je **zwei Kaskadenkerne**,
+- fällt ohne erreichbare Beteiligte ein Kern am ehemaligen Riss.
+
+Entwicklungskommandos:
+
+```mcfunction
+/aetherklang kaskade start
+/aetherklang kaskade status
+```
+
+Beide verlangen Berechtigungsstufe 2. `start` sucht von der
+Befehlsposition aus eine freie Oberfläche; pro Welt kann nur eine Kaskade
+aktiv sein.
+
+---
+
+## 35. SINFONIE-Fortschrittsbuch
+
+SINFONIE ergänzt vier Fortschrittslinien. Jeder über ein eigenes
+Aetherklang-Kriterium ausgelöste Meilenstein gibt einmalig einen
+Notenschlüssel für das Leitmotiv.
+
+### Welt
+
+- Kammerton betreten
+- Bassgewölbe erreichen
+- Arpeggienmeer erreichen
+- Kakophonie-Riff erreichen
+- Generalpause-Öde erreichen
+- einen Taktling zähmen
+
+### Kampf
+
+- die drei Motiv-Archetypen bezwingen
+- Tremolo, Glissanda, Kakophon und Generalpause bezwingen
+- Choral in der finalen Kadenz besiegen
+
+### Handwerk
+
+- Stimmgabel und erstes Instrument erlangen
+- Klangamboss bauen
+- erste Meister- und erste Virtuos-Aufwertung
+- erstes Relikt sockeln
+
+### Meisterschaft
+
+- ersten und alle drei Tagesaufträge abschließen
+- ersten Leitmotiv-Knoten und ein Leitmotiv-Finale freischalten
+- Akkord und Ensemble vollenden
+
+Fortschritte sind nicht bloß Checklisten. Sie verteilen die ersten Schlüssel
+über alle Spielstile, damit niemand nur Bosse oder nur Aufträge wiederholen
+muss, um ein Leitmotiv zu beginnen.
+
+---
+
+## 36. Kodex, Datenverträge und Autorenschaft
+
+### 81 Folios, 22 Register
+
+Die 35 bisherigen Folios bleiben in ihrer Reihenfolge und damit in ihren
+numerischen Freischalt-IDs unverändert. SINFONIE hängt **46 Folios**
+append-only an. Die sieben neuen Register sind:
+
+1. Regionen
+2. Bosse
+3. Leitmotiv
+4. Partitur
+5. Schmiede
+6. Kaskade
+7. Motive
+
+Der Kodex lädt `assets/aetherklang/kodex/pages.json` clientseitig. Titel,
+Untertitel und Körperzeilen sind Übersetzungsschlüssel in `de_de.json` und
+`en_us.json`. Unbekannte Kategorien würden auf Lore fallen; deshalb sind
+alle 22 Register im Clientvertrag ausdrücklich aufgeführt.
+
+### Zwei Datenlebenszyklen
+
+| Katalog | Pfad | Zeitpunkt | Fehlerverhalten |
+| --- | --- | --- | --- |
+| Sinfonie-Content | `data/aetherklang/content` | Mod-Start | Start bricht bei ungültigen Daten ab |
+| Klangwerk | `data/aetherklang/klangwerk` | Server-Reload | letzter gültiger Snapshot bleibt aktiv |
+| Bosswerk-Partituren | `klangwerk/boss` | Mod-Start | alle vier Scores müssen vorhanden und gültig sein |
+| Kodex | `assets/aetherklang/kodex/pages.json` | Client-Resource-Load | Fehler protokolliert, Willkommens-Fallback |
+
+Für Änderungen am Sinfonie-Content oder Bosswerk muss Client beziehungsweise
+Server neu gestartet werden. Aufträge, Aufwertungen und andere
+Klangwerk-Typen lassen sich mit dem fokussierten Reload erneuern.
+
+### Eingefrorene Integrationspunkte
+
+- Namespace bleibt `aetherklang`.
+- Registry-IDs werden additiv erweitert, nicht umbenannt.
+- Die 16 serialisierten Klangoperationen bleiben stabil.
+- `boss_fx`, `region_sync` und `leitmotiv_sync` sind feste S2C-Verträge.
+- Numerische Kodex-IDs entsprechen der nullbasierten Reihenfolge.
+- Regionanker und Landmarkmarker dürfen nach Weltfreigabe nicht wandern.
+
+---
+
+## 37. Die vollständige Reise
+
+### Akt I · Hören
+
+Kristall → Stimmgabel → Kodex → 120-BPM-Beat → erster RP-Vorrat.
+
+### Akt II · Antworten
+
+Stimmaltar → Instrument → Dissonanzgeist → Rissversiegelung → vier
+Stimmungen bewusst einsetzen.
+
+### Akt III · Crescendo
+
+Orgelturm → Sirene → Chorherz → Klangweber → Ensemble → Akkorde →
+Resonanzgärten → Archive → Choral.
+
+### Akt IV · SINFONIE
+
+Notenpult → Tagespartitur → Motivjagd → erste Großregion → Bosswerk →
+Notenschlüssel → Leitmotiv → Klangamboss → virtuos instrumentierte
+Außenreise.
+
+### Akt V · Weltenchor
+
+Vier Regionen → vier Bossstimmen → vollständiger Build → Weltakkord →
+Dissonanz-Kaskade → Leitmotiv-Finale.
+
+Die Reise endet nicht mit maximalem Schaden. Ein vollständiger Resonant kann
+eine Region lesen, einen Beat halten, in einem Ensemble Raum geben, eine
+Partitur erfüllen und aus Bossbeute eine eigene dauerhafte Stimme formen.
+
+---
+
+## 38. Credits
 
 - **Konzept, Welt und Entwicklung:** Aetherklang Team
 - **Technisches Fundament:** Fabric Loader, Fabric API und Yarn Mappings
@@ -1046,7 +1720,9 @@ Danke an alle, die den ersten Beat nicht nur treffen, sondern ihm zuhören.
 
 ## Kurzreferenz
 
-- **Kodex:** K oder Rechtsklick mit `aetherklang:kodex`
+- **Kodex:** K oder Rechtsklick mit `aetherklang:kodex` · 81 Folios /
+  22 Register
+- **Leitmotiv:** L · 24 Knoten / 3 Zweige · Notenschlüssel als Währung
 - **Resonanzschritt:** R (Echostiefel 8 RP · Klangweberstiefel 6 RP)
 - **Stimmungswechsel:** M (2 RP) oder Stimmaltar (kostenlos)
 - **Adaptive Musik:** N (nur lokaler Klang)
@@ -1062,3 +1738,9 @@ Danke an alle, die den ersten Beat nicht nur treffen, sondern ihm zuhören.
   Serien reinigen · ab 65 % schilden Hallwächter
 - **Crescendo-Ziel:** Orgelturm → Sirene → Ensemble/Akkorde →
   Resonanzgärten → Archive → Maestro
+- **Sinfonie-Ziel:** Partitur → Motive → vier Klangmeer-Regionen →
+  Bosswerk → Leitmotiv → Klangschmiede → Weltakkord/Kaskade
+- **Regionsanker:** Bassgewölbe `-900/129/0` · Arpeggienmeer `900/129/0` ·
+  Kakophonie-Riff `0/129/900` · Generalpause-Öde `0/129/1600`
+- **Testkommandos:** `/aetherklang partitur` · `klangwerk dump|reload` ·
+  `kaskade start|status`

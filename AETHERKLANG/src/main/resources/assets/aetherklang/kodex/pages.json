@@ -381,6 +381,558 @@
       ],
       "always_unlocked": true,
       "status": "playable"
+    },
+    {
+      "id": "sinfonie_overture",
+      "category": "regionen",
+      "title": "kodex.aetherklang.page.sinfonie_overture.title",
+      "subtitle": "kodex.aetherklang.page.sinfonie_overture.subtitle",
+      "body": [
+        "kodex.aetherklang.page.sinfonie_overture.body.1",
+        "kodex.aetherklang.page.sinfonie_overture.body.2"
+      ],
+      "always_unlocked": true,
+      "status": "playable"
+    },
+    {
+      "id": "kammerton_center",
+      "category": "regionen",
+      "title": "kodex.aetherklang.page.kammerton_center.title",
+      "subtitle": "kodex.aetherklang.page.kammerton_center.subtitle",
+      "body": [
+        "kodex.aetherklang.page.kammerton_center.body.1",
+        "kodex.aetherklang.page.kammerton_center.body.2"
+      ],
+      "always_unlocked": true,
+      "status": "playable"
+    },
+    {
+      "id": "tonarium_gardens",
+      "category": "regionen",
+      "title": "kodex.aetherklang.page.tonarium_gardens.title",
+      "subtitle": "kodex.aetherklang.page.tonarium_gardens.subtitle",
+      "body": [
+        "kodex.aetherklang.page.tonarium_gardens.body.1",
+        "kodex.aetherklang.page.tonarium_gardens.body.2"
+      ],
+      "always_unlocked": true,
+      "status": "playable"
+    },
+    {
+      "id": "bassgewoelbe",
+      "category": "regionen",
+      "title": "kodex.aetherklang.page.bassgewoelbe.title",
+      "subtitle": "kodex.aetherklang.page.bassgewoelbe.subtitle",
+      "body": [
+        "kodex.aetherklang.page.bassgewoelbe.body.1",
+        "kodex.aetherklang.page.bassgewoelbe.body.2"
+      ],
+      "always_unlocked": true,
+      "status": "playable"
+    },
+    {
+      "id": "arpeggienmeer",
+      "category": "regionen",
+      "title": "kodex.aetherklang.page.arpeggienmeer.title",
+      "subtitle": "kodex.aetherklang.page.arpeggienmeer.subtitle",
+      "body": [
+        "kodex.aetherklang.page.arpeggienmeer.body.1",
+        "kodex.aetherklang.page.arpeggienmeer.body.2"
+      ],
+      "always_unlocked": true,
+      "status": "playable"
+    },
+    {
+      "id": "kakophonie_riff",
+      "category": "regionen",
+      "title": "kodex.aetherklang.page.kakophonie_riff.title",
+      "subtitle": "kodex.aetherklang.page.kakophonie_riff.subtitle",
+      "body": [
+        "kodex.aetherklang.page.kakophonie_riff.body.1",
+        "kodex.aetherklang.page.kakophonie_riff.body.2"
+      ],
+      "always_unlocked": true,
+      "status": "playable"
+    },
+    {
+      "id": "klangmeer_navigation",
+      "category": "regionen",
+      "title": "kodex.aetherklang.page.klangmeer_navigation.title",
+      "subtitle": "kodex.aetherklang.page.klangmeer_navigation.subtitle",
+      "body": [
+        "kodex.aetherklang.page.klangmeer_navigation.body.1",
+        "kodex.aetherklang.page.klangmeer_navigation.body.2"
+      ],
+      "always_unlocked": true,
+      "status": "playable"
+    },
+    {
+      "id": "bosswerk",
+      "category": "bosse",
+      "title": "kodex.aetherklang.page.bosswerk.title",
+      "subtitle": "kodex.aetherklang.page.bosswerk.subtitle",
+      "body": [
+        "kodex.aetherklang.page.bosswerk.body.1",
+        "kodex.aetherklang.page.bosswerk.body.2"
+      ],
+      "always_unlocked": true,
+      "status": "playable"
+    },
+    {
+      "id": "boss_tremolo",
+      "category": "bosse",
+      "title": "kodex.aetherklang.page.boss_tremolo.title",
+      "subtitle": "kodex.aetherklang.page.boss_tremolo.subtitle",
+      "body": [
+        "kodex.aetherklang.page.boss_tremolo.body.1",
+        "kodex.aetherklang.page.boss_tremolo.body.2"
+      ],
+      "always_unlocked": true,
+      "status": "playable"
+    },
+    {
+      "id": "boss_glissanda",
+      "category": "bosse",
+      "title": "kodex.aetherklang.page.boss_glissanda.title",
+      "subtitle": "kodex.aetherklang.page.boss_glissanda.subtitle",
+      "body": [
+        "kodex.aetherklang.page.boss_glissanda.body.1",
+        "kodex.aetherklang.page.boss_glissanda.body.2"
+      ],
+      "always_unlocked": true,
+      "status": "playable"
+    },
+    {
+      "id": "boss_kakophon",
+      "category": "bosse",
+      "title": "kodex.aetherklang.page.boss_kakophon.title",
+      "subtitle": "kodex.aetherklang.page.boss_kakophon.subtitle",
+      "body": [
+        "kodex.aetherklang.page.boss_kakophon.body.1",
+        "kodex.aetherklang.page.boss_kakophon.body.2"
+      ],
+      "always_unlocked": true,
+      "status": "playable"
+    },
+    {
+      "id": "boss_generalpause",
+      "category": "bosse",
+      "title": "kodex.aetherklang.page.boss_generalpause.title",
+      "subtitle": "kodex.aetherklang.page.boss_generalpause.subtitle",
+      "body": [
+        "kodex.aetherklang.page.boss_generalpause.body.1",
+        "kodex.aetherklang.page.boss_generalpause.body.2"
+      ],
+      "always_unlocked": true,
+      "status": "playable"
+    },
+    {
+      "id": "boss_telegraphs",
+      "category": "bosse",
+      "title": "kodex.aetherklang.page.boss_telegraphs.title",
+      "subtitle": "kodex.aetherklang.page.boss_telegraphs.subtitle",
+      "body": [
+        "kodex.aetherklang.page.boss_telegraphs.body.1",
+        "kodex.aetherklang.page.boss_telegraphs.body.2"
+      ],
+      "always_unlocked": true,
+      "status": "playable"
+    },
+    {
+      "id": "boss_rewards",
+      "category": "bosse",
+      "title": "kodex.aetherklang.page.boss_rewards.title",
+      "subtitle": "kodex.aetherklang.page.boss_rewards.subtitle",
+      "body": [
+        "kodex.aetherklang.page.boss_rewards.body.1",
+        "kodex.aetherklang.page.boss_rewards.body.2"
+      ],
+      "always_unlocked": true,
+      "status": "playable"
+    },
+    {
+      "id": "leitmotiv_tree",
+      "category": "leitmotiv",
+      "title": "kodex.aetherklang.page.leitmotiv_tree.title",
+      "subtitle": "kodex.aetherklang.page.leitmotiv_tree.subtitle",
+      "body": [
+        "kodex.aetherklang.page.leitmotiv_tree.body.1",
+        "kodex.aetherklang.page.leitmotiv_tree.body.2"
+      ],
+      "always_unlocked": true,
+      "status": "playable"
+    },
+    {
+      "id": "leitmotiv_kampf",
+      "category": "leitmotiv",
+      "title": "kodex.aetherklang.page.leitmotiv_kampf.title",
+      "subtitle": "kodex.aetherklang.page.leitmotiv_kampf.subtitle",
+      "body": [
+        "kodex.aetherklang.page.leitmotiv_kampf.body.1",
+        "kodex.aetherklang.page.leitmotiv_kampf.body.2"
+      ],
+      "always_unlocked": true,
+      "status": "playable"
+    },
+    {
+      "id": "leitmotiv_harmonie",
+      "category": "leitmotiv",
+      "title": "kodex.aetherklang.page.leitmotiv_harmonie.title",
+      "subtitle": "kodex.aetherklang.page.leitmotiv_harmonie.subtitle",
+      "body": [
+        "kodex.aetherklang.page.leitmotiv_harmonie.body.1",
+        "kodex.aetherklang.page.leitmotiv_harmonie.body.2"
+      ],
+      "always_unlocked": true,
+      "status": "playable"
+    },
+    {
+      "id": "leitmotiv_welt",
+      "category": "leitmotiv",
+      "title": "kodex.aetherklang.page.leitmotiv_welt.title",
+      "subtitle": "kodex.aetherklang.page.leitmotiv_welt.subtitle",
+      "body": [
+        "kodex.aetherklang.page.leitmotiv_welt.body.1",
+        "kodex.aetherklang.page.leitmotiv_welt.body.2"
+      ],
+      "always_unlocked": true,
+      "status": "playable"
+    },
+    {
+      "id": "notenschluessel",
+      "category": "leitmotiv",
+      "title": "kodex.aetherklang.page.notenschluessel.title",
+      "subtitle": "kodex.aetherklang.page.notenschluessel.subtitle",
+      "body": [
+        "kodex.aetherklang.page.notenschluessel.body.1",
+        "kodex.aetherklang.page.notenschluessel.body.2"
+      ],
+      "always_unlocked": true,
+      "status": "playable"
+    },
+    {
+      "id": "leitmotiv_synergies",
+      "category": "leitmotiv",
+      "title": "kodex.aetherklang.page.leitmotiv_synergies.title",
+      "subtitle": "kodex.aetherklang.page.leitmotiv_synergies.subtitle",
+      "body": [
+        "kodex.aetherklang.page.leitmotiv_synergies.body.1",
+        "kodex.aetherklang.page.leitmotiv_synergies.body.2"
+      ],
+      "always_unlocked": true,
+      "status": "playable"
+    },
+    {
+      "id": "partitur_daily",
+      "category": "partitur",
+      "title": "kodex.aetherklang.page.partitur_daily.title",
+      "subtitle": "kodex.aetherklang.page.partitur_daily.subtitle",
+      "body": [
+        "kodex.aetherklang.page.partitur_daily.body.1",
+        "kodex.aetherklang.page.partitur_daily.body.2"
+      ],
+      "always_unlocked": true,
+      "status": "playable"
+    },
+    {
+      "id": "partitur_objectives",
+      "category": "partitur",
+      "title": "kodex.aetherklang.page.partitur_objectives.title",
+      "subtitle": "kodex.aetherklang.page.partitur_objectives.subtitle",
+      "body": [
+        "kodex.aetherklang.page.partitur_objectives.body.1",
+        "kodex.aetherklang.page.partitur_objectives.body.2"
+      ],
+      "always_unlocked": true,
+      "status": "playable"
+    },
+    {
+      "id": "partitur_rotation",
+      "category": "partitur",
+      "title": "kodex.aetherklang.page.partitur_rotation.title",
+      "subtitle": "kodex.aetherklang.page.partitur_rotation.subtitle",
+      "body": [
+        "kodex.aetherklang.page.partitur_rotation.body.1",
+        "kodex.aetherklang.page.partitur_rotation.body.2"
+      ],
+      "always_unlocked": true,
+      "status": "playable"
+    },
+    {
+      "id": "partitur_rewards",
+      "category": "partitur",
+      "title": "kodex.aetherklang.page.partitur_rewards.title",
+      "subtitle": "kodex.aetherklang.page.partitur_rewards.subtitle",
+      "body": [
+        "kodex.aetherklang.page.partitur_rewards.body.1",
+        "kodex.aetherklang.page.partitur_rewards.body.2"
+      ],
+      "always_unlocked": true,
+      "status": "playable"
+    },
+    {
+      "id": "notenpult",
+      "category": "partitur",
+      "title": "kodex.aetherklang.page.notenpult.title",
+      "subtitle": "kodex.aetherklang.page.notenpult.subtitle",
+      "body": [
+        "kodex.aetherklang.page.notenpult.body.1",
+        "kodex.aetherklang.page.notenpult.body.2"
+      ],
+      "always_unlocked": true,
+      "status": "playable"
+    },
+    {
+      "id": "partitur_klangwerk",
+      "category": "partitur",
+      "title": "kodex.aetherklang.page.partitur_klangwerk.title",
+      "subtitle": "kodex.aetherklang.page.partitur_klangwerk.subtitle",
+      "body": [
+        "kodex.aetherklang.page.partitur_klangwerk.body.1",
+        "kodex.aetherklang.page.partitur_klangwerk.body.2"
+      ],
+      "always_unlocked": true,
+      "status": "playable"
+    },
+    {
+      "id": "klangamboss",
+      "category": "schmiede",
+      "title": "kodex.aetherklang.page.klangamboss.title",
+      "subtitle": "kodex.aetherklang.page.klangamboss.subtitle",
+      "body": [
+        "kodex.aetherklang.page.klangamboss.body.1",
+        "kodex.aetherklang.page.klangamboss.body.2"
+      ],
+      "always_unlocked": true,
+      "status": "playable"
+    },
+    {
+      "id": "klangstufen",
+      "category": "schmiede",
+      "title": "kodex.aetherklang.page.klangstufen.title",
+      "subtitle": "kodex.aetherklang.page.klangstufen.subtitle",
+      "body": [
+        "kodex.aetherklang.page.klangstufen.body.1",
+        "kodex.aetherklang.page.klangstufen.body.2"
+      ],
+      "always_unlocked": true,
+      "status": "playable"
+    },
+    {
+      "id": "schmiede_materials",
+      "category": "schmiede",
+      "title": "kodex.aetherklang.page.schmiede_materials.title",
+      "subtitle": "kodex.aetherklang.page.schmiede_materials.subtitle",
+      "body": [
+        "kodex.aetherklang.page.schmiede_materials.body.1",
+        "kodex.aetherklang.page.schmiede_materials.body.2"
+      ],
+      "always_unlocked": true,
+      "status": "playable"
+    },
+    {
+      "id": "relic_sockets",
+      "category": "schmiede",
+      "title": "kodex.aetherklang.page.relic_sockets.title",
+      "subtitle": "kodex.aetherklang.page.relic_sockets.subtitle",
+      "body": [
+        "kodex.aetherklang.page.relic_sockets.body.1",
+        "kodex.aetherklang.page.relic_sockets.body.2"
+      ],
+      "always_unlocked": true,
+      "status": "playable"
+    },
+    {
+      "id": "relic_effects",
+      "category": "schmiede",
+      "title": "kodex.aetherklang.page.relic_effects.title",
+      "subtitle": "kodex.aetherklang.page.relic_effects.subtitle",
+      "body": [
+        "kodex.aetherklang.page.relic_effects.body.1",
+        "kodex.aetherklang.page.relic_effects.body.2"
+      ],
+      "always_unlocked": true,
+      "status": "playable"
+    },
+    {
+      "id": "sinfonie_instruments",
+      "category": "schmiede",
+      "title": "kodex.aetherklang.page.sinfonie_instruments.title",
+      "subtitle": "kodex.aetherklang.page.sinfonie_instruments.subtitle",
+      "body": [
+        "kodex.aetherklang.page.sinfonie_instruments.body.1",
+        "kodex.aetherklang.page.sinfonie_instruments.body.2"
+      ],
+      "always_unlocked": true,
+      "status": "playable"
+    },
+    {
+      "id": "weltakkord",
+      "category": "kaskade",
+      "title": "kodex.aetherklang.page.weltakkord.title",
+      "subtitle": "kodex.aetherklang.page.weltakkord.subtitle",
+      "body": [
+        "kodex.aetherklang.page.weltakkord.body.1",
+        "kodex.aetherklang.page.weltakkord.body.2"
+      ],
+      "always_unlocked": true,
+      "status": "playable"
+    },
+    {
+      "id": "stimmlagen",
+      "category": "kaskade",
+      "title": "kodex.aetherklang.page.stimmlagen.title",
+      "subtitle": "kodex.aetherklang.page.stimmlagen.subtitle",
+      "body": [
+        "kodex.aetherklang.page.stimmlagen.body.1",
+        "kodex.aetherklang.page.stimmlagen.body.2"
+      ],
+      "always_unlocked": true,
+      "status": "playable"
+    },
+    {
+      "id": "kaskade_call",
+      "category": "kaskade",
+      "title": "kodex.aetherklang.page.kaskade_call.title",
+      "subtitle": "kodex.aetherklang.page.kaskade_call.subtitle",
+      "body": [
+        "kodex.aetherklang.page.kaskade_call.body.1",
+        "kodex.aetherklang.page.kaskade_call.body.2"
+      ],
+      "always_unlocked": true,
+      "status": "playable"
+    },
+    {
+      "id": "kaskade_waves",
+      "category": "kaskade",
+      "title": "kodex.aetherklang.page.kaskade_waves.title",
+      "subtitle": "kodex.aetherklang.page.kaskade_waves.subtitle",
+      "body": [
+        "kodex.aetherklang.page.kaskade_waves.body.1",
+        "kodex.aetherklang.page.kaskade_waves.body.2"
+      ],
+      "always_unlocked": true,
+      "status": "playable"
+    },
+    {
+      "id": "dissonanzherold",
+      "category": "kaskade",
+      "title": "kodex.aetherklang.page.dissonanzherold.title",
+      "subtitle": "kodex.aetherklang.page.dissonanzherold.subtitle",
+      "body": [
+        "kodex.aetherklang.page.dissonanzherold.body.1",
+        "kodex.aetherklang.page.dissonanzherold.body.2"
+      ],
+      "always_unlocked": true,
+      "status": "playable"
+    },
+    {
+      "id": "kaskadenkern",
+      "category": "kaskade",
+      "title": "kodex.aetherklang.page.kaskadenkern.title",
+      "subtitle": "kodex.aetherklang.page.kaskadenkern.subtitle",
+      "body": [
+        "kodex.aetherklang.page.kaskadenkern.body.1",
+        "kodex.aetherklang.page.kaskadenkern.body.2"
+      ],
+      "always_unlocked": true,
+      "status": "playable"
+    },
+    {
+      "id": "motivwesen",
+      "category": "motive",
+      "title": "kodex.aetherklang.page.motivwesen.title",
+      "subtitle": "kodex.aetherklang.page.motivwesen.subtitle",
+      "body": [
+        "kodex.aetherklang.page.motivwesen.body.1",
+        "kodex.aetherklang.page.motivwesen.body.2"
+      ],
+      "always_unlocked": true,
+      "status": "playable"
+    },
+    {
+      "id": "motiv_laeufer",
+      "category": "motive",
+      "title": "kodex.aetherklang.page.motiv_laeufer.title",
+      "subtitle": "kodex.aetherklang.page.motiv_laeufer.subtitle",
+      "body": [
+        "kodex.aetherklang.page.motiv_laeufer.body.1",
+        "kodex.aetherklang.page.motiv_laeufer.body.2"
+      ],
+      "always_unlocked": true,
+      "status": "playable"
+    },
+    {
+      "id": "motiv_schwinge",
+      "category": "motive",
+      "title": "kodex.aetherklang.page.motiv_schwinge.title",
+      "subtitle": "kodex.aetherklang.page.motiv_schwinge.subtitle",
+      "body": [
+        "kodex.aetherklang.page.motiv_schwinge.body.1",
+        "kodex.aetherklang.page.motiv_schwinge.body.2"
+      ],
+      "always_unlocked": true,
+      "status": "playable"
+    },
+    {
+      "id": "motiv_pulser",
+      "category": "motive",
+      "title": "kodex.aetherklang.page.motiv_pulser.title",
+      "subtitle": "kodex.aetherklang.page.motiv_pulser.subtitle",
+      "body": [
+        "kodex.aetherklang.page.motiv_pulser.body.1",
+        "kodex.aetherklang.page.motiv_pulser.body.2"
+      ],
+      "always_unlocked": true,
+      "status": "playable"
+    },
+    {
+      "id": "motiv_variants",
+      "category": "motive",
+      "title": "kodex.aetherklang.page.motiv_variants.title",
+      "subtitle": "kodex.aetherklang.page.motiv_variants.subtitle",
+      "body": [
+        "kodex.aetherklang.page.motiv_variants.body.1",
+        "kodex.aetherklang.page.motiv_variants.body.2"
+      ],
+      "always_unlocked": true,
+      "status": "playable"
+    },
+    {
+      "id": "motiv_loot",
+      "category": "motive",
+      "title": "kodex.aetherklang.page.motiv_loot.title",
+      "subtitle": "kodex.aetherklang.page.motiv_loot.subtitle",
+      "body": [
+        "kodex.aetherklang.page.motiv_loot.body.1",
+        "kodex.aetherklang.page.motiv_loot.body.2"
+      ],
+      "always_unlocked": true,
+      "status": "playable"
+    },
+    {
+      "id": "motiv_tactics",
+      "category": "motive",
+      "title": "kodex.aetherklang.page.motiv_tactics.title",
+      "subtitle": "kodex.aetherklang.page.motiv_tactics.subtitle",
+      "body": [
+        "kodex.aetherklang.page.motiv_tactics.body.1",
+        "kodex.aetherklang.page.motiv_tactics.body.2"
+      ],
+      "always_unlocked": true,
+      "status": "playable"
+    },
+    {
+      "id": "generalpause_oede",
+      "category": "regionen",
+      "title": "kodex.aetherklang.page.generalpause_oede.title",
+      "subtitle": "kodex.aetherklang.page.generalpause_oede.subtitle",
+      "body": [
+        "kodex.aetherklang.page.generalpause_oede.body.1",
+        "kodex.aetherklang.page.generalpause_oede.body.2"
+      ],
+      "always_unlocked": true,
+      "status": "playable"
     }
   ]
 }
