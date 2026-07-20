@@ -1,15 +1,24 @@
 package de.aetherklang.registry;
 
 import de.aetherklang.Aetherklang;
-import de.aetherklang.entity.StubMobEntity;
+import de.aetherklang.entity.ChoralEntity;
+import de.aetherklang.entity.DissonanzgeistEntity;
+import de.aetherklang.entity.EchonoteEntity;
+import de.aetherklang.entity.HallwaechterEntity;
+import net.fabricmc.fabric.api.biome.v1.BiomeModifications;
+import net.fabricmc.fabric.api.biome.v1.BiomeSelectors;
+import net.fabricmc.fabric.api.event.player.UseItemCallback;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRegistry;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnGroup;
-import net.minecraft.entity.mob.MobEntity;
+import net.minecraft.item.ItemStack;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.ActionResult;
 
 public final class ModEntities {
     public static final String DISSONANZGEIST_ID = "dissonanzgeist";
@@ -17,37 +26,73 @@ public final class ModEntities {
     public static final String ECHONOTE_ID = "echonote";
     public static final String CHORAL_ID = "choral";
 
-    public static final EntityType<StubMobEntity> DISSONANZGEIST =
-            register(DISSONANZGEIST_ID, SpawnGroup.MONSTER, 0.65F, 1.9F);
-    public static final EntityType<StubMobEntity> HALLWAECHTER =
-            register(HALLWAECHTER_ID, SpawnGroup.MONSTER, 0.9F, 2.4F);
-    public static final EntityType<StubMobEntity> ECHONOTE =
-            register(ECHONOTE_ID, SpawnGroup.AMBIENT, 0.35F, 0.35F);
-    public static final EntityType<StubMobEntity> CHORAL =
-            register(CHORAL_ID, SpawnGroup.MONSTER, 1.4F, 3.2F);
+    public static final EntityType<DissonanzgeistEntity> DISSONANZGEIST =
+            register(DISSONANZGEIST_ID, SpawnGroup.MONSTER, 0.9F, 1.25F, 10, 3, false, DissonanzgeistEntity::new);
+    public static final EntityType<HallwaechterEntity> HALLWAECHTER =
+            register(HALLWAECHTER_ID, SpawnGroup.CREATURE, 1.2F, 2.8F, 10, 3, false, HallwaechterEntity::new);
+    public static final EntityType<EchonoteEntity> ECHONOTE =
+            register(ECHONOTE_ID, SpawnGroup.MISC, 0.35F, 0.35F, 8, 1, true, EchonoteEntity::new);
+    public static final EntityType<ChoralEntity> CHORAL =
+            register(CHORAL_ID, SpawnGroup.MONSTER, 3.6F, 4.5F, 16, 2, false, ChoralEntity::new);
 
     private ModEntities() {
     }
 
-    private static EntityType<StubMobEntity> register(
+    private static <T extends Entity> EntityType<T> register(
             String path,
             SpawnGroup spawnGroup,
             float width,
-            float height
+            float height,
+            int trackingRange,
+            int trackingInterval,
+            boolean dropsNothing,
+            EntityType.EntityFactory<T> factory
     ) {
         RegistryKey<EntityType<?>> key = RegistryKey.of(RegistryKeys.ENTITY_TYPE, Aetherklang.id(path));
-        EntityType<StubMobEntity> type = EntityType.Builder
-                .create(StubMobEntity::new, spawnGroup)
+        EntityType.Builder<T> builder = EntityType.Builder
+                .create(factory, spawnGroup)
                 .dimensions(width, height)
-                .build(key);
+                .maxTrackingRange(trackingRange)
+                .trackingTickInterval(trackingInterval);
+        if (dropsNothing) {
+            builder.dropsNothing();
+        }
+        EntityType<T> type = builder.build(key);
         return Registry.register(Registries.ENTITY_TYPE, key, type);
     }
 
     public static void register() {
-        FabricDefaultAttributeRegistry.register(DISSONANZGEIST, MobEntity.createMobAttributes());
-        FabricDefaultAttributeRegistry.register(HALLWAECHTER, MobEntity.createMobAttributes());
-        FabricDefaultAttributeRegistry.register(ECHONOTE, MobEntity.createMobAttributes());
-        FabricDefaultAttributeRegistry.register(CHORAL, MobEntity.createMobAttributes());
+        FabricDefaultAttributeRegistry.register(DISSONANZGEIST, DissonanzgeistEntity.createAttributes());
+        FabricDefaultAttributeRegistry.register(HALLWAECHTER, HallwaechterEntity.createAttributes());
+        FabricDefaultAttributeRegistry.register(CHORAL, ChoralEntity.createAttributes());
+        BiomeModifications.addSpawn(
+                BiomeSelectors.foundInOverworld(),
+                SpawnGroup.MONSTER,
+                DISSONANZGEIST,
+                2,
+                1,
+                1
+        );
+        registerHallharfe();
         Aetherklang.LOGGER.debug("Registered {} Aetherklang entity types", 4);
+    }
+
+    private static void registerHallharfe() {
+        UseItemCallback.EVENT.register((player, world, hand) -> {
+            ItemStack stack = player.getStackInHand(hand);
+            if (!stack.isOf(ModItems.HALLHARFE)) {
+                return ActionResult.PASS;
+            }
+            if (player.getItemCooldownManager().isCoolingDown(stack)) {
+                return ActionResult.PASS;
+            }
+            if (world instanceof ServerWorld serverWorld) {
+                EchonoteEntity note = EchonoteEntity.createForMood(serverWorld, player);
+                serverWorld.spawnEntity(note);
+                player.getItemCooldownManager().set(stack, 12);
+                player.playSound(ModSounds.RESONANCE_CAST, 0.8F, note.isHealing() ? 1.55F : 0.9F);
+            }
+            return ActionResult.PASS;
+        });
     }
 }
