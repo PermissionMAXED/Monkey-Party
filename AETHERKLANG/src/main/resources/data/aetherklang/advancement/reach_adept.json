@@ -1,0 +1,30 @@
+{
+  "criteria": {
+    "requirement": {
+      "trigger": "aetherklang:reach_adept"
+    }
+  },
+  "display": {
+    "icon": {
+      "count": 1,
+      "id": "aetherklang:fermatenglocke"
+    },
+    "title": {
+      "translate": "advancements.aetherklang.reach_adept.title"
+    },
+    "description": {
+      "translate": "advancements.aetherklang.reach_adept.description"
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "requirements": [
+    [
+      "requirement"
+    ]
+  ],
+  "sends_telemetry_event": false,
+  "parent": "aetherklang:first_akkord"
+}

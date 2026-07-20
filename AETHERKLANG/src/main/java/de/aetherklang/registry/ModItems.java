@@ -15,6 +15,7 @@ import de.aetherklang.item.KlangweberStiefelItem;
 import de.aetherklang.item.KodexItem;
 import de.aetherklang.item.OrgelhornItem;
 import de.aetherklang.item.ResonanzarchivBlockItem;
+import de.aetherklang.item.ResonanzelixierItem;
 import de.aetherklang.item.ResonanzklingeItem;
 import de.aetherklang.item.SireneSpawnEggItem;
 import de.aetherklang.item.StimmgabelItem;
@@ -49,6 +50,7 @@ public final class ModItems {
     public static final String ORGELHORN_ID = "orgelhorn";
     public static final String FERMATENGLOCKE_ID = "fermatenglocke";
     public static final String CHORHERZ_ID = "chorherz";
+    public static final String RESONANZELIXIER_ID = "resonanzelixier";
     public static final String KLANGWEBER_HELM_ID = "klangweber_helm";
     public static final String KLANGWEBER_BRUST_ID = "klangweber_brust";
     public static final String KLANGWEBER_BEINE_ID = "klangweber_beine";
@@ -102,6 +104,8 @@ public final class ModItems {
             register(FERMATENGLOCKE_ID, FermatenglockeItem::new, new Item.Settings().maxCount(1).maxDamage(256));
     public static final Item CHORHERZ =
             register(CHORHERZ_ID, ChorherzItem::new, new Item.Settings().maxCount(16));
+    public static final Item RESONANZELIXIER =
+            register(RESONANZELIXIER_ID, ResonanzelixierItem::new, new Item.Settings().maxCount(16));
     public static final Item KLANGWEBER_HELM = register(
             KLANGWEBER_HELM_ID,
             KlangweberHelmItem::new,
@@ -168,6 +172,7 @@ public final class ModItems {
             ORGELHORN,
             FERMATENGLOCKE,
             CHORHERZ,
+            RESONANZELIXIER,
             KLANGWEBER_HELM,
             KLANGWEBER_BRUST,
             KLANGWEBER_BEINE,

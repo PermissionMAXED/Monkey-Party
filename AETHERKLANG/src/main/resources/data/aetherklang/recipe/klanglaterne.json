@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "key": {
+    "A": "minecraft:amethyst_shard",
+    "C": "minecraft:copper_ingot",
+    "G": "aetherklang:resonanzkristall_gold",
+    "L": "minecraft:lantern"
+  },
+  "pattern": [
+    " A ",
+    "CLC",
+    " G "
+  ],
+  "result": {
+    "count": 4,
+    "id": "aetherklang:klanglaterne"
+  }
+}

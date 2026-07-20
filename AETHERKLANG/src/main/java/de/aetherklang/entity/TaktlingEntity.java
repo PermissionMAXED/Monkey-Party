@@ -1,5 +1,6 @@
 package de.aetherklang.entity;
 
+import de.aetherklang.registry.ModCriteria;
 import de.aetherklang.registry.ModItems;
 import de.aetherklang.registry.ModParticles;
 import de.aetherklang.registry.ModSounds;
@@ -20,6 +21,7 @@ import net.minecraft.entity.passive.PassiveEntity;
 import net.minecraft.entity.passive.TameableEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
@@ -97,6 +99,9 @@ public final class TaktlingEntity extends TameableEntity {
             setInSittingPose(false);
             getNavigation().stop();
             playSound(ModSounds.TAKTLING_CHIRP, 1.0F, 1.55F);
+            if (player instanceof ServerPlayerEntity serverPlayer) {
+                ModCriteria.TAME_TAKTLING.trigger(serverPlayer);
+            }
             return ActionResult.SUCCESS_SERVER;
         }
 

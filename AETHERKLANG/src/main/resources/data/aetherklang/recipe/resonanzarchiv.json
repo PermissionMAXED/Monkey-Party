@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "key": {
+    "A": "minecraft:amethyst_shard",
+    "B": "minecraft:chiseled_bookshelf",
+    "I": "aetherklang:resonanzkristall_indigo"
+  },
+  "pattern": [
+    "AIA",
+    "IBI",
+    "AIA"
+  ],
+  "result": {
+    "count": 1,
+    "id": "aetherklang:resonanzarchiv"
+  }
+}

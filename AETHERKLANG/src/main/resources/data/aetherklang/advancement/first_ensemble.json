@@ -1,0 +1,30 @@
+{
+  "criteria": {
+    "requirement": {
+      "trigger": "aetherklang:first_ensemble"
+    }
+  },
+  "display": {
+    "icon": {
+      "count": 1,
+      "id": "minecraft:goat_horn"
+    },
+    "title": {
+      "translate": "advancements.aetherklang.first_ensemble.title"
+    },
+    "description": {
+      "translate": "advancements.aetherklang.first_ensemble.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "requirements": [
+    [
+      "requirement"
+    ]
+  ],
+  "sends_telemetry_event": false,
+  "parent": "aetherklang:on_beat_hit"
+}

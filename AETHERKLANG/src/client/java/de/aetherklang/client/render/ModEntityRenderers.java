@@ -1,7 +1,9 @@
 package de.aetherklang.client.render;
 
 import de.aetherklang.Aetherklang;
+import de.aetherklang.registry.ModBlockEntities;
 import de.aetherklang.registry.ModEntities;
+import net.fabricmc.fabric.api.client.rendering.v1.BlockEntityRendererRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.EntityModelLayerRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
 import net.minecraft.client.render.entity.model.EntityModelLayer;
@@ -18,6 +20,14 @@ public final class ModEntityRenderers {
         EntityModelLayerRegistry.registerModelLayer(
                 FermateFeldRenderer.MODEL_LAYER,
                 FermateFeldRenderer::getTexturedModelData
+        );
+        EntityModelLayerRegistry.registerModelLayer(
+                StimmaltarBlockEntityRenderer.MODEL_LAYER,
+                StimmaltarBlockEntityRenderer::getTexturedModelData
+        );
+        BlockEntityRendererRegistry.register(
+                ModBlockEntities.STIMMALTAR,
+                StimmaltarBlockEntityRenderer::new
         );
         EntityRendererRegistry.register(
                 ModEntities.DISSONANZGEIST,

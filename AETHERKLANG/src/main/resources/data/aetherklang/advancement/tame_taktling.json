@@ -1,0 +1,30 @@
+{
+  "criteria": {
+    "requirement": {
+      "trigger": "aetherklang:tame_taktling"
+    }
+  },
+  "display": {
+    "icon": {
+      "count": 1,
+      "id": "aetherklang:resonanzkristall_gold"
+    },
+    "title": {
+      "translate": "advancements.aetherklang.tame_taktling.title"
+    },
+    "description": {
+      "translate": "advancements.aetherklang.tame_taktling.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "requirements": [
+    [
+      "requirement"
+    ]
+  ],
+  "sends_telemetry_event": false,
+  "parent": "aetherklang:enter_portal"
+}

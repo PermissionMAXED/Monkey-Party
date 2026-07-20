@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "key": {
+    "B": "minecraft:bamboo_planks",
+    "C": "aetherklang:resonanzkristall_cyan",
+    "G": "aetherklang:resonanzkristall_gold",
+    "R": "minecraft:redstone"
+  },
+  "pattern": [
+    "CRC",
+    "BBB",
+    " G "
+  ],
+  "result": {
+    "count": 6,
+    "id": "aetherklang:taktbruecke"
+  }
+}

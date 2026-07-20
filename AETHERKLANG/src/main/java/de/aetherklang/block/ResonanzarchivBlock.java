@@ -1,6 +1,7 @@
 package de.aetherklang.block;
 
 import com.mojang.serialization.MapCodec;
+import de.aetherklang.registry.ModCriteria;
 import de.aetherklang.registry.ModParticles;
 import de.aetherklang.registry.ModSounds;
 import de.aetherklang.resonance.ResonanceApi;
@@ -100,6 +101,7 @@ public final class ResonanzarchivBlock extends Block {
                 1.0F,
                 1.0F + folioIndex * 0.12F
         );
+        ModCriteria.UNSEAL_ARCHIVE.trigger(serverPlayer);
         serverPlayer.sendMessage(
                 Text.translatable("message.aetherklang.archive.unsealed", title),
                 false

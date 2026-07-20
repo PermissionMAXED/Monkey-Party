@@ -1,0 +1,30 @@
+{
+  "criteria": {
+    "requirement": {
+      "trigger": "aetherklang:first_akkord"
+    }
+  },
+  "display": {
+    "icon": {
+      "count": 1,
+      "id": "minecraft:music_disc_5"
+    },
+    "title": {
+      "translate": "advancements.aetherklang.first_akkord.title"
+    },
+    "description": {
+      "translate": "advancements.aetherklang.first_akkord.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "requirements": [
+    [
+      "requirement"
+    ]
+  ],
+  "sends_telemetry_event": false,
+  "parent": "aetherklang:on_beat_hit"
+}

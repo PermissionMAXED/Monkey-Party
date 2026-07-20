@@ -1,6 +1,7 @@
 package de.aetherklang.resonance;
 
 import de.aetherklang.network.ModNetworking;
+import de.aetherklang.registry.ModCriteria;
 import net.minecraft.server.network.ServerPlayerEntity;
 
 /**
@@ -51,6 +52,9 @@ public final class RangService {
         long updated = current > Long.MAX_VALUE - gainedRp ? Long.MAX_VALUE : current + gainedRp;
         data.setGesamtRp(updated);
         reconcile(data);
+        if (current < ADEPT_THRESHOLD && updated >= ADEPT_THRESHOLD) {
+            ModCriteria.REACH_ADEPT.trigger(player);
+        }
     }
 
     public static void reconcileAndSync(ServerPlayerEntity player) {

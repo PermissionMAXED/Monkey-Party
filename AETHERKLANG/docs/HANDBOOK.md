@@ -178,7 +178,10 @@ category. The **N** music toggle is listed under **Miscellaneous (MISC)**.
 
 First Resonance (obtain a crystal), Right on Beat (first perfect action),
 A World With a Voice (open the Codex), Through the Glockenspiel (enter a
-portal), Final Cadence (defeat Choral).
+portal), Final Cadence (defeat Choral), Three Become One (first chord), On
+the Same Beat (first ensemble), Resonance Adept (150 lifetime RP), Pocket
+Metronome (tame a Beatling), The Song Falls Silent (defeat a Siren), and
+Sealed Memory (unseal an Archive folio).
 
 ## Commands
 
@@ -299,8 +302,9 @@ generation. Its Siren has 45 hearts, armor 6, and sings every six seconds,
 pulling creatures from up to 16 blocks during the phrase. On-beat hits deal
 ×1.75 damage. The Siren always drops a **Choir Heart**.
 
-The Choir Heart currently serves as loot and an integration item; it has no
-use recipe.
+The Choir Heart fuels Klangweaver armor or combines with four Glass Bottles
+and four Amethyst Shards to make **four Resonance Elixirs**. Each elixir
+restores **12 RP** and grants Speed I plus Luck I for 30 seconds.
 
 ### Beatling · Playable
 
@@ -336,6 +340,10 @@ Cadence folios according to location.
 - A chromatic screen ripple begins on the second consecutive perfect action.
 - A desaturated scanline wash signals proximity to an active Fermata field.
 - Ensemble links and Klangweaver auras make group and equipment state visible.
+- A mood-colored crystal and five orbiting glyphs float above every Mood
+  Altar.
+- Choral gains a rotating halo in phase two and a gold pillar in phase three;
+  each transition erupts in stacked glyph rings and a rising light spiral.
 - Adaptive music maps each mood to an eight-step motif, adds ensemble harmony,
   detunes with dissonance, and layers Choral's phase. Press **N** to toggle it
   locally.
@@ -352,10 +360,15 @@ The original recipes remain unchanged. Crescendo adds:
 | **Klangweaver Chestplate** | 7× any Resonance Crystal around 1× Choir Heart |
 | **Klangweaver Leggings** | 6× any Resonance Crystal around 1× Choir Heart |
 | **Klangweaver Boots** | 2× Resonance Crystal above 2× Choir Heart |
+| **Sound Lantern** (4) | Lantern, 2× Copper Ingot, Amethyst Shard, Gold Resonance Crystal |
+| **Beat Bridge** (6) | 3× Bamboo Planks, 2× Cyan Crystal, Redstone, Gold Crystal |
+| **Resonance Archive** | Chiseled Bookshelf, 4× Indigo Crystal, 4× Amethyst Shard |
+| **Soundflower** (2) | Spore Blossom, 2× Amethyst Shard, Glow Berries, Cyan Crystal |
+| **Resonance Elixir** (4) | Choir Heart, 4× Glass Bottle, 4× Amethyst Shard |
 
-The **Choir Heart** has no recipe; a Siren drops one. Sound Lantern, Beat
-Bridge, Resonance Archive, and Soundflower currently have **no Survival
-crafting recipe** and come from world content or the Creative inventory.
+The **Choir Heart** itself has no recipe; a Siren drops one. Drinking an
+elixir restores 12 RP, applies Speed I and Luck I for 30 seconds, and returns
+its Glass Bottle.
 
 ## Quick reference
 

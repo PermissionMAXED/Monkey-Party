@@ -23,6 +23,7 @@ public final class ChoralEntity extends PhantomEntity {
     private static final int PHASE_ONE_INTERVAL = 90;
     private static final int PHASE_TWO_INTERVAL = 100;
     private static final int PHASE_THREE_INTERVAL = 120;
+    private int lastPhase = 1;
     private final ServerBossBar bossBar =
             new ServerBossBar(Text.translatable("entity.aetherklang.choral"), BossBar.Color.PURPLE, BossBar.Style.PROGRESS);
 
@@ -62,9 +63,15 @@ public final class ChoralEntity extends PhantomEntity {
             return;
         }
 
+        int phase = getPhase();
+        if (phase != lastPhase) {
+            spawnPhaseTransition(world, phase);
+            lastPhase = phase;
+        }
+
         bossBar.setPercent(getHealth() / getMaxHealth());
         bossBar.setName(getDisplayName());
-        bossBar.setColor(switch (getPhase()) {
+        bossBar.setColor(switch (phase) {
             case 1 -> BossBar.Color.PURPLE;
             case 2 -> BossBar.Color.YELLOW;
             default -> BossBar.Color.RED;
@@ -87,11 +94,40 @@ public final class ChoralEntity extends PhantomEntity {
             );
         }
 
-        switch (getPhase()) {
+        switch (phase) {
             case 1 -> tickNoteRing(world);
             case 2 -> tickDissonanzStorm(world);
             default -> tickChorusBeam(world);
         }
+    }
+
+    private void spawnPhaseTransition(ServerWorld world, int phase) {
+        Vec3d center = getEntityPos().add(0.0D, getHeight() * 0.52D, 0.0D);
+        for (int tier = 0; tier < 4; tier++) {
+            spawnHorizontalRing(
+                    world,
+                    phase >= 3 ? ModParticles.AKKORD_GLYPH : ModParticles.BEAT_RING,
+                    center.add(0.0D, (tier - 1.5D) * 0.85D, 0.0D),
+                    2.2D + tier * 0.75D,
+                    24 + tier * 4
+            );
+        }
+        for (int step = -18; step <= 30; step++) {
+            double y = center.y + step * 0.18D;
+            double spiral = age * 0.12D + step * 0.48D;
+            world.spawnParticles(
+                    ModParticles.BEAM_MOTE,
+                    center.x + Math.cos(spiral) * 0.55D,
+                    y,
+                    center.z + Math.sin(spiral) * 0.55D,
+                    phase,
+                    0.08D,
+                    0.04D,
+                    0.08D,
+                    0.025D
+            );
+        }
+        playSound(ModSounds.CHORAL_THEME, 1.8F, phase >= 3 ? 1.35F : 1.12F);
     }
 
     private void tickNoteRing(ServerWorld world) {

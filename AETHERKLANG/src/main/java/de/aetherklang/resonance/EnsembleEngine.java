@@ -1,6 +1,7 @@
 package de.aetherklang.resonance;
 
 import de.aetherklang.network.ModNetworking;
+import de.aetherklang.registry.ModCriteria;
 import de.aetherklang.registry.ModParticles;
 import de.aetherklang.registry.ModSounds;
 import java.util.HashMap;
@@ -143,6 +144,12 @@ public final class EnsembleEngine {
         }
         if (newlyLinked) {
             playLinkFeedback(source);
+            for (UUID memberId : members) {
+                ServerPlayerEntity member = server.getPlayerManager().getPlayer(memberId);
+                if (member != null) {
+                    ModCriteria.FIRST_ENSEMBLE.trigger(member);
+                }
+            }
         }
         return link;
     }

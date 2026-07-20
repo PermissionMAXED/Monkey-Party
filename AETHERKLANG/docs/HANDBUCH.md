@@ -597,11 +597,16 @@ Alle vorhandenen Rezepte sind freigeschaltet und im Rezeptbuch auffindbar.
 | **Klangweberharnisch** | 7× beliebiger Resonanzkristall um 1× Chorherz |
 | **Klangweberbeinschutz** | 6× beliebiger Resonanzkristall um 1× Chorherz |
 | **Klangweberstiefel** | 2× Resonanzkristall über 2× Chorherz |
+| **Klanglaterne** (4) | Laterne, 2× Kupferingot, Amethystscherbe und Gold-Kristall |
+| **Taktbrücke** (6) | 3× Bambusbretter, 2× Cyan-Kristall, Redstone und Gold-Kristall |
+| **Resonanzarchiv** | Gemeißeltes Bücherregal, 4× Indigo-Kristall und 4× Amethystscherbe |
+| **Klangblume** (2) | Sporenblüte, 2× Amethystscherbe, Leuchtbeeren und Cyan-Kristall |
+| **Resonanzelixier** (4) | Chorherz, 4× Glasflasche und 4× Amethystscherbe (formlos) |
 
-Das **Chorherz** besitzt kein Rezept: Die Sirene lässt eines fallen.
-Klanglaterne, Taktbrücke, Resonanzarchiv und Klangblume besitzen derzeit
-**kein Überlebensrezept**; sie erscheinen als Weltinhalt oder im
-Kreativinventar.
+Das **Chorherz** besitzt kein eigenes Rezept: Die Sirene lässt eines fallen.
+Neben der Klangweber-Rüstung kann ein Herz in vier Resonanzelixiere geteilt
+werden. Jedes Elixier gibt **12 RP** und für 30 Sekunden Schnelligkeit I sowie
+Glück I; nach dem Trinken bleibt die Glasflasche zurück.
 
 ---
 
@@ -614,6 +619,12 @@ Kreativinventar.
 | **Eine Welt mit Stimme** | Den Kodex der Resonanz öffnen |
 | **Durch das Glockenspiel** | Ein Glockenspiel-Portal betreten |
 | **Finale Kadenz** | Choral besiegen |
+| **Drei werden eins** | Den ersten vollständigen Akkord auflösen |
+| **Im selben Takt** | Das erste Ensemble mit einem anderen Resonanten bilden |
+| **Resonanzadept** | 150 Gesamt-RP und damit Grad Adept erreichen |
+| **Kleiner Taktgeber** | Einen Taktling zähmen |
+| **Das Lied verstummt** | Eine Sirene besiegen |
+| **Versiegelte Erinnerung** | Das erste Archiv-Folio entsiegeln |
 
 ---
 
@@ -908,9 +919,9 @@ besiegt, erscheint sie nach einem Neuladen nicht automatisch erneut.
 - On-Beat-Treffer richten **×1,75** Schaden an
 - hinterlässt garantiert ein **Chorherz**
 
-Das Chorherz ist derzeit ein Beute- und Integrationsgegenstand ohne eigenes
-Benutzungsrezept. Das Orgelhorn wird regulär gefertigt, nicht direkt aus dem
-Herz.
+Das Chorherz speist Klangweber-Rezepte oder wird mit vier Glasflaschen und
+vier Amethystscherben in **vier Resonanzelixiere** geteilt. Ein Elixier füllt
+12 RP und verleiht 30 Sekunden Schnelligkeit I und Glück I.
 
 ### Taktling — `aetherklang:taktling` · Spielbar
 
@@ -978,6 +989,11 @@ Beatwertung und andere Spielende bleiben unverändert.
 - Aktive Ensembles erhalten sichtbare, verschlungene Cyan-Gold-Verbindungen.
 - Jedes Klangweberteil verstärkt seine Aura; der Vollsatz setzt pro Beat
   einen Halo.
+- Über dem Stimmaltar schwebt ein stimmungsgefärbter Kristall, den fünf
+  bewegte Stimmungsglyphen umkreisen.
+- Chorals zweite Phase öffnet einen rotierenden Halo; in Phase drei tritt
+  eine goldene Lichtsäule hinzu. Jeder Phasenwechsel bricht in Glyphenringen
+  und einem spiralförmigen Lichtaufstieg auf.
 
 ### Zwölf neue Kodex-Folios
 

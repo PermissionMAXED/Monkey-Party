@@ -13,6 +13,16 @@ public final class ModCriteria {
             register("perfect_beat", new ActionCriterion());
     public static final ActionCriterion KODEX_OPENED =
             register("kodex_opened", new ActionCriterion());
+    public static final ActionCriterion FIRST_AKKORD =
+            register("first_akkord", new ActionCriterion());
+    public static final ActionCriterion FIRST_ENSEMBLE =
+            register("first_ensemble", new ActionCriterion());
+    public static final ActionCriterion REACH_ADEPT =
+            register("reach_adept", new ActionCriterion());
+    public static final ActionCriterion TAME_TAKTLING =
+            register("tame_taktling", new ActionCriterion());
+    public static final ActionCriterion UNSEAL_ARCHIVE =
+            register("unseal_archive", new ActionCriterion());
 
     private ModCriteria() {
     }

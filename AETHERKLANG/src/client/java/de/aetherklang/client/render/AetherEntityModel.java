@@ -23,6 +23,8 @@ public final class AetherEntityModel extends Model<AetherEntityRenderState> {
     private final ModelPart choral;
     private final ModelPart choralLeftWings;
     private final ModelPart choralRightWings;
+    private final ModelPart choralPhaseHalo;
+    private final ModelPart choralPhasePillar;
     private final ModelPart sirene;
     private final ModelPart sireneLeftVeil;
     private final ModelPart sireneRightVeil;
@@ -43,6 +45,8 @@ public final class AetherEntityModel extends Model<AetherEntityRenderState> {
         choral = root.getChild("choral");
         choralLeftWings = choral.getChild("left_wings");
         choralRightWings = choral.getChild("right_wings");
+        choralPhaseHalo = choral.getChild("phase_halo");
+        choralPhasePillar = choral.getChild("phase_pillar");
         sirene = root.getChild("sirene");
         sireneLeftVeil = sirene.getChild("left_veil");
         sireneRightVeil = sirene.getChild("right_veil");
@@ -206,6 +210,24 @@ public final class AetherEntityModel extends Model<AetherEntityRenderState> {
                         .uv(53, 25).cuboid(-7.0F, -1.0F, -1.0F, 14.0F, 2.0F, 2.0F),
                 ModelTransform.origin(0.0F, 0.0F, 0.0F)
         );
+        choral.addChild(
+                "phase_halo",
+                ModelPartBuilder.create()
+                        .uv(0, 61).cuboid(-12.0F, -0.55F, -0.55F, 24.0F, 1.1F, 1.1F)
+                        .uv(0, 61).cuboid(-0.55F, -0.55F, -12.0F, 1.1F, 1.1F, 24.0F)
+                        .uv(52, 40).cuboid(-1.4F, -1.4F, -13.4F, 2.8F, 2.8F, 2.8F)
+                        .uv(52, 40).cuboid(-1.4F, -1.4F, 10.6F, 2.8F, 2.8F, 2.8F)
+                        .uv(52, 40).cuboid(-13.4F, -1.4F, -1.4F, 2.8F, 2.8F, 2.8F)
+                        .uv(52, 40).cuboid(10.6F, -1.4F, -1.4F, 2.8F, 2.8F, 2.8F),
+                ModelTransform.of(0.0F, 0.0F, 1.0F, 0.18F, 0.0F, 0.08F)
+        );
+        choral.addChild(
+                "phase_pillar",
+                ModelPartBuilder.create()
+                        .uv(58, 48).cuboid(-0.65F, -30.0F, -0.65F, 1.3F, 52.0F, 1.3F)
+                        .uv(52, 48).cuboid(-1.8F, -18.0F, -1.8F, 3.6F, 28.0F, 3.6F),
+                ModelTransform.origin(0.0F, 8.0F, 2.0F)
+        );
     }
 
     private static void buildSirene(ModelPartData root) {
@@ -313,6 +335,12 @@ public final class AetherEntityModel extends Model<AetherEntityRenderState> {
         choralLeftWings.roll = -0.35F - choralPulse * 0.2F;
         choralRightWings.roll = 0.35F + choralPulse * 0.2F;
         choral.yaw = MathHelper.sin(state.age * 0.025F) * 0.08F;
+        choralPhaseHalo.visible = state.phase >= 2;
+        choralPhaseHalo.yaw = state.age * (state.phase >= 3 ? -0.075F : -0.045F);
+        choralPhaseHalo.roll = MathHelper.sin(state.age * 0.055F) * 0.16F;
+        choralPhasePillar.visible = state.phase >= 3;
+        choralPhasePillar.yaw = state.age * 0.09F;
+        choralPhasePillar.originY = 8.0F + MathHelper.sin(state.age * 0.18F) * 1.2F;
 
         float sirenePulse = MathHelper.sin(state.age * 0.14F);
         sirene.originY = sirenePulse * 0.85F;
