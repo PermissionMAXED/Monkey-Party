@@ -80,7 +80,7 @@ public final class EnsembleAkkordHooks {
             ItemStack stack = player.getStackInHand(hand);
             if (player instanceof ServerPlayerEntity serverPlayer
                     && world instanceof ServerWorld
-                    && isResonanceInstrument(stack)
+                    && isImmediateResonanceInstrument(stack)
                     && !player.getItemCooldownManager().isCoolingDown(stack)) {
                 notifyOnBeatAction(serverPlayer, ResonanceApi.getMood(serverPlayer));
             }
@@ -88,13 +88,10 @@ public final class EnsembleAkkordHooks {
         });
     }
 
-    private static boolean isResonanceInstrument(ItemStack stack) {
+    private static boolean isImmediateResonanceInstrument(ItemStack stack) {
         return stack.isOf(ModItems.STIMMGABEL)
                 || stack.isOf(ModItems.RESONANZKLINGE)
-                || stack.isOf(ModItems.HALLHARFE)
-                || stack.isOf(ModItems.BASSHAMMER)
-                || stack.isOf(ModItems.ORGELHORN)
-                || stack.isOf(ModItems.FERMATENGLOCKE);
+                || stack.isOf(ModItems.BASSHAMMER);
     }
 
     private static void registerLifecycle() {

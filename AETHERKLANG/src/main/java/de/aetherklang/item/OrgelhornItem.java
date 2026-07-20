@@ -1,5 +1,6 @@
 package de.aetherklang.item;
 
+import de.aetherklang.crescendo.EnsembleAkkordHooks;
 import de.aetherklang.registry.ModParticles;
 import de.aetherklang.registry.ModSounds;
 import de.aetherklang.resonance.BeatEngine;
@@ -76,6 +77,7 @@ public final class OrgelhornItem extends Item {
             return false;
         }
 
+        EnsembleAkkordHooks.notifyOnBeatAction(player, ResonanceApi.getMood(player));
         blast(serverWorld, player, timing);
         BeatEngine.grantPerfectTimingRp(player);
         stack.damage(1, player);

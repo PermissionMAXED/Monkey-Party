@@ -1,5 +1,6 @@
 package de.aetherklang.item;
 
+import de.aetherklang.crescendo.EnsembleAkkordHooks;
 import de.aetherklang.crescendo.InstrumentHooks;
 import de.aetherklang.entity.FermateFeldEntity;
 import de.aetherklang.registry.ModSounds;
@@ -50,6 +51,7 @@ public final class FermatenglockeItem extends Item {
             return ActionResult.FAIL;
         }
 
+        EnsembleAkkordHooks.notifyOnBeatAction(serverPlayer, ResonanceApi.getMood(serverPlayer));
         BeatTiming timing = BeatEngine.getTiming(serverPlayer);
         FermateFeldEntity field = FermateFeldEntity.createThrown(serverWorld, serverPlayer);
         ProjectileEntity.spawn(field, serverWorld, stack);
