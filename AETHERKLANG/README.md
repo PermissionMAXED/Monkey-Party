@@ -46,7 +46,8 @@ Prüfen und bauen:
 ./gradlew build
 ```
 
-Die remappte Mod-JAR liegt danach unter `build/libs/aetherklang-0.1.0.jar`.
+Die remappte Mod-JAR liegt danach unter
+`build/libs/aetherklang-0.2.0-sinfonie.jar`.
 Ein Datengenerator ist in WP1 nicht konfiguriert; die minimalen Blockstates,
 Modelle und Texturen sind eingecheckt.
 

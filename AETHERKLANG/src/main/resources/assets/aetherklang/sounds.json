@@ -115,5 +115,95 @@
         "type": "event"
       }
     ]
+  },
+  "pauke_hit": {
+    "subtitle": "subtitles.aetherklang.pauke_hit",
+    "sounds": [
+      {
+        "name": "minecraft:block.note_block.basedrum",
+        "type": "event"
+      }
+    ]
+  },
+  "floete_tone": {
+    "subtitle": "subtitles.aetherklang.floete_tone",
+    "sounds": [
+      {
+        "name": "minecraft:block.note_block.flute",
+        "type": "event"
+      }
+    ]
+  },
+  "kontrabass_note": {
+    "subtitle": "subtitles.aetherklang.kontrabass_note",
+    "sounds": [
+      {
+        "name": "minecraft:block.note_block.bass",
+        "type": "event"
+      }
+    ]
+  },
+  "triangel_chime": {
+    "subtitle": "subtitles.aetherklang.triangel_chime",
+    "sounds": [
+      {
+        "name": "minecraft:block.note_block.bell",
+        "type": "event"
+      }
+    ]
+  },
+  "relikt_activate": {
+    "subtitle": "subtitles.aetherklang.relikt_activate",
+    "sounds": [
+      {
+        "name": "minecraft:block.enchantment_table.use",
+        "type": "event"
+      }
+    ]
+  },
+  "boss_tremolo": {
+    "subtitle": "subtitles.aetherklang.boss_tremolo",
+    "sounds": [
+      {
+        "name": "minecraft:entity.warden.heartbeat",
+        "type": "event"
+      }
+    ]
+  },
+  "boss_glissanda": {
+    "subtitle": "subtitles.aetherklang.boss_glissanda",
+    "sounds": [
+      {
+        "name": "minecraft:entity.allay.ambient_with_item",
+        "type": "event"
+      }
+    ]
+  },
+  "boss_kakophon": {
+    "subtitle": "subtitles.aetherklang.boss_kakophon",
+    "sounds": [
+      {
+        "name": "minecraft:entity.warden.roar",
+        "type": "event"
+      }
+    ]
+  },
+  "boss_generalpause": {
+    "subtitle": "subtitles.aetherklang.boss_generalpause",
+    "sounds": [
+      {
+        "name": "minecraft:block.sculk_shrieker.shriek",
+        "type": "event"
+      }
+    ]
+  },
+  "region_enter": {
+    "subtitle": "subtitles.aetherklang.region_enter",
+    "sounds": [
+      {
+        "name": "minecraft:block.amethyst_block.resonate",
+        "type": "event"
+      }
+    ]
   }
 }

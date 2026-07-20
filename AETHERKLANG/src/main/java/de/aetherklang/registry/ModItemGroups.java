@@ -20,7 +20,10 @@ public final class ModItemGroups {
             FabricItemGroup.builder()
                     .displayName(Text.translatable("itemGroup.aetherklang.main"))
                     .icon(() -> new ItemStack(ModItems.STIMMGABEL))
-                    .entries((context, entries) -> ModItems.ALL_ITEMS.forEach(entries::add))
+                    .entries((context, entries) -> {
+                        ModItems.ALL_ITEMS.forEach(entries::add);
+                        ContentRegistrar.dataItems().forEach(entries::add);
+                    })
                     .build()
     );
 

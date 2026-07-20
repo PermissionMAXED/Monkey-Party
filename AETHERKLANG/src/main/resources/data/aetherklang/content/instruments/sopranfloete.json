@@ -1,0 +1,9 @@
+{
+  "id": "sopranfloete",
+  "family": "blasinstrument",
+  "rp_cost": 5,
+  "operations": [
+    "halten",
+    "heilung"
+  ]
+}

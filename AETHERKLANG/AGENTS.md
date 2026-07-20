@@ -31,3 +31,7 @@
 - Registry identifiers and payload directions in the `Mod*` registry classes
   are frozen integration contracts. Add implementations behind those constants
   rather than renaming them.
+- Sinfonie JSON under `data/aetherklang/content` is decoded and frozen only at
+  mod initialization; restart the client/server after edits. The type map,
+  strict validation rules, and the extra registry work required for mob/boss
+  definitions are documented in `docs/CONTENT_PIPELINE.md`.

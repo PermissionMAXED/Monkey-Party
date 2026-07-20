@@ -3,6 +3,7 @@ package de.aetherklang;
 import de.aetherklang.command.ModCommands;
 import de.aetherklang.crescendo.CrescendoServerHooks;
 import de.aetherklang.network.ModNetworking;
+import de.aetherklang.registry.ContentBootstrap;
 import de.aetherklang.registry.ModAttachments;
 import de.aetherklang.registry.ModBlockEntities;
 import de.aetherklang.registry.ModBlocks;
@@ -35,6 +36,7 @@ public final class Aetherklang implements ModInitializer {
         ModItemGroups.register();
         ModBlockEntities.register();
         ModEntities.register();
+        ContentBootstrap.register();
         ModParticles.register();
         ModSounds.register();
         ModAttachments.register();

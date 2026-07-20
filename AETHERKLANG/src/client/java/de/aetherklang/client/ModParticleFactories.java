@@ -21,5 +21,13 @@ public final class ModParticleFactories {
         registry.register(ModParticles.FERMATE_GLIMMER, AetherParticles.BeatRingFactory::new);
         registry.register(ModParticles.ENSEMBLE_FUNKE, EnsembleFunkeParticle.Factory::new);
         registry.register(ModParticles.SIRENEN_SCHLEIER, AetherParticles.DissonanzSmokeFactory::new);
+        registry.register(ModParticles.TREMOLO_SPLITTER, AetherParticles.NoteSparkFactory::new);
+        registry.register(ModParticles.GLISSANDO_SPUR, AetherParticles.BeamMoteFactory::new);
+        registry.register(ModParticles.KAKOPHON_FUNKE, AetherParticles.NoteSparkFactory::new);
+        registry.register(ModParticles.GENERALPAUSE_NEBEL, AetherParticles.DissonanzSmokeFactory::new);
+        registry.register(ModParticles.RELIKT_AURA, AetherParticles.BeatRingFactory::new);
+        registry.register(ModParticles.INSEL_RESONANZ, AetherParticles.BeamMoteFactory::new);
+        registry.register(ModParticles.LEITMOTIV_NOTE, AetherParticles.NoteSparkFactory::new);
+        registry.register(ModParticles.KLANGOPERATION_RING, AetherParticles.BeatRingFactory::new);
     }
 }

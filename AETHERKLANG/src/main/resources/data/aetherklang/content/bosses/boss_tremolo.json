@@ -1,0 +1,10 @@
+{
+  "id": "boss_tremolo",
+  "score": [
+    "ostinato",
+    "crescendo",
+    "kadenz"
+  ],
+  "health": 240.0,
+  "region": "bassbruch"
+}

@@ -93,5 +93,47 @@ public final class ModEntityRenderers {
                 ModEntities.FERMATE_FELD,
                 FermateFeldRenderer::new
         );
+        EntityRendererRegistry.register(
+                ModEntities.MOTIV_LAEUFER,
+                context -> new AetherEntityRenderer<>(
+                        context, AetherEntityStyle.HALLWAECHTER, 0.72F, 0.35F, 0xE85FF5E0
+                )
+        );
+        EntityRendererRegistry.register(
+                ModEntities.MOTIV_SCHWINGE,
+                context -> new AetherEntityRenderer<>(
+                        context, AetherEntityStyle.SIRENE, 0.68F, 0.3F, 0xE89263FF
+                )
+        );
+        EntityRendererRegistry.register(
+                ModEntities.MOTIV_PULSER,
+                context -> new AetherEntityRenderer<>(
+                        context, AetherEntityStyle.ECHONOTE, 0.85F, 0.35F, 0xE8F5C95F
+                )
+        );
+        EntityRendererRegistry.register(
+                ModEntities.BOSS_TREMOLO,
+                context -> new AetherEntityRenderer<>(
+                        context, AetherEntityStyle.CHORAL, 1.55F, 0.9F, 0xE8E03A8C
+                )
+        );
+        EntityRendererRegistry.register(
+                ModEntities.BOSS_GLISSANDA,
+                context -> new AetherEntityRenderer<>(
+                        context, AetherEntityStyle.SIRENE, 1.8F, 0.9F, 0xE85FF5E0
+                )
+        );
+        EntityRendererRegistry.register(
+                ModEntities.BOSS_KAKOPHON,
+                context -> new AetherEntityRenderer<>(
+                        context, AetherEntityStyle.CHORAL, 1.8F, 1.0F, 0xE8E03A8C
+                )
+        );
+        EntityRendererRegistry.register(
+                ModEntities.BOSS_GENERALPAUSE,
+                context -> new AetherEntityRenderer<>(
+                        context, AetherEntityStyle.HALLWAECHTER, 2.0F, 1.1F, 0xE81A1033
+                )
+        );
     }
 }

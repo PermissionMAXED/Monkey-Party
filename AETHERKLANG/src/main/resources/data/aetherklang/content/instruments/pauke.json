@@ -1,0 +1,9 @@
+{
+  "id": "pauke",
+  "family": "schlagwerk",
+  "rp_cost": 8,
+  "operations": [
+    "anschlag",
+    "welle"
+  ]
+}

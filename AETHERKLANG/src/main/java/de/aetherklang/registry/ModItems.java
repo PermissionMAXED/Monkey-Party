@@ -57,6 +57,30 @@ public final class ModItems {
     public static final String KLANGWEBER_STIEFEL_ID = "klangweber_stiefel";
     public static final String SIRENE_SPAWN_EGG_ID = "sirene_spawn_egg";
     public static final String TAKTLING_SPAWN_EGG_ID = "taktling_spawn_egg";
+    public static final String PAUKE_ID = "pauke";
+    public static final String SOPRANFLOETE_ID = "sopranfloete";
+    public static final String KONTRABASS_ID = "kontrabass";
+    public static final String TRIANGEL_ID = "triangel";
+    public static final String TREMOLOKERN_ID = "tremolokern";
+    public static final String SAITENHERZ_ID = "saitenherz";
+    public static final String SCHWARMAUGE_ID = "schwarmauge";
+    public static final String STILLESPLITTER_ID = "stillesplitter";
+    public static final String KASKADENKERN_ID = "kaskadenkern";
+    public static final String NOTENSCHLUESSEL_ID = "notenschluessel";
+    public static final String KLANGSTAUB_ID = "klangstaub";
+    public static final String RESONANZBARREN_ID = "resonanzbarren";
+    public static final String RELIKT_METRONOM_ID = "relikt_metronom";
+    public static final String RELIKT_ECHO_ID = "relikt_echo";
+    public static final String RELIKT_FERMATE_ID = "relikt_fermate";
+    public static final String RELIKT_CRESCENDO_ID = "relikt_crescendo";
+    public static final String RELIKT_OSTINATO_ID = "relikt_ostinato";
+    public static final String RELIKT_CADENZ_ID = "relikt_cadenz";
+    public static final String ELIXIER_FREUDE_ID = "elixier_freude";
+    public static final String ELIXIER_ZORN_ID = "elixier_zorn";
+    public static final String ELIXIER_STILLE_ID = "elixier_stille";
+    public static final String PARTITUR_DISC_1_ID = "partitur_disc_1";
+    public static final String PARTITUR_DISC_2_ID = "partitur_disc_2";
+    public static final String PARTITUR_DISC_3_ID = "partitur_disc_3";
 
     public static final Item STIMMGABEL =
             register(STIMMGABEL_ID, StimmgabelItem::new, new Item.Settings().maxCount(1));
@@ -136,6 +160,30 @@ public final class ModItems {
             TaktlingSpawnEggItem::new,
             new Item.Settings().spawnEgg(ModEntities.TAKTLING)
     );
+    public static final Item PAUKE = registerStub(PAUKE_ID, 1);
+    public static final Item SOPRANFLOETE = registerStub(SOPRANFLOETE_ID, 1);
+    public static final Item KONTRABASS = registerStub(KONTRABASS_ID, 1);
+    public static final Item TRIANGEL = registerStub(TRIANGEL_ID, 1);
+    public static final Item TREMOLOKERN = registerStub(TREMOLOKERN_ID, 64);
+    public static final Item SAITENHERZ = registerStub(SAITENHERZ_ID, 64);
+    public static final Item SCHWARMAUGE = registerStub(SCHWARMAUGE_ID, 64);
+    public static final Item STILLESPLITTER = registerStub(STILLESPLITTER_ID, 64);
+    public static final Item KASKADENKERN = registerStub(KASKADENKERN_ID, 64);
+    public static final Item NOTENSCHLUESSEL = registerStub(NOTENSCHLUESSEL_ID, 64);
+    public static final Item KLANGSTAUB = registerStub(KLANGSTAUB_ID, 64);
+    public static final Item RESONANZBARREN = registerStub(RESONANZBARREN_ID, 64);
+    public static final Item RELIKT_METRONOM = registerStub(RELIKT_METRONOM_ID, 1);
+    public static final Item RELIKT_ECHO = registerStub(RELIKT_ECHO_ID, 1);
+    public static final Item RELIKT_FERMATE = registerStub(RELIKT_FERMATE_ID, 1);
+    public static final Item RELIKT_CRESCENDO = registerStub(RELIKT_CRESCENDO_ID, 1);
+    public static final Item RELIKT_OSTINATO = registerStub(RELIKT_OSTINATO_ID, 1);
+    public static final Item RELIKT_CADENZ = registerStub(RELIKT_CADENZ_ID, 1);
+    public static final Item ELIXIER_FREUDE = registerStub(ELIXIER_FREUDE_ID, 16);
+    public static final Item ELIXIER_ZORN = registerStub(ELIXIER_ZORN_ID, 16);
+    public static final Item ELIXIER_STILLE = registerStub(ELIXIER_STILLE_ID, 16);
+    public static final Item PARTITUR_DISC_1 = registerStub(PARTITUR_DISC_1_ID, 1);
+    public static final Item PARTITUR_DISC_2 = registerStub(PARTITUR_DISC_2_ID, 1);
+    public static final Item PARTITUR_DISC_3 = registerStub(PARTITUR_DISC_3_ID, 1);
 
     public static final Item RESONANZKRISTALL_INDIGO =
             registerBlockItem(ModBlocks.RESONANZKRISTALL_INDIGO_ID, ModBlocks.RESONANZKRISTALL_INDIGO);
@@ -157,6 +205,26 @@ public final class ModItems {
             registerBlockItem(ModBlocks.RESONANZARCHIV_ID, ModBlocks.RESONANZARCHIV, ResonanzarchivBlockItem::new);
     public static final Item KLANGBLUME =
             registerBlockItem(ModBlocks.KLANGBLUME_ID, ModBlocks.KLANGBLUME, KlangblumeBlockItem::new);
+    public static final Item NOTENPULT = registerBlockItem(ModBlocks.NOTENPULT_ID, ModBlocks.NOTENPULT);
+    public static final Item KLANGAMBOSS = registerBlockItem(ModBlocks.KLANGAMBOSS_ID, ModBlocks.KLANGAMBOSS);
+    public static final Item STIMMPFEILER = registerBlockItem(ModBlocks.STIMMPFEILER_ID, ModBlocks.STIMMPFEILER);
+    public static final Item METRONOMBLOCK = registerBlockItem(ModBlocks.METRONOMBLOCK_ID, ModBlocks.METRONOMBLOCK);
+    public static final Item DISSONANZANKER =
+            registerBlockItem(ModBlocks.DISSONANZANKER_ID, ModBlocks.DISSONANZANKER);
+    public static final Item KRISTALLRESONATOR =
+            registerBlockItem(ModBlocks.KRISTALLRESONATOR_ID, ModBlocks.KRISTALLRESONATOR);
+    public static final Item BASSSCHIEFER = registerBlockItem(ModBlocks.BASSSCHIEFER_ID, ModBlocks.BASSSCHIEFER);
+    public static final Item BASSSCHIEFER_POLIERT =
+            registerBlockItem(ModBlocks.BASSSCHIEFER_POLIERT_ID, ModBlocks.BASSSCHIEFER_POLIERT);
+    public static final Item BASSSCHIEFER_ZIEGEL =
+            registerBlockItem(ModBlocks.BASSSCHIEFER_ZIEGEL_ID, ModBlocks.BASSSCHIEFER_ZIEGEL);
+    public static final Item BASSSCHIEFER_TREPPE =
+            registerBlockItem(ModBlocks.BASSSCHIEFER_TREPPE_ID, ModBlocks.BASSSCHIEFER_TREPPE);
+    public static final Item BASSSCHIEFER_STUFE =
+            registerBlockItem(ModBlocks.BASSSCHIEFER_STUFE_ID, ModBlocks.BASSSCHIEFER_STUFE);
+    public static final Item RESONANZHOLZ = registerBlockItem(ModBlocks.RESONANZHOLZ_ID, ModBlocks.RESONANZHOLZ);
+    public static final Item RESONANZHOLZ_PLANKEN =
+            registerBlockItem(ModBlocks.RESONANZHOLZ_PLANKEN_ID, ModBlocks.RESONANZHOLZ_PLANKEN);
 
     public static final List<Item> ALL_ITEMS = List.of(
             STIMMGABEL,
@@ -179,6 +247,30 @@ public final class ModItems {
             KLANGWEBER_STIEFEL,
             SIRENE_SPAWN_EGG,
             TAKTLING_SPAWN_EGG,
+            PAUKE,
+            SOPRANFLOETE,
+            KONTRABASS,
+            TRIANGEL,
+            TREMOLOKERN,
+            SAITENHERZ,
+            SCHWARMAUGE,
+            STILLESPLITTER,
+            KASKADENKERN,
+            NOTENSCHLUESSEL,
+            KLANGSTAUB,
+            RESONANZBARREN,
+            RELIKT_METRONOM,
+            RELIKT_ECHO,
+            RELIKT_FERMATE,
+            RELIKT_CRESCENDO,
+            RELIKT_OSTINATO,
+            RELIKT_CADENZ,
+            ELIXIER_FREUDE,
+            ELIXIER_ZORN,
+            ELIXIER_STILLE,
+            PARTITUR_DISC_1,
+            PARTITUR_DISC_2,
+            PARTITUR_DISC_3,
             RESONANZKRISTALL_INDIGO,
             RESONANZKRISTALL_CYAN,
             RESONANZKRISTALL_GOLD,
@@ -189,7 +281,20 @@ public final class ModItems {
             KLANGLATERNE,
             TAKTBRUECKE,
             RESONANZARCHIV,
-            KLANGBLUME
+            KLANGBLUME,
+            NOTENPULT,
+            KLANGAMBOSS,
+            STIMMPFEILER,
+            METRONOMBLOCK,
+            DISSONANZANKER,
+            KRISTALLRESONATOR,
+            BASSSCHIEFER,
+            BASSSCHIEFER_POLIERT,
+            BASSSCHIEFER_ZIEGEL,
+            BASSSCHIEFER_TREPPE,
+            BASSSCHIEFER_STUFE,
+            RESONANZHOLZ,
+            RESONANZHOLZ_PLANKEN
     );
 
     private ModItems() {
@@ -198,6 +303,10 @@ public final class ModItems {
     private static Item register(String path, Function<Item.Settings, Item> factory, Item.Settings settings) {
         RegistryKey<Item> key = RegistryKey.of(RegistryKeys.ITEM, Aetherklang.id(path));
         return Registry.register(Registries.ITEM, key, factory.apply(settings.registryKey(key)));
+    }
+
+    private static Item registerStub(String path, int maxCount) {
+        return register(path, Item::new, new Item.Settings().maxCount(maxCount));
     }
 
     private static Item registerBlockItem(String path, Block block) {

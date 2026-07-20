@@ -22,6 +22,9 @@ public final class ModPayloads {
     public static final Identifier ENSEMBLE_SYNC_ID = Aetherklang.id("ensemble_sync");
     public static final Identifier ENSEMBLE_MEMBERS_ID = Aetherklang.id("ensemble_members");
     public static final Identifier RANG_SYNC_ID = Aetherklang.id("rang_sync");
+    public static final Identifier BOSS_FX_ID = Aetherklang.id("boss_fx");
+    public static final Identifier REGION_SYNC_ID = Aetherklang.id("region_sync");
+    public static final Identifier LEITMOTIV_SYNC_ID = Aetherklang.id("leitmotiv_sync");
 
     private ModPayloads() {
     }
@@ -37,7 +40,10 @@ public final class ModPayloads {
         PayloadTypeRegistry.playS2C().register(EnsembleSyncPayload.ID, EnsembleSyncPayload.CODEC);
         PayloadTypeRegistry.playS2C().register(EnsembleMembersPayload.ID, EnsembleMembersPayload.CODEC);
         PayloadTypeRegistry.playS2C().register(RangSyncPayload.ID, RangSyncPayload.CODEC);
-        Aetherklang.LOGGER.debug("Registered {} Aetherklang play payloads", 10);
+        PayloadTypeRegistry.playS2C().register(BossFxPayload.ID, BossFxPayload.CODEC);
+        PayloadTypeRegistry.playS2C().register(RegionSyncPayload.ID, RegionSyncPayload.CODEC);
+        PayloadTypeRegistry.playS2C().register(LeitmotivSyncPayload.ID, LeitmotivSyncPayload.CODEC);
+        Aetherklang.LOGGER.debug("Registered {} Aetherklang play payloads", 13);
     }
 
     public record DashPayload(float strength) implements CustomPayload {
@@ -246,6 +252,63 @@ public final class ModPayloads {
                     buffer.writeVarLong(payload.gesamtRp());
                 },
                 buffer -> new RangSyncPayload(buffer.readVarInt(), buffer.readVarLong())
+        );
+
+        @Override
+        public Id<? extends CustomPayload> getId() {
+            return ID;
+        }
+    }
+
+    public record BossFxPayload(int phase, int operation) implements CustomPayload {
+        public static final CustomPayload.Id<BossFxPayload> ID = new CustomPayload.Id<>(BOSS_FX_ID);
+        public static final PacketCodec<RegistryByteBuf, BossFxPayload> CODEC = PacketCodec.of(
+                (payload, buffer) -> {
+                    buffer.writeVarInt(payload.phase());
+                    buffer.writeVarInt(payload.operation());
+                },
+                buffer -> new BossFxPayload(buffer.readVarInt(), buffer.readVarInt())
+        );
+
+        @Override
+        public Id<? extends CustomPayload> getId() {
+            return ID;
+        }
+    }
+
+    public record RegionSyncPayload(String region, int anchorX, int anchorY, int anchorZ)
+            implements CustomPayload {
+        public static final CustomPayload.Id<RegionSyncPayload> ID = new CustomPayload.Id<>(REGION_SYNC_ID);
+        public static final PacketCodec<RegistryByteBuf, RegionSyncPayload> CODEC = PacketCodec.of(
+                (payload, buffer) -> {
+                    buffer.writeString(payload.region());
+                    buffer.writeVarInt(payload.anchorX());
+                    buffer.writeVarInt(payload.anchorY());
+                    buffer.writeVarInt(payload.anchorZ());
+                },
+                buffer -> new RegionSyncPayload(
+                        buffer.readString(),
+                        buffer.readVarInt(),
+                        buffer.readVarInt(),
+                        buffer.readVarInt()
+                )
+        );
+
+        @Override
+        public Id<? extends CustomPayload> getId() {
+            return ID;
+        }
+    }
+
+    public record LeitmotivSyncPayload(String motiv, int intensity) implements CustomPayload {
+        public static final CustomPayload.Id<LeitmotivSyncPayload> ID =
+                new CustomPayload.Id<>(LEITMOTIV_SYNC_ID);
+        public static final PacketCodec<RegistryByteBuf, LeitmotivSyncPayload> CODEC = PacketCodec.of(
+                (payload, buffer) -> {
+                    buffer.writeString(payload.motiv());
+                    buffer.writeVarInt(payload.intensity());
+                },
+                buffer -> new LeitmotivSyncPayload(buffer.readString(), buffer.readVarInt())
         );
 
         @Override

@@ -7,6 +7,7 @@ import de.aetherklang.entity.EchonoteEntity;
 import de.aetherklang.entity.FermateFeldEntity;
 import de.aetherklang.entity.HallwaechterEntity;
 import de.aetherklang.entity.SireneEntity;
+import de.aetherklang.entity.StubMobEntity;
 import de.aetherklang.entity.TaktlingEntity;
 import net.fabricmc.fabric.api.biome.v1.BiomeModifications;
 import net.fabricmc.fabric.api.biome.v1.BiomeSelectors;
@@ -31,6 +32,13 @@ public final class ModEntities {
     public static final String SIRENE_ID = "sirene";
     public static final String TAKTLING_ID = "taktling";
     public static final String FERMATE_FELD_ID = "fermate_feld";
+    public static final String MOTIV_LAEUFER_ID = "motiv_laeufer";
+    public static final String MOTIV_SCHWINGE_ID = "motiv_schwinge";
+    public static final String MOTIV_PULSER_ID = "motiv_pulser";
+    public static final String BOSS_TREMOLO_ID = "boss_tremolo";
+    public static final String BOSS_GLISSANDA_ID = "boss_glissanda";
+    public static final String BOSS_KAKOPHON_ID = "boss_kakophon";
+    public static final String BOSS_GENERALPAUSE_ID = "boss_generalpause";
 
     public static final EntityType<DissonanzgeistEntity> DISSONANZGEIST =
             register(DISSONANZGEIST_ID, SpawnGroup.MONSTER, 0.9F, 1.25F, 10, 3, false, DissonanzgeistEntity::new);
@@ -46,6 +54,20 @@ public final class ModEntities {
             register(TAKTLING_ID, SpawnGroup.CREATURE, 0.6F, 0.9F, 8, 3, false, TaktlingEntity::new);
     public static final EntityType<FermateFeldEntity> FERMATE_FELD =
             register(FERMATE_FELD_ID, SpawnGroup.MISC, 0.35F, 0.35F, 10, 1, true, FermateFeldEntity::new);
+    public static final EntityType<StubMobEntity> MOTIV_LAEUFER =
+            register(MOTIV_LAEUFER_ID, SpawnGroup.MONSTER, 0.75F, 1.7F, 10, 3, false, StubMobEntity::new);
+    public static final EntityType<StubMobEntity> MOTIV_SCHWINGE =
+            register(MOTIV_SCHWINGE_ID, SpawnGroup.MONSTER, 0.9F, 1.1F, 10, 3, false, StubMobEntity::new);
+    public static final EntityType<StubMobEntity> MOTIV_PULSER =
+            register(MOTIV_PULSER_ID, SpawnGroup.MONSTER, 1.0F, 1.0F, 10, 3, false, StubMobEntity::new);
+    public static final EntityType<StubMobEntity> BOSS_TREMOLO =
+            register(BOSS_TREMOLO_ID, SpawnGroup.MONSTER, 2.2F, 3.2F, 16, 2, false, StubMobEntity::new);
+    public static final EntityType<StubMobEntity> BOSS_GLISSANDA =
+            register(BOSS_GLISSANDA_ID, SpawnGroup.MONSTER, 2.2F, 3.2F, 16, 2, false, StubMobEntity::new);
+    public static final EntityType<StubMobEntity> BOSS_KAKOPHON =
+            register(BOSS_KAKOPHON_ID, SpawnGroup.MONSTER, 2.6F, 3.6F, 16, 2, false, StubMobEntity::new);
+    public static final EntityType<StubMobEntity> BOSS_GENERALPAUSE =
+            register(BOSS_GENERALPAUSE_ID, SpawnGroup.MONSTER, 2.8F, 4.0F, 16, 2, false, StubMobEntity::new);
 
     private ModEntities() {
     }
@@ -79,6 +101,13 @@ public final class ModEntities {
         FabricDefaultAttributeRegistry.register(CHORAL, ChoralEntity.createAttributes());
         FabricDefaultAttributeRegistry.register(SIRENE, SireneEntity.createAttributes());
         FabricDefaultAttributeRegistry.register(TAKTLING, TaktlingEntity.createAttributes());
+        FabricDefaultAttributeRegistry.register(MOTIV_LAEUFER, StubMobEntity.createAttributes());
+        FabricDefaultAttributeRegistry.register(MOTIV_SCHWINGE, StubMobEntity.createAttributes());
+        FabricDefaultAttributeRegistry.register(MOTIV_PULSER, StubMobEntity.createAttributes());
+        FabricDefaultAttributeRegistry.register(BOSS_TREMOLO, StubMobEntity.createAttributes());
+        FabricDefaultAttributeRegistry.register(BOSS_GLISSANDA, StubMobEntity.createAttributes());
+        FabricDefaultAttributeRegistry.register(BOSS_KAKOPHON, StubMobEntity.createAttributes());
+        FabricDefaultAttributeRegistry.register(BOSS_GENERALPAUSE, StubMobEntity.createAttributes());
         BiomeModifications.addSpawn(
                 BiomeSelectors.foundInOverworld(),
                 SpawnGroup.MONSTER,
@@ -88,7 +117,7 @@ public final class ModEntities {
                 1
         );
         registerHallharfe();
-        Aetherklang.LOGGER.debug("Registered {} Aetherklang entity types", 7);
+        Aetherklang.LOGGER.debug("Registered {} Aetherklang entity types", 14);
     }
 
     private static void registerHallharfe() {
