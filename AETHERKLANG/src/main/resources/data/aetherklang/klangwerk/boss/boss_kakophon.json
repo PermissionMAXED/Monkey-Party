@@ -1,0 +1,10 @@
+{
+  "id": "boss_kakophon",
+  "type": "boss",
+  "parameters": {
+    "health": "300",
+    "phase_67": "5;kakophonie,1,8,10|beschwoere_motiv,2,0,8",
+    "phase_34": "3;kakophonie,1,10,12|notenring,1,8,11|schockwelle,1,9,10",
+    "phase_0": "2;kakophonie,1,12,14|strahl_linie,1,11,8|beschwoere_motiv,1,0,10"
+  }
+}

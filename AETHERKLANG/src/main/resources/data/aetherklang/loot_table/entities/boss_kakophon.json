@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:entity",
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "aetherklang:schwarmauge"
+        }
+      ]
+    }
+  ],
+  "random_sequence": "aetherklang:entities/boss_kakophon"
+}

@@ -1,6 +1,7 @@
 package de.aetherklang.registry;
 
 import de.aetherklang.Aetherklang;
+import de.aetherklang.bosswerk.BosswerkBossEntity;
 import de.aetherklang.entity.ChoralEntity;
 import de.aetherklang.entity.DissonanzgeistEntity;
 import de.aetherklang.entity.EchonoteEntity;
@@ -85,14 +86,14 @@ public final class ModEntities {
             false,
             (type, world) -> new MotivEntity(type, world, "pulser")
     );
-    public static final EntityType<StubMobEntity> BOSS_TREMOLO =
-            register(BOSS_TREMOLO_ID, SpawnGroup.MONSTER, 2.2F, 3.2F, 16, 2, false, StubMobEntity::new);
-    public static final EntityType<StubMobEntity> BOSS_GLISSANDA =
-            register(BOSS_GLISSANDA_ID, SpawnGroup.MONSTER, 2.2F, 3.2F, 16, 2, false, StubMobEntity::new);
-    public static final EntityType<StubMobEntity> BOSS_KAKOPHON =
-            register(BOSS_KAKOPHON_ID, SpawnGroup.MONSTER, 2.6F, 3.6F, 16, 2, false, StubMobEntity::new);
-    public static final EntityType<StubMobEntity> BOSS_GENERALPAUSE =
-            register(BOSS_GENERALPAUSE_ID, SpawnGroup.MONSTER, 2.8F, 4.0F, 16, 2, false, StubMobEntity::new);
+    public static final EntityType<BosswerkBossEntity> BOSS_TREMOLO =
+            register(BOSS_TREMOLO_ID, SpawnGroup.MONSTER, 2.2F, 3.2F, 16, 2, false, BosswerkBossEntity::new);
+    public static final EntityType<BosswerkBossEntity> BOSS_GLISSANDA =
+            register(BOSS_GLISSANDA_ID, SpawnGroup.MONSTER, 2.2F, 3.2F, 16, 2, false, BosswerkBossEntity::new);
+    public static final EntityType<BosswerkBossEntity> BOSS_KAKOPHON =
+            register(BOSS_KAKOPHON_ID, SpawnGroup.MONSTER, 2.6F, 3.6F, 16, 2, false, BosswerkBossEntity::new);
+    public static final EntityType<BosswerkBossEntity> BOSS_GENERALPAUSE =
+            register(BOSS_GENERALPAUSE_ID, SpawnGroup.MONSTER, 2.8F, 4.0F, 16, 2, false, BosswerkBossEntity::new);
 
     private ModEntities() {
     }
@@ -129,10 +130,10 @@ public final class ModEntities {
         FabricDefaultAttributeRegistry.register(MOTIV_LAEUFER, MotivEntity.createAttributes());
         FabricDefaultAttributeRegistry.register(MOTIV_SCHWINGE, MotivEntity.createAttributes());
         FabricDefaultAttributeRegistry.register(MOTIV_PULSER, MotivEntity.createAttributes());
-        FabricDefaultAttributeRegistry.register(BOSS_TREMOLO, StubMobEntity.createAttributes());
-        FabricDefaultAttributeRegistry.register(BOSS_GLISSANDA, StubMobEntity.createAttributes());
-        FabricDefaultAttributeRegistry.register(BOSS_KAKOPHON, StubMobEntity.createAttributes());
-        FabricDefaultAttributeRegistry.register(BOSS_GENERALPAUSE, StubMobEntity.createAttributes());
+        FabricDefaultAttributeRegistry.register(BOSS_TREMOLO, BosswerkBossEntity.createAttributes());
+        FabricDefaultAttributeRegistry.register(BOSS_GLISSANDA, BosswerkBossEntity.createAttributes());
+        FabricDefaultAttributeRegistry.register(BOSS_KAKOPHON, BosswerkBossEntity.createAttributes());
+        FabricDefaultAttributeRegistry.register(BOSS_GENERALPAUSE, BosswerkBossEntity.createAttributes());
         BiomeModifications.addSpawn(
                 BiomeSelectors.foundInOverworld(),
                 SpawnGroup.MONSTER,

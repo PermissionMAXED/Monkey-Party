@@ -1,5 +1,6 @@
 package de.aetherklang;
 
+import de.aetherklang.bosswerk.Bosswerk;
 import de.aetherklang.command.ModCommands;
 import de.aetherklang.crescendo.CrescendoServerHooks;
 import de.aetherklang.kaskade.KaskadeHooks;
@@ -36,8 +37,8 @@ public final class Aetherklang implements ModInitializer {
 
     @Override
     public void onInitialize() {
-        ModBlocks.register();
         SchmiedeComponents.register();
+        ModBlocks.register();
         ModItems.register();
         ModItemGroups.register();
         ModBlockEntities.register();
@@ -47,6 +48,7 @@ public final class Aetherklang implements ModInitializer {
         SchmiedeRezepte.register();
         ModParticles.register();
         ModSounds.register();
+        Bosswerk.register();
         ModAttachments.register();
         LeitmotivService.register();
         ModCriteria.register();

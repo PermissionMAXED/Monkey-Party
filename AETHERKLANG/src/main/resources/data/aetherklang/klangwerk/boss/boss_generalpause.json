@@ -1,0 +1,10 @@
+{
+  "id": "boss_generalpause",
+  "type": "boss",
+  "parameters": {
+    "health": "340",
+    "phase_67": "5;stille_zone,2,7,8|fermate,2,5,7",
+    "phase_34": "3;stille_zone,1,9,10|strahl_linie,2,10,8|beschwoere_motiv,2,0,8",
+    "phase_0": "2;fermate,1,8,9|stille_zone,1,11,12|schockwelle,1,10,11"
+  }
+}

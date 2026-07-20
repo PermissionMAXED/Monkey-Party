@@ -1,0 +1,10 @@
+{
+  "id": "boss_glissanda",
+  "type": "boss",
+  "parameters": {
+    "health": "260",
+    "phase_67": "4;gleitstoss,1,8,8|strahl_linie,2,9,7",
+    "phase_34": "3;gleitstoss,1,10,9|schockwelle,1,8,10|notenring,1,7,9",
+    "phase_0": "2;strahl_linie,1,12,9|gleitstoss,1,11,10|fermate,2,6,7"
+  }
+}
