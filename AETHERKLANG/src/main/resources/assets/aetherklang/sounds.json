@@ -1,0 +1,47 @@
+{
+  "beat_tick": {
+    "subtitle": "subtitles.aetherklang.beat_tick",
+    "sounds": [
+      {
+        "name": "minecraft:block.note_block.hat",
+        "type": "event"
+      }
+    ]
+  },
+  "resonance_cast": {
+    "subtitle": "subtitles.aetherklang.resonance_cast",
+    "sounds": [
+      {
+        "name": "minecraft:block.amethyst_block.chime",
+        "type": "event"
+      }
+    ]
+  },
+  "dissonanz_hit": {
+    "subtitle": "subtitles.aetherklang.dissonanz_hit",
+    "sounds": [
+      {
+        "name": "minecraft:entity.warden.sonic_boom",
+        "type": "event"
+      }
+    ]
+  },
+  "portal_hum": {
+    "subtitle": "subtitles.aetherklang.portal_hum",
+    "sounds": [
+      {
+        "name": "minecraft:block.portal.ambient",
+        "type": "event"
+      }
+    ]
+  },
+  "choral_theme": {
+    "subtitle": "subtitles.aetherklang.choral_theme",
+    "sounds": [
+      {
+        "name": "minecraft:music.game",
+        "type": "event"
+      }
+    ]
+  }
+}
