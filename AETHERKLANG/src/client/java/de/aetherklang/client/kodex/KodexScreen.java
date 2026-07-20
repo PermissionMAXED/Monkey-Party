@@ -1,5 +1,6 @@
 package de.aetherklang.client.kodex;
 
+import de.aetherklang.leitmotiv.client.LeitmotivOpener;
 import de.aetherklang.resonance.client.ClientResonanceCache;
 import java.util.List;
 import net.minecraft.client.MinecraftClient;
@@ -183,6 +184,17 @@ public final class KodexScreen extends Screen {
         );
         next.active = currentIndex + 1 < categoryEntries.size();
         addDrawableChild(next);
+
+        addDrawableChild(new TonariumButton(
+                panelX + panelWidth - 128,
+                panelY + 12,
+                90,
+                19,
+                Text.translatable("leitmotiv.aetherklang.button"),
+                TonariumButton.Style.NAVIGATION,
+                GOLD,
+                () -> LeitmotivOpener.open(MinecraftClient.getInstance(), this)
+        ));
 
         addDrawableChild(new TonariumButton(
                 panelX + panelWidth - 31,

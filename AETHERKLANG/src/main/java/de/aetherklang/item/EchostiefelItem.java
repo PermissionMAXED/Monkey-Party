@@ -1,9 +1,11 @@
 package de.aetherklang.item;
 
+import de.aetherklang.leitmotiv.LeitmotivEffects;
 import de.aetherklang.registry.ModParticles;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
@@ -32,8 +34,11 @@ public final class EchostiefelItem extends Item {
         if (player.getItemCooldownManager().isCoolingDown(stack)) {
             return ActionResult.FAIL;
         }
-        if (!ResonanceItemUtil.spendRp(player, DASH_COST)) {
-            player.sendMessage(Text.translatable("message.aetherklang.rp.missing", DASH_COST), true);
+        int dashCost = player instanceof ServerPlayerEntity serverPlayer
+                ? LeitmotivEffects.adjustDashCost(serverPlayer, DASH_COST)
+                : DASH_COST;
+        if (!ResonanceItemUtil.spendRp(player, dashCost)) {
+            player.sendMessage(Text.translatable("message.aetherklang.rp.missing", dashCost), true);
             return ActionResult.FAIL;
         }
 

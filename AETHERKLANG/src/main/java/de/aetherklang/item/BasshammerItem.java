@@ -1,5 +1,6 @@
 package de.aetherklang.item;
 
+import de.aetherklang.leitmotiv.LeitmotivEffects;
 import de.aetherklang.registry.ModParticles;
 import de.aetherklang.resonance.BeatEngine;
 import java.util.List;
@@ -72,6 +73,9 @@ public final class BasshammerItem extends Item {
             double radius,
             float damage
     ) {
+        float adjustedDamage = player instanceof ServerPlayerEntity serverPlayer
+                ? damage * LeitmotivEffects.getDamageMultiplier(serverPlayer)
+                : damage;
         List<LivingEntity> targets = world.getEntitiesByClass(
                 LivingEntity.class,
                 player.getBoundingBox().expand(radius + 1.0),
@@ -81,7 +85,7 @@ public final class BasshammerItem extends Item {
                         && target.getEntityPos().squaredDistanceTo(center) <= radius * radius
         );
         for (LivingEntity target : targets) {
-            target.damage(world, player.getDamageSources().magic(), damage);
+            target.damage(world, player.getDamageSources().magic(), adjustedDamage);
             Vec3d force = target.getEntityPos().subtract(center).multiply(1.0, 0.0, 1.0).normalize();
             if (force.lengthSquared() < 0.01) {
                 force = player.getRotationVector().multiply(1.0, 0.0, 1.0).normalize();

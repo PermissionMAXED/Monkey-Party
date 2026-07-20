@@ -3,14 +3,16 @@ package de.aetherklang.resonance;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.BitSet;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Persistent resonance data attached to each player.
  */
 public class ResonancePlayerData {
     public static final int MAX_RP = 100;
-    public static final int MAX_RP_WITH_BONUS = 120;
+    public static final int MAX_RP_WITH_BONUS = 200;
     public static final int MAX_CODEX_PAGE = 255;
 
     public static final Codec<ResonancePlayerData> CODEC = RecordCodecBuilder.create(instance ->
@@ -29,7 +31,11 @@ public class ResonancePlayerData {
                     Codec.intRange(0, Integer.MAX_VALUE).optionalFieldOf("rang", 0)
                             .forGetter(ResonancePlayerData::getRang),
                     Codec.LONG.optionalFieldOf("gesamt_rp", 0L)
-                            .forGetter(ResonancePlayerData::getGesamtRp)
+                            .forGetter(ResonancePlayerData::getGesamtRp),
+                    Codec.STRING.listOf().optionalFieldOf("leitmotiv_unlocked", List.of())
+                            .forGetter(ResonancePlayerData::getUnlockedLeitmotivNodeIds),
+                    Codec.STRING.listOf().optionalFieldOf("leitmotiv_rewards", List.of())
+                            .forGetter(ResonancePlayerData::getClaimedLeitmotivRewardIds)
             ).apply(instance, ResonancePlayerData::fromSerialized)
     );
 
@@ -40,9 +46,11 @@ public class ResonancePlayerData {
     private final BitSet unlockedCodexPages;
     private int rang;
     private long gesamtRp;
+    private final Set<String> unlockedLeitmotivNodes;
+    private final Set<String> claimedLeitmotivRewards;
 
     public ResonancePlayerData() {
-        this(Stimmung.STILLE, 0, 0.0F, 0.0F, new BitSet(), 0, 0L);
+        this(Stimmung.STILLE, 0, 0.0F, 0.0F, new BitSet(), 0, 0L, Set.of(), Set.of());
     }
 
     public ResonancePlayerData(
@@ -52,7 +60,7 @@ public class ResonancePlayerData {
             float dissonanz,
             BitSet unlockedCodexPages
     ) {
-        this(mood, rp, beatPhase, dissonanz, unlockedCodexPages, 0, 0L);
+        this(mood, rp, beatPhase, dissonanz, unlockedCodexPages, 0, 0L, Set.of(), Set.of());
     }
 
     public ResonancePlayerData(
@@ -64,6 +72,20 @@ public class ResonancePlayerData {
             int rang,
             long gesamtRp
     ) {
+        this(mood, rp, beatPhase, dissonanz, unlockedCodexPages, rang, gesamtRp, Set.of(), Set.of());
+    }
+
+    public ResonancePlayerData(
+            Stimmung mood,
+            int rp,
+            float beatPhase,
+            float dissonanz,
+            BitSet unlockedCodexPages,
+            int rang,
+            long gesamtRp,
+            Set<String> unlockedLeitmotivNodes,
+            Set<String> claimedLeitmotivRewards
+    ) {
         this.mood = mood == null ? Stimmung.STILLE : mood;
         this.rp = clampRp(rp);
         this.beatPhase = clampUnit(beatPhase);
@@ -73,6 +95,8 @@ public class ResonancePlayerData {
                 : (BitSet) unlockedCodexPages.clone();
         this.rang = Math.max(0, rang);
         this.gesamtRp = Math.max(0L, gesamtRp);
+        this.unlockedLeitmotivNodes = sanitizeIds(unlockedLeitmotivNodes);
+        this.claimedLeitmotivRewards = sanitizeIds(claimedLeitmotivRewards);
     }
 
     private static ResonancePlayerData fromSerialized(
@@ -82,11 +106,23 @@ public class ResonancePlayerData {
             float dissonanz,
             List<Integer> unlockedCodexPages,
             int rang,
-            long gesamtRp
+            long gesamtRp,
+            List<String> unlockedLeitmotivNodes,
+            List<String> claimedLeitmotivRewards
     ) {
         BitSet pages = new BitSet();
         unlockedCodexPages.forEach(pages::set);
-        return new ResonancePlayerData(mood, rp, beatPhase, dissonanz, pages, rang, gesamtRp);
+        return new ResonancePlayerData(
+                mood,
+                rp,
+                beatPhase,
+                dissonanz,
+                pages,
+                rang,
+                gesamtRp,
+                Set.copyOf(unlockedLeitmotivNodes),
+                Set.copyOf(claimedLeitmotivRewards)
+        );
     }
 
     public Stimmung getMood() {
@@ -159,6 +195,26 @@ public class ResonancePlayerData {
         this.gesamtRp = Math.max(0L, gesamtRp);
     }
 
+    public boolean isLeitmotivNodeUnlocked(String nodeId) {
+        return nodeId != null && unlockedLeitmotivNodes.contains(nodeId);
+    }
+
+    public boolean unlockLeitmotivNode(String nodeId) {
+        return nodeId != null && !nodeId.isBlank() && unlockedLeitmotivNodes.add(nodeId);
+    }
+
+    public List<String> getUnlockedLeitmotivNodeIds() {
+        return unlockedLeitmotivNodes.stream().sorted().toList();
+    }
+
+    public boolean claimLeitmotivReward(String rewardId) {
+        return rewardId != null && !rewardId.isBlank() && claimedLeitmotivRewards.add(rewardId);
+    }
+
+    public List<String> getClaimedLeitmotivRewardIds() {
+        return claimedLeitmotivRewards.stream().sorted().toList();
+    }
+
     private static int clampRp(int value) {
         return Math.clamp(value, 0, MAX_RP_WITH_BONUS);
     }
@@ -168,5 +224,15 @@ public class ResonancePlayerData {
             return 0.0F;
         }
         return Math.clamp(value, 0.0F, 1.0F);
+    }
+
+    private static Set<String> sanitizeIds(Set<String> ids) {
+        Set<String> sanitized = new HashSet<>();
+        if (ids != null) {
+            ids.stream()
+                    .filter(id -> id != null && !id.isBlank())
+                    .forEach(sanitized::add);
+        }
+        return sanitized;
     }
 }

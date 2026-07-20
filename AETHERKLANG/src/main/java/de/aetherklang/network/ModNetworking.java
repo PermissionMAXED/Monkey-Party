@@ -1,6 +1,9 @@
 package de.aetherklang.network;
 
 import de.aetherklang.crescendo.ArmorHooks;
+import de.aetherklang.leitmotiv.LeitmotivEffects;
+import de.aetherklang.leitmotiv.LeitmotivService;
+import de.aetherklang.leitmotiv.LeitmotivTree;
 import de.aetherklang.registry.ModCriteria;
 import de.aetherklang.registry.ModParticles;
 import de.aetherklang.registry.ModPayloads;
@@ -46,8 +49,15 @@ public final class ModNetworking {
                 ModPayloads.KodexOpenPayload.ID,
                 (payload, context) -> handleKodexOpen(payload, context.player())
         );
+        ServerPlayNetworking.registerGlobalReceiver(
+                ModPayloads.LeitmotivUnlockPayload.ID,
+                (payload, context) -> handleLeitmotivUnlock(payload, context.player())
+        );
         ServerPlayConnectionEvents.JOIN.register(
-                (handler, sender, server) -> ResonanceApi.sync(handler.getPlayer())
+                (handler, sender, server) -> {
+                    ResonanceApi.sync(handler.getPlayer());
+                    LeitmotivService.sync(handler.getPlayer());
+                }
         );
         ServerPlayConnectionEvents.DISCONNECT.register(
                 (handler, server) -> LAST_DASH_TICKS.remove(handler.getPlayer().getUuid())
@@ -71,7 +81,7 @@ public final class ModNetworking {
         if (lastDashTick != null && currentTick - lastDashTick < DASH_COOLDOWN_TICKS) {
             return;
         }
-        int dashCost = ArmorHooks.getDashCost(boots);
+        int dashCost = LeitmotivEffects.adjustDashCost(player, ArmorHooks.getDashCost(boots));
         if (!ResonanceApi.spendRp(player, dashCost)) {
             player.sendMessage(Text.translatable("message.aetherklang.rp.missing", dashCost), true);
             return;
@@ -155,6 +165,20 @@ public final class ModNetworking {
         }
     }
 
+    private static void handleLeitmotivUnlock(
+            ModPayloads.LeitmotivUnlockPayload payload,
+            ServerPlayerEntity player
+    ) {
+        if (!player.isAlive() || player.isSpectator()) {
+            return;
+        }
+        if (payload.nodeId().isBlank()) {
+            LeitmotivService.sync(player);
+        } else {
+            LeitmotivService.unlock(player, payload.nodeId());
+        }
+    }
+
     public static void sendResonanceSync(ServerPlayerEntity player, ResonancePlayerData data) {
         if (ServerPlayNetworking.canSend(player, ModPayloads.ResonanceSyncPayload.ID)) {
             ServerPlayNetworking.send(player, ModPayloads.ResonanceSyncPayload.from(data));
@@ -166,6 +190,20 @@ public final class ModNetworking {
             ServerPlayNetworking.send(
                     player,
                     new ModPayloads.RangSyncPayload(data.getRang(), data.getGesamtRp())
+            );
+        }
+    }
+
+    public static void sendLeitmotivSync(ServerPlayerEntity player, ResonancePlayerData data, int keys) {
+        if (ServerPlayNetworking.canSend(player, ModPayloads.LeitmotivSyncPayload.ID)) {
+            ServerPlayNetworking.send(
+                    player,
+                    new ModPayloads.LeitmotivSyncPayload(
+                            keys,
+                            data.getUnlockedLeitmotivNodeIds().stream()
+                                    .filter(id -> LeitmotivTree.byId(id).isPresent())
+                                    .toList()
+                    )
             );
         }
     }

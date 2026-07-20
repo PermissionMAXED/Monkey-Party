@@ -6,6 +6,7 @@ import de.aetherklang.item.KlangweberBeineItem;
 import de.aetherklang.item.KlangweberBrustItem;
 import de.aetherklang.item.KlangweberHelmItem;
 import de.aetherklang.item.KlangweberStiefelItem;
+import de.aetherklang.leitmotiv.LeitmotivEffects;
 import de.aetherklang.registry.ModParticles;
 import de.aetherklang.registry.ModSounds;
 import de.aetherklang.resonance.ResonanceApi;
@@ -71,10 +72,13 @@ public final class ArmorHooks {
     }
 
     public static int getRpCap(LivingEntity wearer) {
-        return ResonancePlayerData.MAX_RP
+        int cap = ResonancePlayerData.MAX_RP
                 + (isEquipped(wearer, EquipmentSlot.CHEST, KlangweberBrustItem.class)
                 ? KlangweberBrustItem.RP_CAP_BONUS
                 : 0);
+        return wearer instanceof ServerPlayerEntity player
+                ? cap + LeitmotivEffects.getRpCapBonus(player)
+                : cap;
     }
 
     public static float getGoodWindow(LivingEntity wearer, float baseWindow) {

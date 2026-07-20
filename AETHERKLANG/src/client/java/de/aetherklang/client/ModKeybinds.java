@@ -17,6 +17,7 @@ public final class ModKeybinds {
             KeyBinding.Category.create(Aetherklang.id("controls"));
 
     public static final KeyBinding OPEN_KODEX = register("open_kodex", GLFW.GLFW_KEY_K);
+    public static final KeyBinding OPEN_LEITMOTIV = register("open_leitmotiv", GLFW.GLFW_KEY_L);
     public static final KeyBinding DASH = register("dash", GLFW.GLFW_KEY_R);
     public static final KeyBinding CYCLE_MOOD = register("cycle_mood", GLFW.GLFW_KEY_M);
     private static boolean handlersRegistered;

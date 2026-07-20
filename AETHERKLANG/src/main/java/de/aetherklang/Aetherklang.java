@@ -4,6 +4,7 @@ import de.aetherklang.command.ModCommands;
 import de.aetherklang.crescendo.CrescendoServerHooks;
 import de.aetherklang.kaskade.KaskadeHooks;
 import de.aetherklang.klangwerk.KlangwerkLoader;
+import de.aetherklang.leitmotiv.LeitmotivService;
 import de.aetherklang.network.ModNetworking;
 import de.aetherklang.registry.ContentBootstrap;
 import de.aetherklang.registry.ModAttachments;
@@ -47,6 +48,7 @@ public final class Aetherklang implements ModInitializer {
         ModParticles.register();
         ModSounds.register();
         ModAttachments.register();
+        LeitmotivService.register();
         ModCriteria.register();
         ModPayloads.register();
         ModNetworking.register();

@@ -1,6 +1,7 @@
 package de.aetherklang.resonance;
 
 import de.aetherklang.crescendo.ArmorHooks;
+import de.aetherklang.leitmotiv.LeitmotivEffects;
 import de.aetherklang.network.ModNetworking;
 import de.aetherklang.registry.ModAttachments;
 import de.aetherklang.registry.ModParticles;
@@ -32,7 +33,8 @@ public final class ResonanceApi {
     public static int addRp(ServerPlayerEntity player, int amount) {
         ResonancePlayerData data = getData(player);
         int previousRp = data.getRp();
-        long updated = (long) data.getRp() + amount;
+        int adjustedAmount = LeitmotivEffects.adjustRpGain(player, amount);
+        long updated = (long) data.getRp() + adjustedAmount;
         data.setRp((int) Math.clamp(updated, 0L, ArmorHooks.getRpCap(player)));
         RangService.recordRpGain(player, data.getRp() - previousRp);
         sync(player);
@@ -98,7 +100,8 @@ public final class ResonanceApi {
      * A small outgoing-damage multiplier for ZORN integrations.
      */
     public static float getDamageMultiplier(ServerPlayerEntity player) {
-        return getMood(player) == Stimmung.ZORN ? 1.10F : 1.0F;
+        float moodMultiplier = getMood(player) == Stimmung.ZORN ? 1.10F : 1.0F;
+        return moodMultiplier * LeitmotivEffects.getDamageMultiplier(player);
     }
 
     /**
@@ -141,7 +144,7 @@ public final class ResonanceApi {
         targets.add(source);
         for (ServerPlayerEntity target : targets) {
             if (target.isAlive() && target.getHealth() < target.getMaxHealth()) {
-                target.heal(0.5F);
+                target.heal(0.5F * LeitmotivEffects.getHealingMultiplier(source));
             }
         }
     }

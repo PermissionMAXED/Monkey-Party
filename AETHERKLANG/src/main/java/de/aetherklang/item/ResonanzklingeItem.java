@@ -1,5 +1,6 @@
 package de.aetherklang.item;
 
+import de.aetherklang.leitmotiv.LeitmotivEffects;
 import de.aetherklang.registry.ModParticles;
 import de.aetherklang.resonance.BeatEngine;
 import java.util.List;
@@ -54,7 +55,11 @@ public final class ResonanzklingeItem extends Item {
             float damage,
             int particles
     ) {
-        target.damage(world, player.getDamageSources().magic(), damage);
+        target.damage(
+                world,
+                player.getDamageSources().magic(),
+                damage * LeitmotivEffects.getDamageMultiplier(player)
+        );
         world.spawnParticles(
                 ModParticles.NOTE_SPARK,
                 target.getX(),
@@ -93,7 +98,11 @@ public final class ResonanzklingeItem extends Item {
             if (look.dotProduct(toTarget) < 0.2) {
                 continue;
             }
-            target.damage(serverWorld, player.getDamageSources().magic(), 5.0F);
+            float damage = 5.0F;
+            if (player instanceof ServerPlayerEntity serverPlayer) {
+                damage *= LeitmotivEffects.getDamageMultiplier(serverPlayer);
+            }
+            target.damage(serverWorld, player.getDamageSources().magic(), damage);
             target.addVelocity(look.multiply(0.55).add(0.0, 0.15, 0.0));
             target.velocityModified = true;
         }

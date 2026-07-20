@@ -25,6 +25,7 @@ public final class ModPayloads {
     public static final Identifier BOSS_FX_ID = Aetherklang.id("boss_fx");
     public static final Identifier REGION_SYNC_ID = Aetherklang.id("region_sync");
     public static final Identifier LEITMOTIV_SYNC_ID = Aetherklang.id("leitmotiv_sync");
+    public static final Identifier LEITMOTIV_UNLOCK_ID = Aetherklang.id("leitmotiv_unlock");
     public static final Identifier KASKADE_FX_ID = Aetherklang.id("kaskade_fx");
     public static final Identifier WELTAKKORD_FX_ID = Aetherklang.id("weltakkord_fx");
 
@@ -35,6 +36,7 @@ public final class ModPayloads {
         PayloadTypeRegistry.playC2S().register(DashPayload.ID, DashPayload.CODEC);
         PayloadTypeRegistry.playC2S().register(MoodCyclePayload.ID, MoodCyclePayload.CODEC);
         PayloadTypeRegistry.playC2S().register(KodexOpenPayload.ID, KodexOpenPayload.CODEC);
+        PayloadTypeRegistry.playC2S().register(LeitmotivUnlockPayload.ID, LeitmotivUnlockPayload.CODEC);
         PayloadTypeRegistry.playS2C().register(ResonanceSyncPayload.ID, ResonanceSyncPayload.CODEC);
         PayloadTypeRegistry.playS2C().register(BeatFxPayload.ID, BeatFxPayload.CODEC);
         PayloadTypeRegistry.playS2C().register(PerfectFxPayload.ID, PerfectFxPayload.CODEC);
@@ -47,7 +49,7 @@ public final class ModPayloads {
         PayloadTypeRegistry.playS2C().register(LeitmotivSyncPayload.ID, LeitmotivSyncPayload.CODEC);
         PayloadTypeRegistry.playS2C().register(KaskadeFxPayload.ID, KaskadeFxPayload.CODEC);
         PayloadTypeRegistry.playS2C().register(WeltakkordFxPayload.ID, WeltakkordFxPayload.CODEC);
-        Aetherklang.LOGGER.debug("Registered {} Aetherklang play payloads", 15);
+        Aetherklang.LOGGER.debug("Registered {} Aetherklang play payloads", 16);
     }
 
     public record DashPayload(float strength) implements CustomPayload {
@@ -82,6 +84,26 @@ public final class ModPayloads {
                 (payload, buffer) -> buffer.writeBoolean(payload.opened()),
                 buffer -> new KodexOpenPayload(buffer.readBoolean())
         );
+
+        @Override
+        public Id<? extends CustomPayload> getId() {
+            return ID;
+        }
+    }
+
+    public record LeitmotivUnlockPayload(String nodeId) implements CustomPayload {
+        public static final CustomPayload.Id<LeitmotivUnlockPayload> ID =
+                new CustomPayload.Id<>(LEITMOTIV_UNLOCK_ID);
+        public static final PacketCodec<RegistryByteBuf, LeitmotivUnlockPayload> CODEC = PacketCodec.of(
+                (payload, buffer) -> buffer.writeString(payload.nodeId()),
+                buffer -> new LeitmotivUnlockPayload(buffer.readString(64))
+        );
+
+        public LeitmotivUnlockPayload {
+            if (nodeId.length() > 64) {
+                throw new IllegalArgumentException("Leitmotiv node id is too long");
+            }
+        }
 
         @Override
         public Id<? extends CustomPayload> getId() {
@@ -366,16 +388,40 @@ public final class ModPayloads {
         }
     }
 
-    public record LeitmotivSyncPayload(String motiv, int intensity) implements CustomPayload {
+    public record LeitmotivSyncPayload(int keys, List<String> unlockedNodes) implements CustomPayload {
+        private static final int MAX_NODES = 24;
+
         public static final CustomPayload.Id<LeitmotivSyncPayload> ID =
                 new CustomPayload.Id<>(LEITMOTIV_SYNC_ID);
         public static final PacketCodec<RegistryByteBuf, LeitmotivSyncPayload> CODEC = PacketCodec.of(
                 (payload, buffer) -> {
-                    buffer.writeString(payload.motiv());
-                    buffer.writeVarInt(payload.intensity());
+                    buffer.writeVarInt(payload.keys());
+                    buffer.writeVarInt(payload.unlockedNodes().size());
+                    payload.unlockedNodes().forEach(buffer::writeString);
                 },
-                buffer -> new LeitmotivSyncPayload(buffer.readString(), buffer.readVarInt())
+                buffer -> new LeitmotivSyncPayload(buffer.readVarInt(), readLeitmotivNodes(buffer))
         );
+
+        public LeitmotivSyncPayload {
+            keys = Math.max(0, keys);
+            unlockedNodes = List.copyOf(unlockedNodes);
+            if (unlockedNodes.size() > MAX_NODES) {
+                throw new IllegalArgumentException("Too many unlocked Leitmotiv nodes: " + unlockedNodes.size());
+            }
+        }
+
+        private static List<String> readLeitmotivNodes(RegistryByteBuf buffer) {
+            int nodeCount = buffer.readVarInt();
+            if (nodeCount < 0 || nodeCount > MAX_NODES) {
+                throw new IllegalArgumentException("Invalid unlocked Leitmotiv node count: " + nodeCount);
+            }
+
+            List<String> nodes = new ArrayList<>(nodeCount);
+            for (int index = 0; index < nodeCount; index++) {
+                nodes.add(buffer.readString(64));
+            }
+            return nodes;
+        }
 
         @Override
         public Id<? extends CustomPayload> getId() {

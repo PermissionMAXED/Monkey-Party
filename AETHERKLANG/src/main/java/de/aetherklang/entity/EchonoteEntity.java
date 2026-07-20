@@ -1,5 +1,6 @@
 package de.aetherklang.entity;
 
+import de.aetherklang.leitmotiv.LeitmotivEffects;
 import de.aetherklang.registry.ModEntities;
 import de.aetherklang.registry.ModParticles;
 import de.aetherklang.registry.ModSounds;
@@ -14,6 +15,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ExplosiveProjectileEntity;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.storage.ReadView;
 import net.minecraft.storage.WriteView;
 import net.minecraft.util.hit.BlockHitResult;
@@ -119,7 +121,11 @@ public final class EchonoteEntity extends ExplosiveProjectileEntity {
 
         Entity hit = hitResult.getEntity();
         if (isHealing() && hit instanceof LivingEntity living) {
-            living.heal(7.0F);
+            float healing = 7.0F;
+            if (getOwner() instanceof ServerPlayerEntity player) {
+                healing *= LeitmotivEffects.getHealingMultiplier(player);
+            }
+            living.heal(healing);
             world.spawnParticles(
                     ModParticles.BEAT_RING,
                     hit.getX(),

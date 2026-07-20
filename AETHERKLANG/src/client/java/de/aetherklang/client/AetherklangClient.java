@@ -6,6 +6,7 @@ import de.aetherklang.client.kodex.KodexOpener;
 import de.aetherklang.client.render.ModEntityRenderers;
 import de.aetherklang.crescendo.CrescendoClientHooks;
 import de.aetherklang.kaskade.KaskadeClientFx;
+import de.aetherklang.leitmotiv.client.LeitmotivOpener;
 import net.fabricmc.api.ClientModInitializer;
 
 public final class AetherklangClient implements ClientModInitializer {
@@ -13,6 +14,7 @@ public final class AetherklangClient implements ClientModInitializer {
     public void onInitializeClient() {
         ModKeybinds.register();
         KodexOpener.register();
+        LeitmotivOpener.register();
         ResonanceHud.register();
         ModParticleFactories.register();
         ModEntityRenderers.register();

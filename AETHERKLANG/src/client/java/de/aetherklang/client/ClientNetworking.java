@@ -3,6 +3,8 @@ package de.aetherklang.client;
 import de.aetherklang.Aetherklang;
 import de.aetherklang.client.fx.ClientFxController;
 import de.aetherklang.client.fx.ScreenRippleFx;
+import de.aetherklang.leitmotiv.client.ClientLeitmotivCache;
+import de.aetherklang.leitmotiv.client.LeitmotivScreen;
 import de.aetherklang.registry.ModPayloads;
 import de.aetherklang.registry.ModSounds;
 import de.aetherklang.resonance.client.ClientResonanceCache;
@@ -32,6 +34,20 @@ public final class ClientNetworking {
                             "Resonance grade synchronized: rang={}, gesamt_rp={}",
                             payload.rang(),
                             payload.gesamtRp()
+                    );
+                })
+        );
+        ClientPlayNetworking.registerGlobalReceiver(
+                ModPayloads.LeitmotivSyncPayload.ID,
+                (payload, context) -> context.client().execute(() -> {
+                    ClientLeitmotivCache.update(payload);
+                    if (context.client().currentScreen instanceof LeitmotivScreen screen) {
+                        screen.refresh();
+                    }
+                    Aetherklang.LOGGER.debug(
+                            "Leitmotiv synchronized: keys={}, unlocked={}",
+                            payload.keys(),
+                            payload.unlockedNodes().size()
                     );
                 })
         );

@@ -2,6 +2,7 @@ package de.aetherklang.resonance;
 
 import de.aetherklang.crescendo.ArmorHooks;
 import de.aetherklang.crescendo.CreatureHooks;
+import de.aetherklang.leitmotiv.LeitmotivEffects;
 import de.aetherklang.network.ModNetworking;
 import de.aetherklang.registry.ModCriteria;
 import java.util.HashMap;
@@ -43,21 +44,27 @@ public final class BeatEngine {
     }
 
     public static boolean isOnBeat(ServerPlayerEntity player, float window) {
-        float activeWindow = Float.compare(window, GOOD_WINDOW) == 0
-                ? CreatureHooks.getGoodWindow(player, ArmorHooks.getGoodWindow(player, window))
-                : window;
+        float activeWindow = window;
+        if (Float.compare(window, GOOD_WINDOW) == 0) {
+            activeWindow = LeitmotivEffects.getGoodWindow(
+                    player,
+                    CreatureHooks.getGoodWindow(player, ArmorHooks.getGoodWindow(player, window))
+            );
+        } else if (Float.compare(window, PERFECT_WINDOW) == 0) {
+            activeWindow = LeitmotivEffects.getPerfectWindow(player, window);
+        }
         return BeatTiming.isWithinWindow(ResonanceApi.getData(player).getBeatPhase(), activeWindow);
     }
 
     public static BeatTiming getTiming(ServerPlayerEntity player) {
         float phase = ResonanceApi.getData(player).getBeatPhase();
-        if (BeatTiming.isWithinWindow(phase, PERFECT_WINDOW)) {
+        if (BeatTiming.isWithinWindow(phase, LeitmotivEffects.getPerfectWindow(player, PERFECT_WINDOW))) {
             return BeatTiming.PERFECT;
         }
-        float goodWindow = CreatureHooks.getGoodWindow(
+        float goodWindow = LeitmotivEffects.getGoodWindow(player, CreatureHooks.getGoodWindow(
                 player,
                 ArmorHooks.getGoodWindow(player, GOOD_WINDOW)
-        );
+        ));
         if (BeatTiming.isWithinWindow(phase, goodWindow)) {
             return BeatTiming.GOOD;
         }
@@ -128,6 +135,7 @@ public final class BeatEngine {
         if (hasActivePerfectStreak(player)) {
             decay *= 2.0F;
         }
+        decay *= LeitmotivEffects.getDissonanceDecayMultiplier(player);
         data.setDissonanz(data.getDissonanz() - decay);
     }
 

@@ -1,5 +1,6 @@
 package de.aetherklang.item;
 
+import de.aetherklang.leitmotiv.LeitmotivEffects;
 import de.aetherklang.registry.ModParticles;
 import de.aetherklang.resonance.BeatEngine;
 import de.aetherklang.resonance.BeatTiming;
@@ -65,6 +66,9 @@ public final class HallharfeItem extends Item {
         LAST_PULSE_TICK.put(player.getUuid(), currentTick);
 
         float healAmount = ResonanceItemUtil.hasFreude(player) ? 3.0F : 2.0F;
+        if (player instanceof ServerPlayerEntity resonant) {
+            healAmount *= LeitmotivEffects.getHealingMultiplier(resonant);
+        }
         List<LivingEntity> allies = serverWorld.getEntitiesByClass(
                 LivingEntity.class,
                 player.getBoundingBox().expand(HEAL_RADIUS),
