@@ -39,9 +39,11 @@ public final class KlangmeerEliteIslands {
         }
         for (EliteArena arena : EliteArena.values()) {
             if (world.getBlockState(generationMarker(arena)).isOf(Blocks.LODESTONE)) {
+                ensureNotenpult(world, arena);
                 continue;
             }
             composeIsland(world, arena);
+            ensureNotenpult(world, arena);
             set(world, encounterMarker(arena), Blocks.REINFORCED_DEEPSLATE);
             set(world, generationMarker(arena), Blocks.LODESTONE);
             Aetherklang.LOGGER.info(
@@ -165,6 +167,10 @@ public final class KlangmeerEliteIslands {
                 set(world, pylon.up(y), y == 3 ? ModBlocks.KLANGLATERNE : arena.pillarBlock());
             }
         }
+    }
+
+    private static void ensureNotenpult(ServerWorld world, EliteArena arena) {
+        set(world, arena.center.add(5, 0, -9), ModBlocks.NOTENPULT);
     }
 
     private static void placeRing(ServerWorld world, BlockPos center, int radius, Block block) {

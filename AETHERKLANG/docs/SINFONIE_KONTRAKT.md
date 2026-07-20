@@ -31,7 +31,7 @@ Namespace ist immer `aetherklang`.
 | Gruppe | IDs |
 | --- | --- |
 | Motive | `motiv_laeufer`, `motiv_schwinge`, `motiv_pulser` |
-| Bosse | `boss_tremolo`, `boss_glissanda`, `boss_kakophon`, `boss_generalpause` |
+| Bosse | `boss_tremolo`, `boss_glissanda`, `boss_kakophon`, `boss_generalpause`, `boss_ostinato`, `boss_ritardando` |
 
 ### Netzwerk, Partikel und Sound
 
@@ -75,6 +75,8 @@ Umgebung gestalten, aber diese Koordinaten nicht verschieben.
 | `glissando_gaerten` | 900 | 129 | 0 | Glissanda / Resonanzholz |
 | `kakophon_schwarm` | 0 | 129 | 900 | Kakophon / Schwarm |
 | `generalpause` | 0 | 129 | 1600 | Generalpause / Stille |
+| `ostinato` | -360 | 129 | 2000 | Ostinato / Elite-Bosswerk |
+| `ritardando` | 360 | 129 | 2000 | Ritardando / Elite-Bosswerk |
 
 ## Dateibesitz für parallele Wellen
 
