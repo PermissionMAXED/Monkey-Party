@@ -25,6 +25,12 @@ public enum KlangmeerRegion {
             "Kakophonie-Riff",
             new BlockPos(0, 129, 900),
             InselArchetyp.KAKOPHONIE_RIFF
+    ),
+    GENERALPAUSE_OEDE(
+            "generalpause_oede",
+            "Generalpause-Öde",
+            new BlockPos(0, 129, 1600),
+            InselArchetyp.GENERALPAUSE_SCHOLLE
     );
 
     private static final long ENTRY_RADIUS_SQUARED = 420L * 420L;

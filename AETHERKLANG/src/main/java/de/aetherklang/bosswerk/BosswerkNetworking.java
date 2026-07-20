@@ -11,6 +11,7 @@ import net.minecraft.server.world.ServerWorld;
 final class BosswerkNetworking {
     private static final double FX_RADIUS = 64.0D;
     static final int PHASE_TRANSITION_OPERATION = BossOperation.values().length;
+    static final int INTRO_OPERATION = PHASE_TRANSITION_OPERATION + 1;
 
     private BosswerkNetworking() {
     }
@@ -21,6 +22,10 @@ final class BosswerkNetworking {
 
     static void sendPhaseTransition(BosswerkBossEntity boss, int phase) {
         send(boss, phase, PHASE_TRANSITION_OPERATION);
+    }
+
+    static void sendIntro(BosswerkBossEntity boss) {
+        send(boss, 0, INTRO_OPERATION);
     }
 
     private static void send(BosswerkBossEntity boss, int phase, int operation) {

@@ -1,5 +1,14 @@
 {
   "textures": [
-    "minecraft:big_smoke_0"
+    "minecraft:big_smoke_0",
+    "minecraft:big_smoke_2",
+    "minecraft:big_smoke_4",
+    "minecraft:big_smoke_6",
+    "minecraft:big_smoke_8",
+    "minecraft:big_smoke_10",
+    "minecraft:sculk_soul_0",
+    "minecraft:sculk_soul_3",
+    "minecraft:sculk_soul_6",
+    "minecraft:sculk_soul_9"
   ]
 }

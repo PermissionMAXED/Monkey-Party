@@ -42,14 +42,24 @@ final class BossAttackExecutor {
         };
         ParticleEffect particle = telegraphParticle(attack.operation());
         switch (attack.operation()) {
-            case STRAHL_LINIE, GLEITSTOSS -> spawnBeam(
-                    world,
-                    boss.getEntityPos().add(0.0D, boss.getHeight() * 0.55D, 0.0D),
-                    target.add(0.0D, 0.65D, 0.0D),
-                    particle,
-                    0.0D
-            );
-            default -> spawnRing(world, center.add(0.0D, 0.12D, 0.0D), attack.radius(), 28, particle);
+            case STRAHL_LINIE, GLEITSTOSS -> {
+                Vec3d start = boss.getEntityPos().add(0.0D, boss.getHeight() * 0.55D, 0.0D);
+                Vec3d end = target.add(0.0D, 0.65D, 0.0D);
+                spawnBeam(world, start, end, particle, 0.0D);
+                spawnBeam(world, start.add(0.0D, 0.18D, 0.0D), end.add(0.0D, 0.18D, 0.0D), ModParticles.BEAM_MOTE, 0.0D);
+            }
+            default -> {
+                spawnRing(world, center.add(0.0D, 0.12D, 0.0D), attack.radius(), 48, particle);
+                spawnRing(
+                        world,
+                        center.add(0.0D, 0.18D, 0.0D),
+                        Math.max(0.7D, attack.radius() * 0.72D),
+                        32,
+                        attack.operation() == BossOperation.STILLE_ZONE
+                                ? ModParticles.GENERALPAUSE_NEBEL
+                                : ModParticles.KLANGOPERATION_RING
+                );
+            }
         }
     }
 
@@ -95,7 +105,7 @@ final class BossAttackExecutor {
                     world,
                     center.add(0.0D, (tier - 1) * 0.8D, 0.0D),
                     2.2D + tier * 1.1D,
-                    30,
+                    44,
                     phaseParticle(boss)
             );
         }
@@ -109,6 +119,42 @@ final class BossAttackExecutor {
                 SoundCategory.HOSTILE,
                 1.8F,
                 0.72F + boss.getPhase() * 0.18F
+        );
+    }
+
+    static void intro(ServerWorld world, BosswerkBossEntity boss) {
+        Vec3d center = boss.getEntityPos().add(0.0D, boss.getHeight() * 0.48D, 0.0D);
+        ParticleEffect signature = phaseParticle(boss);
+        for (int tier = 0; tier < 5; tier++) {
+            spawnRing(
+                    world,
+                    center.add(0.0D, (tier - 2) * 0.62D, 0.0D),
+                    1.8D + tier * 0.72D,
+                    52 + tier * 4,
+                    tier % 2 == 0 ? signature : ModParticles.KLANGOPERATION_RING
+            );
+        }
+        world.spawnParticles(
+                signature,
+                center.x,
+                center.y,
+                center.z,
+                84,
+                boss.getWidth() * 0.9D,
+                boss.getHeight() * 0.72D,
+                boss.getWidth() * 0.9D,
+                0.11D
+        );
+        BosswerkNetworking.sendIntro(boss);
+        world.playSound(
+                null,
+                boss.getX(),
+                boss.getY(),
+                boss.getZ(),
+                boss.getBossSound(),
+                SoundCategory.HOSTILE,
+                2.2F,
+                0.62F
         );
     }
 
@@ -146,7 +192,7 @@ final class BossAttackExecutor {
                 world,
                 boss.getEntityPos().add(0.0D, boss.getHeight() * 0.5D, 0.0D),
                 2.4D,
-                notes * 2,
+                notes * 4,
                 ModParticles.TREMOLO_SPLITTER
         );
     }
@@ -197,7 +243,7 @@ final class BossAttackExecutor {
                 center.x,
                 center.y + 0.6D,
                 center.z,
-                70,
+                110,
                 attack.radius() * 0.6D,
                 1.2D,
                 attack.radius() * 0.6D,
@@ -398,7 +444,7 @@ final class BossAttackExecutor {
             double speed
     ) {
         Vec3d delta = end.subtract(start);
-        int points = Math.max(4, (int) Math.ceil(delta.length() * 3.0D));
+        int points = Math.max(6, (int) Math.ceil(delta.length() * 5.0D));
         for (int point = 0; point <= points; point++) {
             Vec3d position = start.add(delta.multiply(point / (double) points));
             world.spawnParticles(particle, position.x, position.y, position.z, 1, 0.04D, 0.04D, 0.04D, speed);

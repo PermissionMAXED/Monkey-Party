@@ -1,5 +1,9 @@
 {
   "textures": [
-    "minecraft:glow"
+    "minecraft:glow",
+    "minecraft:sonic_boom_0",
+    "minecraft:sonic_boom_4",
+    "minecraft:sonic_boom_8",
+    "minecraft:sonic_boom_12"
   ]
 }

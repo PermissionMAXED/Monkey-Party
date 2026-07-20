@@ -1,7 +1,9 @@
 package de.aetherklang.client.music;
 
 import de.aetherklang.Aetherklang;
+import de.aetherklang.bosswerk.BosswerkBossEntity;
 import de.aetherklang.entity.ChoralEntity;
+import de.aetherklang.insel.client.ClientRegionState;
 import de.aetherklang.registry.ModPayloads;
 import de.aetherklang.registry.ModSounds;
 import de.aetherklang.resonance.Stimmung;
@@ -63,6 +65,10 @@ public final class AdaptiveMusicSequencer {
     private static int observedBeat;
     private static boolean hasObservedBeat;
     private static int ensembleSize;
+    private static String bossFxId;
+    private static int bossFxPhase = 1;
+    private static int bossFxTicks;
+    private static int silenceTicks;
 
     private AdaptiveMusicSequencer() {
     }
@@ -91,7 +97,24 @@ public final class AdaptiveMusicSequencer {
         Aetherklang.LOGGER.info("Adaptive music sequencer ready (toggle: N)");
     }
 
+    public static void onBossFx(String bossId, int phase) {
+        bossFxId = bossId;
+        bossFxPhase = Math.clamp(phase, 1, 3);
+        bossFxTicks = 180;
+    }
+
+    public static void silenceFor(int ticks) {
+        silenceTicks = Math.max(silenceTicks, ticks);
+        scheduledNotes.clear();
+    }
+
     private static void tick(MinecraftClient client) {
+        if (bossFxTicks > 0) {
+            bossFxTicks--;
+        }
+        if (silenceTicks > 0) {
+            silenceTicks--;
+        }
         while (toggleMusic.wasPressed()) {
             enabled = !enabled;
             scheduledNotes.clear();
@@ -137,11 +160,68 @@ public final class AdaptiveMusicSequencer {
 
         play(client, motif.instrument(), 0.28F, pitch(semitones));
         playEnsembleHarmony(client, mood, motif, step, semitones);
+        playRegionLayer(client, beat, motif.root());
         playDissonanceAccent(client, beat, semitones);
 
-        int choralPhase = nearbyChoralPhase(client);
-        if (choralPhase > 0) {
-            playChoralLayer(client, beat, motif.root(), choralPhase);
+        BossLayer bossLayer = nearbyBossLayer(client);
+        if (bossLayer != null) {
+            playBossLayer(client, beat, motif.root(), bossLayer);
+        }
+    }
+
+    private static void playRegionLayer(MinecraftClient client, int beat, int root) {
+        String region = ClientRegionState.regionId();
+        if (region == null) {
+            return;
+        }
+
+        int step = Math.floorMod(beat, STEPS_PER_MOTIF);
+        switch (region) {
+            case "bassgewoelbe" -> {
+                if ((step & 1) == 0) {
+                    int[] bass = {0, -5, -2, -7};
+                    play(
+                            client,
+                            SoundEvents.BLOCK_NOTE_BLOCK_DIDGERIDOO.value(),
+                            0.16F,
+                            pitch(root - 7 + bass[step / 2])
+                    );
+                }
+            }
+            case "arpeggienmeer" -> {
+                int[] arpeggio = {0, 4, 7, 12, 7, 4, 9, 7};
+                play(
+                        client,
+                        step % 3 == 0
+                                ? SoundEvents.BLOCK_NOTE_BLOCK_BELL.value()
+                                : SoundEvents.BLOCK_NOTE_BLOCK_PLING.value(),
+                        0.13F,
+                        pitch(root + arpeggio[step])
+                );
+            }
+            case "kakophonie_riff" -> {
+                int[] broken = {0, 6, 1, 10, 3, 8, -1, 5};
+                play(
+                        client,
+                        (step & 1) == 0
+                                ? SoundEvents.BLOCK_NOTE_BLOCK_BIT.value()
+                                : SoundEvents.BLOCK_NOTE_BLOCK_DIDGERIDOO.value(),
+                        0.14F,
+                        pitch(root - 3 + broken[step])
+                );
+            }
+            case "generalpause_oede" -> {
+                if (step == 0 || step == 5) {
+                    play(
+                            client,
+                            SoundEvents.BLOCK_NOTE_BLOCK_FLUTE.value(),
+                            0.11F,
+                            pitch(root - 7 + (step == 0 ? 0 : 3))
+                    );
+                }
+            }
+            default -> {
+            }
         }
     }
 
@@ -201,16 +281,97 @@ public final class AdaptiveMusicSequencer {
         }
     }
 
-    private static int nearbyChoralPhase(MinecraftClient client) {
+    private static void playBossLayer(MinecraftClient client, int beat, int root, BossLayer layer) {
+        if ("choral".equals(layer.id())) {
+            playChoralLayer(client, beat, root, layer.phase());
+            return;
+        }
+
+        int phase = layer.phase();
+        int step = Math.floorMod(beat, STEPS_PER_MOTIF);
+        switch (layer.id()) {
+            case "boss_tremolo" -> {
+                play(
+                        client,
+                        (step & 1) == 0
+                                ? SoundEvents.BLOCK_NOTE_BLOCK_PLING.value()
+                                : SoundEvents.BLOCK_NOTE_BLOCK_BIT.value(),
+                        0.15F + phase * 0.035F,
+                        pitch(root + (step & 1) * (phase + 1))
+                );
+                if (phase >= 3) {
+                    play(client, SoundEvents.BLOCK_NOTE_BLOCK_BASS.value(), 0.17F, pitch(root - 12 + step % 4));
+                }
+            }
+            case "boss_glissanda" -> {
+                int[] sweep = {-5, -2, 0, 3, 7, 10, 12, 7};
+                play(
+                        client,
+                        SoundEvents.BLOCK_NOTE_BLOCK_FLUTE.value(),
+                        0.14F + phase * 0.03F,
+                        pitch(root + sweep[step])
+                );
+                if (phase >= 2 && (step & 1) == 0) {
+                    play(client, SoundEvents.BLOCK_NOTE_BLOCK_CHIME.value(), 0.12F, pitch(root + sweep[step] + 7));
+                }
+            }
+            case "boss_kakophon" -> {
+                int[] clash = {0, 6, -1, 8};
+                int note = clash[Math.floorMod(beat, clash.length)];
+                play(
+                        client,
+                        SoundEvents.BLOCK_NOTE_BLOCK_DIDGERIDOO.value(),
+                        0.18F + phase * 0.035F,
+                        pitch(root - 9 + note)
+                );
+                if (phase >= 2) {
+                    play(client, SoundEvents.BLOCK_NOTE_BLOCK_BIT.value(), 0.15F, pitch(root + note + 6));
+                }
+            }
+            case "boss_generalpause" -> {
+                if (Math.floorMod(beat, Math.max(2, 5 - phase)) == 0) {
+                    play(
+                            client,
+                            phase >= 3
+                                    ? SoundEvents.BLOCK_NOTE_BLOCK_IRON_XYLOPHONE.value()
+                                    : SoundEvents.BLOCK_NOTE_BLOCK_BASS.value(),
+                            0.19F + phase * 0.025F,
+                            pitch(root - 12 + phase * 2)
+                    );
+                }
+            }
+            default -> {
+            }
+        }
+    }
+
+    private static BossLayer nearbyBossLayer(MinecraftClient client) {
         Box searchArea = client.player.getBoundingBox().expand(CHORAL_MUSIC_RADIUS);
-        return client.world.getEntitiesByClass(
+        ChoralEntity choral = client.world.getEntitiesByClass(
                         ChoralEntity.class,
                         searchArea,
                         ChoralEntity::isAlive
                 ).stream()
                 .min(Comparator.comparingDouble(client.player::squaredDistanceTo))
-                .map(ChoralEntity::getPhase)
-                .orElse(0);
+                .orElse(null);
+        BosswerkBossEntity bosswerk = client.world.getEntitiesByClass(
+                        BosswerkBossEntity.class,
+                        searchArea,
+                        BosswerkBossEntity::isAlive
+                ).stream()
+                .min(Comparator.comparingDouble(client.player::squaredDistanceTo))
+                .orElse(null);
+        if (choral != null && (bosswerk == null
+                || client.player.squaredDistanceTo(choral) <= client.player.squaredDistanceTo(bosswerk))) {
+            return new BossLayer("choral", Math.clamp(choral.getPhase(), 1, 3));
+        }
+        if (bosswerk == null) {
+            return null;
+        }
+
+        String id = bosswerk.getBossId();
+        int phase = bossFxTicks > 0 && id.equals(bossFxId) ? bossFxPhase : 1;
+        return new BossLayer(id, phase);
     }
 
     private static void playAkkordComplete(int chord) {
@@ -279,6 +440,7 @@ public final class AdaptiveMusicSequencer {
         return enabled
                 && client.player != null
                 && client.world != null
+                && silenceTicks <= 0
                 && !client.options.hudHidden;
     }
 
@@ -307,5 +469,8 @@ public final class AdaptiveMusicSequencer {
         private ScheduledNote withDelay(int delay) {
             return new ScheduledNote(sound, volume, pitch, delay);
         }
+    }
+
+    private record BossLayer(String id, int phase) {
     }
 }

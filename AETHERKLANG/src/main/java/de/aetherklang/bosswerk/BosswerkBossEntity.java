@@ -38,6 +38,7 @@ public final class BosswerkBossEntity extends HostileEntity {
     private long phaseStartBeat;
     private long lastProcessedBeat = Long.MIN_VALUE;
     private PendingAttack pendingAttack;
+    private boolean engaged;
 
     public BosswerkBossEntity(EntityType<? extends BosswerkBossEntity> type, World world) {
         super(type, world);
@@ -126,12 +127,15 @@ public final class BosswerkBossEntity extends HostileEntity {
         if (nextPhase == phase) {
             return;
         }
+        boolean initialPhase = phase < 0;
         phase = nextPhase;
         attackIndex = 0;
         pendingAttack = null;
         phaseStartBeat = Math.floorDiv(world.getTime(), TICKS_PER_BEAT);
         bossBar.setColor(phaseColor());
-        BossAttackExecutor.phaseTransition(world, this);
+        if (!initialPhase) {
+            BossAttackExecutor.phaseTransition(world, this);
+        }
         Aetherklang.LOGGER.info(
                 "Bosswerk {} entered phase {} at {}% health",
                 getBossId(),
@@ -163,6 +167,14 @@ public final class BosswerkBossEntity extends HostileEntity {
                 || !target.isAlive()
                 || target.isSpectator()
                 || squaredDistanceTo(target) > MAX_TARGET_DISTANCE_SQUARED) {
+            return;
+        }
+        if (!engaged) {
+            engaged = true;
+            attackIndex = 0;
+            pendingAttack = null;
+            phaseStartBeat = beat + 4;
+            BossAttackExecutor.intro(world, this);
             return;
         }
 

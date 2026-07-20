@@ -1,5 +1,13 @@
 {
   "textures": [
-    "minecraft:note"
+    "minecraft:note",
+    "minecraft:critical_hit",
+    "minecraft:glitter_1",
+    "minecraft:glitter_3",
+    "minecraft:glitter_5",
+    "minecraft:glitter_7",
+    "minecraft:spark_1",
+    "minecraft:spark_4",
+    "minecraft:explosion_0"
   ]
 }
