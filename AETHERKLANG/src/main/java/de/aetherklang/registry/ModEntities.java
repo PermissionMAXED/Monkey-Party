@@ -9,6 +9,7 @@ import de.aetherklang.entity.HallwaechterEntity;
 import de.aetherklang.entity.SireneEntity;
 import de.aetherklang.entity.StubMobEntity;
 import de.aetherklang.entity.TaktlingEntity;
+import de.aetherklang.motiv.MotivEntity;
 import net.fabricmc.fabric.api.biome.v1.BiomeModifications;
 import net.fabricmc.fabric.api.biome.v1.BiomeSelectors;
 import net.fabricmc.fabric.api.event.player.UseItemCallback;
@@ -54,12 +55,36 @@ public final class ModEntities {
             register(TAKTLING_ID, SpawnGroup.CREATURE, 0.6F, 0.9F, 8, 3, false, TaktlingEntity::new);
     public static final EntityType<FermateFeldEntity> FERMATE_FELD =
             register(FERMATE_FELD_ID, SpawnGroup.MISC, 0.35F, 0.35F, 10, 1, true, FermateFeldEntity::new);
-    public static final EntityType<StubMobEntity> MOTIV_LAEUFER =
-            register(MOTIV_LAEUFER_ID, SpawnGroup.MONSTER, 0.75F, 1.7F, 10, 3, false, StubMobEntity::new);
-    public static final EntityType<StubMobEntity> MOTIV_SCHWINGE =
-            register(MOTIV_SCHWINGE_ID, SpawnGroup.MONSTER, 0.9F, 1.1F, 10, 3, false, StubMobEntity::new);
-    public static final EntityType<StubMobEntity> MOTIV_PULSER =
-            register(MOTIV_PULSER_ID, SpawnGroup.MONSTER, 1.0F, 1.0F, 10, 3, false, StubMobEntity::new);
+    public static final EntityType<MotivEntity> MOTIV_LAEUFER = register(
+            MOTIV_LAEUFER_ID,
+            SpawnGroup.MONSTER,
+            0.75F,
+            1.7F,
+            10,
+            3,
+            false,
+            (type, world) -> new MotivEntity(type, world, "laeufer")
+    );
+    public static final EntityType<MotivEntity> MOTIV_SCHWINGE = register(
+            MOTIV_SCHWINGE_ID,
+            SpawnGroup.MONSTER,
+            0.9F,
+            1.1F,
+            10,
+            3,
+            false,
+            (type, world) -> new MotivEntity(type, world, "schwinge")
+    );
+    public static final EntityType<MotivEntity> MOTIV_PULSER = register(
+            MOTIV_PULSER_ID,
+            SpawnGroup.MONSTER,
+            1.0F,
+            1.0F,
+            10,
+            3,
+            false,
+            (type, world) -> new MotivEntity(type, world, "pulser")
+    );
     public static final EntityType<StubMobEntity> BOSS_TREMOLO =
             register(BOSS_TREMOLO_ID, SpawnGroup.MONSTER, 2.2F, 3.2F, 16, 2, false, StubMobEntity::new);
     public static final EntityType<StubMobEntity> BOSS_GLISSANDA =
@@ -101,9 +126,9 @@ public final class ModEntities {
         FabricDefaultAttributeRegistry.register(CHORAL, ChoralEntity.createAttributes());
         FabricDefaultAttributeRegistry.register(SIRENE, SireneEntity.createAttributes());
         FabricDefaultAttributeRegistry.register(TAKTLING, TaktlingEntity.createAttributes());
-        FabricDefaultAttributeRegistry.register(MOTIV_LAEUFER, StubMobEntity.createAttributes());
-        FabricDefaultAttributeRegistry.register(MOTIV_SCHWINGE, StubMobEntity.createAttributes());
-        FabricDefaultAttributeRegistry.register(MOTIV_PULSER, StubMobEntity.createAttributes());
+        FabricDefaultAttributeRegistry.register(MOTIV_LAEUFER, MotivEntity.createAttributes());
+        FabricDefaultAttributeRegistry.register(MOTIV_SCHWINGE, MotivEntity.createAttributes());
+        FabricDefaultAttributeRegistry.register(MOTIV_PULSER, MotivEntity.createAttributes());
         FabricDefaultAttributeRegistry.register(BOSS_TREMOLO, StubMobEntity.createAttributes());
         FabricDefaultAttributeRegistry.register(BOSS_GLISSANDA, StubMobEntity.createAttributes());
         FabricDefaultAttributeRegistry.register(BOSS_KAKOPHON, StubMobEntity.createAttributes());

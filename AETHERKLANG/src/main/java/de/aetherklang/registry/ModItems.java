@@ -58,6 +58,9 @@ public final class ModItems {
     public static final String KLANGWEBER_STIEFEL_ID = "klangweber_stiefel";
     public static final String SIRENE_SPAWN_EGG_ID = "sirene_spawn_egg";
     public static final String TAKTLING_SPAWN_EGG_ID = "taktling_spawn_egg";
+    public static final String MOTIV_LAEUFER_SPAWN_EGG_ID = "motiv_laeufer_spawn_egg";
+    public static final String MOTIV_SCHWINGE_SPAWN_EGG_ID = "motiv_schwinge_spawn_egg";
+    public static final String MOTIV_PULSER_SPAWN_EGG_ID = "motiv_pulser_spawn_egg";
     public static final String PAUKE_ID = "pauke";
     public static final String SOPRANFLOETE_ID = "sopranfloete";
     public static final String KONTRABASS_ID = "kontrabass";
@@ -161,6 +164,21 @@ public final class ModItems {
             TaktlingSpawnEggItem::new,
             new Item.Settings().spawnEgg(ModEntities.TAKTLING)
     );
+    public static final Item MOTIV_LAEUFER_SPAWN_EGG = register(
+            MOTIV_LAEUFER_SPAWN_EGG_ID,
+            SpawnEggItem::new,
+            new Item.Settings().spawnEgg(ModEntities.MOTIV_LAEUFER)
+    );
+    public static final Item MOTIV_SCHWINGE_SPAWN_EGG = register(
+            MOTIV_SCHWINGE_SPAWN_EGG_ID,
+            SpawnEggItem::new,
+            new Item.Settings().spawnEgg(ModEntities.MOTIV_SCHWINGE)
+    );
+    public static final Item MOTIV_PULSER_SPAWN_EGG = register(
+            MOTIV_PULSER_SPAWN_EGG_ID,
+            SpawnEggItem::new,
+            new Item.Settings().spawnEgg(ModEntities.MOTIV_PULSER)
+    );
     public static final Item PAUKE =
             register(PAUKE_ID, settings -> new KlanginstrumentItem(settings, PAUKE_ID), new Item.Settings().maxCount(1));
     public static final Item SOPRANFLOETE = register(
@@ -261,6 +279,9 @@ public final class ModItems {
             KLANGWEBER_STIEFEL,
             SIRENE_SPAWN_EGG,
             TAKTLING_SPAWN_EGG,
+            MOTIV_LAEUFER_SPAWN_EGG,
+            MOTIV_SCHWINGE_SPAWN_EGG,
+            MOTIV_PULSER_SPAWN_EGG,
             PAUKE,
             SOPRANFLOETE,
             KONTRABASS,

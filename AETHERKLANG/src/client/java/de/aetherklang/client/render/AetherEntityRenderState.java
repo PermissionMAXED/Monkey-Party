@@ -9,4 +9,7 @@ public final class AetherEntityRenderState extends EntityRenderState {
     public boolean shielded;
     public boolean healing;
     public int phase = 1;
+    public float motivScale = 1.0F;
+    public int primaryColor = 0xFFFFFF;
+    public int secondaryColor = 0xFFFFFF;
 }

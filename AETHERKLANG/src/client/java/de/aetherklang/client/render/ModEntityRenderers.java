@@ -95,20 +95,20 @@ public final class ModEntityRenderers {
         );
         EntityRendererRegistry.register(
                 ModEntities.MOTIV_LAEUFER,
-                context -> new AetherEntityRenderer<>(
-                        context, AetherEntityStyle.HALLWAECHTER, 0.72F, 0.35F, 0xE85FF5E0
+                context -> new MotivEntityRenderer(
+                        context, AetherEntityStyle.HALLWAECHTER, 0.72F, 0.35F
                 )
         );
         EntityRendererRegistry.register(
                 ModEntities.MOTIV_SCHWINGE,
-                context -> new AetherEntityRenderer<>(
-                        context, AetherEntityStyle.SIRENE, 0.68F, 0.3F, 0xE89263FF
+                context -> new MotivEntityRenderer(
+                        context, AetherEntityStyle.SIRENE, 0.68F, 0.3F
                 )
         );
         EntityRendererRegistry.register(
                 ModEntities.MOTIV_PULSER,
-                context -> new AetherEntityRenderer<>(
-                        context, AetherEntityStyle.ECHONOTE, 0.85F, 0.35F, 0xE8F5C95F
+                context -> new MotivEntityRenderer(
+                        context, AetherEntityStyle.ECHONOTE, 0.85F, 0.35F
                 )
         );
         EntityRendererRegistry.register(
