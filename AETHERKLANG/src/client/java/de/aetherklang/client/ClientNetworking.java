@@ -1,6 +1,7 @@
 package de.aetherklang.client;
 
 import de.aetherklang.Aetherklang;
+import de.aetherklang.client.fx.ClientFxController;
 import de.aetherklang.registry.ModPayloads;
 import de.aetherklang.registry.ModSounds;
 import de.aetherklang.resonance.client.ClientResonanceCache;
@@ -26,6 +27,7 @@ public final class ClientNetworking {
                 ModPayloads.BeatFxPayload.ID,
                 (payload, context) -> context.client().execute(() -> {
                     ClientResonanceCache.onBeat(payload);
+                    ClientFxController.onBeat(payload.beat());
                     if (context.client().player != null) {
                         context.client().player.playSound(ModSounds.BEAT_TICK, 0.35F, 1.0F);
                     }
