@@ -28,5 +28,10 @@ A colorful multiplayer party game (Mario-Party-inspired, fully original) themed 
 - **The UI is the integration hub**: `src/ui/index.js` `buildUI(app)` (called by `src/main.js`) wires sessions, input, board-play view, and the minigame harness. `src/ui/matchController.js` orchestrates the board-phase ↔ minigame-phase flow. `src/app/session.js` exposes offline (local sim + bots) and online (server replica) sessions behind one `ISession` interface.
 - Every human decision prompt auto-defaults (~20s client / 25s server) and minigames have hard duration caps, so a match can never hang waiting on input.
 
+### Aetherklang (second product in this repo)
+- **Aetherklang** is a separate Fabric 1.21.9 Minecraft mod living entirely in the **`AETHERKLANG/`** subdirectory (mod id `aetherklang`, JDK 21, Gradle + Fabric Loom). It shares nothing with MONKEY-PARTY — **never mix their build commands, and do not break MONKEY-PARTY** when working on Aetherklang (and vice versa).
+- Run all Gradle tasks from `/workspace/AETHERKLANG`: `./gradlew build` to verify/build (do **not** combine `clean build` in the same invocation — a known Loom pitfall; run `./gradlew clean` separately first if you really need it), `./gradlew runClient` for the dev client, `./gradlew runServer` for a headless server (needs `run/eula.txt` with `eula=true`).
+- Gameplay/docs source of truth: keybinds are **K** (open Kodex), **R** (Resonance Dash, requires worn Echostiefel, 8 RP), **M** (cycle mood, 2 RP). Beat is 120 BPM with ±40 ms perfect / ±100 ms good windows; RP is 0–100. The player-facing product bible is `AETHERKLANG/docs/HANDBUCH.md` (German, primary) with an English summary in `AETHERKLANG/docs/HANDBOOK.md` — keep both in sync with code when mechanics change. More agent notes in `AETHERKLANG/AGENTS.md`.
+
 ### Subagent model preference
 - The project owner requires **`claude-fable-5-thinking-xhigh`** for all Task subagents (planning, building, testing, reviewing). Use that model slug when spawning subagents for this repo.

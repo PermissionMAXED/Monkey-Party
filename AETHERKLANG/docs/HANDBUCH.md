@@ -4,18 +4,20 @@
 > **„Die Welt hat eine Stimme. Du lernst sie zu spielen.“**
 
 Dieses Handbuch ist die vollständige Begleitung zu Aetherklang. Es erklärt
-Mythos, Systeme, Inhalte, Bedienung und den vorgesehenen Weg vom ersten
-Kristall bis zur finalen Kadenz. Im Spiel trägt es den Namen **Kodex der
+Mythos, Systeme, Inhalte, Bedienung und den Weg vom ersten Kristall bis zur
+finalen Kadenz gegen Choral. Im Spiel trägt es den Namen **Kodex der
 Resonanz** und erscheint als indigo-goldenes Tonarium.
 
 ### Legende zum Entwicklungsstand
 
-- **Spielbar** – in der aktuellen Fassung verdrahtet und nutzbar.
+- **Spielbar** – in der aktuellen Fassung vollständig verdrahtet und nutzbar.
 - **Fundament** – registriert, sichtbar und für weitere Mechanik vorbereitet.
-- **Vision** – das geplante Spielziel; wichtig für Balancing und Progression.
+- **Vision** – geplanter Ausbau; wichtig für Balancing und Progression.
 
-Die Statusangaben halten dieses Handbuch ehrlich, ohne die Weltbeschreibung
-auf bloße Patchnotes zu reduzieren.
+Der Kern von Aetherklang ist **spielbar**: alle sechs Gegenstände, alle
+sieben Blöcke, alle vier Kreaturen mit KI, Beute und eigenen Renderern, das
+Resonanz-HUD, die Kammerton-Dimension und die Choral-Begegnung. Die
+Statusangaben markieren ehrlich, wo darüber hinaus noch Ausbau geplant ist.
 
 ---
 
@@ -32,9 +34,11 @@ die Weltenstimme nicht länger begleiten. Er wollte sie besitzen. Er schnitt
 Töne aus ihrem Zusammenhang, schichtete Echos übereinander und formte daraus
 die **Dissonanz**: Klang ohne Einverständnis.
 
-Seitdem öffnen sich Dissonanzrisse. Erinnerungen werden zu Kreaturen.
-Resonanzkristalle wachsen dort, wo die Welt versucht, sich selbst wieder zu
-stimmen.
+Seitdem reißen **Dissonanzrisse** die Oberwelt auf. Erinnerungen werden zu
+Kreaturen. Resonanzkristalle wachsen dort, wo die Welt versucht, sich selbst
+wieder zu stimmen. Und hinter dem Glockenspiel-Portal wartet der
+**Kammerton** – der schwebende Saal, in dem Choral seine gebrochene Kadenz
+dirigiert.
 
 Du bist ein **Resonant**. Du hörst den Grundpuls, den andere für Wind,
 Redstone oder Zufall halten. Deine Aufgabe ist nicht, jedes Geräusch zum
@@ -45,16 +49,18 @@ Form bringen, in der viele Stimmen nebeneinander bestehen können.
 
 ## 2. Schnellstart: deine erste Kadenz
 
-1. Öffne im Kreativinventar den Tab **Aetherklang** oder folge im
-   Überlebensmodus den freigeschalteten Rezepten.
+1. Öffne im Kreativinventar den Tab **Aetherklang** oder fertige die
+   Gegenstände im Überlebensmodus (alle Rezepte in Kapitel 12).
 2. Nimm eine **Stimmgabel** und einen **Kodex der Resonanz**.
 3. Rechtsklicke mit der Stimmgabel. Sie markiert Resonanzquellen in deiner
-   Umgebung und stimmt dich auf **Stille**.
+   Umgebung, stimmt dich auf **Stille** und gewährt im Takt **+3 RP**.
 4. Drücke **K** oder benutze den Kodex mit Rechtsklick.
-5. Beobachte den Beat. Eine Aktion nahe am Puls erzeugt das stärkste
-   Feedback und Resonance Points.
-6. Probiere die **Resonanzklinge**: On-Beat-Treffer und ihre geduckte
-   Resonanzwelle zeigen das Grundprinzip aus Aufbau und Ausgabe.
+5. Beobachte das Metronom im **Resonanz-HUD** unten links. Eine Aktion nahe
+   am Puls erzeugt das stärkste Feedback und Resonance Points.
+6. Probiere die **Resonanzklinge**: On-Beat-Treffer und ihr geduckter
+   Resonanzfächer zeigen das Grundprinzip aus Aufbau und Ausgabe.
+7. Tippe einen **Resonanzkristall** mit Rechtsklick an: Er flüstert dir eine
+   Stimmung zu und schenkt **+1 RP**.
 
 **Tipp:** Übe erst an einem sicheren Ort. Aetherklang belohnt eine einzelne
 bewusste Antwort mehr als hektisches Klicken.
@@ -65,33 +71,38 @@ bewusste Antwort mehr als hektisches Klicken.
 
 Stimmungen sind Resonanzhaltungen. Sie sind keine dauerhaften Klassen und
 keine moralischen Wertungen. Jede verändert, wie du die Welt hörst und welche
-Antwort dir leichtfällt.
+Antwort dir leichtfällt. Alle fünf sind **spielbar**.
 
-| Stimmung | Farbe & Haltung | Systemischer Schwerpunkt | Spielidee |
+| Stimmung | Farbe & Haltung | Systemische Wirkung | Spielidee |
 | --- | --- | --- | --- |
-| **Stille** | Indigo · aufmerksam | Kreaturen-Bemerkungsradius `×0,75` über die Resonanz-API | Erkunden, vorbereiten, RP bewahren |
-| **Freude** | Gold · verbindend | Heilende Aura im Fünf-Sekunden-Puls | Gruppe stabilisieren, gemeinsam spielen |
-| **Zorn** | Magenta · entschlossen | Schadensintegration `×1,10` | Kurze offensive Kadenzen, klares Risiko |
-| **Trauer** | Cyanblau · tragend | Verlangsamungseinfluss `×0,50` | Kontrolle aushalten, ruhig weiterspielen |
-| **Wunder** | Cyan · neugierig | Glückseffekt und Notenpartikel | Entdecken, improvisieren, Chancen öffnen |
+| **Stille** | Indigo · aufmerksam | Kreaturen-Bemerkungsradius `×0,75` (Resonanz-API); Dissonanz klingt **dreifach** schneller ab | Erkunden, vorbereiten, RP bewahren |
+| **Freude** | Gold · verbindend | Heilende Aura: alle 5 s ein Viertelherz für Spieler im 6-Block-Radius; verstärkt Hallharfen-Heilung | Gruppe stabilisieren, gemeinsam spielen |
+| **Zorn** | Magenta · entschlossen | Schadensintegration `×1,10` (Resonanz-API); Basshammer-Schockwellen deutlich stärker | Kurze offensive Kadenzen, klares Risiko |
+| **Trauer** | Cyanblau · tragend | Verlangsamungseinfluss `×0,50` (Resonanz-API) | Kontrolle aushalten, ruhig weiterspielen |
+| **Wunder** | Cyan · neugierig | Glückseffekt (alle 5 s erneuert) und Notenpartikel; stimmt Hallharfen-Noten heilend | Entdecken, improvisieren, Chancen öffnen |
 
 ### Stille
 
 Stille ist nicht Abwesenheit, sondern Raum. In ihr hörst du gegnerische
-Muster früher, verschwendest weniger Resonanz und bereitest die nächste
-Phrase vor. Die Stimmgabel führt dich beim Benutzen in diese Haltung.
+Muster früher, verschwendest weniger Resonanz und lässt angesammelte
+Dissonanz dreimal so schnell abklingen. Die Stimmgabel führt dich beim
+Benutzen in diese Haltung.
 
 ### Freude
 
 Freude verbindet Stimmen. Ihre Aura pulsiert alle fünf Sekunden in einem
-Radius von sechs Blöcken und kann verletzte Verbündete einschließlich dir
-selbst leicht heilen. Sie glänzt in Gruppen und langen Expeditionen.
+Radius von sechs Blöcken und heilt verletzte Spieler einschließlich dir
+selbst um ein Viertelherz. Mit der Hallharfe in der Hand steigert Freude
+jeden Heilpuls von einem auf anderthalb Herzen. Sie glänzt in Gruppen und
+langen Expeditionen.
 
 ### Zorn
 
 Zorn verdichtet Resonanz zu einem scharfen Akzent. Integrationen können ihren
-Ausgangsschaden um zehn Prozent erhöhen. Zorn ist wirkungsvoll, aber keine
-Erlaubnis zum Button-Mashing: Ein verfehlter Takt bleibt ein verfehlter Takt.
+Ausgangsschaden um zehn Prozent erhöhen; die Schockwellen des Basshammers
+springen in Zorn von 1,5 auf 2,5 beziehungsweise von 2,5 auf 4 Herzen. Zorn
+ist wirkungsvoll, aber keine Erlaubnis zum Button-Mashing: Ein verfehlter
+Takt bleibt ein verfehlter Takt.
 
 ### Trauer
 
@@ -101,46 +112,68 @@ kontrollierte Rückzüge, schwere Arenen und geduldige Gegenangriffe.
 
 ### Wunder
 
-Wunder behandelt die Welt als offene Frage. Es erneuert regelmäßig einen
-Glückseffekt und zeichnet Notenpartikel um den Resonanten. Diese Stimmung ist
-für Entdeckung, seltene Chancen und spielerische Improvisation gedacht.
+Wunder behandelt die Welt als offene Frage. Es erneuert alle fünf Sekunden
+einen Glückseffekt und zeichnet Notenpartikel um den Resonanten. Wie Freude
+stimmt es die Echonoten der Hallharfe heilend. Diese Stimmung ist für
+Entdeckung, seltene Chancen und spielerische Improvisation gedacht.
 
-> **Bedienung:** Die Standardtaste **M** wechselt die Stimmung, sobald die
-> zugehörige Client-Mechanik aktiv ist. Admins und Tester können sie bereits
-> mit `/aetherklang mood <stimmung>` setzen.
+> **Bedienung:** Die Standardtaste **M** wechselt die Stimmung im Kreis
+> (Stille → Freude → Zorn → Trauer → Wunder). Der Wechsel kostet **2 RP**
+> (im Kreativmodus kostenlos). Am **Stimmaltar** wechselst du kostenlos, und
+> `/aetherklang mood <stimmung>` setzt jede Haltung direkt.
 
 ---
 
 ## 4. Takt: die Mathematik des guten Moments
 
-Der autoritative Beat läuft mit **120 BPM**. Ein Schlag dauert damit
-**500 Millisekunden** beziehungsweise zehn Spielticks bei stabilen 20 TPS.
-Bewertet wird der Abstand deiner Aktion zum nächsten Schlag.
+Der autoritative Beat läuft serverseitig mit **120 BPM**. Ein Schlag dauert
+damit **500 Millisekunden** beziehungsweise zehn Spielticks bei stabilen
+20 TPS. Bewertet wird der Abstand deiner Aktion zum nächsten Schlag.
 
 | Wertung | Phasenabstand | Zeitfenster bei 120 BPM | Bedeutung |
 | --- | ---: | ---: | --- |
-| **PERFEKT** | `≤ 0,08` | **±40 ms** | Maximales Feedback; aktuell `+2 RP` für angebundene perfekte Aktionen |
-| **GUT** | `≤ 0,20` | **±100 ms** | Solide Ausführung im erweiterten Fenster |
-| **DANEBEN** | `> 0,20` | außerhalb **±100 ms** | Aktion kann treffen, erzeugt aber keinen perfekten Beat-Bonus |
+| **PERFEKT** | `≤ 0,08` | **±40 ms** | Maximales Feedback; `+2 RP` für perfekte Instrumentenaktionen |
+| **GUT** | `≤ 0,20` | **±100 ms** | Solide Ausführung; löst alle On-Beat-Effekte der Instrumente aus |
+| **DANEBEN** | `> 0,20` | außerhalb **±100 ms** | Aktion kann treffen, erzeugt aber keinen Beat-Bonus |
 
 Die Fenster liegen **vor und nach** dem Schlag. Ein Treffer 35 ms vor dem
 Puls ist ebenso perfekt wie einer 35 ms danach.
 
+### Perfekte Serien
+
+Der Beat merkt sich aufeinanderfolgende perfekte Aktionen. Wer Schlag für
+Schlag perfekt antwortet, baut eine **perfekte Serie** auf (gezählt bis
+acht). Eine laufende Serie von mindestens zwei Schlägen **verdoppelt** den
+Abbau deiner Dissonanz – Präzision reinigt das Lied buchstäblich. Eine
+verfehlte perfekte Gelegenheit bricht die Serie.
+
 ### So lernst du den Beat
 
-- Höre auf den Beat-Tick und beobachte den goldenen Ring.
+- Höre auf den Beat-Tick und beobachte das goldene Metronom im HUD: Das
+  Pendel schwingt mit der Phase, und im perfekten Fenster leuchtet der
+  Rahmen mit dem Schriftzug **TAKT** auf.
 - Zähle in gleichmäßigen Vierteln: **eins – zwei – drei – vier**.
 - Beginne mit einzelnen Aktionen, nicht mit langen Serien.
 - Nutze `/aetherklang beat info`, um Phase und aktuelle Wertung zu prüfen.
 - Bei Server-Lag zählt die serverseitige Phase. Visuelles Feedback ist die
   Bestätigung, nicht die Quelle der Wahrheit.
 
-### Dissonanz und Timing
+### Dissonanz
 
-Die Dissonanzskala reicht von `0,0` bis `1,0`. Sie ist als Gegenrhythmus zu RP
-gedacht: Fehler, Risse und riskante Kräfte erhöhen sie; saubere Kadenzen,
-Stille und geschlossene Risse bauen sie ab. Die persistente Spielerdatenbasis
-ist **spielbar**; weitere Quellen, Schwellen und Weltfolgen sind **Vision**.
+Die Dissonanzskala reicht von `0 %` bis `100 %` und wird im HUD als
+**DIS**-Meter angezeigt. Sie ist der Gegenrhythmus zu RP – und sie ist
+**spielbar**:
+
+- **Quellen:** In einem Dissonanzriss stehen (+5 % pro Sekunde), Treffer
+  eines Dissonanzgeists (+12 %), dissonante Echonoten (+8 %), Chorals
+  Dissonanzsturm (+24 %) und Chorstrahl (+16 %).
+- **Folgen:** Ab **65 %** legen Hallwächter einen Resonanzschild an, nehmen
+  nur noch rund ein Drittel Schaden und greifen dissonante Eindringlinge
+  nahe ihrer Altäre an. Hohe Werte verzerren zusätzlich den Bildschirmrand
+  und färben das HUD magenta.
+- **Abbau:** Dissonanz klingt von selbst langsam ab. **Stille**
+  verdreifacht, eine **perfekte Serie** verdoppelt den Abbau; beides
+  zusammen wirkt sechsfach. Geschlossene Risse verhindern neuen Zuwachs.
 
 ---
 
@@ -150,15 +183,33 @@ RP sind gespeicherter Gleichklang. Sie messen nicht Erfahrung, sondern wie
 viel sauber aufgebaute Resonanz du gerade in eine besondere Aktion umsetzen
 kannst.
 
+### Quellen
+
+| Aktion | Gewinn |
+| --- | ---: |
+| Perfekte Instrumentenaktion (±40 ms) | `+2 RP` |
+| On-Beat-Treffer mit Resonanzklinge oder Basshammer (±100 ms) | `+2 RP` |
+| Stimmgabel-Scan im Takt | `+3 RP` |
+| Resonanzkristall anspielen (Rechtsklick) | `+1 RP` |
+| Hallharfen-Heilpuls, der Verbündete heilt | `+1 RP` |
+
+### Kosten
+
+| Fähigkeit | Kosten |
+| --- | ---: |
+| Stimmungswechsel per **M** | `2 RP` |
+| Kristall-Einstimmung am Stimmaltar | `6 RP` |
+| Resonanzschritt der Echostiefel | `8 RP` |
+| Resonanzfächer der Resonanzklinge | `12 RP` |
+| Dissonanzriss versiegeln | `12 RP` |
+| Glockenspiel-Portal ohne Kodex betreten | `24 RP` |
+
 ### Regeln
 
 - Der Vorrat liegt zwischen **0 und 100 RP**.
-- Eine angebundene perfekte Beat-Aktion gewährt aktuell **2 RP**.
-- Die Stimmgabel kann bei passendem Takt **3 RP** erzeugen.
-- Ein On-Beat-Treffer der Resonanzklinge gewährt **2 RP**.
 - Spezialfähigkeiten ziehen ihre Kosten nur bei erfolgreicher Auslösung ab.
 - RP, Stimmung, Beatphase, Dissonanz und Kodex-Freischaltungen werden im
-  Spieler-Attachment gespeichert und beim Tod kopiert.
+  Spieler-Attachment gespeichert und **beim Tod übernommen**.
 
 ### RP-Ökonomie
 
@@ -169,11 +220,34 @@ neu positionieren → wieder zuhören**
 
 Wer alle RP sofort ausgibt, hat keine Antwort auf einen überraschenden
 Angriff. Als Faustregel sind 12 bis 25 RP Reserve sinnvoll, solange die
-Begegnung noch unbekannt ist.
+Begegnung noch unbekannt ist – und mindestens 24 RP, wenn du ohne Kodex zum
+Portal willst.
 
 ---
 
-## 6. Gegenstände und Instrumente
+## 6. Das Resonanz-HUD
+
+Unten links begleitet dich das **Resonanz-HUD** – ein indigo-goldenes Panel
+mit vier Anzeigen:
+
+- **Stimmung:** Symbol und Name deiner aktuellen Haltung in ihrer Farbe.
+- **RP-Leiste:** dein Vorrat als cyan-goldener Balken mit `x / 100`.
+- **Metronom:** ein schwingendes Pendel; im perfekten Fenster pulsiert ein
+  goldener Rahmen und der Schriftzug **TAKT** leuchtet auf. Jeder Schlag
+  wird zusätzlich vom Beat-Tick begleitet.
+- **DIS-Meter:** deine Dissonanz in Prozent; ab hohen Werten warnt die
+  Anzeige magenta.
+
+Dazu kommen weltliche Effekte: Beat-Ringe um den Spieler, ein
+stimmungsgefärbter Bildschirmrand (Vignette), Dissonanz-Verzerrungen an den
+Kanten und Notenpartikel an Resonanzquellen. Farbe wird dabei immer mit
+Text, Symbol oder Klang kombiniert.
+
+---
+
+## 7. Gegenstände und Instrumente
+
+Alle sechs Gegenstände sind **spielbar**.
 
 ### Stimmgabel — `aetherklang:stimmgabel` · Spielbar
 
@@ -183,229 +257,379 @@ Gefundene Quellen erhalten Notenpartikel; eine Meldung nennt Anzahl, nächste
 Quelle und Entfernung.
 
 - Rechtsklick: Resonanzscan
-- Abklingzeit: 20 Ticks
+- Abklingzeit: 20 Ticks (1 s)
 - Nebenwirkung: setzt Stimmung auf Stille
 - On-Beat: `+3 RP`
+- Dient außerdem als Ritualwerkzeug an Kristallen (Anspielen), am
+  Stimmaltar (Einstimmung) und am Dissonanzriss (Versiegeln)
 
 ### Resonanzklinge — `aetherklang:resonanzklinge` · Spielbar
 
-Eine schnelle Nahkampfwaffe für klare Antworten.
+Eine schnelle Nahkampfwaffe für klare Antworten, geführt auf
+Diamantschwert-Niveau.
 
-- On-Beat-Treffer: `+3` Magieschaden, `+2 RP`, Notenpartikel
-- Schleichen + Rechtsklick: Resonanzfächer vor dem Spieler
+- On-Beat-Treffer (±100 ms): `+3` Magieschaden, `+2 RP`, Notenpartikel
+- Schleichen + Rechtsklick: **Resonanzfächer** vor dem Spieler
 - Kosten des Fächers: `12 RP`
-- Reichweite des Fächers: ungefähr `4,5` Blöcke
-- Abklingzeit: 30 Ticks
+- Fächer: ungefähr `4,5` Blöcke Reichweite, `5` Magieschaden (2,5 Herzen)
+  und Rückstoß auf alle Gegner im Kegel
+- Abklingzeit des Fächers: 30 Ticks (1,5 s)
 - Haltbarkeit: 512
 
-### Hallharfe — `aetherklang:hallharfe` · Fundament
+### Hallharfe — `aetherklang:hallharfe` · Spielbar
 
-Die geplante Fern- und Unterstützungsstimme. Hallharfen-Töne sollen an
-Flächen reflektieren, Gegner markieren und in Freude/Harmonie Verbündete
-stärken. Rhythmische Saitenfolgen bilden kontrollierende Akkorde.
+Die Fern- und Unterstützungsstimme. Beim Anspielen entsendet die Harfe eine
+zielsuchende **Echonote** – in Freude oder Wunder eine heilende (3,5 Herzen
+für das Ziel), sonst eine dissonante (3,5 Herzen Schaden). Hältst du die
+Harfe gespannt wie einen Bogen, spielt sie im Takt **Heilpulse**:
 
-- Geplante Rolle: Fernkampf, Raumkontrolle, Gruppenspiel
-- Haltbarkeitsfundament: 384
+- Heilpuls: alle Verbündeten im 7-Block-Radius erhalten 1 Herz
+  (in Freude: 1,5 Herzen); nur im GUT-Fenster des Beats
+- Jeder Puls, der wirklich heilt: `+1 RP`
+- Sichtbare Antwort: Beam-Partikel entlang der Blickrichtung, Beat-Ring am
+  Boden, Herzen über Geheilten
+- Echonoten-Folge: höchstens alle 12 Ticks (0,6 s)
+- Haltbarkeit: 384 (jeder Puls kostet 1)
 
-### Basshammer — `aetherklang:basshammer` · Fundament
+### Basshammer — `aetherklang:basshammer` · Spielbar
 
-Ein schweres Instrument für Haltungsschaden und Flächenakzente. Sein idealer
-Einsatz ist nicht eine schnelle Serie, sondern der letzte Schlag einer
-gegnerischen Phrase.
+Ein schweres Instrument für Haltungsschaden und Flächenakzente, geführt auf
+Diamantaxt-Niveau. Sein idealer Einsatz ist nicht eine schnelle Serie,
+sondern der letzte Schlag einer gegnerischen Phrase.
 
-- Geplante Rolle: Haltung brechen, Schockwellen, schwere Beat-Fenster
-- Haltbarkeitsfundament: 768
+- On-Beat-Treffer: **Schockwelle** am Ziel, Radius `3,25` Blöcke,
+  `3` Magieschaden (in Zorn `5`), Rückstoß mit Anheben, `+2 RP`
+- Rechtsklick im Takt: **Bodenschlag** vor dem Spieler, Radius `4,25`
+  Blöcke, `5` Magieschaden (in Zorn `8`), starker Rückstoß
+- Bodenschlag außerhalb des Takts: verpufft ohne Wirkung
+- Abklingzeit des Bodenschlags: 45 Ticks (2,25 s)
+- Haltbarkeit: 768 (Bodenschlag kostet 2)
+- Inszenierung: Staub- und Splitterpartikel des Untergrunds, Beat-Ringe,
+  tiefer Kadenzklang
 
-### Echostiefel — `aetherklang:echostiefel` · Fundament
+### Echostiefel — `aetherklang:echostiefel` · Spielbar
 
-Die Stiefel speichern den Nachklang von Bewegung. Geplant ist der
-**Resonanzschritt**: ein kurzer Dash durch Wellen, zu sicheren Zonen oder auf
-den nächsten Beat.
+Die Stiefel speichern den Nachklang von Bewegung und tragen sich wie
+Eisenstiefel. Der **Resonanzschritt** ist ein kurzer Dash in Blickrichtung
+mit stimmungsgefärbter Notenspur.
 
-- Standardtaste: **R**
-- Geplante Rolle: Mobilität und Rhythmuskorrektur
-- Haltbarkeitsfundament: 429
+- Standardtaste: **R** (Stiefel müssen getragen werden)
+- Alternative: Schleichen + Rechtsklick mit den Stiefeln in der Hand
+- Kosten: `8 RP` · Abklingzeit: 60 Ticks (3 s)
+- Schub: rund fünf Blöcke horizontal, mit leichtem Anheben am Boden
+- Haltbarkeit: 429 (jeder Schritt kostet 1)
+- Einsatz: Chorals Sturm verlassen, aus dem Chorstrahl treten, Lücken im
+  Notenring finden – oder schlicht den nächsten Beat erreichen
 
 ### Kodex der Resonanz — `aetherklang:kodex` · Spielbar
 
-Das Tonarium mit neun Registern, Seitenfortschritt und versiegelten Einträgen.
-Im Kreativmodus sind alle Seiten offen. Im Überlebensmodus liest der Kodex
-die freigeschalteten Seiten aus deinen Resonanzdaten.
+Das Tonarium mit neun Registern, 23 Folios und versiegelten Einträgen. Im
+Kreativmodus sind alle Seiten offen. Im Überlebensmodus liest der Kodex die
+freigeschalteten Seiten aus deinen synchronisierten Resonanzdaten.
 
-- Rechtsklick mit dem Gegenstand: öffnen
+- Rechtsklick mit dem Gegenstand: öffnen (zählt für den Fortschritt
+  „Eine Welt mit Stimme“)
 - Standardtaste: **K**
 - Register: Lore, Stimmungen, Takt & RP, Instrumente, Blöcke, Kreaturen,
   Dimension, Boss und Tipps
+- In beiden Händen wirksam: Wer den Kodex trägt, durchschreitet das
+  Glockenspiel-Portal **kostenlos**
 
 ---
 
-## 7. Blöcke und Resonanzorte
+## 8. Blöcke und Resonanzorte
 
-Alle sieben Blöcke sind registriert, besitzen Modelle, Texturen, Gegenstände
-und Ernte-/Rezeptfundamente. Ihre tieferen Weltmechaniken werden auf diesem
-Fundament ausgebaut.
+Alle sieben Blöcke sind **spielbar**: mit Modellen, Texturen, Beute,
+Rezepten und aktiver Weltmechanik.
 
-### Indigo-Resonanzkristall
+### Die vier Resonanzkristalle · Spielbar
 
-Grundton und Erinnerung. Indigo-Kristalle sind als stabiler Basisträger für
-Stimmgabel, Kodex und ruhige Konstruktionen gedacht.
+Indigo (Grundton), Cyan (Leitung), Gold (Takt) und Magenta (gebundene
+Dissonanz). Alle vier leuchten von selbst, klingen wie Amethyst und werden
+mit einer **Eisenspitzhacke** oder besser abgebaut; sie droppen sich selbst.
 
-### Cyan-Resonanzkristall
+- Rechtsklick (leer oder mit Stimmgabel): Der Kristall **flüstert eine
+  Stimmung** – Indigo rät zu Stille, Cyan zu Wunder, Gold zu Freude,
+  Magenta zu Zorn – und gewährt `+1 RP` samt farbtypischem Klangakzent.
+- Werkstoff für alle Instrumente, den Stimmaltar und das Portal.
+- Choral lässt beim Tod zwei zufällige Kristalle fallen.
 
-Leitung und Bewegung. Cyan soll Resonanzsignale weitertragen, Ferninstrumente
-stimmen und Portalsequenzen verbinden.
+### Stimmaltar — `aetherklang:stimmaltar` · Spielbar
 
-### Gold-Resonanzkristall
+Der sichere Ort für Stimmungswechsel und Kristallrituale. Er leuchtet sanft
+und pulst Beat-Ringe in die Umgebung.
 
-Takt und Präzision. Gold markiert perfekte Beat-Fenster und dient als
-Zeitgeber anspruchsvoller Rituale.
+- Rechtsklick: Stimmung im Kreis wechseln (Schleichen: rückwärts) –
+  **kostenlos**; der Altar merkt sich die gewählte Haltung.
+- Rechtsklick mit der Stimmgabel: **Einstimmung** – alle Resonanzkristalle
+  im 6-Block-Umkreis antworten mit Notenpartikeln, deine Stimmung wird auf
+  die Altarwahl gesetzt. Kosten: `6 RP`; benötigt mindestens einen
+  Kristall in Reichweite.
+- Hallwächter betrachten Altäre als Schutzgut: Wer mit hoher Dissonanz
+  (ab 65 %) in ihre Nähe kommt, wird gestellt.
 
-### Magenta-Resonanzkristall
+### Dissonanzriss — `aetherklang:dissonanzriss` · Spielbar
 
-Gebundene Dissonanz. Magenta ist mächtig, aber instabil; es gehört in
-Kontrollmechaniken, Rissverschlüsse und Chorals Gegenmelodie.
+Eine Wunde im Lied der Welt – begehbar, aber giftig. Dissonanzgeister
+reißen neue Risse in die Oberfläche, wo sie erscheinen.
 
-### Stimmaltar — `aetherklang:stimmaltar`
+- Im Riss stehen: Wither-Effekt, ein Herz Magieschaden und `+5 %`
+  Dissonanz pro Sekunde.
+- Rechtsklick (leer oder mit Stimmgabel): **Versiegeln** für `12 RP` –
+  der Riss löst sich in Beam-Partikeln auf.
+- Ohne RP widersteht der Riss; die Meldung nennt die fehlenden Kosten.
 
-Der geplante sichere Ort für Stimmungswechsel, Abstimmung und Instrument-
-Fortschritt. Ein Altar sollte geschützt und fern von aktiven Rissen stehen.
+### Glockenspiel-Portal — `aetherklang:glockenspiel_portal` · Spielbar
 
-### Dissonanzriss — `aetherklang:dissonanzriss`
+Die kontrollierte Gegenform zum Riss und das Tor zum **Kammerton**. Der
+Portalblock ist unzerstörbar, leuchtet, singt Portal-Summen und streut
+Noten- und Beam-Partikel.
 
-Eine Wunde im Lied der Welt. Risse sollen Dissonanzgeister hervorbringen,
-lokale Regeln verzerren und durch abgestimmte Mehrphasenaktionen geschlossen
-werden.
-
-### Glockenspiel-Portal — `aetherklang:glockenspiel_portal`
-
-Die kontrollierte Gegenform zum Riss. Eine geplante Folge aus vier
-Kristallfarben und sauberem Takt öffnet den Weg ins Tonarium. Der Block ist
-bereits als unzerstörbares Portalfundament registriert.
-
----
-
-## 8. Kreaturen
-
-Die vier Entitätstypen, Größen und Grundattribute sind registriert. KI,
-Beute, Spawnregeln, Modelle und vollständige Begegnungen sind noch
-**Fundament/Vision**.
-
-### Dissonanzgeist — `aetherklang:dissonanzgeist`
-
-Ein Rhythmusfehler, der laufen lernte. Dissonanzgeister sollen in
-unregelmäßigen Offbeats angreifen, frühe Antworten provozieren und nahe
-Risse verstärken.
-
-### Hallwächter — `aetherklang:hallwaechter`
-
-Ein großer Prüfer von Haltung und Geduld. Seine schweren Phrasen sollen nach
-dem Schlussakzent ein deutliches Gegenfenster öffnen.
-
-### Echonote — `aetherklang:echonote`
-
-Eine kleine schwebende Erinnerung. Echonoten sind als nicht grundsätzlich
-feindliche Wegweiser zu Geheimnissen, Resonanzquellen und sicheren Takten
-gedacht.
-
-### Choral — `aetherklang:choral`
-
-Der Dirigent der Dissonanz und finale Boss. Choral ist als besonders große
-Entität registriert; seine vollständige Mehrphasen-Kadenz ist die
-Boss-Vision von Aetherklang.
+- Hineintreten mit dem **Kodex** in Haupt- oder Nebenhand: kostenlose
+  Überfahrt in den Kammerton.
+- Ohne Kodex: `24 RP` Portalzoll.
+- Rückreise: Das Portal auf der Ankunftsinsel des Kammertons bringt dich
+  **kostenlos** zum Weltspawn der Oberwelt zurück.
+- Nach jeder Überfahrt gilt eine kurze Portal-Abklingzeit (5 s).
 
 ---
 
-## 9. Das Tonarium
+## 9. Kreaturen
 
-Das **Tonarium** ist die geplante Aetherklang-Dimension: kein gewöhnlicher
-Himmel und keine bloße Höhle, sondern ein Archiv, in dem Klang Geometrie
-wird.
+Alle vier Entitätstypen sind **spielbar**: mit Kampf-KI, Beutetabellen,
+eigenen Renderern samt Modellen und Spawn-Eiern im Kreativtab.
 
-### Geplante Orte
+### Dissonanzgeist — `aetherklang:dissonanzgeist` · Spielbar
 
-- **Saitenbrücken**, die nur im richtigen Beat festen Boden bilden
-- **Hallkammern**, in denen ein Ton verzögert als Mechanik zurückkehrt
-- **Kristallarchive**, die Kodexseiten und Weltgeschichte bewahren
-- **Stille Inseln**, auf denen Dissonanz langsam abklingt
-- **Chorals Konservatorium**, die Arena der finalen Kadenz
+Ein Rhythmusfehler, der fliegen lernte. Dissonanzgeister erscheinen nachts
+und in dunklen Ecken der Oberwelt (Lichtlevel ≤ 6) sowie an Dissonanzrissen –
+und reißen selbst neue Risse in die Oberfläche.
 
-### Vorbereitung
+- 14 Herzen, phantomartige Sturzflüge
+- Treffer: Zusatz-Magieschaden und `+12 %` Dissonanz
+- Fernangriff: schickt alle 3,5 s eine dissonante **Echonote** (3,5 Herzen,
+  `+8 %` Dissonanz) auf Ziele bis 24 Blöcke
+- Schwäche: Treffer im Takt richten **×1,75** Schaden an – der Geist quittiert
+  es mit Beat-Ring und hellem Tick
+- Beute: 1–3 Amethystscherben
 
-Nimm ein Ersatzinstrument, Nahrung, Baumaterial, eine Stimmgabel und genug
-RP-Reserve mit. Portale sollen nicht nur Transport sein: Das Öffnungsritual
-prüft, ob du Kristallfarben, Stimmungen und Beat verstanden hast.
+### Hallwächter — `aetherklang:hallwaechter` · Spielbar
 
-Die Dimensionsregistrierung und Weltgenerierung sind derzeit **Vision**; das
-Glockenspiel-Portal ist als Inhaltsfundament vorhanden.
+Ein großer Prüfer von Haltung und Geduld, der **Stimmaltäre bewacht**. Er
+spawnt nicht von selbst; du begegnest ihm über Spawn-Ei, Befehl oder
+Abenteuerkarten.
+
+- 26 Herzen, Rüstung 10, schwerer Nahkampf (4 Herzen), hohe
+  Rückstoßresistenz, bedächtiges Tempo
+- **Resonanzschild:** Sobald ein Spieler mit mindestens `65 %` Dissonanz in
+  14 Blöcke Nähe kommt, hüllt sich der Wächter in Noten- und Lichtpartikel
+  und nimmt nur noch rund ein Drittel des Schadens
+- Verteidigt Altäre im 12-Block-Umkreis aktiv gegen dissonante Eindringlinge
+- Beute: 2–6 Goldklumpen
+- Lehre: Erst die eigene Dissonanz senken, dann den Wächter stellen
+
+### Echonote — `aetherklang:echonote` · Spielbar
+
+Eine kleine fliegende Erinnerung mit zwei Gesichtern: Als **heilende Note**
+(von Harfenspielern in Freude oder Wunder entsandt) schenkt sie dem Ziel
+3,5 Herzen; als **dissonante Note** (von Geistern und Choral) richtet sie
+3,5 Herzen Schaden an und lädt `+8 %` Dissonanz auf. Sie verfolgt ihr Ziel
+sanft, zerschellt an Wänden und verklingt nach acht Sekunden.
+
+### Choral — `aetherklang:choral` · Spielbar
+
+Der Dirigent der Dissonanz und finale Boss des Kammertons – eine gewaltige
+schwebende Gestalt mit eigenem Thema, Bossleiste und verdunkeltem Himmel.
+Seine vollständige Partitur steht in Kapitel 11.
+
+- 110 Herzen, Rüstung 8, schwere Sturzangriffe (5 Herzen), fast immun gegen
+  Rückstoß
+- Drei Phasen nach Lebensdrittel; die Bossleiste wechselt von Lila über
+  Gold zu Rot
+- Beute: 3–7 Echoscherben, 2–4 Amethysthaufen, zwei Resonanzkristalle,
+  dazu bei Spielertötung die Musikdisc „5“ und mit 20 % Glück eine
+  Hallharfe oder Resonanzklinge
 
 ---
 
-## 10. Bossakte: Choral
+## 10. Der Kammerton
 
-Choral kämpft wie ein Dirigent. Jeder Angriff gehört zu einer Phrase; jede
-Phrase besitzt Auftakt, Steigerung und Kadenz.
+Der **Kammerton** ist die Aetherklang-Dimension (`aetherklang:kammerton`) –
+der erste bereisbare Saal des sagenumwobenen Tonariums: schwebende Inseln
+aus Obsidian, Endstein und Purpur unter indigofarbenem Himmel, überzogen von
+Notenfunken und fernem Portal-Summen. **Spielbar.**
 
-### Geplante Phasen
+### Anreise
 
-1. **Auftakt der Splitter** – Dissonanzanker verzerren den Grundbeat.
-2. **Fuge der Echos** – Hallwächter und kopierte Spieleraktionen überlagern
-   die Arena.
-3. **Gebrochener Takt** – sichere Felder wechseln mit dem sichtbaren Beat.
-4. **Finale Kadenz** – Choral wird verwundbar, wenn die Gruppe seine Phrase
-   mit einer sauberen gemeinsamen Antwort auflöst.
+1. Fertige ein **Glockenspiel-Portal** (Rezept in Kapitel 12) und platziere
+   es in der Oberwelt.
+2. Tritt hinein – mit dem **Kodex in einer Hand** kostenlos, sonst gegen
+   **24 RP**.
+3. Du erscheinst auf der **Ankunftsinsel** (0, 129, 0): ein Quarz- und
+   Schwarzstein-Rondell mit Stimmaltar, vier Kristallpylonen und dem
+   Rückportal.
 
-### Taktik
+### Der Weg zur Arena
 
-- Zerstöre Anker vor dem direkten Schaden.
-- Blicke auf Taktstock und Partikel, nicht nur auf den Körper.
-- Behalte RP für Mobilität und Verteidigung.
-- Unterbrich schlechte Kombos.
+Von der Ankunftsinsel führt eine **goldene Brücke** mit Seelaternen gut 90
+Blöcke nach Süden zur **Choral-Arena**: eine große Insel mit
+Amethyst-Ringen, einem goldenen Außenring, zwölf Purpursäulen mit
+Amethysthauben, einem zentralen Stimmaltar und vier Kristallpylonen in den
+Himmelsrichtungen. Satelliteninseln mit Kristallkronen schweben ringsum.
+
+### Die Erweckung
+
+Nähert sich zum ersten Mal ein Spieler der Arenamitte auf **22 Blöcke**,
+erwacht Choral über dem Altar: Beat-Ringe branden auf, sein Thema erklingt,
+und die Meldung **„Choral erwacht“** eröffnet die Begegnung. Die Erweckung
+ist ein einmaliges Weltereignis – danach bleibt die Arena still, bis ein
+neuer Choral beschworen wird.
+
+### Rückreise
+
+Das Portal hinter dem Ankunftspunkt führt **kostenlos** zurück zum
+Weltspawn der Oberwelt. Nimm trotzdem Vorräte mit: Ersatzinstrument,
+Nahrung, Baumaterial, eine Stimmgabel und eine RP-Reserve für Schritt,
+Fächer und Notfälle.
+
+### Ausblick · Vision
+
+Saitenbrücken, die nur im Takt tragen, Hallkammern mit verzögerten
+Mechaniken und kristallene Archive weiterer Kodexseiten sind als Ausbau des
+Tonariums geplant.
+
+---
+
+## 11. Bossakte: Choral
+
+Choral kämpft wie ein Dirigent. Jede Phase ist eine Phrase mit Auftakt,
+Telegraphie und Kadenz – und jede Kadenz öffnet dein Antwortfenster. Die
+Begegnung ist **spielbar**.
+
+### Phase 1 · Auftakt der Splitter (über 66 % Leben, lila Bossleiste)
+
+Alle 4,5 Sekunden schleudert Choral einen **Notenring** aus vierzehn
+dissonanten Echonoten in alle Richtungen. Der Auftakt kündigt sich durch
+einen wachsenden goldenen Beat-Ring um seinen Leib an.
+
+- Antwort: Zwischen zwei Noten der Speichen stehen oder unter/über die
+  Ringebene ausweichen; danach frei angreifen.
+- Jede Note: 3,5 Herzen und `+8 %` Dissonanz.
+
+### Phase 2 · Fuge der Echos (66 % bis 33 %, goldene Bossleiste)
+
+Alle 5 Sekunden bricht ein **Dissonanzsturm** genau dort los, wo du stehst:
+Ein magentafarbener Rauchring zieht sich um deine Position zusammen, dann
+entlädt sich das Feld.
+
+- Antwort: Sobald der Ring erscheint, die Position verlassen –
+  der Resonanzschritt (**R**) ist hier Gold wert.
+- Einschlag: 4,5 Herzen Magieschaden und `+24 %` Dissonanz im weiten Feld.
+
+### Phase 3 · Gebrochener Takt (unter 33 %, rote Bossleiste)
+
+Alle 6 Sekunden bündelt Choral einen **Chorstrahl** auf dein Ziel: Erst
+zeichnen Lichtpunkte die Linie zwischen ihm und dir, dann brennt der Strahl
+den Korridor aus.
+
+- Antwort: Seitlich aus der markierten Linie treten; der Strahl trifft
+  alles im Korridor.
+- Einschlag: 7 Herzen und `+16 %` Dissonanz.
+
+### Taktik der finalen Kadenz
+
+- Halte deine **Dissonanz niedrig** – Chorals Angriffe laden sie schnell
+  auf, und über 65 % wirst du zusätzlich zur Zielscheibe für Wächter-Logik.
+- Behalte **mindestens 8 RP** für den Resonanzschritt zurück; 12 RP mehr
+  erlauben einen Fächer als Konter.
+- Nutze die Telegraphie: Beat-Ring → Speichenlücke suchen; Rauchring →
+  sofort bewegen; Lichtlinie → seitlich heraustreten.
+- Der Basshammer glänzt, wenn Choral tief fliegt; die Hallharfe hält
+  Gruppen durch die Stürme.
 - Eine perfekte Aktion am Ende der Phrase ist wertvoller als drei hektische
   Treffer während des Aufbaus.
 
-Der Entitätstyp, Boss-Sound und die visuelle Sprache sind **Fundament**; die
-vollständige Begegnung ist **Vision**.
+### Lohn
+
+Der Sieg schließt den Fortschritt **„Finale Kadenz“** ab. Choral hinterlässt
+Echoscherben, Amethysthaufen, zwei Resonanzkristalle, die Musikdisc „5“ und
+mit etwas Glück ein Meisterinstrument.
 
 ---
 
-## 11. Progression und Meistertipps
+## 12. Fertigung
+
+Alle Rezepte sind freigeschaltet und im Rezeptbuch auffindbar.
+
+| Gegenstand | Zutaten (Kurzform) |
+| --- | --- |
+| **Stimmgabel** | 4× Eiseningot über 1× Amethystscherbe |
+| **Kodex der Resonanz** | Buch + Amethystscherbe + Goldklumpen (formlos) |
+| **Resonanzklinge** | Indigo-Kristall über Amethystscherbe über Lohenrute |
+| **Hallharfe** | Rahmen aus Goldingots und Fäden um 1× Cyan-Kristall |
+| **Basshammer** | Eiseningots und Gold-Kristall als Kopf, Stöcke als Stiel |
+| **Echostiefel** | 2× Cyan-Kristall über 2× Leder |
+| **Indigo-Kristall** | 4× Amethystscherbe um 1× Lapislazuli |
+| **Cyan-Kristall** | 4× Amethystscherbe um 1× Prismarinkristalle |
+| **Gold-Kristall** | 4× Amethystscherbe um 1× Goldingot |
+| **Magenta-Kristall** | 4× Amethystscherbe um 1× Magenta Farbstoff |
+| **Stimmaltar** | Indigo/Cyan/Gold-Kristalle über Amethyst+Notenblock, Fuß aus Obsidian und Magenta-Kristall |
+| **Glockenspiel-Portal** | Goldblöcke und Glocken um einen Stimmaltar, gefasst in Weinenden Obsidian |
+
+---
+
+## 13. Fortschritte
+
+| Fortschritt | Auslöser |
+| --- | --- |
+| **Erste Resonanz** | Einen Resonanzkristall erhalten |
+| **Genau im Takt** | Die erste perfekte Beat-Aktion landen |
+| **Eine Welt mit Stimme** | Den Kodex der Resonanz öffnen |
+| **Durch das Glockenspiel** | Ein Glockenspiel-Portal betreten |
+| **Finale Kadenz** | Choral besiegen |
+
+---
+
+## 14. Progression und Meistertipps
 
 ### Empfohlener Weg
 
-1. Erster Resonanzkristall
-2. Stimmgabel und Kodex
-3. Beat an sicheren Zielen lesen
-4. Stimmaltar errichten
+1. Erster Resonanzkristall (Fortschritt „Erste Resonanz“)
+2. Stimmgabel und Kodex fertigen
+3. Beat an sicheren Zielen lesen, erste perfekte Aktion
+4. Stimmaltar errichten und Stimmungen erproben
 5. Resonanzklinge oder anderes Instrument fertigen
-6. Dissonanzrisse finden und schließen
-7. Alle vier Kristallfarben sammeln
-8. Glockenspiel-Portal stimmen
-9. Tonarium erkunden
+6. Dissonanzgeister stellen, ihre Risse versiegeln
+7. Alle vier Kristallfarben fertigen oder erbeuten
+8. Glockenspiel-Portal bauen
+9. Kammerton erkunden, RP-Reserve aufbauen
 10. Choral in der finalen Kadenz beantworten
 
 ### Zehn Regeln für Resonanten
 
 1. **Höre vor dem Angriff.**
 2. **Übe bei 120 BPM mit einzelnen Aktionen.**
-3. **Verwechsle Dissonanz nicht mit einer fünften Haltung:** Die fünf
-   Stimmungen heißen Stille, Freude, Zorn, Trauer und Wunder.
-4. **Nutze Stille zum Erkunden.**
+3. **Verwechsle Dissonanz nicht mit einer sechsten Haltung:** Die fünf
+   Stimmungen heißen Stille, Freude, Zorn, Trauer und Wunder – Dissonanz
+   ist ihr Gegenspieler.
+4. **Nutze Stille zum Erkunden und Entgiften.**
 5. **Spare RP für unbekannte Phasen.**
 6. **Die Stimmgabel ist Werkzeug, nicht nur Zutat.**
-7. **Magenta bedeutet Risiko.**
-8. **Echonoten sind Hinweise.**
-9. **Brich eine schlechte Serie bewusst ab.**
+7. **Magenta bedeutet Risiko** – am Kristall, am Riss und im DIS-Meter.
+8. **Echonoten sind Botschaften:** heilende annehmen, dissonante abfangen.
+9. **Brich eine schlechte Serie bewusst ab** – perfekte Serien reinigen,
+   erzwungene verfehlen.
 10. **Choral wird durch Verstehen besiegt, nicht durch Lautstärke.**
 
 ---
 
-## 12. Steuerung
+## 15. Steuerung
 
 | Aktion | Standard | Hinweis |
 | --- | --- | --- |
-| Kodex öffnen | **K** | Funktioniert direkt; Rechtsklick mit dem Kodex ebenfalls |
-| Resonanzschritt | **R** | Taste registriert, vollständige Stiefelmechanik im Ausbau |
-| Stimmung wechseln | **M** | Taste registriert, vollständiger Clientwechsel im Ausbau |
+| Kodex öffnen | **K** | Jederzeit; Rechtsklick mit dem Kodex ebenfalls |
+| Resonanzschritt | **R** | Echostiefel müssen getragen werden; kostet 8 RP, 3 s Abklingzeit |
+| Stimmung wechseln | **M** | Zyklisch; kostet 2 RP (Kreativmodus: kostenlos) |
 | Seite/Register wählen | Linksklick | Eigene Tonarium-Schaltflächen |
 | Vorige/nächste Seite | `‹` / `›` | Innerhalb des gewählten Registers |
 | Kodex schließen | **Esc** oder `×` | Das Spiel läuft im Hintergrund weiter |
@@ -415,7 +639,7 @@ Alle Belegungen findest du unter
 
 ---
 
-## 13. Kommandoreferenz
+## 16. Kommandoreferenz
 
 Kommandos ohne Änderung können Spielende selbst ausführen. Ändernde
 Testkommandos benötigen Berechtigungsstufe 2.
@@ -438,35 +662,49 @@ Testkommandos benötigen Berechtigungsstufe 2.
 Die Kodexdaten verwenden ihre Reihenfolge in
 `assets/aetherklang/kodex/pages.json` als Folio-ID, beginnend bei `0`.
 
+Für schnelle Entwicklungstests in den Kammerton:
+
+```mcfunction
+/execute in aetherklang:kammerton run tp @s 0.5 129 0.5
+/execute in aetherklang:kammerton run summon aetherklang:choral 0.5 140 96.5
+```
+
 ---
 
-## 14. Kodex-Freischaltungen
+## 17. Kodex-Freischaltungen
 
-Einträge können drei Zustände haben:
+Der Kodex umfasst **23 Folios** in neun Registern. Einträge können drei
+Zustände haben:
 
-- **Grundwissen:** immer offen, etwa Einstieg, Steuerung und Progression.
-- **Entdeckt:** die Folio-ID steht in deinen persistenten Resonanzdaten.
+- **Grundwissen:** immer offen – die Willkommensseite sowie die
+  Tipps-Folios zu Progression, Steuerung und Kommandos.
+- **Entdeckt:** die Folio-ID steht in deinen persistenten Resonanzdaten und
+  wird dem Client automatisch synchronisiert.
 - **Versiegelt:** Titel bleibt sichtbar, der Inhalt wartet auf seine
   Weltentdeckung.
 
-Im Kreativmodus sind alle Folios offen. Das macht den Kodex zugleich zu einem
-vollständigen Designarchiv für Bauende, Tester und Content-Creator.
+Im Kreativmodus sind alle Folios offen. Das macht den Kodex zugleich zu
+einem vollständigen Designarchiv für Bauende, Tester und Content-Creator.
 
 ---
 
-## 15. Barrierefreiheit und Spielgefühl
+## 18. Barrierefreiheit und Spielgefühl
 
-- Alle wichtigen Systeme kombinieren Farbe mit Text, Symbol oder Partikel.
+- Alle wichtigen Systeme kombinieren Farbe mit Text, Symbol oder Partikel;
+  das HUD nennt Stimmung, RP und Dissonanz ausdrücklich.
 - Tasten sind vollständig neu belegbar.
 - Das erweiterte **GUT**-Fenster von ±100 ms erlaubt rhythmisches Spiel ohne
-  musikalische Vorbildung.
+  musikalische Vorbildung; perfekte Fenster bleiben optionale Kür.
+- Der Beat ist dreifach ablesbar: Metronom-Pendel, goldener TAKT-Puls und
+  hörbarer Beat-Tick.
+- Chorals Angriffe sind durchgängig telegraphiert (Ring, Rauch, Lichtlinie).
 - Diagnosekommandos machen Beat und Fortschritt prüfbar.
 - Untertitel existieren für Beat, Resonanz, Dissonanz, Portal und Choral.
 - Der Kodex pausiert die Welt nicht; öffne ihn in sicherer Umgebung.
 
 ---
 
-## 16. Credits
+## 19. Credits
 
 - **Konzept, Welt und Entwicklung:** Aetherklang Team
 - **Technisches Fundament:** Fabric Loader, Fabric API und Yarn Mappings
@@ -480,9 +718,11 @@ Danke an alle, die den ersten Beat nicht nur treffen, sondern ihm zuhören.
 ## Kurzreferenz
 
 - **Kodex:** K oder Rechtsklick mit `aetherklang:kodex`
-- **Beat:** 120 BPM
-- **Perfekt:** ±40 ms
-- **Gut:** ±100 ms
-- **RP:** 0–100
+- **Resonanzschritt:** R (getragene Echostiefel, 8 RP)
+- **Stimmungswechsel:** M (2 RP) oder Stimmaltar (kostenlos)
+- **Beat:** 120 BPM · **Perfekt:** ±40 ms (`+2 RP`) · **Gut:** ±100 ms
+- **RP:** 0–100 · Fächer 12 · Schritt 8 · Riss 12 · Altar 6 · Portal 24
 - **Stimmungen:** Stille, Freude, Zorn, Trauer, Wunder
-- **Ziel:** Kristalle → Instrument → Risse → Portal → Tonarium → Choral
+- **Dissonanz:** Risse/Geister/Choral laden auf · Stille und perfekte
+  Serien reinigen · ab 65 % schilden Hallwächter
+- **Ziel:** Kristalle → Instrument → Risse → Portal → Kammerton → Choral
