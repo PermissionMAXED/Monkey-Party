@@ -2,6 +2,7 @@ package de.aetherklang.world;
 
 import de.aetherklang.Aetherklang;
 import de.aetherklang.block.GlockenspielPortalBlock;
+import de.aetherklang.bosswerk.ChoralRepriseService;
 import de.aetherklang.entity.ChoralEntity;
 import de.aetherklang.registry.ModBlocks;
 import de.aetherklang.registry.ModEntities;
@@ -113,6 +114,7 @@ public final class KammertonWorld {
 
         long time = world.getTime();
         if (time % 10L == 0L) {
+            ChoralRepriseService.armIfReady(world);
             for (ServerPlayerEntity player : world.getPlayers()) {
                 world.spawnParticles(
                         ModParticles.NOTE_SPARK,
@@ -167,10 +169,14 @@ public final class KammertonWorld {
             return;
         }
 
+        boolean reprise = ChoralRepriseService.isArmed(world);
         ChoralEntity choral = ModEntities.CHORAL.create(world, SpawnReason.EVENT);
         if (choral == null) {
             Aetherklang.LOGGER.error("Could not create Choral for the Kammerton encounter");
             return;
+        }
+        if (reprise) {
+            choral.setReprise(true);
         }
         choral.refreshPositionAndAngles(
                 BOSS_SPAWN.getX() + 0.5D,
@@ -184,6 +190,9 @@ public final class KammertonWorld {
             return;
         }
         world.setBlockState(ENCOUNTER_MARKER, Blocks.CRYING_OBSIDIAN.getDefaultState(), UPDATE_FLAGS);
+        if (reprise) {
+            ChoralRepriseService.markSpawned(world);
+        }
 
         world.spawnParticles(
                 ModParticles.BEAT_RING,
@@ -205,9 +214,18 @@ public final class KammertonWorld {
                 1.0F
         );
         for (ServerPlayerEntity challenger : challengers) {
-            challenger.sendMessage(Text.translatable("message.aetherklang.choral.awakens"), false);
+            challenger.sendMessage(
+                    Text.translatable(reprise
+                            ? "message.aetherklang.choral_reprise.awakens"
+                            : "message.aetherklang.choral.awakens"),
+                    false
+            );
         }
-        Aetherklang.LOGGER.info("Choral awakened in the Kammerton arena");
+        Aetherklang.LOGGER.info("{} awakened in the Kammerton arena", reprise ? "Choral-Reprise" : "Choral");
+    }
+
+    public static void armEncounter(ServerWorld world) {
+        world.setBlockState(ENCOUNTER_MARKER, Blocks.REINFORCED_DEEPSLATE.getDefaultState(), UPDATE_FLAGS);
     }
 
     private static void ensureDestination(ServerWorld world) {

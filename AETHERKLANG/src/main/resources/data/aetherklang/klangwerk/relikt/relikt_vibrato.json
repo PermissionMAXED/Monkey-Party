@@ -1,0 +1,9 @@
+{
+  "id": "relikt_vibrato",
+  "type": "relikt",
+  "parameters": {
+    "effect": "halten",
+    "cooldown_ticks": "92",
+    "tier": "rare"
+  }
+}

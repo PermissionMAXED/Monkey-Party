@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "minecraft:quartz",
+    "minecraft:quartz"
+  ],
+  "result": {
+    "id": "aetherklang:klangstaub",
+    "count": 3
+  }
+}

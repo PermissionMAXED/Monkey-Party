@@ -56,14 +56,14 @@ public final class InselGenerator {
 
     private int decorate(ServerWorld world, InselParameter parameter) {
         return switch (parameter.archetyp()) {
-            case BASSGEWOELBE -> bassgewoelbe(world, parameter);
-            case ARPEGGIEN_GARTEN -> arpeggienGarten(world, parameter);
-            case KAKOPHONIE_RIFF -> kakophonieRiff(world, parameter);
-            case KRISTALLKRANZ -> kristallkranz(world, parameter);
-            case RESONANZHAIN -> resonanzhain(world, parameter);
-            case GENERALPAUSE_SCHOLLE -> generalpauseScholle(world, parameter);
-            case ECHO_TERRASSEN -> echoTerrassen(world, parameter);
-            case TAKT_RONDELL -> taktRondell(world, parameter);
+            case BASSGEWOELBE, KADENZ_BASTION -> bassgewoelbe(world, parameter);
+            case ARPEGGIEN_GARTEN, CRESCENDO_SPITZE -> arpeggienGarten(world, parameter);
+            case KAKOPHONIE_RIFF, STACCATO_KLIPPEN -> kakophonieRiff(world, parameter);
+            case KRISTALLKRANZ, POLYRHYTHMUS_RIFF -> kristallkranz(world, parameter);
+            case RESONANZHAIN, LEGATO_HAIN -> resonanzhain(world, parameter);
+            case GENERALPAUSE_SCHOLLE, FERMATE_SANKTUARIUM -> generalpauseScholle(world, parameter);
+            case ECHO_TERRASSEN, NOCTURNE_ATOLL -> echoTerrassen(world, parameter);
+            case TAKT_RONDELL, OSTINATO_STEPPE -> taktRondell(world, parameter);
         };
     }
 

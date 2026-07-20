@@ -60,7 +60,7 @@ public final class LeitmotivScreen extends Screen {
         int columnWidth = (panelWidth - sidePadding * 2 - gap * 2) / 3;
         int nodeTop = panelY + 66;
         int footerTop = panelY + panelHeight - 55;
-        int step = Math.max(14, (footerTop - nodeTop - 22) / 7);
+        int step = Math.max(10, (footerTop - nodeTop - 22) / (LeitmotivTree.NODES_PER_BRANCH - 1));
         int nodeHeight = Math.clamp(step - 4, 10, 24);
 
         LeitmotivBranch[] branches = LeitmotivBranch.values();

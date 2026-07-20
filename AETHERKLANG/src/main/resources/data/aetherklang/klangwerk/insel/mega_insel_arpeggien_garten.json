@@ -1,0 +1,10 @@
+{
+  "id": "mega_insel_arpeggien_garten",
+  "type": "insel",
+  "parameters": {
+    "archetype": "arpeggien_garten",
+    "radius": "9",
+    "height": "6",
+    "palette": "1"
+  }
+}

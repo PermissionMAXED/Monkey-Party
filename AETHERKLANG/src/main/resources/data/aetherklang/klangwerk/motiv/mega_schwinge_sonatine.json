@@ -1,0 +1,15 @@
+{
+  "id": "mega_schwinge_sonatine",
+  "type": "motiv",
+  "parameters": {
+    "archetype": "schwinge",
+    "operation": "impuls",
+    "tempo": "152",
+    "tier": "ungewoehnlich",
+    "health": "23.5",
+    "attack": "5.75",
+    "primary_color": "#61D095",
+    "secondary_color": "#1A1033",
+    "loot": "aetherklang:resonanzbarren"
+  }
+}

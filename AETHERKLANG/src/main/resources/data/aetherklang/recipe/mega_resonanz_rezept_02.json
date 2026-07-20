@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "minecraft:redstone",
+    "minecraft:flint"
+  ],
+  "result": {
+    "id": "aetherklang:resonanzbarren",
+    "count": 2
+  }
+}

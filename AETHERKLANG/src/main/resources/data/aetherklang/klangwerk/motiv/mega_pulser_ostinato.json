@@ -1,0 +1,15 @@
+{
+  "id": "mega_pulser_ostinato",
+  "type": "motiv",
+  "parameters": {
+    "archetype": "pulser",
+    "operation": "impuls",
+    "tempo": "114",
+    "tier": "gewoehnlich",
+    "health": "44.0",
+    "attack": "8.0",
+    "primary_color": "#1A1033",
+    "secondary_color": "#F5C95F",
+    "loot": "aetherklang:klangstaub"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "id": "mega_pulser_maestoso",
+  "type": "motiv",
+  "parameters": {
+    "archetype": "pulser",
+    "operation": "bewegung",
+    "tempo": "122",
+    "tier": "selten",
+    "health": "32.0",
+    "attack": "5.75",
+    "primary_color": "#F5C95F",
+    "secondary_color": "#BFA7FF",
+    "loot": "aetherklang:notenschluessel"
+  }
+}

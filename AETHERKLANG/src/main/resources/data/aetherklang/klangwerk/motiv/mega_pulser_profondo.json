@@ -1,0 +1,15 @@
+{
+  "id": "mega_pulser_profondo",
+  "type": "motiv",
+  "parameters": {
+    "archetype": "pulser",
+    "operation": "impuls",
+    "tempo": "150",
+    "tier": "ungewoehnlich",
+    "health": "37.5",
+    "attack": "7.25",
+    "primary_color": "#72A7FF",
+    "secondary_color": "#E03A8C",
+    "loot": "aetherklang:resonanzbarren"
+  }
+}

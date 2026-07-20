@@ -340,6 +340,19 @@ public final class AdaptiveMusicSequencer {
                     );
                 }
             }
+            case "boss_ostinato" -> {
+                int[] figure = {0, 3, 7, 3};
+                int note = figure[Math.floorMod(beat, figure.length)];
+                play(client, SoundEvents.BLOCK_NOTE_BLOCK_PLING.value(), 0.18F + phase * 0.03F, pitch(root + note));
+                play(client, SoundEvents.BLOCK_NOTE_BLOCK_BASS.value(), 0.12F, pitch(root - 12 + note));
+            }
+            case "boss_ritardando" -> {
+                int spacing = Math.max(2, phase + 1);
+                if (Math.floorMod(beat, spacing) == 0) {
+                    play(client, SoundEvents.BLOCK_NOTE_BLOCK_CHIME.value(), 0.19F, pitch(root - 5 + phase * 2));
+                    play(client, SoundEvents.BLOCK_NOTE_BLOCK_FLUTE.value(), 0.13F, pitch(root + 7 - phase));
+                }
+            }
             default -> {
             }
         }

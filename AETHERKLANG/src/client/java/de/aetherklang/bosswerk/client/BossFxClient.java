@@ -140,6 +140,8 @@ public final class BossFxClient {
             case ModEntities.BOSS_GLISSANDA_ID -> ModParticles.GLISSANDO_SPUR;
             case ModEntities.BOSS_KAKOPHON_ID -> ModParticles.KAKOPHON_FUNKE;
             case ModEntities.BOSS_GENERALPAUSE_ID -> ModParticles.GENERALPAUSE_NEBEL;
+            case ModEntities.BOSS_OSTINATO_ID -> ModParticles.LEITMOTIV_NOTE;
+            case ModEntities.BOSS_RITARDANDO_ID -> ModParticles.FERMATE_GLIMMER;
             default -> ModParticles.KLANGOPERATION_RING;
         };
     }

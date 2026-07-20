@@ -1,0 +1,15 @@
+{
+  "id": "mega_auftrag_18",
+  "type": "auftrag",
+  "parameters": {
+    "title": "partitur.aetherklang.contract.mega_auftrag_18.title",
+    "description": "partitur.aetherklang.contract.mega_auftrag_18.description",
+    "objective": "earn_resonance",
+    "target": "any",
+    "amount": "125",
+    "reward_rp": "10",
+    "reward_notenschluessel": "3",
+    "reward_material": "aetherklang:resonanzbarren",
+    "reward_material_count": "2"
+  }
+}

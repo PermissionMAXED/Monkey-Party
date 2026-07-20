@@ -21,8 +21,10 @@ public final class InselServerInitializer implements ModInitializer {
         ServerWorldEvents.LOAD.register((server, world) -> {
             KlangmeerKomponist.ensureGenerated(world);
             KlangmeerLandmarks.ensureGenerated(world);
+            KlangmeerEliteIslands.ensureGenerated(world);
         });
         ServerTickEvents.END_WORLD_TICK.register(KlangmeerLandmarks::tick);
+        ServerTickEvents.END_WORLD_TICK.register(KlangmeerEliteIslands::tick);
         ServerTickEvents.END_WORLD_TICK.register(OverworldResonanzorte::tick);
         RegionSyncHooks.register();
         Aetherklang.LOGGER.info(

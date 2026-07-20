@@ -18,7 +18,7 @@ import net.minecraft.util.math.BlockPos;
  * authored center of Kammerton.
  */
 public final class KlangmeerKomponist {
-    public static final int INSEL_ANZAHL = 48;
+    public static final int INSEL_ANZAHL = 120;
     public static final BlockPos GENERATION_MARKER = new BlockPos(0, 105, -900);
 
     private static final int PROCEDURAL_ISLANDS = INSEL_ANZAHL - KlangmeerRegion.values().length;

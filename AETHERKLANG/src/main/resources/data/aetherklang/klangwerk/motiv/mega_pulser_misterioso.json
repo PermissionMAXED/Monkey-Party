@@ -1,0 +1,15 @@
+{
+  "id": "mega_pulser_misterioso",
+  "type": "motiv",
+  "parameters": {
+    "archetype": "pulser",
+    "operation": "impuls",
+    "tempo": "162",
+    "tier": "gewoehnlich",
+    "health": "48.0",
+    "attack": "5.75",
+    "primary_color": "#FF7A90",
+    "secondary_color": "#72A7FF",
+    "loot": "aetherklang:klangstaub"
+  }
+}

@@ -135,5 +135,17 @@ public final class ModEntityRenderers {
                         context, AetherEntityStyle.HALLWAECHTER, 2.0F, 1.1F, 0xE81A1033
                 )
         );
+        EntityRendererRegistry.register(
+                ModEntities.BOSS_OSTINATO,
+                context -> new AetherEntityRenderer<>(
+                        context, AetherEntityStyle.CHORAL, 1.7F, 0.95F, 0xE87954D6
+                )
+        );
+        EntityRendererRegistry.register(
+                ModEntities.BOSS_RITARDANDO,
+                context -> new AetherEntityRenderer<>(
+                        context, AetherEntityStyle.HALLWAECHTER, 1.9F, 1.0F, 0xE85FF5E0
+                )
+        );
     }
 }

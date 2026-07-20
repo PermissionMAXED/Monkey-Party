@@ -2,7 +2,8 @@
   "id": "sopranfloete_virtuos",
   "type": "aufwertung",
   "parameters": {
-    "instrument": "aetherklang:sopranfloete",
+    "instrument": "aetherklang:sopranfloete_meister",
+    "result": "aetherklang:sopranfloete_virtuos",
     "from": "meister",
     "to": "virtuos",
     "resonanzbarren": "4",

@@ -1,0 +1,15 @@
+{
+  "id": "mega_pulser_passacaglia",
+  "type": "motiv",
+  "parameters": {
+    "archetype": "pulser",
+    "operation": "welle",
+    "tempo": "130",
+    "tier": "gewoehnlich",
+    "health": "39.0",
+    "attack": "7.25",
+    "primary_color": "#FF7A90",
+    "secondary_color": "#72A7FF",
+    "loot": "aetherklang:klangstaub"
+  }
+}

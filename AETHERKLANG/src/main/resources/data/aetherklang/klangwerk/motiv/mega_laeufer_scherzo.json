@@ -1,0 +1,15 @@
+{
+  "id": "mega_laeufer_scherzo",
+  "type": "motiv",
+  "parameters": {
+    "archetype": "laeufer",
+    "operation": "bewegung",
+    "tempo": "135",
+    "tier": "ungewoehnlich",
+    "health": "34.5",
+    "attack": "7.5",
+    "primary_color": "#5FF5E0",
+    "secondary_color": "#F5C95F",
+    "loot": "aetherklang:resonanzbarren"
+  }
+}

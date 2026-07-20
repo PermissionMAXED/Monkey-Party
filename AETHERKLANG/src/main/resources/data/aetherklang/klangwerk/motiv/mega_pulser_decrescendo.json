@@ -1,0 +1,15 @@
+{
+  "id": "mega_pulser_decrescendo",
+  "type": "motiv",
+  "parameters": {
+    "archetype": "pulser",
+    "operation": "bewegung",
+    "tempo": "110",
+    "tier": "episch",
+    "health": "40.5",
+    "attack": "7.25",
+    "primary_color": "#E03A8C",
+    "secondary_color": "#5FF5E0",
+    "loot": "aetherklang:kaskadenkern"
+  }
+}

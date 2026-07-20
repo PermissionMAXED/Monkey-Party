@@ -1,0 +1,15 @@
+{
+  "id": "mega_schwinge_sforzato",
+  "type": "motiv",
+  "parameters": {
+    "archetype": "schwinge",
+    "operation": "bewegung",
+    "tempo": "160",
+    "tier": "episch",
+    "health": "30.5",
+    "attack": "3.5",
+    "primary_color": "#BFA7FF",
+    "secondary_color": "#5FF5E0",
+    "loot": "aetherklang:kaskadenkern"
+  }
+}

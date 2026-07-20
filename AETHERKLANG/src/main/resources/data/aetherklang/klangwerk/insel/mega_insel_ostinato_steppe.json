@@ -1,0 +1,10 @@
+{
+  "id": "mega_insel_ostinato_steppe",
+  "type": "insel",
+  "parameters": {
+    "archetype": "ostinato_steppe",
+    "radius": "11",
+    "height": "9",
+    "palette": "1"
+  }
+}

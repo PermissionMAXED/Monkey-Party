@@ -3,6 +3,7 @@
   "type": "aufwertung",
   "parameters": {
     "instrument": "aetherklang:sopranfloete",
+    "result": "aetherklang:sopranfloete_meister",
     "from": "basis",
     "to": "meister",
     "resonanzbarren": "2",

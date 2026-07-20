@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "minecraft:echo_shard",
+    "minecraft:lapis_lazuli",
+    "minecraft:bone_meal"
+  ],
+  "result": {
+    "id": "aetherklang:resonanzbarren",
+    "count": 1
+  }
+}

@@ -2,7 +2,8 @@
   "id": "triangel_virtuos",
   "type": "aufwertung",
   "parameters": {
-    "instrument": "aetherklang:triangel",
+    "instrument": "aetherklang:triangel_meister",
+    "result": "aetherklang:triangel_virtuos",
     "from": "meister",
     "to": "virtuos",
     "resonanzbarren": "4",

@@ -1,0 +1,9 @@
+{
+  "id": "relikt_rubato",
+  "type": "relikt",
+  "parameters": {
+    "effect": "fermate",
+    "cooldown_ticks": "120",
+    "tier": "epic"
+  }
+}

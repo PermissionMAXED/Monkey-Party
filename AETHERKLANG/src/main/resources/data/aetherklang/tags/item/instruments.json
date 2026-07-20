@@ -4,6 +4,18 @@
     "aetherklang:stimmgabel",
     "aetherklang:resonanzklinge",
     "aetherklang:hallharfe",
-    "aetherklang:basshammer"
+    "aetherklang:basshammer",
+    "aetherklang:pauke",
+    "aetherklang:pauke_meister",
+    "aetherklang:pauke_virtuos",
+    "aetherklang:sopranfloete",
+    "aetherklang:sopranfloete_meister",
+    "aetherklang:sopranfloete_virtuos",
+    "aetherklang:kontrabass",
+    "aetherklang:kontrabass_meister",
+    "aetherklang:kontrabass_virtuos",
+    "aetherklang:triangel",
+    "aetherklang:triangel_meister",
+    "aetherklang:triangel_virtuos"
   ]
 }

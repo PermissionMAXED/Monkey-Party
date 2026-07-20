@@ -1,0 +1,9 @@
+{
+  "id": "relikt_pizzicato",
+  "type": "relikt",
+  "parameters": {
+    "effect": "impuls",
+    "cooldown_ticks": "68",
+    "tier": "uncommon"
+  }
+}

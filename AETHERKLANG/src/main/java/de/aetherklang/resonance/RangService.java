@@ -12,12 +12,24 @@ public final class RangService {
     public static final long ADEPT_THRESHOLD = 150L;
     public static final long VIRTUOSE_THRESHOLD = 400L;
     public static final long MAESTRO_THRESHOLD = 900L;
+    public static final long KOMPONIST_THRESHOLD = 1_800L;
+    public static final long DIRIGENT_THRESHOLD = 3_600L;
+    public static final long KLANGMEISTER_THRESHOLD = 9_000L;
 
     private RangService() {
     }
 
     public static Rang fromGesamtRp(long gesamtRp) {
         long total = Math.max(0L, gesamtRp);
+        if (total >= KLANGMEISTER_THRESHOLD) {
+            return Rang.KLANGMEISTER;
+        }
+        if (total >= DIRIGENT_THRESHOLD) {
+            return Rang.DIRIGENT;
+        }
+        if (total >= KOMPONIST_THRESHOLD) {
+            return Rang.KOMPONIST;
+        }
         if (total >= MAESTRO_THRESHOLD) {
             return Rang.MAESTRO;
         }
@@ -75,7 +87,10 @@ public final class RangService {
         NOVIZE("novize", NOVIZE_THRESHOLD),
         ADEPT("adept", ADEPT_THRESHOLD),
         VIRTUOSE("virtuose", VIRTUOSE_THRESHOLD),
-        MAESTRO("maestro", MAESTRO_THRESHOLD);
+        MAESTRO("maestro", MAESTRO_THRESHOLD),
+        KOMPONIST("komponist", KOMPONIST_THRESHOLD),
+        DIRIGENT("dirigent", DIRIGENT_THRESHOLD),
+        KLANGMEISTER("klangmeister", KLANGMEISTER_THRESHOLD);
 
         private final String id;
         private final long threshold;

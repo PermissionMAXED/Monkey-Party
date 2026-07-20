@@ -1,0 +1,10 @@
+{
+  "id": "boss_ostinato",
+  "type": "boss",
+  "parameters": {
+    "health": "285",
+    "phase_67": "4;notenring,1,8,10|beschwoere_motiv,2,0,8",
+    "phase_34": "3;kakophonie,1,9,11|notenring,1,10,12|gleitstoss,1,8,8",
+    "phase_0": "2;notenring,1,12,14|beschwoere_motiv,1,0,10|schockwelle,1,11,11"
+  }
+}

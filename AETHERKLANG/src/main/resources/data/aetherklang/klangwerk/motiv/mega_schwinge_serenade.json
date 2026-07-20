@@ -1,0 +1,15 @@
+{
+  "id": "mega_schwinge_serenade",
+  "type": "motiv",
+  "parameters": {
+    "archetype": "schwinge",
+    "operation": "welle",
+    "tempo": "132",
+    "tier": "gewoehnlich",
+    "health": "25.0",
+    "attack": "5.75",
+    "primary_color": "#5FF5E0",
+    "secondary_color": "#F5C95F",
+    "loot": "aetherklang:klangstaub"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "id": "mega_laeufer_cadenz",
+  "type": "motiv",
+  "parameters": {
+    "archetype": "laeufer",
+    "operation": "welle",
+    "tempo": "119",
+    "tier": "ungewoehnlich",
+    "health": "39.5",
+    "attack": "4.5",
+    "primary_color": "#F5C95F",
+    "secondary_color": "#BFA7FF",
+    "loot": "aetherklang:resonanzbarren"
+  }
+}

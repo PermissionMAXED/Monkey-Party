@@ -15,7 +15,15 @@ public enum InselArchetyp {
     RESONANZHAIN,
     GENERALPAUSE_SCHOLLE,
     ECHO_TERRASSEN,
-    TAKT_RONDELL;
+    TAKT_RONDELL,
+    CRESCENDO_SPITZE,
+    OSTINATO_STEPPE,
+    LEGATO_HAIN,
+    STACCATO_KLIPPEN,
+    FERMATE_SANKTUARIUM,
+    POLYRHYTHMUS_RIFF,
+    NOCTURNE_ATOLL,
+    KADENZ_BASTION;
 
     BlockState surface(int tone) {
         return switch (this) {
@@ -43,6 +51,30 @@ public enum InselArchetyp {
             case TAKT_RONDELL -> tone < 2
                     ? Blocks.GOLD_BLOCK.getDefaultState()
                     : Blocks.POLISHED_BLACKSTONE_BRICKS.getDefaultState();
+            case CRESCENDO_SPITZE -> tone < 2
+                    ? Blocks.QUARTZ_BRICKS.getDefaultState()
+                    : Blocks.GOLD_BLOCK.getDefaultState();
+            case OSTINATO_STEPPE -> tone == 0
+                    ? Blocks.POLISHED_DEEPSLATE.getDefaultState()
+                    : Blocks.NOTE_BLOCK.getDefaultState();
+            case LEGATO_HAIN -> tone < 2
+                    ? Blocks.MOSS_BLOCK.getDefaultState()
+                    : Blocks.CLAY.getDefaultState();
+            case STACCATO_KLIPPEN -> tone < 2
+                    ? Blocks.COBBLED_DEEPSLATE.getDefaultState()
+                    : Blocks.POLISHED_ANDESITE.getDefaultState();
+            case FERMATE_SANKTUARIUM -> tone == 0
+                    ? Blocks.SMOOTH_QUARTZ.getDefaultState()
+                    : Blocks.PURPUR_BLOCK.getDefaultState();
+            case POLYRHYTHMUS_RIFF -> tone < 2
+                    ? Blocks.PRISMARINE.getDefaultState()
+                    : Blocks.DARK_PRISMARINE.getDefaultState();
+            case NOCTURNE_ATOLL -> tone < 2
+                    ? Blocks.SCULK.getDefaultState()
+                    : Blocks.BLUE_TERRACOTTA.getDefaultState();
+            case KADENZ_BASTION -> tone == 0
+                    ? Blocks.CUT_COPPER.getDefaultState()
+                    : Blocks.POLISHED_BLACKSTONE_BRICKS.getDefaultState();
         };
     }
 
@@ -69,6 +101,30 @@ public enum InselArchetyp {
             case TAKT_RONDELL -> tone == 0
                     ? Blocks.GILDED_BLACKSTONE.getDefaultState()
                     : Blocks.OBSIDIAN.getDefaultState();
+            case CRESCENDO_SPITZE -> layer % 3 == 0
+                    ? Blocks.CALCITE.getDefaultState()
+                    : Blocks.QUARTZ_BLOCK.getDefaultState();
+            case OSTINATO_STEPPE -> tone == 0
+                    ? Blocks.DEEPSLATE.getDefaultState()
+                    : Blocks.BLACKSTONE.getDefaultState();
+            case LEGATO_HAIN -> tone == 0
+                    ? Blocks.ROOTED_DIRT.getDefaultState()
+                    : Blocks.END_STONE.getDefaultState();
+            case STACCATO_KLIPPEN -> layer % 3 == 0
+                    ? Blocks.TUFF.getDefaultState()
+                    : Blocks.STONE.getDefaultState();
+            case FERMATE_SANKTUARIUM -> tone == 0
+                    ? Blocks.CALCITE.getDefaultState()
+                    : Blocks.END_STONE_BRICKS.getDefaultState();
+            case POLYRHYTHMUS_RIFF -> layer % 3 == 0
+                    ? Blocks.PRISMARINE_BRICKS.getDefaultState()
+                    : Blocks.PRISMARINE.getDefaultState();
+            case NOCTURNE_ATOLL -> tone == 0
+                    ? Blocks.DEEPSLATE.getDefaultState()
+                    : Blocks.OBSIDIAN.getDefaultState();
+            case KADENZ_BASTION -> layer % 3 == 0
+                    ? Blocks.TUFF_BRICKS.getDefaultState()
+                    : Blocks.POLISHED_BLACKSTONE.getDefaultState();
         };
     }
 }

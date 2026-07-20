@@ -4,6 +4,11 @@
       "trigger": "aetherklang:first_contract"
     }
   },
+  "rewards": {
+    "loot": [
+      "aetherklang:rewards/partitur_disc_1"
+    ]
+  },
   "display": {
     "icon": {
       "count": 1,

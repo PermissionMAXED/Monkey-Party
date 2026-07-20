@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    " A ",
+    "GXG",
+    " A "
+  ],
+  "key": {
+    "A": "minecraft:amethyst_shard",
+    "G": "minecraft:gold_nugget",
+    "X": "minecraft:honey_bottle"
+  },
+  "result": {
+    "id": "aetherklang:relikt_dolce",
+    "count": 1
+  }
+}

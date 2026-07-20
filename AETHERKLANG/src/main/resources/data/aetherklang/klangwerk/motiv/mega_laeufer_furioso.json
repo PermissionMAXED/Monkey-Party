@@ -1,0 +1,15 @@
+{
+  "id": "mega_laeufer_furioso",
+  "type": "motiv",
+  "parameters": {
+    "archetype": "laeufer",
+    "operation": "impuls",
+    "tempo": "127",
+    "tier": "episch",
+    "health": "27.5",
+    "attack": "6.0",
+    "primary_color": "#FF7A90",
+    "secondary_color": "#72A7FF",
+    "loot": "aetherklang:kaskadenkern"
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    " A ",
+    "GXG",
+    " A "
+  ],
+  "key": {
+    "A": "minecraft:amethyst_shard",
+    "G": "minecraft:gold_nugget",
+    "X": "minecraft:iron_axe"
+  },
+  "result": {
+    "id": "aetherklang:relikt_marcato",
+    "count": 1
+  }
+}

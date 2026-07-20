@@ -1,0 +1,15 @@
+{
+  "id": "mega_pulser_chaconne",
+  "type": "motiv",
+  "parameters": {
+    "archetype": "pulser",
+    "operation": "bewegung",
+    "tempo": "134",
+    "tier": "ungewoehnlich",
+    "health": "42.5",
+    "attack": "8.0",
+    "primary_color": "#BFA7FF",
+    "secondary_color": "#5FF5E0",
+    "loot": "aetherklang:resonanzbarren"
+  }
+}

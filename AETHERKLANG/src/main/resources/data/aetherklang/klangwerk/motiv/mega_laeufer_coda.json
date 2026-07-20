@@ -1,0 +1,15 @@
+{
+  "id": "mega_laeufer_coda",
+  "type": "motiv",
+  "parameters": {
+    "archetype": "laeufer",
+    "operation": "impuls",
+    "tempo": "139",
+    "tier": "selten",
+    "health": "38.0",
+    "attack": "4.5",
+    "primary_color": "#E03A8C",
+    "secondary_color": "#5FF5E0",
+    "loot": "aetherklang:notenschluessel"
+  }
+}

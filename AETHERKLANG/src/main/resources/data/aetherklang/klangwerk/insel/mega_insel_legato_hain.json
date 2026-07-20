@@ -1,0 +1,10 @@
+{
+  "id": "mega_insel_legato_hain",
+  "type": "insel",
+  "parameters": {
+    "archetype": "legato_hain",
+    "radius": "12",
+    "height": "5",
+    "palette": "2"
+  }
+}

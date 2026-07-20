@@ -1,0 +1,10 @@
+{
+  "id": "mega_insel_kristallkranz",
+  "type": "insel",
+  "parameters": {
+    "archetype": "kristallkranz",
+    "radius": "11",
+    "height": "8",
+    "palette": "3"
+  }
+}

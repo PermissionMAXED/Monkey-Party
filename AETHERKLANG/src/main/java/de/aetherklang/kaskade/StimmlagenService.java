@@ -93,7 +93,11 @@ public final class StimmlagenService {
 
     static Stimmlage voiceFor(ItemStack stack) {
         if (stack.isOf(ModItems.SOPRANFLOETE)
+                || stack.isOf(ModItems.SOPRANFLOETE_MEISTER)
+                || stack.isOf(ModItems.SOPRANFLOETE_VIRTUOS)
                 || stack.isOf(ModItems.TRIANGEL)
+                || stack.isOf(ModItems.TRIANGEL_MEISTER)
+                || stack.isOf(ModItems.TRIANGEL_VIRTUOS)
                 || stack.isOf(ModItems.STIMMGABEL)) {
             return Stimmlage.SOPRAN;
         }
@@ -107,7 +111,11 @@ public final class StimmlagenService {
         }
         if (stack.isOf(ModItems.BASSHAMMER)
                 || stack.isOf(ModItems.KONTRABASS)
-                || stack.isOf(ModItems.PAUKE)) {
+                || stack.isOf(ModItems.KONTRABASS_MEISTER)
+                || stack.isOf(ModItems.KONTRABASS_VIRTUOS)
+                || stack.isOf(ModItems.PAUKE)
+                || stack.isOf(ModItems.PAUKE_MEISTER)
+                || stack.isOf(ModItems.PAUKE_VIRTUOS)) {
             return Stimmlage.BASS;
         }
         return null;

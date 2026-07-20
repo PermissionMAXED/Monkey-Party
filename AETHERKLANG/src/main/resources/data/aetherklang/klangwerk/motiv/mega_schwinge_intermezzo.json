@@ -1,0 +1,15 @@
+{
+  "id": "mega_schwinge_intermezzo",
+  "type": "motiv",
+  "parameters": {
+    "archetype": "schwinge",
+    "operation": "impuls",
+    "tempo": "140",
+    "tier": "selten",
+    "health": "32.0",
+    "attack": "3.5",
+    "primary_color": "#1A1033",
+    "secondary_color": "#F5C95F",
+    "loot": "aetherklang:notenschluessel"
+  }
+}

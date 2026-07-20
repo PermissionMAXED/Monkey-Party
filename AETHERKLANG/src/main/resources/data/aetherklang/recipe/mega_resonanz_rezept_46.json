@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "minecraft:amethyst_shard",
+    "minecraft:copper_ingot",
+    "minecraft:gold_nugget"
+  ],
+  "result": {
+    "id": "aetherklang:saitenherz",
+    "count": 1
+  }
+}

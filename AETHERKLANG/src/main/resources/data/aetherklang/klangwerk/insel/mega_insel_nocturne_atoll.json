@@ -1,0 +1,10 @@
+{
+  "id": "mega_insel_nocturne_atoll",
+  "type": "insel",
+  "parameters": {
+    "archetype": "nocturne_atoll",
+    "radius": "10",
+    "height": "9",
+    "palette": "6"
+  }
+}

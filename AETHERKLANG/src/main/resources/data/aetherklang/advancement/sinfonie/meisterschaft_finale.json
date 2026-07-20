@@ -4,6 +4,11 @@
       "trigger": "aetherklang:leitmotiv_finale"
     }
   },
+  "rewards": {
+    "loot": [
+      "aetherklang:rewards/partitur_disc_3"
+    ]
+  },
   "display": {
     "icon": {
       "count": 1,

@@ -42,25 +42,24 @@ public final class KlangmeerLandmarks {
 
         for (KlangmeerRegion region : KlangmeerRegion.values()) {
             BlockPos marker = generationMarker(region);
-            if (world.getBlockState(marker).isOf(Blocks.LODESTONE)) {
-                continue;
+            if (!world.getBlockState(marker).isOf(Blocks.LODESTONE)) {
+                switch (region) {
+                    case BASSGEWOELBE -> placeGrossePauke(world, region.anker());
+                    case ARPEGGIENMEER -> placeSaitenbruecken(world, region.anker());
+                    case KAKOPHONIE_RIFF -> placeSchwarmthron(world, region.anker());
+                    case GENERALPAUSE_OEDE -> placeLeeresPodium(world, region.anker());
+                }
+                set(world, encounterMarker(region), Blocks.REINFORCED_DEEPSLATE);
+                set(world, marker, Blocks.LODESTONE);
+                Aetherklang.LOGGER.info(
+                        "Klangmeer landmark '{}' generated at [{}, {}, {}]",
+                        landmarkName(region),
+                        region.anker().getX(),
+                        region.anker().getY(),
+                        region.anker().getZ()
+                );
             }
-
-            switch (region) {
-                case BASSGEWOELBE -> placeGrossePauke(world, region.anker());
-                case ARPEGGIENMEER -> placeSaitenbruecken(world, region.anker());
-                case KAKOPHONIE_RIFF -> placeSchwarmthron(world, region.anker());
-                case GENERALPAUSE_OEDE -> placeLeeresPodium(world, region.anker());
-            }
-            set(world, encounterMarker(region), Blocks.REINFORCED_DEEPSLATE);
-            set(world, marker, Blocks.LODESTONE);
-            Aetherklang.LOGGER.info(
-                    "Klangmeer landmark '{}' generated at [{}, {}, {}]",
-                    landmarkName(region),
-                    region.anker().getX(),
-                    region.anker().getY(),
-                    region.anker().getZ()
-            );
+            ensureNotenpult(world, region);
         }
     }
 
@@ -300,6 +299,11 @@ public final class KlangmeerLandmarks {
         set(world, base, ModBlocks.STIMMPFEILER);
         set(world, base.up(), ModBlocks.STIMMPFEILER);
         set(world, base.up(2), crystal);
+    }
+
+    private static void ensureNotenpult(ServerWorld world, KlangmeerRegion region) {
+        BlockPos position = region.anker().add(5, 0, -9);
+        set(world, position, ModBlocks.NOTENPULT);
     }
 
     private static void column(ServerWorld world, BlockPos base, Block block, int height) {

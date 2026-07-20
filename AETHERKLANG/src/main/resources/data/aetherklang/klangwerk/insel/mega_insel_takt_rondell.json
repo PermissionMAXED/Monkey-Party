@@ -1,0 +1,10 @@
+{
+  "id": "mega_insel_takt_rondell",
+  "type": "insel",
+  "parameters": {
+    "archetype": "takt_rondell",
+    "radius": "9",
+    "height": "7",
+    "palette": "7"
+  }
+}

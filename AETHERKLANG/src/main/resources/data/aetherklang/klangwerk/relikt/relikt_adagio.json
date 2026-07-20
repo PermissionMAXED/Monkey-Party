@@ -1,0 +1,9 @@
+{
+  "id": "relikt_adagio",
+  "type": "relikt",
+  "parameters": {
+    "effect": "heilung",
+    "cooldown_ticks": "104",
+    "tier": "rare"
+  }
+}

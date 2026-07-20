@@ -1,0 +1,15 @@
+{
+  "id": "mega_laeufer_rondo",
+  "type": "motiv",
+  "parameters": {
+    "archetype": "laeufer",
+    "operation": "impuls",
+    "tempo": "115",
+    "tier": "gewoehnlich",
+    "health": "36.0",
+    "attack": "7.5",
+    "primary_color": "#72A7FF",
+    "secondary_color": "#E03A8C",
+    "loot": "aetherklang:klangstaub"
+  }
+}

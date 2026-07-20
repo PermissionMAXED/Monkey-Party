@@ -1,0 +1,9 @@
+{
+  "id": "relikt_glissando",
+  "type": "relikt",
+  "parameters": {
+    "effect": "strahl",
+    "cooldown_ticks": "80",
+    "tier": "uncommon"
+  }
+}

@@ -6,7 +6,7 @@ The primary opus bible is available in German at
 [`HANDBUCH.md`](HANDBUCH.md). This English companion covers the complete
 playable core, Crescendo, and SINFONIE: original items, blocks, creatures,
 HUD, Kammerton, and Choral connect to ensembles, chords, lifetime grades,
-Klangweaver armor, a 48-island outer Klangmeer, Motif creatures, four new
+Klangweaver armor, a 48-island outer Klangmeer, Motif creatures, six
 boss scores, daily contracts, the Leitmotiv tree, Sound Forge, World Chord,
 and Dissonance Cascades.
 
@@ -268,6 +268,9 @@ the pool is already full does not count.
 | **Adept** | `150` |
 | **Virtuoso** | `400` |
 | **Maestro** | `900` |
+| **Composer** | `1,800` |
+| **Conductor** | `3,600` |
+| **Klangmeister** | `9,000` |
 
 The server derives the grade from lifetime RP, persists both values, and
 sends `aetherklang:rang_sync`. The rank sigil uses color plus additional
@@ -398,7 +401,7 @@ its Glass Bottle.
 
 SINFONIE turns the systems learned in the core and Crescendo into a
 long-term score. Explore the Klangmeer, hunt data-driven Motifs, wake four
-regional bosses, claim daily Score contracts, spend Leitmotiv Keys, and
+regional bosses and two elite island bosses, claim daily Score contracts, spend Leitmotiv Keys, and
 forge four instruments from Base through Master to Virtuoso.
 
 The repeatable loop is:
@@ -410,7 +413,7 @@ Leitmotiv or Forge → World Chord and Cascade**
 | --- | --- |
 | Klangmeer | 48 deterministic islands, eight archetypes, four fixed regions |
 | Motifs | Runner, Wing, Pulser; eight stat/color/loot variants |
-| Bosswerk | Tremolo, Glissanda, Kakophon, General Pause |
+| Bosswerk | Tremolo, Glissanda, Kakophon, General Pause, Ostinato, Ritardando |
 | Leitmotiv | 24 permanent nodes in Combat, Harmony, World |
 | Score | Three contracts per 24,000-tick world day from eleven definitions |
 | Forge | Four instruments, three tiers, twelve one-slot relics |
@@ -473,7 +476,7 @@ hunt can feed contracts, Forge materials, and Leitmotiv currency.
 
 ## Bosswerk scores
 
-All four bosses execute validated three-phase JSON scores on the ten-tick
+All six bosses execute validated three-phase JSON scores on the ten-tick
 world beat. An attack begins on its interval, telegraphs for one or two
 beats, then executes server-side. Phase changes reset the phrase and update
 the boss bar.
@@ -484,6 +487,8 @@ the boss bar.
 | Glissanda | 260 | String Heart | 2 | 4 → 3 → 2 beats |
 | Kakophon | 300 | Swarm Eye | 2 | 5 → 3 → 2 beats |
 | General Pause | 340 | Silence Shard | 3 | 5 → 3 → 2 beats |
+| Ostinato | 285 | Ostinato Relic | 2 | 4 → 3 → 2 beats |
+| Ritardando | 310 | Fermata Relic | 2 | 5 → 4 → 3 beats |
 
 ### Phase scripts
 
@@ -638,7 +643,7 @@ Two content lifecycles matter:
 | --- | --- |
 | `data/aetherklang/content` | decoded and frozen at mod initialization |
 | `data/aetherklang/klangwerk` | validated and atomically reloadable |
-| Bosswerk boss files | loaded at startup; all four scores required |
+| Bosswerk boss files | loaded at startup; all six scores required |
 | `assets/aetherklang/kodex/pages.json` | loaded from client resources |
 
 Registry IDs, 16 serialized Klang operations, region anchors, numeric Codex
@@ -656,7 +661,8 @@ integration contracts.
 - **Beat:** 120 BPM; PERFECT ±40 ms; GOOD ±100 ms
 - **RP:** 0–100, or 120 with chestplate; Horn 10; Bell 16; fan/rift 12
 - **Fermata Bell:** usable from Adept grade (`150` lifetime RP)
-- **Grades:** Novice 0; Adept 150; Virtuoso 400; Maestro 900 lifetime RP
+- **Grades:** Novice 0; Adept 150; Virtuoso 400; Maestro 900; Composer 1,800;
+  Conductor 3,600; Klangmeister 9,000 lifetime RP
 - **Ensemble:** same beat, within 12 blocks, 10 seconds, +1 RP/action
 - **Chord:** three on-beat moods, effect within 8 blocks
 - **Crescendo route:** Organ Tower → Siren → ensembles/chords → Gardens →

@@ -210,6 +210,8 @@ public final class BosswerkBossEntity extends HostileEntity {
                     case ModEntities.BOSS_TREMOLO_ID -> ModParticles.TREMOLO_SPLITTER;
                     case ModEntities.BOSS_GLISSANDA_ID -> ModParticles.GLISSANDO_SPUR;
                     case ModEntities.BOSS_KAKOPHON_ID -> ModParticles.KAKOPHON_FUNKE;
+                    case ModEntities.BOSS_OSTINATO_ID -> ModParticles.LEITMOTIV_NOTE;
+                    case ModEntities.BOSS_RITARDANDO_ID -> ModParticles.FERMATE_GLIMMER;
                     default -> ModParticles.GENERALPAUSE_NEBEL;
                 },
                 getX(),
@@ -233,6 +235,7 @@ public final class BosswerkBossEntity extends HostileEntity {
         return switch (getBossId()) {
             case ModEntities.BOSS_GLISSANDA_ID -> BossBar.Color.BLUE;
             case ModEntities.BOSS_GENERALPAUSE_ID -> BossBar.Color.WHITE;
+            case ModEntities.BOSS_RITARDANDO_ID -> BossBar.Color.GREEN;
             default -> BossBar.Color.PURPLE;
         };
     }
@@ -252,7 +255,9 @@ public final class BosswerkBossEntity extends HostileEntity {
             case ModEntities.BOSS_TREMOLO_ID -> ModSounds.BOSS_TREMOLO;
             case ModEntities.BOSS_GLISSANDA_ID -> ModSounds.BOSS_GLISSANDA;
             case ModEntities.BOSS_KAKOPHON_ID -> ModSounds.BOSS_KAKOPHON;
-            default -> ModSounds.BOSS_GENERALPAUSE;
+            case ModEntities.BOSS_GENERALPAUSE_ID -> ModSounds.BOSS_GENERALPAUSE;
+            case ModEntities.BOSS_OSTINATO_ID -> ModSounds.BOSS_OSTINATO;
+            default -> ModSounds.BOSS_RITARDANDO;
         };
     }
 

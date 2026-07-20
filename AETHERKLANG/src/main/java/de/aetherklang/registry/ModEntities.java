@@ -44,6 +44,8 @@ public final class ModEntities {
     public static final String BOSS_GLISSANDA_ID = "boss_glissanda";
     public static final String BOSS_KAKOPHON_ID = "boss_kakophon";
     public static final String BOSS_GENERALPAUSE_ID = "boss_generalpause";
+    public static final String BOSS_OSTINATO_ID = "boss_ostinato";
+    public static final String BOSS_RITARDANDO_ID = "boss_ritardando";
 
     public static final EntityType<DissonanzgeistEntity> DISSONANZGEIST =
             register(DISSONANZGEIST_ID, SpawnGroup.MONSTER, 0.9F, 1.25F, 10, 3, false, DissonanzgeistEntity::new);
@@ -97,6 +99,10 @@ public final class ModEntities {
             register(BOSS_KAKOPHON_ID, SpawnGroup.MONSTER, 2.6F, 3.6F, 16, 2, false, BosswerkBossEntity::new);
     public static final EntityType<BosswerkBossEntity> BOSS_GENERALPAUSE =
             register(BOSS_GENERALPAUSE_ID, SpawnGroup.MONSTER, 2.8F, 4.0F, 16, 2, false, BosswerkBossEntity::new);
+    public static final EntityType<BosswerkBossEntity> BOSS_OSTINATO =
+            register(BOSS_OSTINATO_ID, SpawnGroup.MONSTER, 2.3F, 3.4F, 16, 2, false, BosswerkBossEntity::new);
+    public static final EntityType<BosswerkBossEntity> BOSS_RITARDANDO =
+            register(BOSS_RITARDANDO_ID, SpawnGroup.MONSTER, 2.5F, 3.7F, 16, 2, false, BosswerkBossEntity::new);
 
     private ModEntities() {
     }
@@ -140,6 +146,8 @@ public final class ModEntities {
         FabricDefaultAttributeRegistry.register(BOSS_GLISSANDA, BosswerkBossEntity.createAttributes());
         FabricDefaultAttributeRegistry.register(BOSS_KAKOPHON, BosswerkBossEntity.createAttributes());
         FabricDefaultAttributeRegistry.register(BOSS_GENERALPAUSE, BosswerkBossEntity.createAttributes());
+        FabricDefaultAttributeRegistry.register(BOSS_OSTINATO, BosswerkBossEntity.createAttributes());
+        FabricDefaultAttributeRegistry.register(BOSS_RITARDANDO, BosswerkBossEntity.createAttributes());
         BiomeModifications.addSpawn(
                 BiomeSelectors.foundInOverworld(),
                 SpawnGroup.MONSTER,
@@ -149,7 +157,7 @@ public final class ModEntities {
                 1
         );
         registerHallharfe();
-        Aetherklang.LOGGER.debug("Registered {} Aetherklang entity types", 14);
+        Aetherklang.LOGGER.debug("Registered {} Aetherklang entity types", 16);
     }
 
     private static void registerMotivSpawnRestriction(EntityType<MotivEntity> type) {

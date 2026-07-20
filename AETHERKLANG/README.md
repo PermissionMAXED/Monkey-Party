@@ -77,6 +77,8 @@ Annähern auf 24 Blöcke wird der zugehörige Boss genau einmal beschworen:
 | Arpeggienmeer / Saitenbrücken | `/execute in aetherklang:kammerton run tp @s 900.5 130 0.5` | Glissanda |
 | Kakophonie-Riff / Schwarmthron | `/execute in aetherklang:kammerton run tp @s 0.5 130 900.5` | Kakophon |
 | Generalpause-Öde / Leeres Podium | `/execute in aetherklang:kammerton run tp @s 0.5 130 1600.5` | Generalpause |
+| Ostinato-Insel | `/execute in aetherklang:kammerton run tp @s -359.5 130 2000.5` | Ostinato |
+| Ritardando-Insel | `/execute in aetherklang:kammerton run tp @s 360.5 130 2000.5` | Ritardando |
 
 Für wiederholbare Bosswerk-Tests nach dem verbrauchten Annäherungstrigger:
 
@@ -85,10 +87,25 @@ Für wiederholbare Bosswerk-Tests nach dem verbrauchten Annäherungstrigger:
 /execute in aetherklang:kammerton run summon aetherklang:boss_glissanda 900.5 132 4.5
 /execute in aetherklang:kammerton run summon aetherklang:boss_kakophon 0.5 135 900.5
 /execute in aetherklang:kammerton run summon aetherklang:boss_generalpause 0.5 133 1600.5
+/execute in aetherklang:kammerton run summon aetherklang:boss_ostinato -359.5 133 2000.5
+/execute in aetherklang:kammerton run summon aetherklang:boss_ritardando 360.5 133 2000.5
 ```
 
 Zusätzlich entstehen zwei Resonanzorte mit Ring und Stimmpfeiler relativ zum
 Oberwelt-Spawn bei `(-36, +28)` und `(+36, +28)` Blöcken.
+
+Eingestimmte Stimmpfeiler bilden eine Rundroute
+**Oberwelt → Bassgewölbe → Arpeggienmeer → Kakophonie-Riff →
+Generalpause-Öde → Oberwelt**. Benutzen reist vorwärts, Schleichen + Benutzen
+rückwärts; jede Reise kostet 12 RP. Nach Siegen über Choral und Generalpause
+wird Chorals Arena einmal für die affixverstärkte **Choral-Reprise** neu
+aktiviert.
+
+Die Klangschmiede wandelt Pauke, Sopranflöte, Kontrabass und Triangel in eigene
+Meister- und Virtuos-Gegenstände um. Diese besitzen höhere Haltbarkeit sowie
+die bereits stufenabhängig stärkeren Effekte. Die Lebenszeit-Ränge reichen nun
+über Komponist (`1800 ΣRP`) und Dirigent (`3600 ΣRP`) bis Klangmeister
+(`9000 ΣRP`).
 
 ## Eingefrorene Schnittstellen
 

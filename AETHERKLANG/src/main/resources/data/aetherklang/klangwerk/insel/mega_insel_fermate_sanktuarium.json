@@ -1,0 +1,10 @@
+{
+  "id": "mega_insel_fermate_sanktuarium",
+  "type": "insel",
+  "parameters": {
+    "archetype": "fermate_sanktuarium",
+    "radius": "8",
+    "height": "7",
+    "palette": "4"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "id": "mega_schwinge_cantabile",
+  "type": "motiv",
+  "parameters": {
+    "archetype": "schwinge",
+    "operation": "impuls",
+    "tempo": "104",
+    "tier": "ungewoehnlich",
+    "health": "19.5",
+    "attack": "4.25",
+    "primary_color": "#E03A8C",
+    "secondary_color": "#5FF5E0",
+    "loot": "aetherklang:resonanzbarren"
+  }
+}

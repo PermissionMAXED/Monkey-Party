@@ -1,0 +1,10 @@
+{
+  "id": "mega_insel_generalpause_scholle",
+  "type": "insel",
+  "parameters": {
+    "archetype": "generalpause_scholle",
+    "radius": "13",
+    "height": "5",
+    "palette": "5"
+  }
+}

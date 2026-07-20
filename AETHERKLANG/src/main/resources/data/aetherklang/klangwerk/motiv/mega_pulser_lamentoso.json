@@ -1,0 +1,15 @@
+{
+  "id": "mega_pulser_lamentoso",
+  "type": "motiv",
+  "parameters": {
+    "archetype": "pulser",
+    "operation": "welle",
+    "tempo": "142",
+    "tier": "episch",
+    "health": "49.5",
+    "attack": "5.75",
+    "primary_color": "#E03A8C",
+    "secondary_color": "#5FF5E0",
+    "loot": "aetherklang:kaskadenkern"
+  }
+}

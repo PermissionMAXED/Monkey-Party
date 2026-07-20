@@ -1,0 +1,15 @@
+{
+  "id": "mega_laeufer_brillante",
+  "type": "motiv",
+  "parameters": {
+    "archetype": "laeufer",
+    "operation": "impuls",
+    "tempo": "151",
+    "tier": "ungewoehnlich",
+    "health": "29.5",
+    "attack": "6.75",
+    "primary_color": "#F5C95F",
+    "secondary_color": "#BFA7FF",
+    "loot": "aetherklang:resonanzbarren"
+  }
+}

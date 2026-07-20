@@ -197,6 +197,24 @@
       }
     ]
   },
+  "boss_ostinato": {
+    "subtitle": "subtitles.aetherklang.boss_ostinato",
+    "sounds": [
+      {
+        "name": "minecraft:block.note_block.bit",
+        "type": "event"
+      }
+    ]
+  },
+  "boss_ritardando": {
+    "subtitle": "subtitles.aetherklang.boss_ritardando",
+    "sounds": [
+      {
+        "name": "minecraft:block.note_block.chime",
+        "type": "event"
+      }
+    ]
+  },
   "region_enter": {
     "subtitle": "subtitles.aetherklang.region_enter",
     "sounds": [

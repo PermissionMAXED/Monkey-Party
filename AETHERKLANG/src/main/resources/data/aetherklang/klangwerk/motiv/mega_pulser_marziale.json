@@ -1,0 +1,15 @@
+{
+  "id": "mega_pulser_marziale",
+  "type": "motiv",
+  "parameters": {
+    "archetype": "pulser",
+    "operation": "welle",
+    "tempo": "118",
+    "tier": "ungewoehnlich",
+    "health": "47.5",
+    "attack": "5.0",
+    "primary_color": "#72A7FF",
+    "secondary_color": "#E03A8C",
+    "loot": "aetherklang:resonanzbarren"
+  }
+}

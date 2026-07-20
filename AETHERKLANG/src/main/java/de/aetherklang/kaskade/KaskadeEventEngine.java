@@ -1,6 +1,7 @@
 package de.aetherklang.kaskade;
 
 import de.aetherklang.Aetherklang;
+import de.aetherklang.motiv.MotivEntity;
 import de.aetherklang.registry.ModBlocks;
 import de.aetherklang.registry.ModEntities;
 import de.aetherklang.registry.ModItems;
@@ -247,6 +248,9 @@ public final class KaskadeEventEngine {
                     0.0F
             );
             mob.setPersistent();
+            if (mob instanceof MotivEntity motiv) {
+                motiv.applyRandomAffix(true);
+            }
             if (herald) {
                 empowerHerald(mob);
             }

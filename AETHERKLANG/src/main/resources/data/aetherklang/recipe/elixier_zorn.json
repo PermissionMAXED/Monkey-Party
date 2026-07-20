@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "food",
+  "ingredients": [
+    "minecraft:glass_bottle",
+    "minecraft:blaze_powder",
+    "aetherklang:resonanzkristall_magenta",
+    "aetherklang:klangstaub"
+  ],
+  "result": {
+    "count": 1,
+    "id": "aetherklang:elixier_zorn"
+  }
+}

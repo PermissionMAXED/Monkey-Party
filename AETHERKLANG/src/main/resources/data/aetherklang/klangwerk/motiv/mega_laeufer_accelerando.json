@@ -1,0 +1,15 @@
+{
+  "id": "mega_laeufer_accelerando",
+  "type": "motiv",
+  "parameters": {
+    "archetype": "laeufer",
+    "operation": "impuls",
+    "tempo": "103",
+    "tier": "ungewoehnlich",
+    "health": "25.5",
+    "attack": "5.25",
+    "primary_color": "#5FF5E0",
+    "secondary_color": "#F5C95F",
+    "loot": "aetherklang:resonanzbarren"
+  }
+}

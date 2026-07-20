@@ -1,0 +1,9 @@
+{
+  "id": "relikt_accelerando",
+  "type": "relikt",
+  "parameters": {
+    "effect": "bewegung",
+    "cooldown_ticks": "72",
+    "tier": "uncommon"
+  }
+}

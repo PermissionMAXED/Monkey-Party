@@ -1,0 +1,15 @@
+{
+  "id": "mega_schwinge_volante",
+  "type": "motiv",
+  "parameters": {
+    "archetype": "schwinge",
+    "operation": "impuls",
+    "tempo": "128",
+    "tier": "episch",
+    "health": "21.5",
+    "attack": "5.0",
+    "primary_color": "#BFA7FF",
+    "secondary_color": "#5FF5E0",
+    "loot": "aetherklang:kaskadenkern"
+  }
+}

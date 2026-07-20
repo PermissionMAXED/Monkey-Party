@@ -1,0 +1,15 @@
+{
+  "id": "mega_laeufer_ritardando",
+  "type": "motiv",
+  "parameters": {
+    "archetype": "laeufer",
+    "operation": "bewegung",
+    "tempo": "147",
+    "tier": "gewoehnlich",
+    "health": "26.0",
+    "attack": "6.0",
+    "primary_color": "#72A7FF",
+    "secondary_color": "#E03A8C",
+    "loot": "aetherklang:klangstaub"
+  }
+}

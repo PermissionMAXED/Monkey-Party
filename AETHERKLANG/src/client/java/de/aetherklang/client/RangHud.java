@@ -86,6 +86,16 @@ public final class RangHud {
             context.fill(centerX - 6, centerY - 6, centerX - 4, centerY - 4, GOLD);
             context.fill(centerX + 5, centerY - 6, centerX + 7, centerY - 4, GOLD);
         }
+        if (marks >= 4) {
+            context.fill(centerX - 6, centerY + 5, centerX - 4, centerY + 7, GOLD);
+            context.fill(centerX + 5, centerY + 5, centerX + 7, centerY + 7, GOLD);
+        }
+        if (marks >= 5) {
+            context.fill(centerX - 5, centerY - 1, centerX + 6, centerY + 2, color);
+        }
+        if (marks >= 6) {
+            drawDiamondOutline(context, centerX, centerY, 10, GOLD);
+        }
     }
 
     private static void drawDiamond(DrawContext context, int centerX, int centerY, int radius, int color) {
@@ -115,6 +125,9 @@ public final class RangHud {
             case ADEPT -> 0xFF5FF5E0;
             case VIRTUOSE -> GOLD;
             case MAESTRO -> 0xFFFF77C8;
+            case KOMPONIST -> 0xFF9A8CFF;
+            case DIRIGENT -> 0xFF72D6FF;
+            case KLANGMEISTER -> 0xFFFFFFFF;
         };
     }
 

@@ -1,0 +1,10 @@
+{
+  "id": "mega_insel_kadenz_bastion",
+  "type": "insel",
+  "parameters": {
+    "archetype": "kadenz_bastion",
+    "radius": "11",
+    "height": "5",
+    "palette": "7"
+  }
+}

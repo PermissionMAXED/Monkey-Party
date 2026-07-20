@@ -1,0 +1,9 @@
+{
+  "id": "relikt_nocturne",
+  "type": "relikt",
+  "parameters": {
+    "effect": "feld",
+    "cooldown_ticks": "112",
+    "tier": "epic"
+  }
+}

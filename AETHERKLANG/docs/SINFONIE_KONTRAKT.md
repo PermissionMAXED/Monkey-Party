@@ -71,10 +71,10 @@ Umgebung gestalten, aber diese Koordinaten nicht verschieben.
 | --- | ---: | ---: | ---: | --- |
 | `ankunft` | 0 | 129 | 0 | bestehende Ankunft |
 | `choral_arena` | 0 | 140 | 96 | bestehende Schlussarena |
-| `bassbruch` | -768 | 112 | -384 | Tremolo / Bassschiefer |
-| `glissando_gaerten` | 640 | 128 | -512 | Glissanda / Resonanzholz |
-| `kakophon_schwarm` | 768 | 104 | 512 | Kakophon / Schwarm |
-| `generalpause` | -640 | 120 | 640 | Generalpause / Stille |
+| `bassbruch` | -900 | 129 | 0 | Tremolo / Bassschiefer |
+| `glissando_gaerten` | 900 | 129 | 0 | Glissanda / Resonanzholz |
+| `kakophon_schwarm` | 0 | 129 | 900 | Kakophon / Schwarm |
+| `generalpause` | 0 | 129 | 1600 | Generalpause / Stille |
 
 ## Dateibesitz für parallele Wellen
 

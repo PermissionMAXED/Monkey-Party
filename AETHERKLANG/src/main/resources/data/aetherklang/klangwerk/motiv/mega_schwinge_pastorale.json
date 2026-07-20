@@ -1,0 +1,15 @@
+{
+  "id": "mega_schwinge_pastorale",
+  "type": "motiv",
+  "parameters": {
+    "archetype": "schwinge",
+    "operation": "welle",
+    "tempo": "156",
+    "tier": "selten",
+    "health": "27.0",
+    "attack": "6.5",
+    "primary_color": "#FF7A90",
+    "secondary_color": "#72A7FF",
+    "loot": "aetherklang:notenschluessel"
+  }
+}

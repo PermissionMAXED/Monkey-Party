@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "key": {
+    "B": "minecraft:book",
+    "P": "aetherklang:resonanzholz_planken",
+    "S": "minecraft:stick"
+  },
+  "pattern": [
+    " B ",
+    "PPP",
+    " S "
+  ],
+  "result": {
+    "count": 1,
+    "id": "aetherklang:notenpult"
+  }
+}

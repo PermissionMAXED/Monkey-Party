@@ -13,6 +13,7 @@ import de.aetherklang.item.KlangweberBrustItem;
 import de.aetherklang.item.KlangweberHelmItem;
 import de.aetherklang.item.KlangweberStiefelItem;
 import de.aetherklang.item.KodexItem;
+import de.aetherklang.item.MoodElixirItem;
 import de.aetherklang.item.OrgelhornItem;
 import de.aetherklang.item.ResonanzarchivBlockItem;
 import de.aetherklang.item.ResonanzelixierItem;
@@ -22,8 +23,11 @@ import de.aetherklang.item.StimmgabelItem;
 import de.aetherklang.item.TaktbrueckeBlockItem;
 import de.aetherklang.item.TaktlingSpawnEggItem;
 import de.aetherklang.schmiede.KlanginstrumentItem;
+import de.aetherklang.schmiede.Klangstufe;
 import de.aetherklang.schmiede.ReliktItem;
 import de.aetherklang.schmiede.ReliktTyp;
+import de.aetherklang.schmiede.SchmiedeComponents;
+import de.aetherklang.resonance.Stimmung;
 import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -64,9 +68,17 @@ public final class ModItems {
     public static final String MOTIV_SCHWINGE_SPAWN_EGG_ID = "motiv_schwinge_spawn_egg";
     public static final String MOTIV_PULSER_SPAWN_EGG_ID = "motiv_pulser_spawn_egg";
     public static final String PAUKE_ID = "pauke";
+    public static final String PAUKE_MEISTER_ID = "pauke_meister";
+    public static final String PAUKE_VIRTUOS_ID = "pauke_virtuos";
     public static final String SOPRANFLOETE_ID = "sopranfloete";
+    public static final String SOPRANFLOETE_MEISTER_ID = "sopranfloete_meister";
+    public static final String SOPRANFLOETE_VIRTUOS_ID = "sopranfloete_virtuos";
     public static final String KONTRABASS_ID = "kontrabass";
+    public static final String KONTRABASS_MEISTER_ID = "kontrabass_meister";
+    public static final String KONTRABASS_VIRTUOS_ID = "kontrabass_virtuos";
     public static final String TRIANGEL_ID = "triangel";
+    public static final String TRIANGEL_MEISTER_ID = "triangel_meister";
+    public static final String TRIANGEL_VIRTUOS_ID = "triangel_virtuos";
     public static final String TREMOLOKERN_ID = "tremolokern";
     public static final String SAITENHERZ_ID = "saitenherz";
     public static final String SCHWARMAUGE_ID = "schwarmauge";
@@ -189,21 +201,37 @@ public final class ModItems {
     );
     public static final Item PAUKE =
             register(PAUKE_ID, settings -> new KlanginstrumentItem(settings, PAUKE_ID), new Item.Settings().maxDamage(256));
+    public static final Item PAUKE_MEISTER =
+            registerTieredInstrument(PAUKE_MEISTER_ID, PAUKE_ID, Klangstufe.MEISTER, 384);
+    public static final Item PAUKE_VIRTUOS =
+            registerTieredInstrument(PAUKE_VIRTUOS_ID, PAUKE_ID, Klangstufe.VIRTUOS, 512);
     public static final Item SOPRANFLOETE = register(
             SOPRANFLOETE_ID,
             settings -> new KlanginstrumentItem(settings, SOPRANFLOETE_ID),
             new Item.Settings().maxDamage(256)
     );
+    public static final Item SOPRANFLOETE_MEISTER =
+            registerTieredInstrument(SOPRANFLOETE_MEISTER_ID, SOPRANFLOETE_ID, Klangstufe.MEISTER, 384);
+    public static final Item SOPRANFLOETE_VIRTUOS =
+            registerTieredInstrument(SOPRANFLOETE_VIRTUOS_ID, SOPRANFLOETE_ID, Klangstufe.VIRTUOS, 512);
     public static final Item KONTRABASS = register(
             KONTRABASS_ID,
             settings -> new KlanginstrumentItem(settings, KONTRABASS_ID),
             new Item.Settings().maxDamage(320)
     );
+    public static final Item KONTRABASS_MEISTER =
+            registerTieredInstrument(KONTRABASS_MEISTER_ID, KONTRABASS_ID, Klangstufe.MEISTER, 480);
+    public static final Item KONTRABASS_VIRTUOS =
+            registerTieredInstrument(KONTRABASS_VIRTUOS_ID, KONTRABASS_ID, Klangstufe.VIRTUOS, 640);
     public static final Item TRIANGEL = register(
             TRIANGEL_ID,
             settings -> new KlanginstrumentItem(settings, TRIANGEL_ID),
             new Item.Settings().maxDamage(224)
     );
+    public static final Item TRIANGEL_MEISTER =
+            registerTieredInstrument(TRIANGEL_MEISTER_ID, TRIANGEL_ID, Klangstufe.MEISTER, 336);
+    public static final Item TRIANGEL_VIRTUOS =
+            registerTieredInstrument(TRIANGEL_VIRTUOS_ID, TRIANGEL_ID, Klangstufe.VIRTUOS, 448);
     public static final Item TREMOLOKERN = registerStub(TREMOLOKERN_ID, 64);
     public static final Item SAITENHERZ = registerStub(SAITENHERZ_ID, 64);
     public static final Item SCHWARMAUGE = registerStub(SCHWARMAUGE_ID, 64);
@@ -224,9 +252,9 @@ public final class ModItems {
     public static final Item RELIKT_PIANISSIMO = registerRelic(RELIKT_PIANISSIMO_ID, ReliktTyp.PIANISSIMO);
     public static final Item RELIKT_HARMONIE = registerRelic(RELIKT_HARMONIE_ID, ReliktTyp.HARMONIE);
     public static final Item RELIKT_DISSONANZ = registerRelic(RELIKT_DISSONANZ_ID, ReliktTyp.DISSONANZ);
-    public static final Item ELIXIER_FREUDE = registerStub(ELIXIER_FREUDE_ID, 16);
-    public static final Item ELIXIER_ZORN = registerStub(ELIXIER_ZORN_ID, 16);
-    public static final Item ELIXIER_STILLE = registerStub(ELIXIER_STILLE_ID, 16);
+    public static final Item ELIXIER_FREUDE = registerMoodElixir(ELIXIER_FREUDE_ID, Stimmung.FREUDE);
+    public static final Item ELIXIER_ZORN = registerMoodElixir(ELIXIER_ZORN_ID, Stimmung.ZORN);
+    public static final Item ELIXIER_STILLE = registerMoodElixir(ELIXIER_STILLE_ID, Stimmung.STILLE);
     public static final Item PARTITUR_DISC_1 = registerStub(PARTITUR_DISC_1_ID, 1);
     public static final Item PARTITUR_DISC_2 = registerStub(PARTITUR_DISC_2_ID, 1);
     public static final Item PARTITUR_DISC_3 = registerStub(PARTITUR_DISC_3_ID, 1);
@@ -312,9 +340,17 @@ public final class ModItems {
             MOTIV_SCHWINGE_SPAWN_EGG,
             MOTIV_PULSER_SPAWN_EGG,
             PAUKE,
+            PAUKE_MEISTER,
+            PAUKE_VIRTUOS,
             SOPRANFLOETE,
+            SOPRANFLOETE_MEISTER,
+            SOPRANFLOETE_VIRTUOS,
             KONTRABASS,
+            KONTRABASS_MEISTER,
+            KONTRABASS_VIRTUOS,
             TRIANGEL,
+            TRIANGEL_MEISTER,
+            TRIANGEL_VIRTUOS,
             TREMOLOKERN,
             SAITENHERZ,
             SCHWARMAUGE,
@@ -383,12 +419,31 @@ public final class ModItems {
         return Registry.register(Registries.ITEM, key, factory.apply(settings.registryKey(key)));
     }
 
+    private static Item registerTieredInstrument(
+            String path,
+            String instrumentId,
+            Klangstufe tier,
+            int durability
+    ) {
+        return register(
+                path,
+                settings -> new KlanginstrumentItem(settings, instrumentId),
+                new Item.Settings()
+                        .maxDamage(durability)
+                        .component(SchmiedeComponents.KLANGSTUFE, tier)
+        );
+    }
+
     private static Item registerStub(String path, int maxCount) {
         return register(path, Item::new, new Item.Settings().maxCount(maxCount));
     }
 
     private static Item registerRelic(String path, ReliktTyp relic) {
         return register(path, settings -> new ReliktItem(settings, relic), new Item.Settings().maxCount(1));
+    }
+
+    private static Item registerMoodElixir(String path, Stimmung mood) {
+        return register(path, settings -> new MoodElixirItem(settings, mood), new Item.Settings().maxCount(16));
     }
 
     private static Item registerBlockItem(String path, Block block) {

@@ -1,0 +1,15 @@
+{
+  "id": "mega_pulser_grave",
+  "type": "motiv",
+  "parameters": {
+    "archetype": "pulser",
+    "operation": "bewegung",
+    "tempo": "98",
+    "tier": "gewoehnlich",
+    "health": "30.0",
+    "attack": "5.0",
+    "primary_color": "#FF7A90",
+    "secondary_color": "#72A7FF",
+    "loot": "aetherklang:klangstaub"
+  }
+}

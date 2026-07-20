@@ -1,0 +1,15 @@
+{
+  "id": "mega_pulser_pesante",
+  "type": "motiv",
+  "parameters": {
+    "archetype": "pulser",
+    "operation": "welle",
+    "tempo": "154",
+    "tier": "selten",
+    "health": "41.0",
+    "attack": "8.0",
+    "primary_color": "#F5C95F",
+    "secondary_color": "#BFA7FF",
+    "loot": "aetherklang:notenschluessel"
+  }
+}

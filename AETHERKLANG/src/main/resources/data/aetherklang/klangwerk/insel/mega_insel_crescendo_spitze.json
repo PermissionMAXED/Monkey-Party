@@ -1,0 +1,10 @@
+{
+  "id": "mega_insel_crescendo_spitze",
+  "type": "insel",
+  "parameters": {
+    "archetype": "crescendo_spitze",
+    "radius": "10",
+    "height": "8",
+    "palette": "0"
+  }
+}

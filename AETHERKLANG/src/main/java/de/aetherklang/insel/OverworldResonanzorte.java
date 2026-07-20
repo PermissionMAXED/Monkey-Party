@@ -2,7 +2,9 @@ package de.aetherklang.insel;
 
 import de.aetherklang.Aetherklang;
 import de.aetherklang.registry.ModBlocks;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 import java.util.WeakHashMap;
 import net.minecraft.block.Block;
@@ -62,6 +64,32 @@ public final class OverworldResonanzorte {
                     center.getZ()
             );
         }
+    }
+
+    public static List<BlockPos> stimmpfeilerPositions(ServerWorld world) {
+        BlockPos spawn = world.getSpawnPoint().getPos();
+        List<BlockPos> positions = new ArrayList<>(SPAWN_OFFSETS.length);
+        for (int[] offset : SPAWN_OFFSETS) {
+            int x = spawn.getX() + offset[0];
+            int z = spawn.getZ() + offset[1];
+            world.getChunk(x >> 4, z >> 4);
+            BlockPos top = world.getTopPosition(
+                    Heightmap.Type.MOTION_BLOCKING_NO_LEAVES,
+                    new BlockPos(x, spawn.getY(), z)
+            );
+            BlockPos pillar = top;
+            for (int y = top.getY(); y >= top.getY() - 8; y--) {
+                BlockPos candidate = new BlockPos(x, y, z);
+                if (world.getBlockState(candidate).isOf(ModBlocks.STIMMPFEILER)) {
+                    pillar = world.getBlockState(candidate.down()).isOf(ModBlocks.STIMMPFEILER)
+                            ? candidate.down()
+                            : candidate;
+                    break;
+                }
+            }
+            positions.add(pillar);
+        }
+        return List.copyOf(positions);
     }
 
     private static void placeResonanzort(ServerWorld world, BlockPos center, int index) {

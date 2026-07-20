@@ -1,0 +1,15 @@
+{
+  "id": "mega_pulser_crescendo",
+  "type": "motiv",
+  "parameters": {
+    "archetype": "pulser",
+    "operation": "welle",
+    "tempo": "106",
+    "tier": "selten",
+    "health": "37.0",
+    "attack": "6.5",
+    "primary_color": "#5FF5E0",
+    "secondary_color": "#F5C95F",
+    "loot": "aetherklang:notenschluessel"
+  }
+}

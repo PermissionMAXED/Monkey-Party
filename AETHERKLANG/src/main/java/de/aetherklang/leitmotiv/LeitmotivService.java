@@ -23,7 +23,9 @@ public final class LeitmotivService {
             "boss_tremolo", 2,
             "boss_glissanda", 2,
             "boss_kakophon", 2,
-            "boss_generalpause", 3
+            "boss_generalpause", 3,
+            "boss_ostinato", 2,
+            "boss_ritardando", 2
     );
 
     private LeitmotivService() {

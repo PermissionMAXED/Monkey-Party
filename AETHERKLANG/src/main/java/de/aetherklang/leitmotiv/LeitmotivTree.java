@@ -6,11 +6,11 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * Authoritative definition of the 24-node Leitmotiv tree.
+ * Authoritative definition of the 36-node Leitmotiv tree.
  */
 public final class LeitmotivTree {
-    public static final int NODE_COUNT = 24;
-    public static final int NODES_PER_BRANCH = 8;
+    public static final int NODE_COUNT = 36;
+    public static final int NODES_PER_BRANCH = 12;
 
     private static final List<LeitmotivNode> NODES = List.of(
             node("scharfer_auftakt", LeitmotivBranch.KAMPF, 0, 1, LeitmotivEffect.DAMAGE_MULTIPLIER, 0.05F),
@@ -28,6 +28,14 @@ public final class LeitmotivTree {
                     "praezision"),
             node("finale", LeitmotivBranch.KAMPF, 7, 3, LeitmotivEffect.DAMAGE_MULTIPLIER, 0.10F,
                     "heldenkadenz"),
+            node("klingenrhythmus", LeitmotivBranch.KAMPF, 8, 4, LeitmotivEffect.DAMAGE_MULTIPLIER, 0.05F,
+                    "finale"),
+            node("kritischer_nachhall", LeitmotivBranch.KAMPF, 9, 4, LeitmotivEffect.PERFECT_WINDOW, 0.01F,
+                    "klingenrhythmus"),
+            node("schlagrefrain", LeitmotivBranch.KAMPF, 10, 5, LeitmotivEffect.RP_GAIN, 1.0F,
+                    "kritischer_nachhall"),
+            node("apotheose", LeitmotivBranch.KAMPF, 11, 6, LeitmotivEffect.DAMAGE_MULTIPLIER, 0.125F,
+                    "schlagrefrain"),
 
             node("sanfter_auftakt", LeitmotivBranch.HARMONIE, 0, 1, LeitmotivEffect.HEALING_MULTIPLIER, 0.10F),
             node("ruhiger_puls", LeitmotivBranch.HARMONIE, 1, 1,
@@ -44,6 +52,14 @@ public final class LeitmotivTree {
                     "tiefer_vorrat"),
             node("lebenslied", LeitmotivBranch.HARMONIE, 7, 3,
                     LeitmotivEffect.HEALING_MULTIPLIER, 0.25F, "gemeinsamer_takt"),
+            node("sanfte_resonanz", LeitmotivBranch.HARMONIE, 8, 4,
+                    LeitmotivEffect.HEALING_MULTIPLIER, 0.10F, "lebenslied"),
+            node("reine_kadenz", LeitmotivBranch.HARMONIE, 9, 4,
+                    LeitmotivEffect.DISSONANCE_DECAY_MULTIPLIER, 0.25F, "sanfte_resonanz"),
+            node("tragender_akkord", LeitmotivBranch.HARMONIE, 10, 5,
+                    LeitmotivEffect.RP_CAP, 15.0F, "reine_kadenz"),
+            node("ewiger_chor", LeitmotivBranch.HARMONIE, 11, 6,
+                    LeitmotivEffect.HEALING_MULTIPLIER, 0.30F, "tragender_akkord"),
 
             node("leichter_schritt", LeitmotivBranch.WELT, 0, 1, LeitmotivEffect.DASH_COST_REDUCTION, 1.0F),
             node("resonanzraum", LeitmotivBranch.WELT, 1, 1, LeitmotivEffect.RP_CAP, 10.0F,
@@ -59,7 +75,15 @@ public final class LeitmotivTree {
             node("weltchor", LeitmotivBranch.WELT, 6, 3, LeitmotivEffect.RP_GAIN, 1.0F,
                     "klangspeicher"),
             node("meisterreise", LeitmotivBranch.WELT, 7, 3, LeitmotivEffect.DASH_COST_REDUCTION, 2.0F,
-                    "weltchor")
+                    "weltchor"),
+            node("luftiger_pfad", LeitmotivBranch.WELT, 8, 4, LeitmotivEffect.DASH_COST_REDUCTION, 1.0F,
+                    "meisterreise"),
+            node("ferne_harmonie", LeitmotivBranch.WELT, 9, 4, LeitmotivEffect.GOOD_WINDOW, 0.015F,
+                    "luftiger_pfad"),
+            node("wanderlied", LeitmotivBranch.WELT, 10, 5, LeitmotivEffect.RP_GAIN, 1.0F,
+                    "ferne_harmonie"),
+            node("grenzenlos", LeitmotivBranch.WELT, 11, 6, LeitmotivEffect.RP_CAP, 20.0F,
+                    "wanderlied")
     );
 
     private static final Map<String, LeitmotivNode> BY_ID = buildIndex();

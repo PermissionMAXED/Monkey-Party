@@ -1,6 +1,7 @@
 package de.aetherklang;
 
 import de.aetherklang.bosswerk.Bosswerk;
+import de.aetherklang.bosswerk.ChoralRepriseService;
 import de.aetherklang.command.ModCommands;
 import de.aetherklang.crescendo.CrescendoServerHooks;
 import de.aetherklang.kaskade.KaskadeHooks;
@@ -51,6 +52,7 @@ public final class Aetherklang implements ModInitializer {
         ModParticles.register();
         ModSounds.register();
         Bosswerk.register();
+        ChoralRepriseService.register();
         ModAttachments.register();
         LeitmotivService.register();
         ModCriteria.register();

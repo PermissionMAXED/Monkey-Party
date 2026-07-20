@@ -2,7 +2,8 @@
   "id": "kontrabass_virtuos",
   "type": "aufwertung",
   "parameters": {
-    "instrument": "aetherklang:kontrabass",
+    "instrument": "aetherklang:kontrabass_meister",
+    "result": "aetherklang:kontrabass_virtuos",
     "from": "meister",
     "to": "virtuos",
     "resonanzbarren": "4",

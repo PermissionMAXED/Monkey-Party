@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "minecraft:lapis_lazuli",
+    "minecraft:amethyst_shard",
+    "minecraft:clay_ball"
+  ],
+  "result": {
+    "id": "aetherklang:kaskadenkern",
+    "count": 1
+  }
+}

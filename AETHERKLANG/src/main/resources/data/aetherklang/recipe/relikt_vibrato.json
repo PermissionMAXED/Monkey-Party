@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    " A ",
+    "GXG",
+    " A "
+  ],
+  "key": {
+    "A": "minecraft:amethyst_shard",
+    "G": "minecraft:gold_nugget",
+    "X": "minecraft:goat_horn"
+  },
+  "result": {
+    "id": "aetherklang:relikt_vibrato",
+    "count": 1
+  }
+}

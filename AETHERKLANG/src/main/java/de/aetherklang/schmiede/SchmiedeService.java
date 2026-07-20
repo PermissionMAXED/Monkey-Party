@@ -14,6 +14,7 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
+import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 
 /**
@@ -116,7 +117,9 @@ public final class SchmiedeService {
         if (!player.isCreative()) {
             consumeIngredients(player.getInventory(), recipe.ingredients());
         }
-        instrument.set(SchmiedeComponents.KLANGSTUFE, recipe.to());
+        ItemStack upgraded = instrument.copyComponentsToNewStack(recipe.result(), instrument.getCount());
+        upgraded.set(SchmiedeComponents.KLANGSTUFE, recipe.to());
+        player.setStackInHand(Hand.MAIN_HAND, upgraded);
         world.spawnParticles(
                 ModParticles.KLANGOPERATION_RING,
                 pos.getX() + 0.5D,
@@ -139,7 +142,7 @@ public final class SchmiedeService {
         player.sendMessage(
                 Text.translatable(
                         "message.aetherklang.schmiede.upgraded",
-                        instrument.getName(),
+                        upgraded.getName(),
                         Text.translatable(recipe.to().translationKey())
                 ),
                 false

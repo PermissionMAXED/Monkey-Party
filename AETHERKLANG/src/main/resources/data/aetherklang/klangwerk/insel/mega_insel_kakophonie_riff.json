@@ -1,0 +1,10 @@
+{
+  "id": "mega_insel_kakophonie_riff",
+  "type": "insel",
+  "parameters": {
+    "archetype": "kakophonie_riff",
+    "radius": "10",
+    "height": "7",
+    "palette": "2"
+  }
+}

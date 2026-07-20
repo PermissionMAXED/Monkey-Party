@@ -1,6 +1,7 @@
 package de.aetherklang.block;
 
 import com.mojang.serialization.MapCodec;
+import de.aetherklang.insel.StimmpfeilerNetwork;
 import de.aetherklang.registry.ModBlocks;
 import de.aetherklang.registry.ModItems;
 import de.aetherklang.registry.ModParticles;
@@ -65,7 +66,7 @@ public final class StimmpfeilerBlock extends Block {
         }
         if (world instanceof ServerWorld serverWorld) {
             boolean attuned = !state.get(ATTUNED);
-            serverWorld.setBlockState(pos, state.with(ATTUNED, attuned), Block.NOTIFY_ALL);
+            setTowerAttuned(serverWorld, pos, attuned);
             serverWorld.playSound(
                     null,
                     pos,
@@ -102,8 +103,23 @@ public final class StimmpfeilerBlock extends Block {
             return ActionResult.SUCCESS;
         }
 
-        BlockPos destination = findDestination(serverWorld, pos);
-        if (destination == null) {
+        StimmpfeilerNetwork.Route route = StimmpfeilerNetwork.route(serverWorld, pos, serverPlayer.isSneaking());
+        if (route == null) {
+            BlockPos nearby = findDestination(serverWorld, pos);
+            if (nearby != null) {
+                route = new StimmpfeilerNetwork.Route(
+                        serverWorld,
+                        nearby,
+                        "destination.aetherklang.nearby"
+                );
+            }
+        }
+        if (route == null) {
+            serverPlayer.sendMessage(Text.translatable("message.aetherklang.stimmpfeiler.no_destination"), true);
+            return ActionResult.SUCCESS_SERVER;
+        }
+        BlockPos arrival = findSafeArrival(route.world(), route.pillar());
+        if (arrival == null) {
             serverPlayer.sendMessage(Text.translatable("message.aetherklang.stimmpfeiler.no_destination"), true);
             return ActionResult.SUCCESS_SERVER;
         }
@@ -113,18 +129,24 @@ public final class StimmpfeilerBlock extends Block {
         }
 
         pulse(serverWorld, pos);
-        BlockPos arrival = destination.up();
         serverPlayer.fallDistance = 0.0F;
         serverPlayer.teleportTo(new TeleportTarget(
-                serverWorld,
+                route.world(),
                 Vec3d.ofBottomCenter(arrival),
                 Vec3d.ZERO,
                 serverPlayer.getYaw(),
                 serverPlayer.getPitch(),
                 TeleportTarget.NO_OP
         ));
-        pulse(serverWorld, destination);
-        serverPlayer.sendMessage(Text.translatable("message.aetherklang.stimmpfeiler.teleported", RP_COST), true);
+        pulse(route.world(), route.pillar());
+        serverPlayer.sendMessage(
+                Text.translatable(
+                        "message.aetherklang.stimmpfeiler.teleported",
+                        Text.translatable(route.destinationKey()),
+                        RP_COST
+                ),
+                true
+        );
         return ActionResult.SUCCESS_SERVER;
     }
 
@@ -135,15 +157,52 @@ public final class StimmpfeilerBlock extends Block {
                 VERTICAL_RANGE,
                 HORIZONTAL_RANGE
         )) {
-            if (candidate.equals(origin)) {
+            if (candidate.equals(origin)
+                    || candidate.getX() == origin.getX()
+                    && candidate.getZ() == origin.getZ()
+                    && Math.abs(candidate.getY() - origin.getY()) <= 2) {
                 continue;
             }
             BlockState state = world.getBlockState(candidate);
             if (state.isOf(ModBlocks.STIMMPFEILER)
                     && state.get(ATTUNED)
-                    && world.getBlockState(candidate.up()).isAir()
-                    && world.getBlockState(candidate.up(2)).isAir()) {
+                    && findSafeArrival(world, candidate) != null) {
                 return candidate.toImmutable();
+            }
+        }
+        return null;
+    }
+
+    private static void setTowerAttuned(ServerWorld world, BlockPos position, boolean attuned) {
+        BlockPos lower = world.getBlockState(position.down()).isOf(ModBlocks.STIMMPFEILER)
+                ? position.down()
+                : position;
+        for (int offset = 0; offset < 2; offset++) {
+            BlockPos part = lower.up(offset);
+            BlockState partState = world.getBlockState(part);
+            if (partState.isOf(ModBlocks.STIMMPFEILER)) {
+                world.setBlockState(part, partState.with(ATTUNED, attuned), Block.NOTIFY_ALL);
+            }
+        }
+    }
+
+    private static BlockPos findSafeArrival(ServerWorld world, BlockPos pillar) {
+        BlockPos lower = world.getBlockState(pillar.down()).isOf(ModBlocks.STIMMPFEILER)
+                ? pillar.down()
+                : pillar;
+        for (int radius = 1; radius <= 4; radius++) {
+            for (int x = -radius; x <= radius; x++) {
+                for (int z = -radius; z <= radius; z++) {
+                    if (Math.max(Math.abs(x), Math.abs(z)) != radius) {
+                        continue;
+                    }
+                    BlockPos candidate = lower.add(x, 0, z);
+                    if (world.getBlockState(candidate).isAir()
+                            && world.getBlockState(candidate.up()).isAir()
+                            && world.getBlockState(candidate.down()).isSolidBlock(world, candidate.down())) {
+                        return candidate.toImmutable();
+                    }
+                }
             }
         }
         return null;

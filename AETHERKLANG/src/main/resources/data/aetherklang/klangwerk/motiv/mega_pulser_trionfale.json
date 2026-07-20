@@ -1,0 +1,15 @@
+{
+  "id": "mega_pulser_trionfale",
+  "type": "motiv",
+  "parameters": {
+    "archetype": "pulser",
+    "operation": "welle",
+    "tempo": "166",
+    "tier": "ungewoehnlich",
+    "health": "51.5",
+    "attack": "6.5",
+    "primary_color": "#BFA7FF",
+    "secondary_color": "#5FF5E0",
+    "loot": "aetherklang:resonanzbarren"
+  }
+}

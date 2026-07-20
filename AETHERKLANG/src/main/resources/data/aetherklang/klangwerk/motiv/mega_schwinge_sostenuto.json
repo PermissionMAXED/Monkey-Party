@@ -1,0 +1,15 @@
+{
+  "id": "mega_schwinge_sostenuto",
+  "type": "motiv",
+  "parameters": {
+    "archetype": "schwinge",
+    "operation": "bewegung",
+    "tempo": "124",
+    "tier": "selten",
+    "health": "18.0",
+    "attack": "4.25",
+    "primary_color": "#FF7A90",
+    "secondary_color": "#72A7FF",
+    "loot": "aetherklang:notenschluessel"
+  }
+}

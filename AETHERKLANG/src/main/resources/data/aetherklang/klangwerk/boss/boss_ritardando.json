@@ -1,0 +1,10 @@
+{
+  "id": "boss_ritardando",
+  "type": "boss",
+  "parameters": {
+    "health": "310",
+    "phase_67": "5;fermate,2,6,8|strahl_linie,2,8,7",
+    "phase_34": "4;stille_zone,2,8,9|fermate,2,7,9|schockwelle,1,9,10",
+    "phase_0": "3;fermate,1,9,10|strahl_linie,2,11,9|stille_zone,1,10,11"
+  }
+}

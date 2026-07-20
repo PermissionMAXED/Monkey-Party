@@ -1,0 +1,9 @@
+{
+  "id": "relikt_marcato",
+  "type": "relikt",
+  "parameters": {
+    "effect": "anschlag",
+    "cooldown_ticks": "76",
+    "tier": "rare"
+  }
+}

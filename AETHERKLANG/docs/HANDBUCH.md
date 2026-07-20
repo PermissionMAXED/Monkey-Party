@@ -16,7 +16,7 @@ Resonanz** und erscheint als indigo-goldenes Tonarium.
 
 Der Kern von Aetherklang, **Crescendo** und **SINFONIE** ist spielbar: zu
 Instrumenten, Ensembles, Akkorden, Resonanzgraden und Tonarium treten das
-48-Insel-Klangmeer, vier Außenregionen, datengetriebene Motivwesen, vier
+48-Insel-Klangmeer, vier Außenregionen, datengetriebene Motivwesen, sechs
 Bosswerke, ein 24-Knoten-Leitmotiv, Tagespartituren, Klangschmiede,
 Weltakkord und Dissonanz-Kaskaden. Das Resonanz-HUD, der Kodex mit
 **81 Folios in 22 Registern**, die Kammerton-Dimension und alle beschriebenen
@@ -854,6 +854,9 @@ Ausgaben, Tod und Dimensionswechsel verringern sie nicht.
 | **Adept** | `150` | Cyanes Sigil mit Seitenmarken |
 | **Virtuose** | `400` | Goldenes Sigil mit vier Achsen |
 | **Maestro** | `900` | Magenta-goldenes vollständiges Sigil |
+| **Komponist** | `1.800` | Violettes Sigil mit unteren Goldmarken |
+| **Dirigent** | `3.600` | Cyanes Sigil mit Mittelbalken |
+| **Klangmeister** | `9.000` | Weiß-goldenes Doppelsigil |
 
 Das Rangsigil sitzt über dem Resonanz-HUD und nennt zusätzlich `ΣRP`.
 Formmarken unterscheiden die Stufen auch ohne Farbwahrnehmung. Der Server
@@ -1057,7 +1060,7 @@ Instrumente von **Basis** über **Meister** zu **Virtuos**.
 | --- | --- | --- |
 | **Regionen** | 48 deterministische Klangmeer-Inseln, vier Großregionen, Landmarken | Erkundungsfortschritte, Bosszugang |
 | **Motive** | Drei Archetypen mit acht Datenvarianten | Staub, Barren, Kerne, Schlüssel |
-| **Bosse** | Vier Drei-Phasen-Partituren | Bossmaterial, zwei bis drei Notenschlüssel |
+| **Bosse** | Sechs Drei-Phasen-Partituren | Bossmaterial, zwei bis drei Notenschlüssel |
 | **Partitur** | Drei Tagesaufträge aus elf Definitionen | RP, Schlüssel, Schmiedematerial |
 | **Leitmotiv** | 24 Knoten in drei Zweigen | Permanente Resonanzmodifikatoren |
 | **Schmiede** | Vier Instrumente, drei Stufen, zwölf Relikte | Längere/stärkere Effekte, Reliktbonus |
@@ -1216,9 +1219,9 @@ Beute bedient mehrere Systeme:
 
 ---
 
-## 30. Bosswerk: vier Partituren des Außenrings
+## 30. Bosswerk: sechs Partituren des Außenrings
 
-Bosswerk liest vier validierte JSON-Partituren beim Mod-Start. Jede
+Bosswerk liest sechs validierte JSON-Partituren beim Mod-Start. Jede
 Partitur besitzt drei Lebensphasen, ein Beatintervall und eine zyklische
 Angriffsliste. Ein Angriff wird auf dem Weltbeat vorbereitet, ein bis zwei
 Beats telegraphiert und danach serverautoritativ ausgeführt.
@@ -1231,6 +1234,8 @@ Beats telegraphiert und danach serverautoritativ ausgeführt.
 | **Glissanda** | 260 | Saitenbrücken | Saitenherz | 2 |
 | **Kakophon** | 300 | Schwarmthron | Schwarmauge | 2 |
 | **Generalpause** | 340 | Leeres Podium | Stillesplitter | 3 |
+| **Ostinato** | 285 | Ostinato-Insel | Ostinato-Relikt | 2 |
+| **Ritardando** | 310 | Ritardando-Insel | Fermate-Relikt | 2 |
 
 ### Tremolo
 
@@ -1656,7 +1661,7 @@ alle 22 Register im Clientvertrag ausdrücklich aufgeführt.
 | --- | --- | --- | --- |
 | Sinfonie-Content | `data/aetherklang/content` | Mod-Start | Start bricht bei ungültigen Daten ab |
 | Klangwerk | `data/aetherklang/klangwerk` | Server-Reload | letzter gültiger Snapshot bleibt aktiv |
-| Bosswerk-Partituren | `klangwerk/boss` | Mod-Start | alle vier Scores müssen vorhanden und gültig sein |
+| Bosswerk-Partituren | `klangwerk/boss` | Mod-Start | alle sechs Scores müssen vorhanden und gültig sein |
 | Kodex | `assets/aetherklang/kodex/pages.json` | Client-Resource-Load | Fehler protokolliert, Willkommens-Fallback |
 
 Für Änderungen am Sinfonie-Content oder Bosswerk muss Client beziehungsweise
@@ -1730,7 +1735,8 @@ Danke an alle, die den ersten Beat nicht nur treffen, sondern ihm zuhören.
 - **RP:** 0–100, mit Klangweberharnisch 120 · Horn 10 · Fermate 16 ·
   Fächer/Riss 12 · Schritt 8/6 · Altar 6 · Portal 24
 - **Fermatenglocke:** erst ab Grad Adept (`150` Gesamt-RP) einsetzbar
-- **Grade:** Novize 0 · Adept 150 · Virtuose 400 · Maestro 900 Gesamt-RP
+- **Grade:** Novize 0 · Adept 150 · Virtuose 400 · Maestro 900 ·
+  Komponist 1.800 · Dirigent 3.600 · Klangmeister 9.000 Gesamt-RP
 - **Ensemble:** gleicher Beat + höchstens 12 Blöcke · 10 s · +1 RP/Aktion
 - **Akkorde:** drei On-Beat-Stimmungen · Wirkung in 8 Blöcken
 - **Stimmungen:** Stille, Freude, Zorn, Trauer, Wunder

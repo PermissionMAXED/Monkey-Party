@@ -1,0 +1,15 @@
+{
+  "id": "mega_schwinge_capriccio",
+  "type": "motiv",
+  "parameters": {
+    "archetype": "schwinge",
+    "operation": "impuls",
+    "tempo": "116",
+    "tier": "gewoehnlich",
+    "health": "30.0",
+    "attack": "6.5",
+    "primary_color": "#F5C95F",
+    "secondary_color": "#BFA7FF",
+    "loot": "aetherklang:klangstaub"
+  }
+}

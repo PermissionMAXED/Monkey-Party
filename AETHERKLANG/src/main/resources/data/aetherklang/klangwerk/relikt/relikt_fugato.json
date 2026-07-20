@@ -1,0 +1,9 @@
+{
+  "id": "relikt_fugato",
+  "type": "relikt",
+  "parameters": {
+    "effect": "echo",
+    "cooldown_ticks": "84",
+    "tier": "rare"
+  }
+}

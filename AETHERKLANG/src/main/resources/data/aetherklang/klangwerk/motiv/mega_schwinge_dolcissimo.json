@@ -1,0 +1,15 @@
+{
+  "id": "mega_schwinge_dolcissimo",
+  "type": "motiv",
+  "parameters": {
+    "archetype": "schwinge",
+    "operation": "bewegung",
+    "tempo": "112",
+    "tier": "episch",
+    "health": "26.5",
+    "attack": "5.75",
+    "primary_color": "#72A7FF",
+    "secondary_color": "#E03A8C",
+    "loot": "aetherklang:kaskadenkern"
+  }
+}

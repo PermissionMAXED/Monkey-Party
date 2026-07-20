@@ -1,0 +1,15 @@
+{
+  "id": "mega_laeufer_maestoso",
+  "type": "motiv",
+  "parameters": {
+    "archetype": "laeufer",
+    "operation": "welle",
+    "tempo": "143",
+    "tier": "episch",
+    "health": "41.5",
+    "attack": "5.25",
+    "primary_color": "#1A1033",
+    "secondary_color": "#F5C95F",
+    "loot": "aetherklang:kaskadenkern"
+  }
+}

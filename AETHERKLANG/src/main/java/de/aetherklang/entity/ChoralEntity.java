@@ -1,10 +1,12 @@
 package de.aetherklang.entity;
 
+import de.aetherklang.bosswerk.ChoralRepriseService;
 import de.aetherklang.registry.ModParticles;
 import de.aetherklang.registry.ModSounds;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
+import net.minecraft.entity.attribute.EntityAttributeInstance;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.boss.BossBar;
 import net.minecraft.entity.boss.ServerBossBar;
@@ -14,6 +16,8 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.storage.ReadView;
+import net.minecraft.storage.WriteView;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
@@ -24,6 +28,10 @@ public final class ChoralEntity extends PhantomEntity {
     private static final int PHASE_TWO_INTERVAL = 100;
     private static final int PHASE_THREE_INTERVAL = 120;
     private int lastPhase = 1;
+    private boolean reprise;
+    private float attackMultiplier = 1.0F;
+    private float echoChance;
+    private float lifeSteal;
     private final ServerBossBar bossBar =
             new ServerBossBar(Text.translatable("entity.aetherklang.choral"), BossBar.Color.PURPLE, BossBar.Style.PROGRESS);
 
@@ -56,6 +64,47 @@ public final class ChoralEntity extends PhantomEntity {
         return 3;
     }
 
+    public boolean isReprise() {
+        return reprise;
+    }
+
+    public void setReprise(boolean reprise) {
+        configureReprise(reprise, true);
+    }
+
+    private void configureReprise(boolean reprise, boolean refillHealth) {
+        this.reprise = reprise;
+        if (!reprise) {
+            return;
+        }
+
+        ChoralRepriseService.RepriseAffixes affixes = ChoralRepriseService.affixes();
+        attackMultiplier = 1.0F + affixes.attackBonus();
+        echoChance = affixes.echoChance();
+        lifeSteal = affixes.lifeSteal();
+        setCustomName(Text.translatable("entity.aetherklang.choral_reprise"));
+
+        setAttributeBase(EntityAttributes.MAX_HEALTH, 360.0D);
+        setAttributeBase(EntityAttributes.ARMOR, 8.0D + affixes.armorBonus());
+        setAttributeBase(EntityAttributes.ATTACK_DAMAGE, 10.0D * attackMultiplier);
+        setAttributeBase(EntityAttributes.FLYING_SPEED, 0.62D * (1.0D + affixes.speedBonus()));
+        if (refillHealth) {
+            setHealth(getMaxHealth());
+        } else {
+            setHealth(Math.min(getHealth(), getMaxHealth()));
+        }
+    }
+
+    private void setAttributeBase(
+            net.minecraft.registry.entry.RegistryEntry<net.minecraft.entity.attribute.EntityAttribute> attribute,
+            double value
+    ) {
+        EntityAttributeInstance instance = getAttributeInstance(attribute);
+        if (instance != null) {
+            instance.setBaseValue(value);
+        }
+    }
+
     @Override
     public void tick() {
         super.tick();
@@ -82,7 +131,8 @@ public final class ChoralEntity extends PhantomEntity {
         }
         if (age % 4 == 0) {
             world.spawnParticles(
-                    getPhase() == 2 ? ModParticles.DISSONANZ_SMOKE : ModParticles.BEAM_MOTE,
+                    reprise ? ModParticles.KLANGOPERATION_RING
+                            : getPhase() == 2 ? ModParticles.DISSONANZ_SMOKE : ModParticles.BEAM_MOTE,
                     getX(),
                     getBodyY(0.58),
                     getZ(),
@@ -131,7 +181,7 @@ public final class ChoralEntity extends PhantomEntity {
     }
 
     private void tickNoteRing(ServerWorld world) {
-        int cycle = age % PHASE_ONE_INTERVAL;
+        int cycle = age % (reprise ? 65 : PHASE_ONE_INTERVAL);
         if (cycle >= 65 && cycle % 3 == 0) {
             spawnHorizontalRing(
                     world,
@@ -146,8 +196,9 @@ public final class ChoralEntity extends PhantomEntity {
         }
 
         Entity target = getTarget();
-        for (int i = 0; i < 14; i++) {
-            double angle = Math.PI * 2.0 * i / 14.0;
+        int noteCount = reprise && getRandom().nextFloat() < echoChance ? 20 : 14;
+        for (int i = 0; i < noteCount; i++) {
+            double angle = Math.PI * 2.0 * i / noteCount;
             Vec3d radial = new Vec3d(Math.cos(angle), 0.06 * Math.sin(angle * 3.0), Math.sin(angle));
             EchonoteEntity note = EchonoteEntity.create(world, this, target, false);
             note.setPosition(getEntityPos().add(radial.multiply(3.0)).add(0.0, getHeight() * 0.55, 0.0));
@@ -163,7 +214,7 @@ public final class ChoralEntity extends PhantomEntity {
             return;
         }
 
-        int cycle = age % PHASE_TWO_INTERVAL;
+        int cycle = age % (reprise ? 78 : PHASE_TWO_INTERVAL);
         Vec3d center = target.getEntityPos();
         if (cycle >= 65 && cycle % 3 == 0) {
             double radius = 5.0 - (cycle - 65) * 0.1;
@@ -175,8 +226,7 @@ public final class ChoralEntity extends PhantomEntity {
 
         Box storm = Box.of(center, 12.0, 6.0, 12.0);
         for (PlayerEntity player : world.getEntitiesByClass(PlayerEntity.class, storm, PlayerEntity::isAlive)) {
-            player.damage(world, world.getDamageSources().magic(), 9.0F);
-            ResonanceEntityEffects.addDissonanz(player, 0.24F);
+            damagePlayer(world, player, 9.0F, 0.24F);
         }
         world.spawnParticles(
                 ModParticles.DISSONANZ_SMOKE,
@@ -198,7 +248,7 @@ public final class ChoralEntity extends PhantomEntity {
             return;
         }
 
-        int cycle = age % PHASE_THREE_INTERVAL;
+        int cycle = age % (reprise ? 92 : PHASE_THREE_INTERVAL);
         Vec3d origin = getEntityPos().add(0.0, getHeight() * 0.62, 0.0);
         Vec3d end = target.getBoundingBox().getCenter();
         if (cycle >= 75 && cycle % 2 == 0) {
@@ -219,8 +269,7 @@ public final class ChoralEntity extends PhantomEntity {
             if (projection >= 0.0
                     && projection <= length
                     && relative.subtract(direction.multiply(projection)).lengthSquared() <= 2.25) {
-                player.damage(world, world.getDamageSources().magic(), 14.0F);
-                ResonanceEntityEffects.addDissonanz(player, 0.16F);
+                damagePlayer(world, player, 14.0F, 0.16F);
             }
         }
         playSound(ModSounds.DISSONANZ_HIT, 1.5F, 1.5F);
@@ -262,6 +311,37 @@ public final class ChoralEntity extends PhantomEntity {
             Vec3d point = origin.add(delta.multiply(i / (double) points));
             world.spawnParticles(particle, point.x, point.y, point.z, 2, 0.08, 0.08, 0.08, speed);
         }
+    }
+
+    private void damagePlayer(ServerWorld world, PlayerEntity player, float baseDamage, float dissonance) {
+        float damage = baseDamage * attackMultiplier;
+        if (player.damage(world, world.getDamageSources().magic(), damage)) {
+            ResonanceEntityEffects.addDissonanz(player, dissonance * attackMultiplier);
+            if (reprise && lifeSteal > 0.0F) {
+                heal(damage * lifeSteal);
+            }
+        }
+        if (reprise && getRandom().nextFloat() < echoChance) {
+            float echoDamage = damage * 0.45F;
+            if (player.damage(world, world.getDamageSources().magic(), echoDamage)) {
+                ResonanceEntityEffects.addDissonanz(player, dissonance * 0.5F);
+                if (lifeSteal > 0.0F) {
+                    heal(echoDamage * lifeSteal);
+                }
+            }
+        }
+    }
+
+    @Override
+    protected void readCustomData(ReadView view) {
+        super.readCustomData(view);
+        configureReprise(view.getBoolean("AetherklangReprise", false), false);
+    }
+
+    @Override
+    protected void writeCustomData(WriteView view) {
+        super.writeCustomData(view);
+        view.putBoolean("AetherklangReprise", reprise);
     }
 
     @Override

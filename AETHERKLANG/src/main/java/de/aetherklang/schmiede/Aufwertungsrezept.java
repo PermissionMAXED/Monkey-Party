@@ -15,12 +15,16 @@ import net.minecraft.util.Identifier;
 public record Aufwertungsrezept(
         String id,
         Item instrument,
+        Item result,
         Klangstufe from,
         Klangstufe to,
         Map<Item, Integer> ingredients
 ) {
     public Aufwertungsrezept {
         ingredients = Map.copyOf(ingredients);
+        if (!(instrument instanceof KlanginstrumentItem) || !(result instanceof KlanginstrumentItem)) {
+            throw new IllegalArgumentException("Upgrade '" + id + "' must use Klanginstrument items");
+        }
         if (!from.canAdvanceTo(to)) {
             throw new IllegalArgumentException("Upgrade '" + id + "' must advance exactly one Klangstufe");
         }
@@ -32,6 +36,7 @@ public record Aufwertungsrezept(
     public static Aufwertungsrezept decode(KlangwerkReloadDef definition) {
         Map<String, String> parameters = definition.parameters();
         Item instrument = requireItem(parameters, "instrument", definition.id());
+        Item result = requireItem(parameters, "result", definition.id());
         Klangstufe from = Klangstufe.fromId(require(parameters, "from", definition.id()));
         Klangstufe to = Klangstufe.fromId(require(parameters, "to", definition.id()));
 
@@ -49,11 +54,14 @@ public record Aufwertungsrezept(
                 positiveInt(parameters, "boss_drop_count", definition.id())
         );
 
-        return new Aufwertungsrezept(definition.id(), instrument, from, to, ingredients);
+        return new Aufwertungsrezept(definition.id(), instrument, result, from, to, ingredients);
     }
 
     public boolean matches(ItemStack stack) {
-        return stack.isOf(instrument) && SchmiedeComponents.getTier(stack) == from;
+        return stack.getItem() instanceof KlanginstrumentItem candidate
+                && instrument instanceof KlanginstrumentItem recipeInstrument
+                && candidate.instrumentId().equals(recipeInstrument.instrumentId())
+                && SchmiedeComponents.getTier(stack) == from;
     }
 
     private static Item requireItem(Map<String, String> parameters, String key, String recipeId) {

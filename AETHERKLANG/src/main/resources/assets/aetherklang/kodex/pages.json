@@ -933,6 +933,1194 @@
       ],
       "always_unlocked": true,
       "status": "playable"
+    },
+    {
+      "id": "mega_folio_laeufer_presto",
+      "category": "motive",
+      "title": "kodex.aetherklang.page.mega_folio_laeufer_presto.title",
+      "subtitle": "kodex.aetherklang.page.mega_folio_laeufer_presto.subtitle",
+      "body": [
+        "kodex.aetherklang.page.mega_folio_laeufer_presto.body.1",
+        "kodex.aetherklang.page.mega_folio_laeufer_presto.body.2"
+      ],
+      "always_unlocked": true,
+      "status": "playable"
+    },
+    {
+      "id": "mega_folio_laeufer_ostinato",
+      "category": "motive",
+      "title": "kodex.aetherklang.page.mega_folio_laeufer_ostinato.title",
+      "subtitle": "kodex.aetherklang.page.mega_folio_laeufer_ostinato.subtitle",
+      "body": [
+        "kodex.aetherklang.page.mega_folio_laeufer_ostinato.body.1",
+        "kodex.aetherklang.page.mega_folio_laeufer_ostinato.body.2"
+      ],
+      "always_unlocked": true,
+      "status": "playable"
+    },
+    {
+      "id": "mega_folio_laeufer_synkope",
+      "category": "motive",
+      "title": "kodex.aetherklang.page.mega_folio_laeufer_synkope.title",
+      "subtitle": "kodex.aetherklang.page.mega_folio_laeufer_synkope.subtitle",
+      "body": [
+        "kodex.aetherklang.page.mega_folio_laeufer_synkope.body.1",
+        "kodex.aetherklang.page.mega_folio_laeufer_synkope.body.2"
+      ],
+      "always_unlocked": true,
+      "status": "playable"
+    },
+    {
+      "id": "mega_folio_laeufer_largo",
+      "category": "motive",
+      "title": "kodex.aetherklang.page.mega_folio_laeufer_largo.title",
+      "subtitle": "kodex.aetherklang.page.mega_folio_laeufer_largo.subtitle",
+      "body": [
+        "kodex.aetherklang.page.mega_folio_laeufer_largo.body.1",
+        "kodex.aetherklang.page.mega_folio_laeufer_largo.body.2"
+      ],
+      "always_unlocked": true,
+      "status": "playable"
+    },
+    {
+      "id": "mega_folio_laeufer_pizzicato",
+      "category": "motive",
+      "title": "kodex.aetherklang.page.mega_folio_laeufer_pizzicato.title",
+      "subtitle": "kodex.aetherklang.page.mega_folio_laeufer_pizzicato.subtitle",
+      "body": [
+        "kodex.aetherklang.page.mega_folio_laeufer_pizzicato.body.1",
+        "kodex.aetherklang.page.mega_folio_laeufer_pizzicato.body.2"
+      ],
+      "always_unlocked": true,
+      "status": "playable"
+    },
+    {
+      "id": "mega_folio_laeufer_marcato",
+      "category": "motive",
+      "title": "kodex.aetherklang.page.mega_folio_laeufer_marcato.title",
+      "subtitle": "kodex.aetherklang.page.mega_folio_laeufer_marcato.subtitle",
+      "body": [
+        "kodex.aetherklang.page.mega_folio_laeufer_marcato.body.1",
+        "kodex.aetherklang.page.mega_folio_laeufer_marcato.body.2"
+      ],
+      "always_unlocked": true,
+      "status": "playable"
+    },
+    {
+      "id": "mega_folio_laeufer_fugato",
+      "category": "motive",
+      "title": "kodex.aetherklang.page.mega_folio_laeufer_fugato.title",
+      "subtitle": "kodex.aetherklang.page.mega_folio_laeufer_fugato.subtitle",
+      "body": [
+        "kodex.aetherklang.page.mega_folio_laeufer_fugato.body.1",
+        "kodex.aetherklang.page.mega_folio_laeufer_fugato.body.2"
+      ],
+      "always_unlocked": true,
+      "status": "playable"
+    },
+    {
+      "id": "mega_folio_mega_laeufer_allegro",
+      "category": "motive",
+      "title": "kodex.aetherklang.page.mega_folio_mega_laeufer_allegro.title",
+      "subtitle": "kodex.aetherklang.page.mega_folio_mega_laeufer_allegro.subtitle",
+      "body": [
+        "kodex.aetherklang.page.mega_folio_mega_laeufer_allegro.body.1",
+        "kodex.aetherklang.page.mega_folio_mega_laeufer_allegro.body.2"
+      ],
+      "always_unlocked": true,
+      "status": "playable"
+    },
+    {
+      "id": "mega_folio_mega_laeufer_accelerando",
+      "category": "motive",
+      "title": "kodex.aetherklang.page.mega_folio_mega_laeufer_accelerando.title",
+      "subtitle": "kodex.aetherklang.page.mega_folio_mega_laeufer_accelerando.subtitle",
+      "body": [
+        "kodex.aetherklang.page.mega_folio_mega_laeufer_accelerando.body.1",
+        "kodex.aetherklang.page.mega_folio_mega_laeufer_accelerando.body.2"
+      ],
+      "always_unlocked": true,
+      "status": "playable"
+    },
+    {
+      "id": "mega_folio_mega_laeufer_rubato",
+      "category": "motive",
+      "title": "kodex.aetherklang.page.mega_folio_mega_laeufer_rubato.title",
+      "subtitle": "kodex.aetherklang.page.mega_folio_mega_laeufer_rubato.subtitle",
+      "body": [
+        "kodex.aetherklang.page.mega_folio_mega_laeufer_rubato.body.1",
+        "kodex.aetherklang.page.mega_folio_mega_laeufer_rubato.body.2"
+      ],
+      "always_unlocked": true,
+      "status": "playable"
+    },
+    {
+      "id": "mega_folio_mega_laeufer_vivace",
+      "category": "motive",
+      "title": "kodex.aetherklang.page.mega_folio_mega_laeufer_vivace.title",
+      "subtitle": "kodex.aetherklang.page.mega_folio_mega_laeufer_vivace.subtitle",
+      "body": [
+        "kodex.aetherklang.page.mega_folio_mega_laeufer_vivace.body.1",
+        "kodex.aetherklang.page.mega_folio_mega_laeufer_vivace.body.2"
+      ],
+      "always_unlocked": true,
+      "status": "playable"
+    },
+    {
+      "id": "mega_folio_mega_laeufer_rondo",
+      "category": "motive",
+      "title": "kodex.aetherklang.page.mega_folio_mega_laeufer_rondo.title",
+      "subtitle": "kodex.aetherklang.page.mega_folio_mega_laeufer_rondo.subtitle",
+      "body": [
+        "kodex.aetherklang.page.mega_folio_mega_laeufer_rondo.body.1",
+        "kodex.aetherklang.page.mega_folio_mega_laeufer_rondo.body.2"
+      ],
+      "always_unlocked": true,
+      "status": "playable"
+    },
+    {
+      "id": "mega_folio_mega_laeufer_cadenz",
+      "category": "motive",
+      "title": "kodex.aetherklang.page.mega_folio_mega_laeufer_cadenz.title",
+      "subtitle": "kodex.aetherklang.page.mega_folio_mega_laeufer_cadenz.subtitle",
+      "body": [
+        "kodex.aetherklang.page.mega_folio_mega_laeufer_cadenz.body.1",
+        "kodex.aetherklang.page.mega_folio_mega_laeufer_cadenz.body.2"
+      ],
+      "always_unlocked": true,
+      "status": "playable"
+    },
+    {
+      "id": "mega_folio_mega_laeufer_dolce",
+      "category": "motive",
+      "title": "kodex.aetherklang.page.mega_folio_mega_laeufer_dolce.title",
+      "subtitle": "kodex.aetherklang.page.mega_folio_mega_laeufer_dolce.subtitle",
+      "body": [
+        "kodex.aetherklang.page.mega_folio_mega_laeufer_dolce.body.1",
+        "kodex.aetherklang.page.mega_folio_mega_laeufer_dolce.body.2"
+      ],
+      "always_unlocked": true,
+      "status": "playable"
+    },
+    {
+      "id": "mega_folio_mega_laeufer_furioso",
+      "category": "motive",
+      "title": "kodex.aetherklang.page.mega_folio_mega_laeufer_furioso.title",
+      "subtitle": "kodex.aetherklang.page.mega_folio_mega_laeufer_furioso.subtitle",
+      "body": [
+        "kodex.aetherklang.page.mega_folio_mega_laeufer_furioso.body.1",
+        "kodex.aetherklang.page.mega_folio_mega_laeufer_furioso.body.2"
+      ],
+      "always_unlocked": true,
+      "status": "playable"
+    },
+    {
+      "id": "mega_folio_mega_laeufer_andante",
+      "category": "motive",
+      "title": "kodex.aetherklang.page.mega_folio_mega_laeufer_andante.title",
+      "subtitle": "kodex.aetherklang.page.mega_folio_mega_laeufer_andante.subtitle",
+      "body": [
+        "kodex.aetherklang.page.mega_folio_mega_laeufer_andante.body.1",
+        "kodex.aetherklang.page.mega_folio_mega_laeufer_andante.body.2"
+      ],
+      "always_unlocked": true,
+      "status": "playable"
+    },
+    {
+      "id": "mega_folio_mega_laeufer_scherzo",
+      "category": "motive",
+      "title": "kodex.aetherklang.page.mega_folio_mega_laeufer_scherzo.title",
+      "subtitle": "kodex.aetherklang.page.mega_folio_mega_laeufer_scherzo.subtitle",
+      "body": [
+        "kodex.aetherklang.page.mega_folio_mega_laeufer_scherzo.body.1",
+        "kodex.aetherklang.page.mega_folio_mega_laeufer_scherzo.body.2"
+      ],
+      "always_unlocked": true,
+      "status": "playable"
+    },
+    {
+      "id": "mega_folio_mega_laeufer_coda",
+      "category": "motive",
+      "title": "kodex.aetherklang.page.mega_folio_mega_laeufer_coda.title",
+      "subtitle": "kodex.aetherklang.page.mega_folio_mega_laeufer_coda.subtitle",
+      "body": [
+        "kodex.aetherklang.page.mega_folio_mega_laeufer_coda.body.1",
+        "kodex.aetherklang.page.mega_folio_mega_laeufer_coda.body.2"
+      ],
+      "always_unlocked": true,
+      "status": "playable"
+    },
+    {
+      "id": "mega_folio_mega_laeufer_maestoso",
+      "category": "motive",
+      "title": "kodex.aetherklang.page.mega_folio_mega_laeufer_maestoso.title",
+      "subtitle": "kodex.aetherklang.page.mega_folio_mega_laeufer_maestoso.subtitle",
+      "body": [
+        "kodex.aetherklang.page.mega_folio_mega_laeufer_maestoso.body.1",
+        "kodex.aetherklang.page.mega_folio_mega_laeufer_maestoso.body.2"
+      ],
+      "always_unlocked": true,
+      "status": "playable"
+    },
+    {
+      "id": "mega_folio_mega_laeufer_ritardando",
+      "category": "motive",
+      "title": "kodex.aetherklang.page.mega_folio_mega_laeufer_ritardando.title",
+      "subtitle": "kodex.aetherklang.page.mega_folio_mega_laeufer_ritardando.subtitle",
+      "body": [
+        "kodex.aetherklang.page.mega_folio_mega_laeufer_ritardando.body.1",
+        "kodex.aetherklang.page.mega_folio_mega_laeufer_ritardando.body.2"
+      ],
+      "always_unlocked": true,
+      "status": "playable"
+    },
+    {
+      "id": "mega_folio_mega_laeufer_brillante",
+      "category": "motive",
+      "title": "kodex.aetherklang.page.mega_folio_mega_laeufer_brillante.title",
+      "subtitle": "kodex.aetherklang.page.mega_folio_mega_laeufer_brillante.subtitle",
+      "body": [
+        "kodex.aetherklang.page.mega_folio_mega_laeufer_brillante.body.1",
+        "kodex.aetherklang.page.mega_folio_mega_laeufer_brillante.body.2"
+      ],
+      "always_unlocked": true,
+      "status": "playable"
+    },
+    {
+      "id": "mega_folio_mega_laeufer_con_fuoco",
+      "category": "motive",
+      "title": "kodex.aetherklang.page.mega_folio_mega_laeufer_con_fuoco.title",
+      "subtitle": "kodex.aetherklang.page.mega_folio_mega_laeufer_con_fuoco.subtitle",
+      "body": [
+        "kodex.aetherklang.page.mega_folio_mega_laeufer_con_fuoco.body.1",
+        "kodex.aetherklang.page.mega_folio_mega_laeufer_con_fuoco.body.2"
+      ],
+      "always_unlocked": true,
+      "status": "playable"
+    },
+    {
+      "id": "mega_folio_mega_laeufer_grazioso",
+      "category": "motive",
+      "title": "kodex.aetherklang.page.mega_folio_mega_laeufer_grazioso.title",
+      "subtitle": "kodex.aetherklang.page.mega_folio_mega_laeufer_grazioso.subtitle",
+      "body": [
+        "kodex.aetherklang.page.mega_folio_mega_laeufer_grazioso.body.1",
+        "kodex.aetherklang.page.mega_folio_mega_laeufer_grazioso.body.2"
+      ],
+      "always_unlocked": true,
+      "status": "playable"
+    },
+    {
+      "id": "mega_folio_mega_laeufer_tempestoso",
+      "category": "motive",
+      "title": "kodex.aetherklang.page.mega_folio_mega_laeufer_tempestoso.title",
+      "subtitle": "kodex.aetherklang.page.mega_folio_mega_laeufer_tempestoso.subtitle",
+      "body": [
+        "kodex.aetherklang.page.mega_folio_mega_laeufer_tempestoso.body.1",
+        "kodex.aetherklang.page.mega_folio_mega_laeufer_tempestoso.body.2"
+      ],
+      "always_unlocked": true,
+      "status": "playable"
+    },
+    {
+      "id": "mega_folio_schwinge_legato",
+      "category": "motive",
+      "title": "kodex.aetherklang.page.mega_folio_schwinge_legato.title",
+      "subtitle": "kodex.aetherklang.page.mega_folio_schwinge_legato.subtitle",
+      "body": [
+        "kodex.aetherklang.page.mega_folio_schwinge_legato.body.1",
+        "kodex.aetherklang.page.mega_folio_schwinge_legato.body.2"
+      ],
+      "always_unlocked": true,
+      "status": "playable"
+    },
+    {
+      "id": "mega_folio_schwinge_staccato",
+      "category": "motive",
+      "title": "kodex.aetherklang.page.mega_folio_schwinge_staccato.title",
+      "subtitle": "kodex.aetherklang.page.mega_folio_schwinge_staccato.subtitle",
+      "body": [
+        "kodex.aetherklang.page.mega_folio_schwinge_staccato.body.1",
+        "kodex.aetherklang.page.mega_folio_schwinge_staccato.body.2"
+      ],
+      "always_unlocked": true,
+      "status": "playable"
+    },
+    {
+      "id": "mega_folio_schwinge_nocturne",
+      "category": "motive",
+      "title": "kodex.aetherklang.page.mega_folio_schwinge_nocturne.title",
+      "subtitle": "kodex.aetherklang.page.mega_folio_schwinge_nocturne.subtitle",
+      "body": [
+        "kodex.aetherklang.page.mega_folio_schwinge_nocturne.body.1",
+        "kodex.aetherklang.page.mega_folio_schwinge_nocturne.body.2"
+      ],
+      "always_unlocked": true,
+      "status": "playable"
+    },
+    {
+      "id": "mega_folio_schwinge_glissando",
+      "category": "motive",
+      "title": "kodex.aetherklang.page.mega_folio_schwinge_glissando.title",
+      "subtitle": "kodex.aetherklang.page.mega_folio_schwinge_glissando.subtitle",
+      "body": [
+        "kodex.aetherklang.page.mega_folio_schwinge_glissando.body.1",
+        "kodex.aetherklang.page.mega_folio_schwinge_glissando.body.2"
+      ],
+      "always_unlocked": true,
+      "status": "playable"
+    },
+    {
+      "id": "mega_folio_schwinge_tremolo",
+      "category": "motive",
+      "title": "kodex.aetherklang.page.mega_folio_schwinge_tremolo.title",
+      "subtitle": "kodex.aetherklang.page.mega_folio_schwinge_tremolo.subtitle",
+      "body": [
+        "kodex.aetherklang.page.mega_folio_schwinge_tremolo.body.1",
+        "kodex.aetherklang.page.mega_folio_schwinge_tremolo.body.2"
+      ],
+      "always_unlocked": true,
+      "status": "playable"
+    },
+    {
+      "id": "mega_folio_schwinge_fermate",
+      "category": "motive",
+      "title": "kodex.aetherklang.page.mega_folio_schwinge_fermate.title",
+      "subtitle": "kodex.aetherklang.page.mega_folio_schwinge_fermate.subtitle",
+      "body": [
+        "kodex.aetherklang.page.mega_folio_schwinge_fermate.body.1",
+        "kodex.aetherklang.page.mega_folio_schwinge_fermate.body.2"
+      ],
+      "always_unlocked": true,
+      "status": "playable"
+    },
+    {
+      "id": "mega_folio_schwinge_arpeggio",
+      "category": "motive",
+      "title": "kodex.aetherklang.page.mega_folio_schwinge_arpeggio.title",
+      "subtitle": "kodex.aetherklang.page.mega_folio_schwinge_arpeggio.subtitle",
+      "body": [
+        "kodex.aetherklang.page.mega_folio_schwinge_arpeggio.body.1",
+        "kodex.aetherklang.page.mega_folio_schwinge_arpeggio.body.2"
+      ],
+      "always_unlocked": true,
+      "status": "playable"
+    },
+    {
+      "id": "mega_folio_mega_schwinge_allegretto",
+      "category": "motive",
+      "title": "kodex.aetherklang.page.mega_folio_mega_schwinge_allegretto.title",
+      "subtitle": "kodex.aetherklang.page.mega_folio_mega_schwinge_allegretto.subtitle",
+      "body": [
+        "kodex.aetherklang.page.mega_folio_mega_schwinge_allegretto.body.1",
+        "kodex.aetherklang.page.mega_folio_mega_schwinge_allegretto.body.2"
+      ],
+      "always_unlocked": true,
+      "status": "playable"
+    },
+    {
+      "id": "mega_folio_mega_schwinge_cantabile",
+      "category": "motive",
+      "title": "kodex.aetherklang.page.mega_folio_mega_schwinge_cantabile.title",
+      "subtitle": "kodex.aetherklang.page.mega_folio_mega_schwinge_cantabile.subtitle",
+      "body": [
+        "kodex.aetherklang.page.mega_folio_mega_schwinge_cantabile.body.1",
+        "kodex.aetherklang.page.mega_folio_mega_schwinge_cantabile.body.2"
+      ],
+      "always_unlocked": true,
+      "status": "playable"
+    },
+    {
+      "id": "mega_folio_mega_schwinge_vibrato",
+      "category": "motive",
+      "title": "kodex.aetherklang.page.mega_folio_mega_schwinge_vibrato.title",
+      "subtitle": "kodex.aetherklang.page.mega_folio_mega_schwinge_vibrato.subtitle",
+      "body": [
+        "kodex.aetherklang.page.mega_folio_mega_schwinge_vibrato.body.1",
+        "kodex.aetherklang.page.mega_folio_mega_schwinge_vibrato.body.2"
+      ],
+      "always_unlocked": true,
+      "status": "playable"
+    },
+    {
+      "id": "mega_folio_mega_schwinge_dolcissimo",
+      "category": "motive",
+      "title": "kodex.aetherklang.page.mega_folio_mega_schwinge_dolcissimo.title",
+      "subtitle": "kodex.aetherklang.page.mega_folio_mega_schwinge_dolcissimo.subtitle",
+      "body": [
+        "kodex.aetherklang.page.mega_folio_mega_schwinge_dolcissimo.body.1",
+        "kodex.aetherklang.page.mega_folio_mega_schwinge_dolcissimo.body.2"
+      ],
+      "always_unlocked": true,
+      "status": "playable"
+    },
+    {
+      "id": "mega_folio_mega_schwinge_capriccio",
+      "category": "motive",
+      "title": "kodex.aetherklang.page.mega_folio_mega_schwinge_capriccio.title",
+      "subtitle": "kodex.aetherklang.page.mega_folio_mega_schwinge_capriccio.subtitle",
+      "body": [
+        "kodex.aetherklang.page.mega_folio_mega_schwinge_capriccio.body.1",
+        "kodex.aetherklang.page.mega_folio_mega_schwinge_capriccio.body.2"
+      ],
+      "always_unlocked": true,
+      "status": "playable"
+    },
+    {
+      "id": "mega_folio_mega_schwinge_arabeske",
+      "category": "motive",
+      "title": "kodex.aetherklang.page.mega_folio_mega_schwinge_arabeske.title",
+      "subtitle": "kodex.aetherklang.page.mega_folio_mega_schwinge_arabeske.subtitle",
+      "body": [
+        "kodex.aetherklang.page.mega_folio_mega_schwinge_arabeske.body.1",
+        "kodex.aetherklang.page.mega_folio_mega_schwinge_arabeske.body.2"
+      ],
+      "always_unlocked": true,
+      "status": "playable"
+    },
+    {
+      "id": "mega_folio_mega_schwinge_sostenuto",
+      "category": "motive",
+      "title": "kodex.aetherklang.page.mega_folio_mega_schwinge_sostenuto.title",
+      "subtitle": "kodex.aetherklang.page.mega_folio_mega_schwinge_sostenuto.subtitle",
+      "body": [
+        "kodex.aetherklang.page.mega_folio_mega_schwinge_sostenuto.body.1",
+        "kodex.aetherklang.page.mega_folio_mega_schwinge_sostenuto.body.2"
+      ],
+      "always_unlocked": true,
+      "status": "playable"
+    },
+    {
+      "id": "mega_folio_mega_schwinge_volante",
+      "category": "motive",
+      "title": "kodex.aetherklang.page.mega_folio_mega_schwinge_volante.title",
+      "subtitle": "kodex.aetherklang.page.mega_folio_mega_schwinge_volante.subtitle",
+      "body": [
+        "kodex.aetherklang.page.mega_folio_mega_schwinge_volante.body.1",
+        "kodex.aetherklang.page.mega_folio_mega_schwinge_volante.body.2"
+      ],
+      "always_unlocked": true,
+      "status": "playable"
+    },
+    {
+      "id": "mega_folio_mega_schwinge_serenade",
+      "category": "motive",
+      "title": "kodex.aetherklang.page.mega_folio_mega_schwinge_serenade.title",
+      "subtitle": "kodex.aetherklang.page.mega_folio_mega_schwinge_serenade.subtitle",
+      "body": [
+        "kodex.aetherklang.page.mega_folio_mega_schwinge_serenade.body.1",
+        "kodex.aetherklang.page.mega_folio_mega_schwinge_serenade.body.2"
+      ],
+      "always_unlocked": true,
+      "status": "playable"
+    },
+    {
+      "id": "mega_folio_mega_schwinge_rhapsodie",
+      "category": "motive",
+      "title": "kodex.aetherklang.page.mega_folio_mega_schwinge_rhapsodie.title",
+      "subtitle": "kodex.aetherklang.page.mega_folio_mega_schwinge_rhapsodie.subtitle",
+      "body": [
+        "kodex.aetherklang.page.mega_folio_mega_schwinge_rhapsodie.body.1",
+        "kodex.aetherklang.page.mega_folio_mega_schwinge_rhapsodie.body.2"
+      ],
+      "always_unlocked": true,
+      "status": "playable"
+    },
+    {
+      "id": "mega_folio_mega_schwinge_intermezzo",
+      "category": "motive",
+      "title": "kodex.aetherklang.page.mega_folio_mega_schwinge_intermezzo.title",
+      "subtitle": "kodex.aetherklang.page.mega_folio_mega_schwinge_intermezzo.subtitle",
+      "body": [
+        "kodex.aetherklang.page.mega_folio_mega_schwinge_intermezzo.body.1",
+        "kodex.aetherklang.page.mega_folio_mega_schwinge_intermezzo.body.2"
+      ],
+      "always_unlocked": true,
+      "status": "playable"
+    },
+    {
+      "id": "mega_folio_mega_schwinge_arioso",
+      "category": "motive",
+      "title": "kodex.aetherklang.page.mega_folio_mega_schwinge_arioso.title",
+      "subtitle": "kodex.aetherklang.page.mega_folio_mega_schwinge_arioso.subtitle",
+      "body": [
+        "kodex.aetherklang.page.mega_folio_mega_schwinge_arioso.body.1",
+        "kodex.aetherklang.page.mega_folio_mega_schwinge_arioso.body.2"
+      ],
+      "always_unlocked": true,
+      "status": "playable"
+    },
+    {
+      "id": "mega_folio_mega_schwinge_etude",
+      "category": "motive",
+      "title": "kodex.aetherklang.page.mega_folio_mega_schwinge_etude.title",
+      "subtitle": "kodex.aetherklang.page.mega_folio_mega_schwinge_etude.subtitle",
+      "body": [
+        "kodex.aetherklang.page.mega_folio_mega_schwinge_etude.body.1",
+        "kodex.aetherklang.page.mega_folio_mega_schwinge_etude.body.2"
+      ],
+      "always_unlocked": true,
+      "status": "playable"
+    },
+    {
+      "id": "mega_folio_mega_schwinge_sonatine",
+      "category": "motive",
+      "title": "kodex.aetherklang.page.mega_folio_mega_schwinge_sonatine.title",
+      "subtitle": "kodex.aetherklang.page.mega_folio_mega_schwinge_sonatine.subtitle",
+      "body": [
+        "kodex.aetherklang.page.mega_folio_mega_schwinge_sonatine.body.1",
+        "kodex.aetherklang.page.mega_folio_mega_schwinge_sonatine.body.2"
+      ],
+      "always_unlocked": true,
+      "status": "playable"
+    },
+    {
+      "id": "mega_folio_mega_schwinge_pastorale",
+      "category": "motive",
+      "title": "kodex.aetherklang.page.mega_folio_mega_schwinge_pastorale.title",
+      "subtitle": "kodex.aetherklang.page.mega_folio_mega_schwinge_pastorale.subtitle",
+      "body": [
+        "kodex.aetherklang.page.mega_folio_mega_schwinge_pastorale.body.1",
+        "kodex.aetherklang.page.mega_folio_mega_schwinge_pastorale.body.2"
+      ],
+      "always_unlocked": true,
+      "status": "playable"
+    },
+    {
+      "id": "mega_folio_mega_schwinge_sforzato",
+      "category": "motive",
+      "title": "kodex.aetherklang.page.mega_folio_mega_schwinge_sforzato.title",
+      "subtitle": "kodex.aetherklang.page.mega_folio_mega_schwinge_sforzato.subtitle",
+      "body": [
+        "kodex.aetherklang.page.mega_folio_mega_schwinge_sforzato.body.1",
+        "kodex.aetherklang.page.mega_folio_mega_schwinge_sforzato.body.2"
+      ],
+      "always_unlocked": true,
+      "status": "playable"
+    },
+    {
+      "id": "mega_folio_mega_schwinge_luminoso",
+      "category": "motive",
+      "title": "kodex.aetherklang.page.mega_folio_mega_schwinge_luminoso.title",
+      "subtitle": "kodex.aetherklang.page.mega_folio_mega_schwinge_luminoso.subtitle",
+      "body": [
+        "kodex.aetherklang.page.mega_folio_mega_schwinge_luminoso.body.1",
+        "kodex.aetherklang.page.mega_folio_mega_schwinge_luminoso.body.2"
+      ],
+      "always_unlocked": true,
+      "status": "playable"
+    },
+    {
+      "id": "mega_folio_pulser_bass",
+      "category": "motive",
+      "title": "kodex.aetherklang.page.mega_folio_pulser_bass.title",
+      "subtitle": "kodex.aetherklang.page.mega_folio_pulser_bass.subtitle",
+      "body": [
+        "kodex.aetherklang.page.mega_folio_pulser_bass.body.1",
+        "kodex.aetherklang.page.mega_folio_pulser_bass.body.2"
+      ],
+      "always_unlocked": true,
+      "status": "playable"
+    },
+    {
+      "id": "mega_folio_pulser_triole",
+      "category": "motive",
+      "title": "kodex.aetherklang.page.mega_folio_pulser_triole.title",
+      "subtitle": "kodex.aetherklang.page.mega_folio_pulser_triole.subtitle",
+      "body": [
+        "kodex.aetherklang.page.mega_folio_pulser_triole.body.1",
+        "kodex.aetherklang.page.mega_folio_pulser_triole.body.2"
+      ],
+      "always_unlocked": true,
+      "status": "playable"
+    },
+    {
+      "id": "mega_folio_pulser_fortissimo",
+      "category": "motive",
+      "title": "kodex.aetherklang.page.mega_folio_pulser_fortissimo.title",
+      "subtitle": "kodex.aetherklang.page.mega_folio_pulser_fortissimo.subtitle",
+      "body": [
+        "kodex.aetherklang.page.mega_folio_pulser_fortissimo.body.1",
+        "kodex.aetherklang.page.mega_folio_pulser_fortissimo.body.2"
+      ],
+      "always_unlocked": true,
+      "status": "playable"
+    },
+    {
+      "id": "mega_folio_pulser_diminuendo",
+      "category": "motive",
+      "title": "kodex.aetherklang.page.mega_folio_pulser_diminuendo.title",
+      "subtitle": "kodex.aetherklang.page.mega_folio_pulser_diminuendo.subtitle",
+      "body": [
+        "kodex.aetherklang.page.mega_folio_pulser_diminuendo.body.1",
+        "kodex.aetherklang.page.mega_folio_pulser_diminuendo.body.2"
+      ],
+      "always_unlocked": true,
+      "status": "playable"
+    },
+    {
+      "id": "mega_folio_pulser_polyrhythmus",
+      "category": "motive",
+      "title": "kodex.aetherklang.page.mega_folio_pulser_polyrhythmus.title",
+      "subtitle": "kodex.aetherklang.page.mega_folio_pulser_polyrhythmus.subtitle",
+      "body": [
+        "kodex.aetherklang.page.mega_folio_pulser_polyrhythmus.body.1",
+        "kodex.aetherklang.page.mega_folio_pulser_polyrhythmus.body.2"
+      ],
+      "always_unlocked": true,
+      "status": "playable"
+    },
+    {
+      "id": "mega_folio_pulser_fermate",
+      "category": "motive",
+      "title": "kodex.aetherklang.page.mega_folio_pulser_fermate.title",
+      "subtitle": "kodex.aetherklang.page.mega_folio_pulser_fermate.subtitle",
+      "body": [
+        "kodex.aetherklang.page.mega_folio_pulser_fermate.body.1",
+        "kodex.aetherklang.page.mega_folio_pulser_fermate.body.2"
+      ],
+      "always_unlocked": true,
+      "status": "playable"
+    },
+    {
+      "id": "mega_folio_mega_pulser_grave",
+      "category": "motive",
+      "title": "kodex.aetherklang.page.mega_folio_mega_pulser_grave.title",
+      "subtitle": "kodex.aetherklang.page.mega_folio_mega_pulser_grave.subtitle",
+      "body": [
+        "kodex.aetherklang.page.mega_folio_mega_pulser_grave.body.1",
+        "kodex.aetherklang.page.mega_folio_mega_pulser_grave.body.2"
+      ],
+      "always_unlocked": true,
+      "status": "playable"
+    },
+    {
+      "id": "mega_folio_mega_pulser_adagio",
+      "category": "motive",
+      "title": "kodex.aetherklang.page.mega_folio_mega_pulser_adagio.title",
+      "subtitle": "kodex.aetherklang.page.mega_folio_mega_pulser_adagio.subtitle",
+      "body": [
+        "kodex.aetherklang.page.mega_folio_mega_pulser_adagio.body.1",
+        "kodex.aetherklang.page.mega_folio_mega_pulser_adagio.body.2"
+      ],
+      "always_unlocked": true,
+      "status": "playable"
+    },
+    {
+      "id": "mega_folio_mega_pulser_crescendo",
+      "category": "motive",
+      "title": "kodex.aetherklang.page.mega_folio_mega_pulser_crescendo.title",
+      "subtitle": "kodex.aetherklang.page.mega_folio_mega_pulser_crescendo.subtitle",
+      "body": [
+        "kodex.aetherklang.page.mega_folio_mega_pulser_crescendo.body.1",
+        "kodex.aetherklang.page.mega_folio_mega_pulser_crescendo.body.2"
+      ],
+      "always_unlocked": true,
+      "status": "playable"
+    },
+    {
+      "id": "mega_folio_mega_pulser_decrescendo",
+      "category": "motive",
+      "title": "kodex.aetherklang.page.mega_folio_mega_pulser_decrescendo.title",
+      "subtitle": "kodex.aetherklang.page.mega_folio_mega_pulser_decrescendo.subtitle",
+      "body": [
+        "kodex.aetherklang.page.mega_folio_mega_pulser_decrescendo.body.1",
+        "kodex.aetherklang.page.mega_folio_mega_pulser_decrescendo.body.2"
+      ],
+      "always_unlocked": true,
+      "status": "playable"
+    },
+    {
+      "id": "mega_folio_mega_pulser_ostinato",
+      "category": "motive",
+      "title": "kodex.aetherklang.page.mega_folio_mega_pulser_ostinato.title",
+      "subtitle": "kodex.aetherklang.page.mega_folio_mega_pulser_ostinato.subtitle",
+      "body": [
+        "kodex.aetherklang.page.mega_folio_mega_pulser_ostinato.body.1",
+        "kodex.aetherklang.page.mega_folio_mega_pulser_ostinato.body.2"
+      ],
+      "always_unlocked": true,
+      "status": "playable"
+    },
+    {
+      "id": "mega_folio_mega_pulser_marziale",
+      "category": "motive",
+      "title": "kodex.aetherklang.page.mega_folio_mega_pulser_marziale.title",
+      "subtitle": "kodex.aetherklang.page.mega_folio_mega_pulser_marziale.subtitle",
+      "body": [
+        "kodex.aetherklang.page.mega_folio_mega_pulser_marziale.body.1",
+        "kodex.aetherklang.page.mega_folio_mega_pulser_marziale.body.2"
+      ],
+      "always_unlocked": true,
+      "status": "playable"
+    },
+    {
+      "id": "mega_folio_mega_pulser_maestoso",
+      "category": "motive",
+      "title": "kodex.aetherklang.page.mega_folio_mega_pulser_maestoso.title",
+      "subtitle": "kodex.aetherklang.page.mega_folio_mega_pulser_maestoso.subtitle",
+      "body": [
+        "kodex.aetherklang.page.mega_folio_mega_pulser_maestoso.body.1",
+        "kodex.aetherklang.page.mega_folio_mega_pulser_maestoso.body.2"
+      ],
+      "always_unlocked": true,
+      "status": "playable"
+    },
+    {
+      "id": "mega_folio_mega_pulser_lento",
+      "category": "motive",
+      "title": "kodex.aetherklang.page.mega_folio_mega_pulser_lento.title",
+      "subtitle": "kodex.aetherklang.page.mega_folio_mega_pulser_lento.subtitle",
+      "body": [
+        "kodex.aetherklang.page.mega_folio_mega_pulser_lento.body.1",
+        "kodex.aetherklang.page.mega_folio_mega_pulser_lento.body.2"
+      ],
+      "always_unlocked": true,
+      "status": "playable"
+    },
+    {
+      "id": "mega_folio_mega_pulser_passacaglia",
+      "category": "motive",
+      "title": "kodex.aetherklang.page.mega_folio_mega_pulser_passacaglia.title",
+      "subtitle": "kodex.aetherklang.page.mega_folio_mega_pulser_passacaglia.subtitle",
+      "body": [
+        "kodex.aetherklang.page.mega_folio_mega_pulser_passacaglia.body.1",
+        "kodex.aetherklang.page.mega_folio_mega_pulser_passacaglia.body.2"
+      ],
+      "always_unlocked": true,
+      "status": "playable"
+    },
+    {
+      "id": "mega_folio_mega_pulser_chaconne",
+      "category": "motive",
+      "title": "kodex.aetherklang.page.mega_folio_mega_pulser_chaconne.title",
+      "subtitle": "kodex.aetherklang.page.mega_folio_mega_pulser_chaconne.subtitle",
+      "body": [
+        "kodex.aetherklang.page.mega_folio_mega_pulser_chaconne.body.1",
+        "kodex.aetherklang.page.mega_folio_mega_pulser_chaconne.body.2"
+      ],
+      "always_unlocked": true,
+      "status": "playable"
+    },
+    {
+      "id": "mega_folio_mega_pulser_organum",
+      "category": "motive",
+      "title": "kodex.aetherklang.page.mega_folio_mega_pulser_organum.title",
+      "subtitle": "kodex.aetherklang.page.mega_folio_mega_pulser_organum.subtitle",
+      "body": [
+        "kodex.aetherklang.page.mega_folio_mega_pulser_organum.body.1",
+        "kodex.aetherklang.page.mega_folio_mega_pulser_organum.body.2"
+      ],
+      "always_unlocked": true,
+      "status": "playable"
+    },
+    {
+      "id": "mega_folio_mega_pulser_lamentoso",
+      "category": "motive",
+      "title": "kodex.aetherklang.page.mega_folio_mega_pulser_lamentoso.title",
+      "subtitle": "kodex.aetherklang.page.mega_folio_mega_pulser_lamentoso.subtitle",
+      "body": [
+        "kodex.aetherklang.page.mega_folio_mega_pulser_lamentoso.body.1",
+        "kodex.aetherklang.page.mega_folio_mega_pulser_lamentoso.body.2"
+      ],
+      "always_unlocked": true,
+      "status": "playable"
+    },
+    {
+      "id": "mega_folio_mega_pulser_solenne",
+      "category": "motive",
+      "title": "kodex.aetherklang.page.mega_folio_mega_pulser_solenne.title",
+      "subtitle": "kodex.aetherklang.page.mega_folio_mega_pulser_solenne.subtitle",
+      "body": [
+        "kodex.aetherklang.page.mega_folio_mega_pulser_solenne.body.1",
+        "kodex.aetherklang.page.mega_folio_mega_pulser_solenne.body.2"
+      ],
+      "always_unlocked": true,
+      "status": "playable"
+    },
+    {
+      "id": "mega_folio_mega_pulser_profondo",
+      "category": "motive",
+      "title": "kodex.aetherklang.page.mega_folio_mega_pulser_profondo.title",
+      "subtitle": "kodex.aetherklang.page.mega_folio_mega_pulser_profondo.subtitle",
+      "body": [
+        "kodex.aetherklang.page.mega_folio_mega_pulser_profondo.body.1",
+        "kodex.aetherklang.page.mega_folio_mega_pulser_profondo.body.2"
+      ],
+      "always_unlocked": true,
+      "status": "playable"
+    },
+    {
+      "id": "mega_folio_mega_pulser_pesante",
+      "category": "motive",
+      "title": "kodex.aetherklang.page.mega_folio_mega_pulser_pesante.title",
+      "subtitle": "kodex.aetherklang.page.mega_folio_mega_pulser_pesante.subtitle",
+      "body": [
+        "kodex.aetherklang.page.mega_folio_mega_pulser_pesante.body.1",
+        "kodex.aetherklang.page.mega_folio_mega_pulser_pesante.body.2"
+      ],
+      "always_unlocked": true,
+      "status": "playable"
+    },
+    {
+      "id": "mega_folio_mega_pulser_grandioso",
+      "category": "motive",
+      "title": "kodex.aetherklang.page.mega_folio_mega_pulser_grandioso.title",
+      "subtitle": "kodex.aetherklang.page.mega_folio_mega_pulser_grandioso.subtitle",
+      "body": [
+        "kodex.aetherklang.page.mega_folio_mega_pulser_grandioso.body.1",
+        "kodex.aetherklang.page.mega_folio_mega_pulser_grandioso.body.2"
+      ],
+      "always_unlocked": true,
+      "status": "playable"
+    },
+    {
+      "id": "mega_folio_mega_pulser_misterioso",
+      "category": "motive",
+      "title": "kodex.aetherklang.page.mega_folio_mega_pulser_misterioso.title",
+      "subtitle": "kodex.aetherklang.page.mega_folio_mega_pulser_misterioso.subtitle",
+      "body": [
+        "kodex.aetherklang.page.mega_folio_mega_pulser_misterioso.body.1",
+        "kodex.aetherklang.page.mega_folio_mega_pulser_misterioso.body.2"
+      ],
+      "always_unlocked": true,
+      "status": "playable"
+    },
+    {
+      "id": "mega_folio_mega_pulser_trionfale",
+      "category": "motive",
+      "title": "kodex.aetherklang.page.mega_folio_mega_pulser_trionfale.title",
+      "subtitle": "kodex.aetherklang.page.mega_folio_mega_pulser_trionfale.subtitle",
+      "body": [
+        "kodex.aetherklang.page.mega_folio_mega_pulser_trionfale.body.1",
+        "kodex.aetherklang.page.mega_folio_mega_pulser_trionfale.body.2"
+      ],
+      "always_unlocked": true,
+      "status": "playable"
+    },
+    {
+      "id": "mega_folio_relikt_accelerando",
+      "category": "schmiede",
+      "title": "kodex.aetherklang.page.mega_folio_relikt_accelerando.title",
+      "subtitle": "kodex.aetherklang.page.mega_folio_relikt_accelerando.subtitle",
+      "body": [
+        "kodex.aetherklang.page.mega_folio_relikt_accelerando.body.1",
+        "kodex.aetherklang.page.mega_folio_relikt_accelerando.body.2"
+      ],
+      "always_unlocked": true,
+      "status": "playable"
+    },
+    {
+      "id": "mega_folio_relikt_adagio",
+      "category": "schmiede",
+      "title": "kodex.aetherklang.page.mega_folio_relikt_adagio.title",
+      "subtitle": "kodex.aetherklang.page.mega_folio_relikt_adagio.subtitle",
+      "body": [
+        "kodex.aetherklang.page.mega_folio_relikt_adagio.body.1",
+        "kodex.aetherklang.page.mega_folio_relikt_adagio.body.2"
+      ],
+      "always_unlocked": true,
+      "status": "playable"
+    },
+    {
+      "id": "mega_folio_relikt_arpeggio",
+      "category": "schmiede",
+      "title": "kodex.aetherklang.page.mega_folio_relikt_arpeggio.title",
+      "subtitle": "kodex.aetherklang.page.mega_folio_relikt_arpeggio.subtitle",
+      "body": [
+        "kodex.aetherklang.page.mega_folio_relikt_arpeggio.body.1",
+        "kodex.aetherklang.page.mega_folio_relikt_arpeggio.body.2"
+      ],
+      "always_unlocked": true,
+      "status": "playable"
+    },
+    {
+      "id": "mega_folio_relikt_coda",
+      "category": "schmiede",
+      "title": "kodex.aetherklang.page.mega_folio_relikt_coda.title",
+      "subtitle": "kodex.aetherklang.page.mega_folio_relikt_coda.subtitle",
+      "body": [
+        "kodex.aetherklang.page.mega_folio_relikt_coda.body.1",
+        "kodex.aetherklang.page.mega_folio_relikt_coda.body.2"
+      ],
+      "always_unlocked": true,
+      "status": "playable"
+    },
+    {
+      "id": "mega_folio_relikt_dolce",
+      "category": "schmiede",
+      "title": "kodex.aetherklang.page.mega_folio_relikt_dolce.title",
+      "subtitle": "kodex.aetherklang.page.mega_folio_relikt_dolce.subtitle",
+      "body": [
+        "kodex.aetherklang.page.mega_folio_relikt_dolce.body.1",
+        "kodex.aetherklang.page.mega_folio_relikt_dolce.body.2"
+      ],
+      "always_unlocked": true,
+      "status": "playable"
+    },
+    {
+      "id": "mega_folio_relikt_fugato",
+      "category": "schmiede",
+      "title": "kodex.aetherklang.page.mega_folio_relikt_fugato.title",
+      "subtitle": "kodex.aetherklang.page.mega_folio_relikt_fugato.subtitle",
+      "body": [
+        "kodex.aetherklang.page.mega_folio_relikt_fugato.body.1",
+        "kodex.aetherklang.page.mega_folio_relikt_fugato.body.2"
+      ],
+      "always_unlocked": true,
+      "status": "playable"
+    },
+    {
+      "id": "mega_folio_relikt_glissando",
+      "category": "schmiede",
+      "title": "kodex.aetherklang.page.mega_folio_relikt_glissando.title",
+      "subtitle": "kodex.aetherklang.page.mega_folio_relikt_glissando.subtitle",
+      "body": [
+        "kodex.aetherklang.page.mega_folio_relikt_glissando.body.1",
+        "kodex.aetherklang.page.mega_folio_relikt_glissando.body.2"
+      ],
+      "always_unlocked": true,
+      "status": "playable"
+    },
+    {
+      "id": "mega_folio_relikt_marcato",
+      "category": "schmiede",
+      "title": "kodex.aetherklang.page.mega_folio_relikt_marcato.title",
+      "subtitle": "kodex.aetherklang.page.mega_folio_relikt_marcato.subtitle",
+      "body": [
+        "kodex.aetherklang.page.mega_folio_relikt_marcato.body.1",
+        "kodex.aetherklang.page.mega_folio_relikt_marcato.body.2"
+      ],
+      "always_unlocked": true,
+      "status": "playable"
+    },
+    {
+      "id": "mega_folio_relikt_nocturne",
+      "category": "schmiede",
+      "title": "kodex.aetherklang.page.mega_folio_relikt_nocturne.title",
+      "subtitle": "kodex.aetherklang.page.mega_folio_relikt_nocturne.subtitle",
+      "body": [
+        "kodex.aetherklang.page.mega_folio_relikt_nocturne.body.1",
+        "kodex.aetherklang.page.mega_folio_relikt_nocturne.body.2"
+      ],
+      "always_unlocked": true,
+      "status": "playable"
+    },
+    {
+      "id": "mega_folio_relikt_pizzicato",
+      "category": "schmiede",
+      "title": "kodex.aetherklang.page.mega_folio_relikt_pizzicato.title",
+      "subtitle": "kodex.aetherklang.page.mega_folio_relikt_pizzicato.subtitle",
+      "body": [
+        "kodex.aetherklang.page.mega_folio_relikt_pizzicato.body.1",
+        "kodex.aetherklang.page.mega_folio_relikt_pizzicato.body.2"
+      ],
+      "always_unlocked": true,
+      "status": "playable"
+    },
+    {
+      "id": "mega_folio_relikt_rubato",
+      "category": "schmiede",
+      "title": "kodex.aetherklang.page.mega_folio_relikt_rubato.title",
+      "subtitle": "kodex.aetherklang.page.mega_folio_relikt_rubato.subtitle",
+      "body": [
+        "kodex.aetherklang.page.mega_folio_relikt_rubato.body.1",
+        "kodex.aetherklang.page.mega_folio_relikt_rubato.body.2"
+      ],
+      "always_unlocked": true,
+      "status": "playable"
+    },
+    {
+      "id": "mega_folio_relikt_vibrato",
+      "category": "schmiede",
+      "title": "kodex.aetherklang.page.mega_folio_relikt_vibrato.title",
+      "subtitle": "kodex.aetherklang.page.mega_folio_relikt_vibrato.subtitle",
+      "body": [
+        "kodex.aetherklang.page.mega_folio_relikt_vibrato.body.1",
+        "kodex.aetherklang.page.mega_folio_relikt_vibrato.body.2"
+      ],
+      "always_unlocked": true,
+      "status": "playable"
+    },
+    {
+      "id": "mega_folio_insel_bassgewoelbe",
+      "category": "regionen",
+      "title": "kodex.aetherklang.page.mega_folio_insel_bassgewoelbe.title",
+      "subtitle": "kodex.aetherklang.page.mega_folio_insel_bassgewoelbe.subtitle",
+      "body": [
+        "kodex.aetherklang.page.mega_folio_insel_bassgewoelbe.body.1",
+        "kodex.aetherklang.page.mega_folio_insel_bassgewoelbe.body.2"
+      ],
+      "always_unlocked": true,
+      "status": "playable"
+    },
+    {
+      "id": "mega_folio_insel_arpeggien_garten",
+      "category": "regionen",
+      "title": "kodex.aetherklang.page.mega_folio_insel_arpeggien_garten.title",
+      "subtitle": "kodex.aetherklang.page.mega_folio_insel_arpeggien_garten.subtitle",
+      "body": [
+        "kodex.aetherklang.page.mega_folio_insel_arpeggien_garten.body.1",
+        "kodex.aetherklang.page.mega_folio_insel_arpeggien_garten.body.2"
+      ],
+      "always_unlocked": true,
+      "status": "playable"
+    },
+    {
+      "id": "mega_folio_insel_kakophonie_riff",
+      "category": "regionen",
+      "title": "kodex.aetherklang.page.mega_folio_insel_kakophonie_riff.title",
+      "subtitle": "kodex.aetherklang.page.mega_folio_insel_kakophonie_riff.subtitle",
+      "body": [
+        "kodex.aetherklang.page.mega_folio_insel_kakophonie_riff.body.1",
+        "kodex.aetherklang.page.mega_folio_insel_kakophonie_riff.body.2"
+      ],
+      "always_unlocked": true,
+      "status": "playable"
+    },
+    {
+      "id": "mega_folio_insel_kristallkranz",
+      "category": "regionen",
+      "title": "kodex.aetherklang.page.mega_folio_insel_kristallkranz.title",
+      "subtitle": "kodex.aetherklang.page.mega_folio_insel_kristallkranz.subtitle",
+      "body": [
+        "kodex.aetherklang.page.mega_folio_insel_kristallkranz.body.1",
+        "kodex.aetherklang.page.mega_folio_insel_kristallkranz.body.2"
+      ],
+      "always_unlocked": true,
+      "status": "playable"
+    },
+    {
+      "id": "mega_folio_insel_resonanzhain",
+      "category": "regionen",
+      "title": "kodex.aetherklang.page.mega_folio_insel_resonanzhain.title",
+      "subtitle": "kodex.aetherklang.page.mega_folio_insel_resonanzhain.subtitle",
+      "body": [
+        "kodex.aetherklang.page.mega_folio_insel_resonanzhain.body.1",
+        "kodex.aetherklang.page.mega_folio_insel_resonanzhain.body.2"
+      ],
+      "always_unlocked": true,
+      "status": "playable"
+    },
+    {
+      "id": "mega_folio_insel_generalpause_scholle",
+      "category": "regionen",
+      "title": "kodex.aetherklang.page.mega_folio_insel_generalpause_scholle.title",
+      "subtitle": "kodex.aetherklang.page.mega_folio_insel_generalpause_scholle.subtitle",
+      "body": [
+        "kodex.aetherklang.page.mega_folio_insel_generalpause_scholle.body.1",
+        "kodex.aetherklang.page.mega_folio_insel_generalpause_scholle.body.2"
+      ],
+      "always_unlocked": true,
+      "status": "playable"
+    },
+    {
+      "id": "mega_folio_insel_echo_terrassen",
+      "category": "regionen",
+      "title": "kodex.aetherklang.page.mega_folio_insel_echo_terrassen.title",
+      "subtitle": "kodex.aetherklang.page.mega_folio_insel_echo_terrassen.subtitle",
+      "body": [
+        "kodex.aetherklang.page.mega_folio_insel_echo_terrassen.body.1",
+        "kodex.aetherklang.page.mega_folio_insel_echo_terrassen.body.2"
+      ],
+      "always_unlocked": true,
+      "status": "playable"
+    },
+    {
+      "id": "mega_folio_insel_takt_rondell",
+      "category": "regionen",
+      "title": "kodex.aetherklang.page.mega_folio_insel_takt_rondell.title",
+      "subtitle": "kodex.aetherklang.page.mega_folio_insel_takt_rondell.subtitle",
+      "body": [
+        "kodex.aetherklang.page.mega_folio_insel_takt_rondell.body.1",
+        "kodex.aetherklang.page.mega_folio_insel_takt_rondell.body.2"
+      ],
+      "always_unlocked": true,
+      "status": "playable"
+    },
+    {
+      "id": "mega_folio_insel_crescendo_spitze",
+      "category": "regionen",
+      "title": "kodex.aetherklang.page.mega_folio_insel_crescendo_spitze.title",
+      "subtitle": "kodex.aetherklang.page.mega_folio_insel_crescendo_spitze.subtitle",
+      "body": [
+        "kodex.aetherklang.page.mega_folio_insel_crescendo_spitze.body.1",
+        "kodex.aetherklang.page.mega_folio_insel_crescendo_spitze.body.2"
+      ],
+      "always_unlocked": true,
+      "status": "playable"
+    },
+    {
+      "id": "mega_folio_insel_ostinato_steppe",
+      "category": "regionen",
+      "title": "kodex.aetherklang.page.mega_folio_insel_ostinato_steppe.title",
+      "subtitle": "kodex.aetherklang.page.mega_folio_insel_ostinato_steppe.subtitle",
+      "body": [
+        "kodex.aetherklang.page.mega_folio_insel_ostinato_steppe.body.1",
+        "kodex.aetherklang.page.mega_folio_insel_ostinato_steppe.body.2"
+      ],
+      "always_unlocked": true,
+      "status": "playable"
+    },
+    {
+      "id": "mega_folio_insel_legato_hain",
+      "category": "regionen",
+      "title": "kodex.aetherklang.page.mega_folio_insel_legato_hain.title",
+      "subtitle": "kodex.aetherklang.page.mega_folio_insel_legato_hain.subtitle",
+      "body": [
+        "kodex.aetherklang.page.mega_folio_insel_legato_hain.body.1",
+        "kodex.aetherklang.page.mega_folio_insel_legato_hain.body.2"
+      ],
+      "always_unlocked": true,
+      "status": "playable"
+    },
+    {
+      "id": "mega_folio_insel_staccato_klippen",
+      "category": "regionen",
+      "title": "kodex.aetherklang.page.mega_folio_insel_staccato_klippen.title",
+      "subtitle": "kodex.aetherklang.page.mega_folio_insel_staccato_klippen.subtitle",
+      "body": [
+        "kodex.aetherklang.page.mega_folio_insel_staccato_klippen.body.1",
+        "kodex.aetherklang.page.mega_folio_insel_staccato_klippen.body.2"
+      ],
+      "always_unlocked": true,
+      "status": "playable"
+    },
+    {
+      "id": "mega_folio_insel_fermate_sanktuarium",
+      "category": "regionen",
+      "title": "kodex.aetherklang.page.mega_folio_insel_fermate_sanktuarium.title",
+      "subtitle": "kodex.aetherklang.page.mega_folio_insel_fermate_sanktuarium.subtitle",
+      "body": [
+        "kodex.aetherklang.page.mega_folio_insel_fermate_sanktuarium.body.1",
+        "kodex.aetherklang.page.mega_folio_insel_fermate_sanktuarium.body.2"
+      ],
+      "always_unlocked": true,
+      "status": "playable"
+    },
+    {
+      "id": "mega_folio_insel_polyrhythmus_riff",
+      "category": "regionen",
+      "title": "kodex.aetherklang.page.mega_folio_insel_polyrhythmus_riff.title",
+      "subtitle": "kodex.aetherklang.page.mega_folio_insel_polyrhythmus_riff.subtitle",
+      "body": [
+        "kodex.aetherklang.page.mega_folio_insel_polyrhythmus_riff.body.1",
+        "kodex.aetherklang.page.mega_folio_insel_polyrhythmus_riff.body.2"
+      ],
+      "always_unlocked": true,
+      "status": "playable"
+    },
+    {
+      "id": "mega_folio_insel_nocturne_atoll",
+      "category": "regionen",
+      "title": "kodex.aetherklang.page.mega_folio_insel_nocturne_atoll.title",
+      "subtitle": "kodex.aetherklang.page.mega_folio_insel_nocturne_atoll.subtitle",
+      "body": [
+        "kodex.aetherklang.page.mega_folio_insel_nocturne_atoll.body.1",
+        "kodex.aetherklang.page.mega_folio_insel_nocturne_atoll.body.2"
+      ],
+      "always_unlocked": true,
+      "status": "playable"
     }
   ]
 }

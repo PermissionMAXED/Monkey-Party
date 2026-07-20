@@ -12,7 +12,9 @@ public final class Bosswerk {
             ModEntities.BOSS_TREMOLO_ID,
             ModEntities.BOSS_GLISSANDA_ID,
             ModEntities.BOSS_KAKOPHON_ID,
-            ModEntities.BOSS_GENERALPAUSE_ID
+            ModEntities.BOSS_GENERALPAUSE_ID,
+            ModEntities.BOSS_OSTINATO_ID,
+            ModEntities.BOSS_RITARDANDO_ID
     );
     private static Map<String, BossScore> scores = Map.of();
 

@@ -2,7 +2,8 @@
   "id": "pauke_virtuos",
   "type": "aufwertung",
   "parameters": {
-    "instrument": "aetherklang:pauke",
+    "instrument": "aetherklang:pauke_meister",
+    "result": "aetherklang:pauke_virtuos",
     "from": "meister",
     "to": "virtuos",
     "resonanzbarren": "4",

@@ -1,0 +1,15 @@
+{
+  "id": "mega_schwinge_arabeske",
+  "type": "motiv",
+  "parameters": {
+    "archetype": "schwinge",
+    "operation": "welle",
+    "tempo": "120",
+    "tier": "ungewoehnlich",
+    "health": "33.5",
+    "attack": "3.5",
+    "primary_color": "#61D095",
+    "secondary_color": "#1A1033",
+    "loot": "aetherklang:resonanzbarren"
+  }
+}

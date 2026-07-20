@@ -1,0 +1,15 @@
+{
+  "id": "mega_pulser_adagio",
+  "type": "motiv",
+  "parameters": {
+    "archetype": "pulser",
+    "operation": "impuls",
+    "tempo": "102",
+    "tier": "ungewoehnlich",
+    "health": "33.5",
+    "attack": "5.75",
+    "primary_color": "#BFA7FF",
+    "secondary_color": "#5FF5E0",
+    "loot": "aetherklang:resonanzbarren"
+  }
+}

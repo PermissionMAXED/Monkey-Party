@@ -1,0 +1,10 @@
+{
+  "id": "mega_insel_resonanzhain",
+  "type": "insel",
+  "parameters": {
+    "archetype": "resonanzhain",
+    "radius": "12",
+    "height": "9",
+    "palette": "4"
+  }
+}

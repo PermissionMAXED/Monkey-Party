@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "minecraft:glowstone_dust",
+    "minecraft:glowstone_dust"
+  ],
+  "result": {
+    "id": "aetherklang:tremolokern",
+    "count": 2
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "id": "mega_auftrag_05",
+  "type": "auftrag",
+  "parameters": {
+    "title": "partitur.aetherklang.contract.mega_auftrag_05.title",
+    "description": "partitur.aetherklang.contract.mega_auftrag_05.description",
+    "objective": "play_akkord",
+    "target": "any",
+    "amount": "6",
+    "reward_rp": "10",
+    "reward_notenschluessel": "2",
+    "reward_material": "aetherklang:klangstaub",
+    "reward_material_count": "1"
+  }
+}

@@ -3,6 +3,7 @@
   "type": "aufwertung",
   "parameters": {
     "instrument": "aetherklang:kontrabass",
+    "result": "aetherklang:kontrabass_meister",
     "from": "basis",
     "to": "meister",
     "resonanzbarren": "2",

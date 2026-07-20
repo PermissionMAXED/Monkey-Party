@@ -1,0 +1,10 @@
+{
+  "id": "mega_insel_bassgewoelbe",
+  "type": "insel",
+  "parameters": {
+    "archetype": "bassgewoelbe",
+    "radius": "8",
+    "height": "5",
+    "palette": "0"
+  }
+}

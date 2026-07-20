@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "minecraft:copper_ingot",
+    "minecraft:echo_shard",
+    "minecraft:prismarine_shard"
+  ],
+  "result": {
+    "id": "aetherklang:notenschluessel",
+    "count": 1
+  }
+}

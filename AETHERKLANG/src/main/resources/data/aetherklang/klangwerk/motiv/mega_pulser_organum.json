@@ -1,0 +1,15 @@
+{
+  "id": "mega_pulser_organum",
+  "type": "motiv",
+  "parameters": {
+    "archetype": "pulser",
+    "operation": "impuls",
+    "tempo": "138",
+    "tier": "selten",
+    "health": "46.0",
+    "attack": "5.0",
+    "primary_color": "#5FF5E0",
+    "secondary_color": "#F5C95F",
+    "loot": "aetherklang:notenschluessel"
+  }
+}

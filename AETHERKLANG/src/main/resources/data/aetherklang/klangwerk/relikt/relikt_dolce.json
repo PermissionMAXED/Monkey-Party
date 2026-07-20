@@ -1,0 +1,9 @@
+{
+  "id": "relikt_dolce",
+  "type": "relikt",
+  "parameters": {
+    "effect": "schutz",
+    "cooldown_ticks": "100",
+    "tier": "rare"
+  }
+}

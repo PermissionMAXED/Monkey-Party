@@ -1,0 +1,10 @@
+{
+  "id": "mega_insel_polyrhythmus_riff",
+  "type": "insel",
+  "parameters": {
+    "archetype": "polyrhythmus_riff",
+    "radius": "9",
+    "height": "8",
+    "palette": "5"
+  }
+}

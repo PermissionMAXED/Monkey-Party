@@ -1,0 +1,15 @@
+{
+  "id": "mega_laeufer_andante",
+  "type": "motiv",
+  "parameters": {
+    "archetype": "laeufer",
+    "operation": "welle",
+    "tempo": "131",
+    "tier": "gewoehnlich",
+    "health": "31.0",
+    "attack": "6.75",
+    "primary_color": "#BFA7FF",
+    "secondary_color": "#5FF5E0",
+    "loot": "aetherklang:klangstaub"
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "id": "relikt_arpeggio",
+  "type": "relikt",
+  "parameters": {
+    "effect": "welle",
+    "cooldown_ticks": "88",
+    "tier": "uncommon"
+  }
+}

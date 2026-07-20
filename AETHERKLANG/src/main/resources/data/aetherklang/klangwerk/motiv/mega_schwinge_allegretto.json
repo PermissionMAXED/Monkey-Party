@@ -1,0 +1,15 @@
+{
+  "id": "mega_schwinge_allegretto",
+  "type": "motiv",
+  "parameters": {
+    "archetype": "schwinge",
+    "operation": "bewegung",
+    "tempo": "100",
+    "tier": "gewoehnlich",
+    "health": "16.0",
+    "attack": "3.5",
+    "primary_color": "#5FF5E0",
+    "secondary_color": "#F5C95F",
+    "loot": "aetherklang:klangstaub"
+  }
+}

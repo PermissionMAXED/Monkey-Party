@@ -1,0 +1,15 @@
+{
+  "id": "mega_schwinge_arioso",
+  "type": "motiv",
+  "parameters": {
+    "archetype": "schwinge",
+    "operation": "welle",
+    "tempo": "144",
+    "tier": "episch",
+    "health": "35.5",
+    "attack": "4.25",
+    "primary_color": "#72A7FF",
+    "secondary_color": "#E03A8C",
+    "loot": "aetherklang:kaskadenkern"
+  }
+}

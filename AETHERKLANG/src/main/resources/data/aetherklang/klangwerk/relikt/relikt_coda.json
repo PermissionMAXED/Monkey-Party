@@ -1,0 +1,9 @@
+{
+  "id": "relikt_coda",
+  "type": "relikt",
+  "parameters": {
+    "effect": "kadenz",
+    "cooldown_ticks": "136",
+    "tier": "epic"
+  }
+}

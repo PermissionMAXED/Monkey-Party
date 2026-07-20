@@ -1,0 +1,15 @@
+{
+  "id": "mega_schwinge_luminoso",
+  "type": "motiv",
+  "parameters": {
+    "archetype": "schwinge",
+    "operation": "impuls",
+    "tempo": "164",
+    "tier": "gewoehnlich",
+    "health": "34.0",
+    "attack": "4.25",
+    "primary_color": "#5FF5E0",
+    "secondary_color": "#F5C95F",
+    "loot": "aetherklang:klangstaub"
+  }
+}

@@ -38,6 +38,10 @@ public final class KlanginstrumentItem extends Item {
         this.instrumentId = instrumentId;
     }
 
+    public String instrumentId() {
+        return instrumentId;
+    }
+
     @Override
     public ActionResult use(World world, PlayerEntity player, Hand hand) {
         ItemStack stack = player.getStackInHand(hand);
