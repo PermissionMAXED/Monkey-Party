@@ -4,6 +4,7 @@ import de.aetherklang.Aetherklang;
 import de.aetherklang.resonance.ResonancePlayerData;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
@@ -19,6 +20,7 @@ public final class ModPayloads {
     public static final Identifier PERFECT_FX_ID = Aetherklang.id("perfect_fx");
     public static final Identifier AKKORD_FX_ID = Aetherklang.id("akkord_fx");
     public static final Identifier ENSEMBLE_SYNC_ID = Aetherklang.id("ensemble_sync");
+    public static final Identifier ENSEMBLE_MEMBERS_ID = Aetherklang.id("ensemble_members");
     public static final Identifier RANG_SYNC_ID = Aetherklang.id("rang_sync");
 
     private ModPayloads() {
@@ -33,8 +35,9 @@ public final class ModPayloads {
         PayloadTypeRegistry.playS2C().register(PerfectFxPayload.ID, PerfectFxPayload.CODEC);
         PayloadTypeRegistry.playS2C().register(AkkordFxPayload.ID, AkkordFxPayload.CODEC);
         PayloadTypeRegistry.playS2C().register(EnsembleSyncPayload.ID, EnsembleSyncPayload.CODEC);
+        PayloadTypeRegistry.playS2C().register(EnsembleMembersPayload.ID, EnsembleMembersPayload.CODEC);
         PayloadTypeRegistry.playS2C().register(RangSyncPayload.ID, RangSyncPayload.CODEC);
-        Aetherklang.LOGGER.debug("Registered {} Aetherklang play payloads", 9);
+        Aetherklang.LOGGER.debug("Registered {} Aetherklang play payloads", 10);
     }
 
     public record DashPayload(float strength) implements CustomPayload {
@@ -189,6 +192,45 @@ public final class ModPayloads {
                 (payload, buffer) -> buffer.writeVarInt(payload.ensembleSize()),
                 buffer -> new EnsembleSyncPayload(buffer.readVarInt())
         );
+
+        @Override
+        public Id<? extends CustomPayload> getId() {
+            return ID;
+        }
+    }
+
+    public record EnsembleMembersPayload(List<UUID> members) implements CustomPayload {
+        private static final int MAX_MEMBERS = 1024;
+
+        public static final CustomPayload.Id<EnsembleMembersPayload> ID =
+                new CustomPayload.Id<>(ENSEMBLE_MEMBERS_ID);
+        public static final PacketCodec<RegistryByteBuf, EnsembleMembersPayload> CODEC = PacketCodec.of(
+                (payload, buffer) -> {
+                    buffer.writeVarInt(payload.members().size());
+                    payload.members().forEach(buffer::writeUuid);
+                },
+                buffer -> new EnsembleMembersPayload(readMembers(buffer))
+        );
+
+        public EnsembleMembersPayload {
+            members = List.copyOf(members);
+            if (members.size() > MAX_MEMBERS) {
+                throw new IllegalArgumentException("Too many ensemble members: " + members.size());
+            }
+        }
+
+        private static List<UUID> readMembers(RegistryByteBuf buffer) {
+            int memberCount = buffer.readVarInt();
+            if (memberCount < 0 || memberCount > MAX_MEMBERS) {
+                throw new IllegalArgumentException("Invalid ensemble member count: " + memberCount);
+            }
+
+            List<UUID> members = new ArrayList<>(memberCount);
+            for (int index = 0; index < memberCount; index++) {
+                members.add(buffer.readUuid());
+            }
+            return members;
+        }
 
         @Override
         public Id<? extends CustomPayload> getId() {

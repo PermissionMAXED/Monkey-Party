@@ -6,6 +6,8 @@ import de.aetherklang.registry.ModParticles;
 import de.aetherklang.registry.ModPayloads;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
+import java.util.UUID;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.MinecraftClient;
@@ -19,14 +21,16 @@ import net.minecraft.util.math.Vec3d;
 /**
  * Visualizes an authoritative ensemble sync as intertwined cyan and gold links.
  *
- * <p>The frozen payload carries only an ensemble size, so links select the
- * nearest visible players deterministically.</p>
+ * <p>Member UUIDs select truthful links when supplied by the server. Older
+ * servers only send the frozen size payload, so they retain the deterministic
+ * nearest-player fallback.</p>
  */
 public final class EnsembleBeamFx {
     private static final double SAMPLE_STEP = 0.38D;
 
     private static boolean registered;
     private static int ensembleSize = 1;
+    private static Set<UUID> ensembleMembers;
     private static int clientTicks;
 
     private EnsembleBeamFx() {
@@ -47,6 +51,12 @@ public final class EnsembleBeamFx {
                         )
                 )
         );
+        ClientPlayNetworking.registerGlobalReceiver(
+                ModPayloads.EnsembleMembersPayload.ID,
+                (payload, context) -> context.client().execute(() ->
+                        ensembleMembers = Set.copyOf(payload.members())
+                )
+        );
         ClientTickEvents.END_CLIENT_TICK.register(EnsembleBeamFx::tick);
     }
 
@@ -54,22 +64,33 @@ public final class EnsembleBeamFx {
         clientTicks++;
         if (client.player == null || client.world == null) {
             ensembleSize = 1;
+            ensembleMembers = null;
             return;
         }
-        if (ensembleSize < 2 || (clientTicks & 1) != 0) {
+        boolean hasEnsemble = ensembleMembers == null
+                ? ensembleSize >= 2
+                : ensembleMembers.size() >= 2;
+        if (!hasEnsemble || (clientTicks & 1) != 0) {
             return;
         }
 
         ClientPlayerEntity player = client.player;
+        if (ensembleMembers != null && !ensembleMembers.contains(player.getUuid())) {
+            return;
+        }
         double maxLinkDistance = AuroraHooks.ENSEMBLE_LINK_DISTANCE;
+        long linkLimit = ensembleMembers == null
+                ? ensembleSize - 1L
+                : Math.min(ensembleMembers.size() - 1L, AuroraHooks.MAX_ENSEMBLE_SIZE - 1L);
         List<AbstractClientPlayerEntity> links = client.world.getPlayers().stream()
                 .filter(candidate -> candidate != player)
                 .filter(AbstractClientPlayerEntity::isAlive)
+                .filter(candidate -> ensembleMembers == null || ensembleMembers.contains(candidate.getUuid()))
                 .filter(candidate -> candidate.squaredDistanceTo(player) <= maxLinkDistance * maxLinkDistance)
                 .sorted(Comparator
                         .comparingDouble((AbstractClientPlayerEntity candidate) -> candidate.squaredDistanceTo(player))
                         .thenComparing(candidate -> candidate.getUuid().toString()))
-                .limit(ensembleSize - 1L)
+                .limit(linkLimit)
                 .toList();
 
         for (int link = 0; link < links.size(); link++) {

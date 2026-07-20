@@ -83,7 +83,7 @@ public final class EnsembleEngine {
         if (remaining.size() < 2) {
             for (UUID memberId : remaining) {
                 LINKS.remove(memberId);
-                sync(server, memberId, 0);
+                sync(server, memberId, Set.of());
             }
             return;
         }
@@ -91,7 +91,7 @@ public final class EnsembleEngine {
         LinkState reduced = new LinkState(Set.copyOf(remaining), link.expiresAtTick());
         for (UUID memberId : remaining) {
             LINKS.put(memberId, reduced);
-            sync(server, memberId, remaining.size());
+            sync(server, memberId, reduced.members());
         }
     }
 
@@ -139,7 +139,7 @@ public final class EnsembleEngine {
         MinecraftServer server = source.getEntityWorld().getServer();
         for (UUID memberId : members) {
             LINKS.put(memberId, link);
-            sync(server, memberId, members.size());
+            sync(server, memberId, link.members());
         }
         if (newlyLinked) {
             playLinkFeedback(source);
@@ -205,7 +205,7 @@ public final class EnsembleEngine {
             for (UUID memberId : link.members()) {
                 if (LINKS.get(memberId) == link) {
                     LINKS.remove(memberId);
-                    sync(server, memberId, 0);
+                    sync(server, memberId, Set.of());
                 }
             }
         }
@@ -229,10 +229,11 @@ public final class EnsembleEngine {
         return null;
     }
 
-    private static void sync(MinecraftServer server, UUID playerId, int size) {
+    private static void sync(MinecraftServer server, UUID playerId, Set<UUID> members) {
         ServerPlayerEntity player = server.getPlayerManager().getPlayer(playerId);
         if (player != null) {
-            ModNetworking.sendEnsembleSync(player, size);
+            ModNetworking.sendEnsembleSync(player, members.size());
+            ModNetworking.sendEnsembleMembers(player, members);
         }
     }
 

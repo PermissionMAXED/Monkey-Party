@@ -207,6 +207,15 @@ public final class ModNetworking {
         }
     }
 
+    public static void sendEnsembleMembers(ServerPlayerEntity player, Set<UUID> members) {
+        if (ServerPlayNetworking.canSend(player, ModPayloads.EnsembleMembersPayload.ID)) {
+            ServerPlayNetworking.send(
+                    player,
+                    new ModPayloads.EnsembleMembersPayload(members.stream().sorted().toList())
+            );
+        }
+    }
+
     private static DustParticleEffect moodDust(Stimmung mood) {
         int color = switch (mood) {
             case FREUDE -> 0xF5C95F;
