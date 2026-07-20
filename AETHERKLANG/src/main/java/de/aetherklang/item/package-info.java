@@ -1,4 +1,4 @@
 /**
- * Custom instruments and handbook behavior are implemented by later work packages.
+ * Playable resonance instruments, weapons, movement equipment, and Kodex item behavior.
  */
 package de.aetherklang.item;

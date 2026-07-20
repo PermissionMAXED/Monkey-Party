@@ -1,10 +1,20 @@
 package de.aetherklang.registry;
 
 import de.aetherklang.Aetherklang;
+import de.aetherklang.item.BasshammerItem;
+import de.aetherklang.item.EchostiefelItem;
+import de.aetherklang.item.HallharfeItem;
+import de.aetherklang.item.KodexItem;
+import de.aetherklang.item.ResonanzklingeItem;
+import de.aetherklang.item.StimmgabelItem;
 import java.util.List;
+import java.util.function.Function;
 import net.minecraft.block.Block;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
+import net.minecraft.item.ToolMaterial;
+import net.minecraft.item.equipment.ArmorMaterials;
+import net.minecraft.item.equipment.EquipmentType;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
@@ -18,12 +28,26 @@ public final class ModItems {
     public static final String ECHOSTIEFEL_ID = "echostiefel";
     public static final String KODEX_ID = "kodex";
 
-    public static final Item STIMMGABEL = register(STIMMGABEL_ID, new Item.Settings().maxCount(1));
-    public static final Item RESONANZKLINGE = register(RESONANZKLINGE_ID, new Item.Settings().maxCount(1).maxDamage(512));
-    public static final Item HALLHARFE = register(HALLHARFE_ID, new Item.Settings().maxCount(1).maxDamage(384));
-    public static final Item BASSHAMMER = register(BASSHAMMER_ID, new Item.Settings().maxCount(1).maxDamage(768));
-    public static final Item ECHOSTIEFEL = register(ECHOSTIEFEL_ID, new Item.Settings().maxCount(1).maxDamage(429));
-    public static final Item KODEX = register(KODEX_ID, new Item.Settings().maxCount(1));
+    public static final Item STIMMGABEL =
+            register(STIMMGABEL_ID, StimmgabelItem::new, new Item.Settings().maxCount(1));
+    public static final Item RESONANZKLINGE = register(
+            RESONANZKLINGE_ID,
+            ResonanzklingeItem::new,
+            new Item.Settings().sword(ToolMaterial.DIAMOND, 3.0F, -2.4F).maxDamage(512)
+    );
+    public static final Item HALLHARFE =
+            register(HALLHARFE_ID, HallharfeItem::new, new Item.Settings().maxCount(1).maxDamage(384));
+    public static final Item BASSHAMMER = register(
+            BASSHAMMER_ID,
+            BasshammerItem::new,
+            new Item.Settings().axe(ToolMaterial.DIAMOND, 6.0F, -3.2F).maxDamage(768)
+    );
+    public static final Item ECHOSTIEFEL = register(
+            ECHOSTIEFEL_ID,
+            EchostiefelItem::new,
+            new Item.Settings().armor(ArmorMaterials.IRON, EquipmentType.BOOTS).maxDamage(429)
+    );
+    public static final Item KODEX = register(KODEX_ID, KodexItem::new, new Item.Settings().maxCount(1));
 
     public static final Item RESONANZKRISTALL_INDIGO =
             registerBlockItem(ModBlocks.RESONANZKRISTALL_INDIGO_ID, ModBlocks.RESONANZKRISTALL_INDIGO);
@@ -57,9 +81,9 @@ public final class ModItems {
     private ModItems() {
     }
 
-    private static Item register(String path, Item.Settings settings) {
+    private static Item register(String path, Function<Item.Settings, Item> factory, Item.Settings settings) {
         RegistryKey<Item> key = RegistryKey.of(RegistryKeys.ITEM, Aetherklang.id(path));
-        return Registry.register(Registries.ITEM, key, new Item(settings.registryKey(key)));
+        return Registry.register(Registries.ITEM, key, factory.apply(settings.registryKey(key)));
     }
 
     private static Item registerBlockItem(String path, Block block) {
