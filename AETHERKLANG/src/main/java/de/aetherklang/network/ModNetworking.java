@@ -9,8 +9,11 @@ import de.aetherklang.resonance.ResonanceApi;
 import de.aetherklang.resonance.ResonancePlayerData;
 import de.aetherklang.resonance.Stimmung;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
+import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.entity.EquipmentSlot;
@@ -161,6 +164,31 @@ public final class ModNetworking {
     public static void sendBeatFx(ServerPlayerEntity player, int beat) {
         if (ServerPlayNetworking.canSend(player, ModPayloads.BeatFxPayload.ID)) {
             ServerPlayNetworking.send(player, new ModPayloads.BeatFxPayload(beat));
+        }
+    }
+
+    public static void sendAkkordFx(ServerPlayerEntity player, int akkord) {
+        if (ServerPlayNetworking.canSend(player, ModPayloads.AkkordFxPayload.ID)) {
+            ServerPlayNetworking.send(player, new ModPayloads.AkkordFxPayload(akkord));
+        }
+    }
+
+    public static void broadcastAkkordFx(ServerPlayerEntity source, int akkord) {
+        Set<ServerPlayerEntity> recipients = new HashSet<>(
+                PlayerLookup.around(source.getEntityWorld(), source.getEntityPos(), 32.0D)
+        );
+        recipients.add(source);
+        for (ServerPlayerEntity recipient : recipients) {
+            sendAkkordFx(recipient, akkord);
+        }
+    }
+
+    public static void sendEnsembleSync(ServerPlayerEntity player, int ensembleSize) {
+        if (ServerPlayNetworking.canSend(player, ModPayloads.EnsembleSyncPayload.ID)) {
+            ServerPlayNetworking.send(
+                    player,
+                    new ModPayloads.EnsembleSyncPayload(Math.max(0, ensembleSize))
+            );
         }
     }
 
