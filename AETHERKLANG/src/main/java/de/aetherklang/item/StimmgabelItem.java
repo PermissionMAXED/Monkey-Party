@@ -2,12 +2,15 @@ package de.aetherklang.item;
 
 import de.aetherklang.Aetherklang;
 import de.aetherklang.registry.ModParticles;
+import de.aetherklang.resonance.BeatEngine;
+import de.aetherklang.resonance.BeatTiming;
 import java.util.Locale;
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.Registries;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
@@ -70,6 +73,10 @@ public final class StimmgabelItem extends Item {
         ResonanceItemUtil.setSilence(player);
         if (ResonanceItemUtil.isOnBeat(player)) {
             ResonanceItemUtil.gainRp(player, 3);
+            if (player instanceof ServerPlayerEntity serverPlayer
+                    && BeatEngine.getTiming(serverPlayer) == BeatTiming.PERFECT) {
+                BeatEngine.grantPerfectTimingRp(serverPlayer);
+            }
         }
 
         if (sourceCount == 0) {

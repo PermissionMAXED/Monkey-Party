@@ -1,6 +1,8 @@
 package de.aetherklang.item;
 
 import de.aetherklang.registry.ModParticles;
+import de.aetherklang.resonance.BeatEngine;
+import de.aetherklang.resonance.BeatTiming;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -11,6 +13,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.consume.UseAction;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
@@ -116,6 +119,10 @@ public final class HallharfeItem extends Item {
 
         if (healed) {
             ResonanceItemUtil.gainRp(player, 1);
+            if (player instanceof ServerPlayerEntity serverPlayer
+                    && BeatEngine.getTiming(serverPlayer) == BeatTiming.PERFECT) {
+                BeatEngine.grantPerfectTimingRp(serverPlayer);
+            }
         }
         ResonanceItemUtil.playCast(serverWorld, player, ResonanceItemUtil.hasFreude(player) ? 1.4F : 1.15F);
         stack.damage(1, player);

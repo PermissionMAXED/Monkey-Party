@@ -135,7 +135,7 @@ damit **500 Millisekunden** beziehungsweise zehn Spielticks bei stabilen
 
 | Wertung | Phasenabstand | Zeitfenster bei 120 BPM | Bedeutung |
 | --- | ---: | ---: | --- |
-| **PERFEKT** | `≤ 0,08` | **±40 ms** | Maximales Feedback; `+2 RP` für perfekte Instrumentenaktionen |
+| **PERFEKT** | `≤ 0,08` | **±40 ms** | Maximales Feedback; zusätzlich `+2 RP` für perfekte Instrumentenaktionen |
 | **GUT** | `≤ 0,20` | **±100 ms** | Solide Ausführung; löst alle On-Beat-Effekte der Instrumente aus |
 | **DANEBEN** | `> 0,20` | außerhalb **±100 ms** | Aktion kann treffen, erzeugt aber keinen Beat-Bonus |
 
@@ -192,9 +192,9 @@ kannst.
 | --- | ---: |
 | Perfekte Instrumentenaktion (±40 ms) | `+2 RP` |
 | On-Beat-Treffer mit Resonanzklinge oder Basshammer (±100 ms) | `+2 RP` |
-| Stimmgabel-Scan im Takt | `+3 RP` |
+| Stimmgabel-Scan im Takt | `+3 RP` (`+5 RP` bei PERFEKT) |
 | Resonanzkristall anspielen (Rechtsklick) | `+1 RP` |
-| Hallharfen-Heilpuls, der Verbündete heilt | `+1 RP` |
+| Hallharfen-Heilpuls, der Verbündete heilt | `+1 RP` (`+3 RP` bei PERFEKT) |
 | On-Beat-Aktion im aktiven Ensemble | `+1 RP` je Beat |
 | Klangweber-Nachhall einer perfekten Aktion | mindestens `+1 RP` |
 

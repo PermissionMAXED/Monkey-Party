@@ -49,7 +49,7 @@ The authoritative server beat runs at **120 BPM**, one beat every **500 ms**.
 
 | Rating | Window | Reward |
 | --- | ---: | --- |
-| **Perfect** | within ±40 ms | +2 RP on instrument actions; feeds perfect streaks |
+| **Perfect** | within ±40 ms | +2 RP bonus on instrument actions; feeds perfect streaks |
 | **Good** | within ±100 ms | triggers all on-beat item effects |
 | **Miss** | outside ±100 ms | no beat bonus |
 
@@ -57,9 +57,10 @@ Consecutive perfect beats build a **perfect streak** (up to 8); a streak of
 2+ doubles passive dissonance decay.
 
 RP ranges from **0 to 100** (120 with the Klangweaver Chestplate) and survives
-death. Gains: +2 perfect action, +2 on-beat Blade/Hammer hit, +3 on-beat
-Tuning Fork scan, +1 crystal tap, +1 healing harp pulse, +1 active-ensemble
-action per beat, and at least +1 from a full-set Afterecho. Costs: 2 mood
+death. Gains: +2 perfect-action bonus, +2 on-beat Blade/Hammer hit, +3 on-beat
+Tuning Fork scan (+5 total on Perfect), +1 crystal tap, +1 healing harp pulse
+(+3 total on Perfect), +1 active-ensemble action per beat, and at least +1
+from a full-set Afterecho. Costs: 2 mood
 cycle, 6 altar attunement, 8 dash (6 in Klangweaver Boots), 10 Organ Horn,
 12 blade fan, 12 rift seal, 16 Fermata Bell, and 24 portal toll.
 
@@ -74,14 +75,15 @@ Silence triples and perfect streaks double the decay.
 ### Items (all playable)
 
 - **Tuning Fork:** scans 8 blocks around (±4 vertical) for resonance
-  sources, sets Silence, +3 RP on beat; also taps crystals, attunes altars,
-  and seals rifts.
+  sources, sets Silence, +3 RP on beat (+5 total on Perfect); also taps
+  crystals, attunes altars, and seals rifts.
 - **Resonance Blade:** diamond-tier sword; on-beat hits deal +3 magic
   damage and grant +2 RP; sneak + right-click fires a 12-RP cone slash
   (~4.5 blocks, 5 magic damage, knockback, 1.5 s cooldown). Durability 512.
 - **Echo Harp:** fires homing echo notes (healing 3.5 hearts in Joy/Wonder,
   otherwise 3.5 hearts damage); channel it bow-style to pulse on-beat heals
-  (1 heart, 1.5 in Joy, 7-block radius, +1 RP per healing pulse).
+  (1 heart, 1.5 in Joy, 7-block radius, +1 RP per healing pulse, +3 total
+  on Perfect).
   Durability 384.
 - **Bass Hammer:** diamond-tier axe; on-beat hits smash a 3.25-block
   shockwave (3 damage, 5 in Wrath) with knockback and +2 RP; on-beat
