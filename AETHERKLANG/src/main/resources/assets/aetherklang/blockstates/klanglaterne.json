@@ -1,6 +1,9 @@
 {
   "variants": {
-    "": {
+    "lit=false": {
+      "model": "aetherklang:block/klanglaterne"
+    },
+    "lit=true": {
       "model": "aetherklang:block/klanglaterne"
     }
   }

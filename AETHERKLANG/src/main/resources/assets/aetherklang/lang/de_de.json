@@ -207,5 +207,7 @@
   "message.aetherklang.portal.unavailable": "Die Kadenz des Kammertons ist nicht erreichbar.",
   "message.aetherklang.portal.arrival": "Kammerton · Folge der goldenen Kadenz zu Chorals Arena.",
   "message.aetherklang.portal.return": "Das Glockenspiel bringt dich in die Oberwelt zurück.",
-  "message.aetherklang.choral.awakens": "Choral erwacht · Antworte auf die gebrochene Kadenz!"
+  "message.aetherklang.choral.awakens": "Choral erwacht · Antworte auf die gebrochene Kadenz!",
+  "message.aetherklang.archive.unsealed": "Resonanzarchiv · Folio entsiegelt: %s",
+  "message.aetherklang.archive.already_unsealed": "Dieses Archiv hat %s bereits offenbart."
 }

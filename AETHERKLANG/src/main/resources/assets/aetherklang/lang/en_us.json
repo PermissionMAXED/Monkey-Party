@@ -207,5 +207,7 @@
   "message.aetherklang.portal.unavailable": "The Kammerton cadence cannot be reached.",
   "message.aetherklang.portal.arrival": "Kammerton · Follow the golden cadence to Choral's arena.",
   "message.aetherklang.portal.return": "The Glockenspiel returns you to the Overworld.",
-  "message.aetherklang.choral.awakens": "Choral awakens · Answer the broken cadence!"
+  "message.aetherklang.choral.awakens": "Choral awakens · Answer the broken cadence!",
+  "message.aetherklang.archive.unsealed": "Resonance Archive · Folio unsealed: %s",
+  "message.aetherklang.archive.already_unsealed": "This archive has already revealed %s."
 }

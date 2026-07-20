@@ -86,7 +86,7 @@ public final class ModBlocks {
                     .mapColor(DyeColor.YELLOW)
                     .strength(1.0F)
                     .sounds(BlockSoundGroup.LANTERN)
-                    .luminance(state -> 15)
+                    .luminance(KlanglaterneBlock::getLightLevel)
     );
     public static final TaktbrueckeBlock TAKTBRUECKE = register(
             TAKTBRUECKE_ID,
