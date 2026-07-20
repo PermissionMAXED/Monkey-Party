@@ -23,7 +23,7 @@ public final class KlangmeerKomponist {
 
     private static final int PROCEDURAL_ISLANDS = INSEL_ANZAHL - KlangmeerRegion.values().length;
     private static final int ARCHIPEL_SIZE = 5;
-    private static final int ARCHIPEL_COUNT = PROCEDURAL_ISLANDS / ARCHIPEL_SIZE;
+    private static final int ARCHIPEL_COUNT = (PROCEDURAL_ISLANDS + ARCHIPEL_SIZE - 1) / ARCHIPEL_SIZE;
     private static final long COMPOSER_SALT = 0x4B4C414E474D4545L;
     private static final int UPDATE_FLAGS = Block.NOTIFY_LISTENERS | Block.FORCE_STATE;
     private static final InselGenerator GENERATOR = new InselGenerator();
@@ -39,27 +39,41 @@ public final class KlangmeerKomponist {
         long startedAt = System.nanoTime();
         List<InselParameter> score = compose(world.getSeed());
         Map<InselArchetyp, Integer> archetypeCounts = new EnumMap<>(InselArchetyp.class);
+        boolean composeFullScore = !world.getBlockState(GENERATION_MARKER).isOf(Blocks.LODESTONE);
         int blocks = 0;
+        int generatedIslands = 0;
 
         Aetherklang.LOGGER.info(
-                "Insel-Komponist begins the deterministic Klangmeer score: seed={}, islands={}",
+                "Insel-Komponist begins the deterministic Klangmeer score: seed={}, islands={}, full={}",
                 world.getSeed(),
-                score.size()
+                score.size(),
+                composeFullScore
         );
-        for (InselParameter parameter : score) {
-            blocks += GENERATOR.generate(world, parameter);
-            archetypeCounts.merge(parameter.archetyp(), 1, Integer::sum);
-        }
-
+        int scoreIndex = 0;
         for (KlangmeerRegion region : KlangmeerRegion.values()) {
-            placeStimmpfeilerStub(world, region);
-            set(world, region.marker(), Blocks.LODESTONE);
+            InselParameter parameter = score.get(scoreIndex++);
+            if (composeFullScore || !world.getBlockState(region.marker()).isOf(Blocks.LODESTONE)) {
+                blocks += GENERATOR.generate(world, parameter);
+                generatedIslands++;
+                archetypeCounts.merge(parameter.archetyp(), 1, Integer::sum);
+                placeStimmpfeilerStub(world, region);
+                set(world, region.marker(), Blocks.LODESTONE);
+            }
+        }
+        if (composeFullScore) {
+            for (; scoreIndex < score.size(); scoreIndex++) {
+                InselParameter parameter = score.get(scoreIndex);
+                blocks += GENERATOR.generate(world, parameter);
+                generatedIslands++;
+                archetypeCounts.merge(parameter.archetyp(), 1, Integer::sum);
+            }
         }
         set(world, GENERATION_MARKER, Blocks.LODESTONE);
 
         long elapsedMillis = (System.nanoTime() - startedAt) / 1_000_000L;
         Aetherklang.LOGGER.info(
-                "Klangmeer composed: {} islands, {} archetypes, {} blocks in {} ms; anchors west/east/south ready",
+                "Klangmeer composed: {} of {} islands, {} archetypes, {} blocks in {} ms; four region anchors ready",
+                generatedIslands,
                 score.size(),
                 archetypeCounts.size(),
                 blocks,
@@ -86,14 +100,15 @@ public final class KlangmeerKomponist {
         InselArchetyp[] archetypes = InselArchetyp.values();
         int archetypeOffset = random.nextInt(archetypes.length);
         int slot = 0;
-        for (int archipel = 0; archipel < ARCHIPEL_COUNT; archipel++) {
+        for (int archipel = 0; slot < PROCEDURAL_ISLANDS; archipel++) {
             double beltAngle = Math.PI * 2.0D * archipel / ARCHIPEL_COUNT
                     + random.nextDouble(-0.055D, 0.055D);
             int beltRadius = random.nextInt(790, 961);
             int archipelX = (int) Math.round(Math.cos(beltAngle) * beltRadius);
             int archipelZ = (int) Math.round(Math.sin(beltAngle) * beltRadius);
 
-            for (int member = 0; member < ARCHIPEL_SIZE; member++, slot++) {
+            int archipelMembers = Math.min(ARCHIPEL_SIZE, PROCEDURAL_ISLANDS - slot);
+            for (int member = 0; member < archipelMembers; member++, slot++) {
                 InselArchetyp archetype = archetypes[(slot + archetypeOffset) % archetypes.length];
                 InselParameter candidate = null;
                 for (int attempt = 0; attempt < 16; attempt++) {
@@ -156,6 +171,7 @@ public final class KlangmeerKomponist {
             case BASSGEWOELBE -> ModBlocks.RESONANZKRISTALL_INDIGO;
             case ARPEGGIENMEER -> ModBlocks.RESONANZKRISTALL_CYAN;
             case KAKOPHONIE_RIFF -> ModBlocks.RESONANZKRISTALL_MAGENTA;
+            case GENERALPAUSE_OEDE -> ModBlocks.RESONANZKRISTALL_GOLD;
         };
         set(world, anchor.up(2), cap);
     }

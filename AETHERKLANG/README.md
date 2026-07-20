@@ -66,6 +66,30 @@ Für einen schnellen Entwicklungstest:
 /execute in aetherklang:kammerton run summon aetherklang:choral 0.5 140 96.5
 ```
 
+## Klangmeer-Regionen und Bossarenen
+
+Vier feste Regionen tragen je ein einmalig erzeugtes Wahrzeichen. Beim ersten
+Annähern auf 24 Blöcke wird der zugehörige Boss genau einmal beschworen:
+
+| Region / Wahrzeichen | Teleport | Boss |
+| --- | --- | --- |
+| Bassgewölbe / Die Große Pauke | `/execute in aetherklang:kammerton run tp @s -899.5 130 0.5` | Tremolo |
+| Arpeggienmeer / Saitenbrücken | `/execute in aetherklang:kammerton run tp @s 900.5 130 0.5` | Glissanda |
+| Kakophonie-Riff / Schwarmthron | `/execute in aetherklang:kammerton run tp @s 0.5 130 900.5` | Kakophon |
+| Generalpause-Öde / Leeres Podium | `/execute in aetherklang:kammerton run tp @s 0.5 130 1600.5` | Generalpause |
+
+Für wiederholbare Bosswerk-Tests nach dem verbrauchten Annäherungstrigger:
+
+```mcfunction
+/execute in aetherklang:kammerton run summon aetherklang:boss_tremolo -899.5 135 0.5
+/execute in aetherklang:kammerton run summon aetherklang:boss_glissanda 900.5 135 0.5
+/execute in aetherklang:kammerton run summon aetherklang:boss_kakophon 0.5 135 900.5
+/execute in aetherklang:kammerton run summon aetherklang:boss_generalpause 0.5 133 1600.5
+```
+
+Zusätzlich entstehen zwei Resonanzorte mit Ring und Stimmpfeiler relativ zum
+Oberwelt-Spawn bei `(-36, +28)` und `(+36, +28)` Blöcken.
+
 ## Eingefrorene Schnittstellen
 
 - Blöcke: vier Resonanzkristalle, Stimmaltar, Dissonanzriss und Glockenspiel-Portal
