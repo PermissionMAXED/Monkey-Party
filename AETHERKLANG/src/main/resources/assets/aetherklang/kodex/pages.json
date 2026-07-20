@@ -1,0 +1,242 @@
+{
+  "pages": [
+    {
+      "id": "welcome",
+      "category": "lore",
+      "title": "kodex.aetherklang.page.welcome.title",
+      "subtitle": "kodex.aetherklang.page.welcome.subtitle",
+      "body": [
+        "kodex.aetherklang.page.welcome.body.1",
+        "kodex.aetherklang.page.welcome.body.2"
+      ],
+      "always_unlocked": true
+    },
+    {
+      "id": "world_song",
+      "category": "lore",
+      "title": "kodex.aetherklang.page.world_song.title",
+      "subtitle": "kodex.aetherklang.page.world_song.subtitle",
+      "body": [
+        "kodex.aetherklang.page.world_song.body.1",
+        "kodex.aetherklang.page.world_song.body.2"
+      ]
+    },
+    {
+      "id": "dissonance",
+      "category": "lore",
+      "title": "kodex.aetherklang.page.dissonance.title",
+      "subtitle": "kodex.aetherklang.page.dissonance.subtitle",
+      "body": [
+        "kodex.aetherklang.page.dissonance.body.1",
+        "kodex.aetherklang.page.dissonance.body.2"
+      ]
+    },
+    {
+      "id": "mood_compass",
+      "category": "moods",
+      "title": "kodex.aetherklang.page.mood_compass.title",
+      "subtitle": "kodex.aetherklang.page.mood_compass.subtitle",
+      "body": [
+        "kodex.aetherklang.page.mood_compass.body.1",
+        "kodex.aetherklang.page.mood_compass.body.2"
+      ]
+    },
+    {
+      "id": "five_moods",
+      "category": "moods",
+      "title": "kodex.aetherklang.page.five_moods.title",
+      "subtitle": "kodex.aetherklang.page.five_moods.subtitle",
+      "body": [
+        "kodex.aetherklang.page.five_moods.body.1",
+        "kodex.aetherklang.page.five_moods.body.2",
+        "kodex.aetherklang.page.five_moods.body.3"
+      ]
+    },
+    {
+      "id": "beat_windows",
+      "category": "rhythm",
+      "title": "kodex.aetherklang.page.beat_windows.title",
+      "subtitle": "kodex.aetherklang.page.beat_windows.subtitle",
+      "body": [
+        "kodex.aetherklang.page.beat_windows.body.1",
+        "kodex.aetherklang.page.beat_windows.body.2",
+        "kodex.aetherklang.page.beat_windows.body.3"
+      ]
+    },
+    {
+      "id": "resonance_points",
+      "category": "rhythm",
+      "title": "kodex.aetherklang.page.resonance_points.title",
+      "subtitle": "kodex.aetherklang.page.resonance_points.subtitle",
+      "body": [
+        "kodex.aetherklang.page.resonance_points.body.1",
+        "kodex.aetherklang.page.resonance_points.body.2"
+      ]
+    },
+    {
+      "id": "dissonance_meter",
+      "category": "rhythm",
+      "title": "kodex.aetherklang.page.dissonance_meter.title",
+      "subtitle": "kodex.aetherklang.page.dissonance_meter.subtitle",
+      "body": [
+        "kodex.aetherklang.page.dissonance_meter.body.1",
+        "kodex.aetherklang.page.dissonance_meter.body.2"
+      ]
+    },
+    {
+      "id": "tuning_fork",
+      "category": "instruments",
+      "title": "kodex.aetherklang.page.tuning_fork.title",
+      "subtitle": "kodex.aetherklang.page.tuning_fork.subtitle",
+      "body": [
+        "kodex.aetherklang.page.tuning_fork.body.1",
+        "kodex.aetherklang.page.tuning_fork.body.2"
+      ]
+    },
+    {
+      "id": "arsenal",
+      "category": "instruments",
+      "title": "kodex.aetherklang.page.arsenal.title",
+      "subtitle": "kodex.aetherklang.page.arsenal.subtitle",
+      "body": [
+        "kodex.aetherklang.page.arsenal.body.1",
+        "kodex.aetherklang.page.arsenal.body.2",
+        "kodex.aetherklang.page.arsenal.body.3"
+      ]
+    },
+    {
+      "id": "echo_boots",
+      "category": "instruments",
+      "title": "kodex.aetherklang.page.echo_boots.title",
+      "subtitle": "kodex.aetherklang.page.echo_boots.subtitle",
+      "body": [
+        "kodex.aetherklang.page.echo_boots.body.1",
+        "kodex.aetherklang.page.echo_boots.body.2"
+      ]
+    },
+    {
+      "id": "crystals",
+      "category": "blocks",
+      "title": "kodex.aetherklang.page.crystals.title",
+      "subtitle": "kodex.aetherklang.page.crystals.subtitle",
+      "body": [
+        "kodex.aetherklang.page.crystals.body.1",
+        "kodex.aetherklang.page.crystals.body.2"
+      ]
+    },
+    {
+      "id": "mood_altar",
+      "category": "blocks",
+      "title": "kodex.aetherklang.page.mood_altar.title",
+      "subtitle": "kodex.aetherklang.page.mood_altar.subtitle",
+      "body": [
+        "kodex.aetherklang.page.mood_altar.body.1",
+        "kodex.aetherklang.page.mood_altar.body.2"
+      ]
+    },
+    {
+      "id": "rift_portal",
+      "category": "blocks",
+      "title": "kodex.aetherklang.page.rift_portal.title",
+      "subtitle": "kodex.aetherklang.page.rift_portal.subtitle",
+      "body": [
+        "kodex.aetherklang.page.rift_portal.body.1",
+        "kodex.aetherklang.page.rift_portal.body.2"
+      ]
+    },
+    {
+      "id": "dissonance_spirit",
+      "category": "creatures",
+      "title": "kodex.aetherklang.page.dissonance_spirit.title",
+      "subtitle": "kodex.aetherklang.page.dissonance_spirit.subtitle",
+      "body": [
+        "kodex.aetherklang.page.dissonance_spirit.body.1",
+        "kodex.aetherklang.page.dissonance_spirit.body.2"
+      ]
+    },
+    {
+      "id": "echo_denizens",
+      "category": "creatures",
+      "title": "kodex.aetherklang.page.echo_denizens.title",
+      "subtitle": "kodex.aetherklang.page.echo_denizens.subtitle",
+      "body": [
+        "kodex.aetherklang.page.echo_denizens.body.1",
+        "kodex.aetherklang.page.echo_denizens.body.2"
+      ]
+    },
+    {
+      "id": "tonarium",
+      "category": "dimension",
+      "title": "kodex.aetherklang.page.tonarium.title",
+      "subtitle": "kodex.aetherklang.page.tonarium.subtitle",
+      "body": [
+        "kodex.aetherklang.page.tonarium.body.1",
+        "kodex.aetherklang.page.tonarium.body.2"
+      ]
+    },
+    {
+      "id": "portal_rite",
+      "category": "dimension",
+      "title": "kodex.aetherklang.page.portal_rite.title",
+      "subtitle": "kodex.aetherklang.page.portal_rite.subtitle",
+      "body": [
+        "kodex.aetherklang.page.portal_rite.body.1",
+        "kodex.aetherklang.page.portal_rite.body.2"
+      ]
+    },
+    {
+      "id": "choral",
+      "category": "boss",
+      "title": "kodex.aetherklang.page.choral.title",
+      "subtitle": "kodex.aetherklang.page.choral.subtitle",
+      "body": [
+        "kodex.aetherklang.page.choral.body.1",
+        "kodex.aetherklang.page.choral.body.2"
+      ]
+    },
+    {
+      "id": "final_cadence",
+      "category": "boss",
+      "title": "kodex.aetherklang.page.final_cadence.title",
+      "subtitle": "kodex.aetherklang.page.final_cadence.subtitle",
+      "body": [
+        "kodex.aetherklang.page.final_cadence.body.1",
+        "kodex.aetherklang.page.final_cadence.body.2"
+      ]
+    },
+    {
+      "id": "progression",
+      "category": "tips",
+      "title": "kodex.aetherklang.page.progression.title",
+      "subtitle": "kodex.aetherklang.page.progression.subtitle",
+      "body": [
+        "kodex.aetherklang.page.progression.body.1",
+        "kodex.aetherklang.page.progression.body.2",
+        "kodex.aetherklang.page.progression.body.3"
+      ],
+      "always_unlocked": true
+    },
+    {
+      "id": "controls",
+      "category": "tips",
+      "title": "kodex.aetherklang.page.controls.title",
+      "subtitle": "kodex.aetherklang.page.controls.subtitle",
+      "body": [
+        "kodex.aetherklang.page.controls.body.1",
+        "kodex.aetherklang.page.controls.body.2"
+      ],
+      "always_unlocked": true
+    },
+    {
+      "id": "commands",
+      "category": "tips",
+      "title": "kodex.aetherklang.page.commands.title",
+      "subtitle": "kodex.aetherklang.page.commands.subtitle",
+      "body": [
+        "kodex.aetherklang.page.commands.body.1",
+        "kodex.aetherklang.page.commands.body.2"
+      ],
+      "always_unlocked": true
+    }
+  ]
+}
