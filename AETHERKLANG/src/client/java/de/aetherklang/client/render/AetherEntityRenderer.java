@@ -1,5 +1,6 @@
 package de.aetherklang.client.render;
 
+import de.aetherklang.Aetherklang;
 import de.aetherklang.entity.ChoralEntity;
 import de.aetherklang.entity.EchonoteEntity;
 import de.aetherklang.entity.HallwaechterEntity;
@@ -13,36 +14,30 @@ import net.minecraft.client.render.state.CameraRenderState;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RotationAxis;
 
 public final class AetherEntityRenderer<T extends Entity>
         extends EntityRenderer<T, AetherEntityRenderState> {
-    private static final Identifier TEXTURE =
-            Identifier.ofVanilla("textures/block/white_stained_glass.png");
     private final AetherEntityModel model;
     private final AetherEntityStyle style;
     private final float scale;
-    private final int baseColor;
+    private final Identifier texture;
+    private final Identifier emissiveTexture;
 
     public AetherEntityRenderer(
             EntityRendererFactory.Context context,
             AetherEntityStyle style,
             float scale,
             float shadowRadius,
-            int baseColor
+            String skinName
     ) {
         super(context);
         this.model = new AetherEntityModel(context.getPart(ModEntityRenderers.MODEL_LAYER));
         this.style = style;
         this.scale = scale;
         this.shadowRadius = shadowRadius;
-        this.baseColor = baseColor;
-    }
-
-    @Override
-    protected int getBlockLight(T entity, BlockPos pos) {
-        return 15;
+        this.texture = skin(skinName, false);
+        this.emissiveTexture = skin(skinName, true);
     }
 
     @Override
@@ -76,35 +71,58 @@ public final class AetherEntityRenderer<T extends Entity>
         matrices.scale(-scale, -scale, scale);
         matrices.translate(0.0F, -1.5F, 0.0F);
 
-        RenderLayer layer = model.getLayer(TEXTURE);
-        queue.submitModel(
-                model,
+        submitLayer(state, matrices, queue, model.getLayer(texture), state.light, 0xFFFFFFFF);
+        submitLayer(
                 state,
                 matrices,
-                layer,
+                queue,
+                RenderLayer.getEntityTranslucentEmissive(emissiveTexture),
                 LightmapTextureManager.MAX_LIGHT_COORDINATE,
-                OverlayTexture.DEFAULT_UV,
-                getColor(state),
-                null
+                getEmissiveColor(state)
         );
         matrices.pop();
         super.render(state, matrices, queue, cameraState);
     }
 
-    private int getColor(AetherEntityRenderState state) {
+    private void submitLayer(
+            AetherEntityRenderState state,
+            MatrixStack matrices,
+            OrderedRenderCommandQueue queue,
+            RenderLayer layer,
+            int light,
+            int color
+    ) {
+        queue.submitModel(
+                model,
+                state,
+                matrices,
+                layer,
+                light,
+                OverlayTexture.DEFAULT_UV,
+                color,
+                null
+        );
+    }
+
+    private int getEmissiveColor(AetherEntityRenderState state) {
         if (style == AetherEntityStyle.HALLWAECHTER && state.shielded) {
-            return 0xE05FF5E0;
+            return 0xFF5FF5E0;
         }
         if (style == AetherEntityStyle.ECHONOTE) {
-            return state.healing ? 0xF05FF5E0 : 0xF0F5C95F;
+            return state.healing ? 0xFF5FF5E0 : 0xFFF5C95F;
         }
         if (style == AetherEntityStyle.CHORAL) {
             return switch (state.phase) {
-                case 1 -> 0xD89263FF;
-                case 2 -> 0xD8E03A8C;
-                default -> 0xE8F5C95F;
+                case 1 -> 0xFF9263FF;
+                case 2 -> 0xFFE03A8C;
+                default -> 0xFFF5C95F;
             };
         }
-        return baseColor;
+        return 0xFFFFFFFF;
+    }
+
+    private static Identifier skin(String skinName, boolean emissive) {
+        String suffix = emissive ? "_emissive" : "";
+        return Aetherklang.id("textures/entity/" + skinName + suffix + ".png");
     }
 }

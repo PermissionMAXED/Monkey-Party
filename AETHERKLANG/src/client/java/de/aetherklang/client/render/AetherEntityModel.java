@@ -12,6 +12,9 @@ import net.minecraft.client.model.Model;
 import net.minecraft.util.math.MathHelper;
 
 public final class AetherEntityModel extends Model<AetherEntityRenderState> {
+    public static final int TEXTURE_WIDTH = 128;
+    public static final int TEXTURE_HEIGHT = 128;
+
     private final ModelPart geist;
     private final ModelPart geistLeftWing;
     private final ModelPart geistRightWing;
@@ -33,7 +36,7 @@ public final class AetherEntityModel extends Model<AetherEntityRenderState> {
     private final ModelPart taktlingRightEar;
 
     public AetherEntityModel(ModelPart root) {
-        super(root, RenderLayer::getEntityTranslucent);
+        super(root, RenderLayer::getEntityCutoutNoCull);
         geist = root.getChild("geist");
         geistLeftWing = geist.getChild("left_wing");
         geistRightWing = geist.getChild("right_wing");
@@ -64,7 +67,7 @@ public final class AetherEntityModel extends Model<AetherEntityRenderState> {
         buildChoral(root);
         buildSirene(root);
         buildTaktling(root);
-        return TexturedModelData.of(data, 64, 64);
+        return TexturedModelData.of(data, TEXTURE_WIDTH, TEXTURE_HEIGHT);
     }
 
     private static void buildGeist(ModelPartData root) {

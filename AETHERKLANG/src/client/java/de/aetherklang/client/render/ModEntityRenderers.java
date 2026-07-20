@@ -36,7 +36,7 @@ public final class ModEntityRenderers {
                         AetherEntityStyle.DISSONANZGEIST,
                         0.78F,
                         0.35F,
-                        0xDDE03A8C
+                        "dissonanzgeist"
                 )
         );
         EntityRendererRegistry.register(
@@ -46,7 +46,7 @@ public final class ModEntityRenderers {
                         AetherEntityStyle.HALLWAECHTER,
                         1.15F,
                         0.7F,
-                        0xE8F5C95F
+                        "hallwaechter"
                 )
         );
         EntityRendererRegistry.register(
@@ -56,7 +56,7 @@ public final class ModEntityRenderers {
                         AetherEntityStyle.ECHONOTE,
                         0.34F,
                         0.1F,
-                        0xF0F5C95F
+                        "echonote"
                 )
         );
         EntityRendererRegistry.register(
@@ -66,7 +66,7 @@ public final class ModEntityRenderers {
                         AetherEntityStyle.CHORAL,
                         2.2F,
                         1.3F,
-                        0xD89263FF
+                        "choral"
                 )
         );
         EntityRendererRegistry.register(
@@ -76,7 +76,7 @@ public final class ModEntityRenderers {
                         AetherEntityStyle.SIRENE,
                         1.05F,
                         0.5F,
-                        0xE05FF5E0
+                        "sirene"
                 )
         );
         EntityRendererRegistry.register(
@@ -86,7 +86,7 @@ public final class ModEntityRenderers {
                         AetherEntityStyle.TAKTLING,
                         0.52F,
                         0.25F,
-                        0xE8F5C95F
+                        "taktling"
                 )
         );
         EntityRendererRegistry.register(
@@ -96,73 +96,73 @@ public final class ModEntityRenderers {
         EntityRendererRegistry.register(
                 ModEntities.MOTIV_LAEUFER,
                 context -> new MotivEntityRenderer(
-                        context, AetherEntityStyle.HALLWAECHTER, 0.72F, 0.35F
+                        context, AetherEntityStyle.HALLWAECHTER, 0.72F, 0.35F, "motiv_laeufer"
                 )
         );
         EntityRendererRegistry.register(
                 ModEntities.MOTIV_SCHWINGE,
                 context -> new MotivEntityRenderer(
-                        context, AetherEntityStyle.SIRENE, 0.68F, 0.3F
+                        context, AetherEntityStyle.SIRENE, 0.68F, 0.3F, "motiv_schwinge"
                 )
         );
         EntityRendererRegistry.register(
                 ModEntities.MOTIV_PULSER,
                 context -> new MotivEntityRenderer(
-                        context, AetherEntityStyle.ECHONOTE, 0.85F, 0.35F
+                        context, AetherEntityStyle.ECHONOTE, 0.85F, 0.35F, "motiv_pulser"
                 )
         );
         EntityRendererRegistry.register(
                 ModEntities.MOTIV_KOLOSS,
                 context -> new MotivEntityRenderer(
-                        context, AetherEntityStyle.CHORAL, 1.15F, 0.55F
+                        context, AetherEntityStyle.CHORAL, 1.15F, 0.55F, "motiv_koloss"
                 )
         );
         EntityRendererRegistry.register(
                 ModEntities.MOTIV_WEBER,
                 context -> new MotivEntityRenderer(
-                        context, AetherEntityStyle.DISSONANZGEIST, 0.95F, 0.4F
+                        context, AetherEntityStyle.DISSONANZGEIST, 0.95F, 0.4F, "motiv_weber"
                 )
         );
         EntityRendererRegistry.register(
                 ModEntities.MOTIV_SCHUETZE,
                 context -> new MotivEntityRenderer(
-                        context, AetherEntityStyle.HALLWAECHTER, 0.78F, 0.32F
+                        context, AetherEntityStyle.HALLWAECHTER, 0.78F, 0.32F, "motiv_schuetze"
                 )
         );
         EntityRendererRegistry.register(
                 ModEntities.BOSS_TREMOLO,
                 context -> new AetherEntityRenderer<>(
-                        context, AetherEntityStyle.CHORAL, 1.55F, 0.9F, 0xE8E03A8C
+                        context, AetherEntityStyle.CHORAL, 1.55F, 0.9F, "boss_tremolo"
                 )
         );
         EntityRendererRegistry.register(
                 ModEntities.BOSS_GLISSANDA,
                 context -> new AetherEntityRenderer<>(
-                        context, AetherEntityStyle.SIRENE, 1.8F, 0.9F, 0xE85FF5E0
+                        context, AetherEntityStyle.SIRENE, 1.8F, 0.9F, "boss_glissanda"
                 )
         );
         EntityRendererRegistry.register(
                 ModEntities.BOSS_KAKOPHON,
                 context -> new AetherEntityRenderer<>(
-                        context, AetherEntityStyle.CHORAL, 1.8F, 1.0F, 0xE8E03A8C
+                        context, AetherEntityStyle.CHORAL, 1.8F, 1.0F, "boss_kakophon"
                 )
         );
         EntityRendererRegistry.register(
                 ModEntities.BOSS_GENERALPAUSE,
                 context -> new AetherEntityRenderer<>(
-                        context, AetherEntityStyle.HALLWAECHTER, 2.0F, 1.1F, 0xE81A1033
+                        context, AetherEntityStyle.HALLWAECHTER, 2.0F, 1.1F, "boss_generalpause"
                 )
         );
         EntityRendererRegistry.register(
                 ModEntities.BOSS_OSTINATO,
                 context -> new AetherEntityRenderer<>(
-                        context, AetherEntityStyle.CHORAL, 1.7F, 0.95F, 0xE87954D6
+                        context, AetherEntityStyle.CHORAL, 1.7F, 0.95F, "boss_ostinato"
                 )
         );
         EntityRendererRegistry.register(
                 ModEntities.BOSS_RITARDANDO,
                 context -> new AetherEntityRenderer<>(
-                        context, AetherEntityStyle.HALLWAECHTER, 1.9F, 1.0F, 0xE85FF5E0
+                        context, AetherEntityStyle.HALLWAECHTER, 1.9F, 1.0F, "boss_ritardando"
                 )
         );
     }
