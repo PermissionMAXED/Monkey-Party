@@ -14,10 +14,13 @@ Resonanz** und erscheint als indigo-goldenes Tonarium.
 - **Fundament** – registriert, sichtbar und für weitere Mechanik vorbereitet.
 - **Vision** – geplanter Ausbau; wichtig für Balancing und Progression.
 
-Der Kern von Aetherklang ist **spielbar**: alle sechs Gegenstände, alle
-sieben Blöcke, alle vier Kreaturen mit KI, Beute und eigenen Renderern, das
-Resonanz-HUD, die Kammerton-Dimension und die Choral-Begegnung. Die
-Statusangaben markieren ehrlich, wo darüber hinaus noch Ausbau geplant ist.
+Der Kern von Aetherklang und das Crescendo sind **spielbar**: zu den sechs
+Grundgegenständen, sieben Grundblöcken und vier ursprünglichen Kreaturen
+kommen Ensembles, Akkorde, vier Resonanzgrade, zwei Instrumente, die
+Klangweber-Rüstung, vier Tonarium-Blöcke und zwei Kreaturen. Das
+Resonanz-HUD, der erweiterte Kodex, die Kammerton-Dimension und die
+Choral-Begegnung sind vollständig verdrahtet. Statusangaben markieren
+weiterhin ehrlich, wenn ein Folio nur Fundament oder Vision beschreibt.
 
 ---
 
@@ -192,6 +195,8 @@ kannst.
 | Stimmgabel-Scan im Takt | `+3 RP` |
 | Resonanzkristall anspielen (Rechtsklick) | `+1 RP` |
 | Hallharfen-Heilpuls, der Verbündete heilt | `+1 RP` |
+| On-Beat-Aktion im aktiven Ensemble | `+1 RP` je Beat |
+| Klangweber-Nachhall einer perfekten Aktion | mindestens `+1 RP` |
 
 ### Kosten
 
@@ -202,14 +207,19 @@ kannst.
 | Resonanzschritt der Echostiefel | `8 RP` |
 | Resonanzfächer der Resonanzklinge | `12 RP` |
 | Dissonanzriss versiegeln | `12 RP` |
+| Orgelhorn-Druckwelle | `10 RP` |
+| Fermatenglocke werfen | `16 RP` |
 | Glockenspiel-Portal ohne Kodex betreten | `24 RP` |
 
 ### Regeln
 
-- Der Vorrat liegt zwischen **0 und 100 RP**.
+- Der Vorrat liegt zwischen **0 und 100 RP**; der Klangweberharnisch erhöht
+  die aktive Obergrenze auf **120 RP**.
 - Spezialfähigkeiten ziehen ihre Kosten nur bei erfolgreicher Auslösung ab.
 - RP, Stimmung, Beatphase, Dissonanz und Kodex-Freischaltungen werden im
   Spieler-Attachment gespeichert und **beim Tod übernommen**.
+- Nur tatsächlich gutgeschriebene positive RP erhöhen `gesamt_rp`.
+  Ausgaben und Tod senken diesen Lebenszeitwert nicht.
 
 ### RP-Ökonomie
 
@@ -228,7 +238,7 @@ Portal willst.
 ## 6. Das Resonanz-HUD
 
 Unten links begleitet dich das **Resonanz-HUD** – ein indigo-goldenes Panel
-mit vier Anzeigen:
+mit vier Grundanzeigen und zwei Crescendo-Erweiterungen:
 
 - **Stimmung:** Symbol und Name deiner aktuellen Haltung in ihrer Farbe.
 - **RP-Leiste:** dein Vorrat als cyan-goldener Balken mit `x / 100`.
@@ -237,6 +247,10 @@ mit vier Anzeigen:
   wird zusätzlich vom Beat-Tick begleitet.
 - **DIS-Meter:** deine Dissonanz in Prozent; ab hohen Werten warnt die
   Anzeige magenta.
+- **Rangsigil:** Grad und Gesamt-RP in einer farb- und formkodierten Raute
+  über dem Panel.
+- **Akkordpanel:** drei Stimmungsplätze sowie die Größe eines aktiven
+  Ensembles; erscheint als eigener Crescendo-Baustein.
 
 Dazu kommen weltliche Effekte: Beat-Ringe um den Spieler, ein
 stimmungsgefärbter Bildschirmrand (Vignette), Dissonanz-Verzerrungen an den
@@ -323,15 +337,16 @@ mit stimmungsgefärbter Notenspur.
 
 ### Kodex der Resonanz — `aetherklang:kodex` · Spielbar
 
-Das Tonarium mit neun Registern, 23 Folios und versiegelten Einträgen. Im
+Das Tonarium mit fünfzehn Registern, 35 Folios und versiegelten Einträgen. Im
 Kreativmodus sind alle Seiten offen. Im Überlebensmodus liest der Kodex die
 freigeschalteten Seiten aus deinen synchronisierten Resonanzdaten.
 
 - Rechtsklick mit dem Gegenstand: öffnen (zählt für den Fortschritt
   „Eine Welt mit Stimme“)
 - Standardtaste: **K**
-- Register: Lore, Stimmungen, Takt & RP, Instrumente, Blöcke, Kreaturen,
-  Dimension, Boss und Tipps
+- Register: die neun Grundregister plus Ensemble & Akkorde,
+  Tonarium-Erweiterung, Resonanzgrade, neue Instrumente,
+  Klangweber-Rüstung und neue Kreaturen
 - In beiden Händen wirksam: Wer den Kodex trägt, durchschreitet das
   Glockenspiel-Portal **kostenlos**
 
@@ -339,8 +354,8 @@ freigeschalteten Seiten aus deinen synchronisierten Resonanzdaten.
 
 ## 8. Blöcke und Resonanzorte
 
-Alle sieben Blöcke sind **spielbar**: mit Modellen, Texturen, Beute,
-Rezepten und aktiver Weltmechanik.
+Alle sieben Grundblöcke sind **spielbar**. Crescendo ergänzt vier weitere
+spielbare Tonarium-Blöcke; ihre Details stehen in Kapitel 25.
 
 ### Die vier Resonanzkristalle · Spielbar
 
@@ -396,8 +411,9 @@ Noten- und Beam-Partikel.
 
 ## 9. Kreaturen
 
-Alle vier Entitätstypen sind **spielbar**: mit Kampf-KI, Beutetabellen,
-eigenen Renderern samt Modellen und Spawn-Eiern im Kreativtab.
+Alle vier ursprünglichen Entitätstypen sind **spielbar**. Sirene und
+Taktling erweitern die Begegnungen; das Fermate-Feld ist eine kurzlebige
+Instrumententität. Details stehen in Kapitel 24.
 
 ### Dissonanzgeist — `aetherklang:dissonanzgeist` · Spielbar
 
@@ -559,7 +575,7 @@ mit etwas Glück ein Meisterinstrument.
 
 ## 12. Fertigung
 
-Alle Rezepte sind freigeschaltet und im Rezeptbuch auffindbar.
+Alle vorhandenen Rezepte sind freigeschaltet und im Rezeptbuch auffindbar.
 
 | Gegenstand | Zutaten (Kurzform) |
 | --- | --- |
@@ -575,6 +591,17 @@ Alle Rezepte sind freigeschaltet und im Rezeptbuch auffindbar.
 | **Magenta-Kristall** | 4× Amethystscherbe um 1× Magenta Farbstoff |
 | **Stimmaltar** | Indigo/Cyan/Gold-Kristalle über Amethyst+Notenblock, Fuß aus Obsidian und Magenta-Kristall |
 | **Glockenspiel-Portal** | Goldblöcke und Glocken um einen Stimmaltar, gefasst in Weinenden Obsidian |
+| **Orgelhorn** | Ziegenhorn, Kupferingots und Gold-Resonanzkristall |
+| **Fermatenglocke** | Glocke, Cyan-Resonanzkristall, Amethystscherbe und 2× Goldingot |
+| **Klangweberhelm** | 4× beliebiger Resonanzkristall um 1× Chorherz |
+| **Klangweberharnisch** | 7× beliebiger Resonanzkristall um 1× Chorherz |
+| **Klangweberbeinschutz** | 6× beliebiger Resonanzkristall um 1× Chorherz |
+| **Klangweberstiefel** | 2× Resonanzkristall über 2× Chorherz |
+
+Das **Chorherz** besitzt kein Rezept: Die Sirene lässt eines fallen.
+Klanglaterne, Taktbrücke, Resonanzarchiv und Klangblume besitzen derzeit
+**kein Überlebensrezept**; sie erscheinen als Weltinhalt oder im
+Kreativinventar.
 
 ---
 
@@ -630,6 +657,7 @@ Alle Rezepte sind freigeschaltet und im Rezeptbuch auffindbar.
 | Kodex öffnen | **K** | Jederzeit; Rechtsklick mit dem Kodex ebenfalls |
 | Resonanzschritt | **R** | Echostiefel müssen getragen werden; kostet 8 RP, 3 s Abklingzeit |
 | Stimmung wechseln | **M** | Zyklisch; kostet 2 RP (Kreativmodus: kostenlos) |
+| Adaptive Musik an/aus | **N** | Lokale Crescendo-Musik; beeinflusst keine Servermechanik |
 | Seite/Register wählen | Linksklick | Eigene Tonarium-Schaltflächen |
 | Vorige/nächste Seite | `‹` / `›` | Innerhalb des gewählten Registers |
 | Kodex schließen | **Esc** oder `×` | Das Spiel läuft im Hintergrund weiter |
@@ -648,8 +676,8 @@ Testkommandos benötigen Berechtigungsstufe 2.
 | --- | --- |
 | `/aetherklang` | Modstatus anzeigen |
 | `/aetherklang rp get` | Eigene RP anzeigen |
-| `/aetherklang rp set <0..100>` | RP setzen (Admin) |
-| `/aetherklang rp add <-100..100>` | RP addieren/abziehen (Admin) |
+| `/aetherklang rp set <0..120>` | RP setzen (Admin; ohne Harnisch effektiv höchstens 100) |
+| `/aetherklang rp add <-120..120>` | RP addieren/abziehen (Admin; aktives Vorratslimit gilt) |
 | `/aetherklang mood stille` | Stimmung auf Stille setzen |
 | `/aetherklang mood freude` | Stimmung auf Freude setzen |
 | `/aetherklang mood zorn` | Stimmung auf Zorn setzen |
@@ -673,11 +701,11 @@ Für schnelle Entwicklungstests in den Kammerton:
 
 ## 17. Kodex-Freischaltungen
 
-Der Kodex umfasst **23 Folios** in neun Registern. Einträge können drei
+Der Kodex umfasst **35 Folios** in fünfzehn Registern. Einträge können drei
 Zustände haben:
 
-- **Grundwissen:** immer offen – die Willkommensseite sowie die
-  Tipps-Folios zu Progression, Steuerung und Kommandos.
+- **Grundwissen:** immer offen – die Willkommensseite, die Tipps-Folios und
+  die zwölf Crescendo-Folios.
 - **Entdeckt:** die Folio-ID steht in deinen persistenten Resonanzdaten und
   wird dem Client automatisch synchronisiert.
 - **Versiegelt:** Titel bleibt sichtbar, der Inhalt wartet auf seine
@@ -704,7 +732,266 @@ einem vollständigen Designarchiv für Bauende, Tester und Content-Creator.
 
 ---
 
-## 19. Credits
+## 19. Crescendo: Was neu erklingt
+
+**Crescendo** erweitert den Weg nach Choral, ohne das Grundspiel zu ersetzen.
+Seine Systeme greifen in Takt, Stimmung, RP und Kodex ein:
+
+| Bereich | Inhalt | Stand |
+| --- | --- | --- |
+| Gemeinsames Spiel | Ensembles, vier Dreiklang-Folgen, Akkord-HUD | **Spielbar** |
+| Langzeitfortschritt | Novize, Adept, Virtuose, Maestro | **Spielbar** |
+| Instrumente | Orgelhorn, Fermatenglocke und Fermate-Feld | **Spielbar** |
+| Ausrüstung | Vier Teile Klangweber-Rüstung samt Nachhall | **Spielbar** |
+| Tonarium | Acht Resonanzgärten, drei Archive, Taktbrücken | **Spielbar** |
+| Kreaturen | Sirene am Orgelturm und zähmbare Taktlinge | **Spielbar** |
+| Präsentation | Aurora, Akkord-/Rang-HUD, adaptive Musik | **Spielbar** |
+| Kodex | Zwölf neue, ausdrücklich markierte Folios | **Spielbar** |
+
+Die Bezeichnung **Spielbar** meint: Die Mechanik besitzt einen
+serverautoritativen Auslöser, sicht- oder hörbares Feedback und einen
+vollständigen Ergebnisweg. Sie verspricht nicht automatisch ein
+Überlebensrezept; fehlende Rezepte sind in Kapitel 12 offengelegt.
+
+---
+
+## 20. Ensembles und Akkorde
+
+### Ein Ensemble bilden
+
+Zwei Resonante bilden ein Ensemble, wenn sie in derselben Dimension,
+innerhalb von **12 Blöcken** und auf demselben serverseitigen Beat eine
+gültige On-Beat-Aktion ausführen. Der Verbund hält **10 Sekunden** und wird
+durch weitere gemeinsame Antworten erneuert.
+
+- Jede On-Beat-Aktion im aktiven Verbund gewährt der handelnden Person
+  einmal pro Beat **+1 RP**.
+- Das Akkord-HUD zeigt die Anzahl der verbundenen Stimmen als `♫n`.
+- Cyan-goldene Doppelstrahlen verbinden die nächsten sichtbaren Mitglieder.
+- Verlässt ein Mitglied den Server, wird die Gruppe verkleinert oder
+  aufgelöst; der Bonus ist kein dauerhaft gespeicherter Zustand.
+- Taktbrücken betrachten bereits zwei nahe Spielende als Ensemble und
+  bleiben dann auch zwischen den GUT-Fenstern fest.
+
+Als Ensembleaktionen zählen On-Beat-Angriffe und die Verwendung von
+Stimmgabel, Resonanzklinge, Hallharfe, Basshammer, Orgelhorn oder
+Fermatenglocke. Dieselbe Aktion kann im selben Tick nicht doppelt zählen.
+
+### Drei Stimmungen ergeben einen Akkord
+
+Jede gültige On-Beat-Aktion schreibt die aktuelle Stimmung in einen
+dreistelligen Puffer. Das HUD zeigt die Folge. Passt sie zu einem bekannten
+Akkord, wird der Effekt sofort in einem Radius von **8 Blöcken** aufgelöst
+und die Folge beginnt von vorn.
+
+| Folge | Akkord | Wirkung |
+| --- | --- | --- |
+| Stille → Freude → Wunder | **Heilender Dreiklang** | Heilt dich und nahe Spielende um 3 Herzen |
+| Zorn → Zorn → Trauer | **Sturzkadenz** | 3 Herzen Magieschaden und 6 s Langsamkeit II gegen Gegner |
+| Trauer → Stille → Freude | **Sanfte Auflösung** | Heilt 1 Herz, entfernt Langsamkeit, gibt 8 s Regeneration |
+| Wunder → Zorn → Wunder | **Sternenfortissimo** | 2 Herzen Magieschaden, Rückstoß nach oben und 8 s Leuchten |
+
+Akkorde kosten keine zusätzlichen RP. Ihre Kosten sind Planung, drei
+saubere Aktionen und gegebenenfalls zwei Stimmungswechsel. Goldene Glyphen,
+Auflösungsklang und die ausgeschriebene Akkordbezeichnung bestätigen den
+Treffer.
+
+---
+
+## 21. Resonanzgrade
+
+Der aktuelle RP-Vorrat ist eine Ressource. **Gesamt-RP** (`gesamt_rp`) ist
+dagegen die Summe aller tatsächlich gutgeschriebenen positiven RP-Gewinne.
+Ausgaben, Tod und Dimensionswechsel verringern sie nicht.
+
+| Grad | Gesamt-RP ab | Bedeutung im HUD |
+| --- | ---: | --- |
+| **Novize** | `0` | Indigo-violettes Grundsigil |
+| **Adept** | `150` | Cyanes Sigil mit Seitenmarken |
+| **Virtuose** | `400` | Goldenes Sigil mit vier Achsen |
+| **Maestro** | `900` | Magenta-goldenes vollständiges Sigil |
+
+Das Rangsigil sitzt über dem Resonanz-HUD und nennt zusätzlich `ΣRP`.
+Formmarken unterscheiden die Stufen auch ohne Farbwahrnehmung. Der Server
+leitet den Grad immer neu aus Gesamt-RP ab, speichert beide Werte im
+Resonanz-Attachment und sendet sie über `aetherklang:rang_sync` an den
+Client.
+
+Wichtig für die Ökonomie: Gewinne, die wegen des aktiven Vorratslimits nicht
+gutgeschrieben werden können, erhöhen Gesamt-RP nicht. Gib RP für sinnvolle
+Aktionen aus, statt am Limit weiter zu sammeln. Der Klangweberharnisch hebt
+dieses Limit von 100 auf 120, verändert aber keine Gradschwelle.
+
+---
+
+## 22. Crescendo-Instrumente
+
+### Orgelhorn — `aetherklang:orgelhorn` · Spielbar
+
+Das Orgelhorn wandelt einen gehaltenen Ton in eine gerichtete Druckwelle.
+
+- Rechtsklick mindestens **10 Ticks** halten, dann im GUT-Fenster loslassen
+- Kosten: **10 RP**, nur bei erfolgreicher Welle
+- Reichweite: **12 Blöcke** in einem Blickkegel
+- Schaden: **7** (3,5 Herzen), danach Rückstoß und 2,5 s Dunkelheit
+- PERFEKT: stärkerer Rückstoß und normaler Perfekt-RP-Gewinn
+- DANEBEN: keine Welle, keine RP-Kosten
+- Haltbarkeit: 384
+
+Das Horn eignet sich zum Öffnen eines bedrohten Korridors und zum Trennen
+einer Gegnergruppe. Seine Reichweite ersetzt keine Zielprüfung: Wesen
+außerhalb des Kegels bleiben unberührt.
+
+### Fermatenglocke — `aetherklang:fermatenglocke` · Spielbar
+
+Die Glocke wird als Projektil geworfen und verankert sich am ersten
+Aufprall.
+
+- Kosten: **16 RP**
+- Feldradius: **6 Blöcke**
+- Dauer: **8 Sekunden**
+- Abklingzeit: **20 Sekunden**
+- Lebewesen im Feld erhalten starke Langsamkeit; ihre Geschwindigkeit fällt
+  auf 18 Prozent
+- Geschosse werden auf 5 Prozent ihrer Geschwindigkeit gebremst
+- Die werfende Person ist vom eigenen Feld ausgenommen
+- Haltbarkeit: 256
+
+Das Fermate-Feld ist Kontrolle, kein Schaden. Es friert die Welt nicht
+wirklich ein; Serverzeit, Beat und Effektdauern laufen weiter.
+
+---
+
+## 23. Klangweber-Rüstung
+
+Die vier Teile besitzen Diamantrüstungswerte und skalierende Cyan-Gold-
+Partikel. Jeder Baustein hat einen eigenen spielbaren Nutzen:
+
+| Teil | Bonus |
+| --- | --- |
+| **Klangweberhelm** | Markiert bis zu 16 Kristalle, Altäre, Risse, Portale und Archive in 12 Blöcken horizontal / 6 vertikal |
+| **Klangweberharnisch** | Erhöht den aktiven RP-Vorrat von 100 auf **120** |
+| **Klangweberbeinschutz** | Erweitert das GUT-Phasenfenster um `0,03` |
+| **Klangweberstiefel** | Erlaubt den Resonanzschritt per **R** für **6 RP** statt 8 |
+
+### Vollsatz: Nachhall
+
+Eine perfekte Aktion legt beim vollständigen Satz eine Antwort für den
+nächsten Beat ab, also **10 Ticks** später:
+
+- mindestens **+1 RP** als halbstarker Ertrag,
+- Beat-Ring, Notenfunken und hoher Resonanzklang,
+- bei Resonanzklinge und Basshammer zusätzlich eine halbstarke Wiederholung
+  ihres Resonanzeffekts am ursprünglichen Ziel.
+
+Nachhall verlangt weiterhin eine perfekte Ursprungsaktion. Er erweitert den
+Rhythmuszyklus, automatisiert ihn aber nicht.
+
+---
+
+## 24. Sirene, Taktling und Orgelturm
+
+### Der Orgelturm · Spielbar
+
+Beim Laden der Oberwelt entsteht einmalig **96 Blöcke östlich des
+Weltspawns** ein schwarzer Kupfer- und Goldturm. Ein Leitstein im Fundament
+merkt sich die Generierung. Über der Plattform wartet eine Sirene; wird sie
+besiegt, erscheint sie nach einem Neuladen nicht automatisch erneut.
+
+### Sirene — `aetherklang:sirene` · Spielbar
+
+- 45 Herzen, Rüstung 6, fliegende Phantombewegung
+- singt alle **6 Sekunden** eine 1,8 Sekunden lange Lockphrase
+- zieht Lebewesen aus **16 Blöcken** zum Turm
+- On-Beat-Treffer richten **×1,75** Schaden an
+- hinterlässt garantiert ein **Chorherz**
+
+Das Chorherz ist derzeit ein Beute- und Integrationsgegenstand ohne eigenes
+Benutzungsrezept. Das Orgelhorn wird regulär gefertigt, nicht direkt aus dem
+Herz.
+
+### Taktling — `aetherklang:taktling` · Spielbar
+
+Taktlinge erscheinen im Kammerton, hüpfen im Zehn-Tick-Puls und können mit
+einem **Gold-Resonanzkristall** gezähmt werden.
+
+- folgen ihrem Besitzer oder sitzen nach Interaktion,
+- geben in 12 Blöcken ein um `0,02` erweitertes GUT-Fenster,
+- antworten gelegentlich mit einem hohen Zirpen,
+- vermehren sich in der aktuellen Fassung nicht.
+
+---
+
+## 25. Tonarium-Erweiterung
+
+Jenseits der Choral-Arena setzt sich der Kammerton nach Süden fort. Die
+Erweiterung wird beim ersten Laden der Dimension deterministisch komponiert
+und durch verborgene Leitsteinmarker gegen doppelte Generierung geschützt.
+
+### Resonanzgärten
+
+Acht schwebende Garteninseln liegen ringförmig um ungefähr
+`0 / 129 / 272`. Moos, Kalzit, Kristallpylonen, Klangblumen und
+Klanglaternen bilden sichere Zwischenräume.
+
+### Kristallarchive
+
+Drei Hallen liegen bei ungefähr `-68 / 137 / 342`, `0 / 142 / 394` und
+`68 / 137 / 342`. Ihr Resonanzarchiv entsiegelt per Rechtsklick je ein
+ortsgebundenes Grundfolio: Tonarium, Portalritus oder Finale Kadenz.
+
+### Vier neue Blöcke
+
+| Block | Spielbare Wirkung |
+| --- | --- |
+| **Klanglaterne** | Pulsiert in den ersten zwei Ticks jedes Beats von Lichtstufe 5 auf 15 |
+| **Taktbrücke** | Kollidiert im GUT-Fenster; mit zwei nahen Spielenden dauerhaft fest |
+| **Resonanzarchiv** | Entsiegelt ein positionsgebundenes Kodex-Folio je Person |
+| **Klangblume** | Klingt und streut Notenfunken bei Berührung, 1,5 s Abklingzeit je Wesen |
+
+Die Taktbrücken verbinden Nordgarten und Archive in einem breiten,
+dreispurigen Netz. Allein musst du ihren Puls lesen; zu zweit kannst du die
+Ensemble-Stabilisierung nutzen.
+
+---
+
+## 26. Crescendo-Präsentation und Kodex
+
+### Adaptive Musik
+
+Der Client setzt jeden synchronisierten Beat in ein achtstufiges Motiv der
+aktuellen Stimmung um. Ensembles fügen Harmonien hinzu, hohe Dissonanz
+verstimmt Akzente und ein naher Choral legt je Phase weitere Stimmen darüber.
+Mit **N** schaltest du diese lokale Musik aus oder ein. Servermechanik,
+Beatwertung und andere Spielende bleiben unverändert.
+
+### Aurora und Lesbarkeit
+
+- Im Kammerton schwingen fünf stimmungsgefärbte Aurorabänder; Dissonanz
+  verschiebt sie nach Magenta und der Beat lässt sie aufleuchten.
+- Ab der zweiten perfekten Aktion in Folge läuft ein cyan-gold-magenta
+  Farbring über den Bildschirm.
+- In der Nähe eines Fermate-Felds legt sich eine entsättigte, fein
+  gestreifte Tönung über das Bild.
+- Aktive Ensembles erhalten sichtbare, verschlungene Cyan-Gold-Verbindungen.
+- Jedes Klangweberteil verstärkt seine Aura; der Vollsatz setzt pro Beat
+  einen Halo.
+
+### Zwölf neue Kodex-Folios
+
+Der Kodex wächst von 23 auf **35 Folios** und von neun auf **15 Register**.
+Die neuen Register heißen Ensemble & Akkorde, Tonarium-Erweiterung,
+Resonanzgrade, neue Instrumente, Klangweber-Rüstung und neue Kreaturen.
+
+Jedes neue Folio trägt rechts oben ausdrücklich **SPIELBAR**,
+**FUNDAMENT** oder **VISION**. In der aktuellen Crescendo-Fassung sind alle
+zwölf neuen Folios spielbar markiert, weil ihre beschriebenen Kernpfade
+verdrahtet sind. Diese Kennzeichnung beschreibt Mechanikstatus, nicht
+automatisch Rezeptverfügbarkeit.
+
+---
+
+## 27. Credits
 
 - **Konzept, Welt und Entwicklung:** Aetherklang Team
 - **Technisches Fundament:** Fabric Loader, Fabric API und Yarn Mappings
@@ -718,11 +1005,17 @@ Danke an alle, die den ersten Beat nicht nur treffen, sondern ihm zuhören.
 ## Kurzreferenz
 
 - **Kodex:** K oder Rechtsklick mit `aetherklang:kodex`
-- **Resonanzschritt:** R (getragene Echostiefel, 8 RP)
+- **Resonanzschritt:** R (Echostiefel 8 RP · Klangweberstiefel 6 RP)
 - **Stimmungswechsel:** M (2 RP) oder Stimmaltar (kostenlos)
+- **Adaptive Musik:** N (nur lokaler Klang)
 - **Beat:** 120 BPM · **Perfekt:** ±40 ms (`+2 RP`) · **Gut:** ±100 ms
-- **RP:** 0–100 · Fächer 12 · Schritt 8 · Riss 12 · Altar 6 · Portal 24
+- **RP:** 0–100, mit Klangweberharnisch 120 · Horn 10 · Fermate 16 ·
+  Fächer/Riss 12 · Schritt 8/6 · Altar 6 · Portal 24
+- **Grade:** Novize 0 · Adept 150 · Virtuose 400 · Maestro 900 Gesamt-RP
+- **Ensemble:** gleicher Beat + höchstens 12 Blöcke · 10 s · +1 RP/Aktion
+- **Akkorde:** drei On-Beat-Stimmungen · Wirkung in 8 Blöcken
 - **Stimmungen:** Stille, Freude, Zorn, Trauer, Wunder
 - **Dissonanz:** Risse/Geister/Choral laden auf · Stille und perfekte
   Serien reinigen · ab 65 % schilden Hallwächter
-- **Ziel:** Kristalle → Instrument → Risse → Portal → Kammerton → Choral
+- **Crescendo-Ziel:** Orgelturm → Sirene → Ensemble/Akkorde →
+  Resonanzgärten → Archive → Maestro

@@ -9,7 +9,8 @@ public record KodexEntry(
         String titleKey,
         String subtitleKey,
         List<String> bodyKeys,
-        boolean alwaysUnlocked
+        boolean alwaysUnlocked,
+        KodexStatus status
 ) {
     public Text title() {
         return Text.translatable(titleKey);

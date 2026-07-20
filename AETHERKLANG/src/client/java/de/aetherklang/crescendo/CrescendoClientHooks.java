@@ -1,5 +1,6 @@
 package de.aetherklang.crescendo;
 
+import de.aetherklang.client.RangHud;
 import de.aetherklang.client.fx.KlangweberAuraFx;
 import de.aetherklang.client.fx.ScreenRippleFx;
 import de.aetherklang.client.fx.sky.AuroraSkyFx;
@@ -13,6 +14,7 @@ public final class CrescendoClientHooks {
     }
 
     public static void register() {
+        RangHud.register();
         AuroraSkyFx.register();
         ScreenRippleFx.register();
         EnsembleBeamFx.register();

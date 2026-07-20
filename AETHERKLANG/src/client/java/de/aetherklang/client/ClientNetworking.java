@@ -24,6 +24,17 @@ public final class ClientNetworking {
                 })
         );
         ClientPlayNetworking.registerGlobalReceiver(
+                ModPayloads.RangSyncPayload.ID,
+                (payload, context) -> context.client().execute(() -> {
+                    ClientResonanceCache.updateRang(payload);
+                    Aetherklang.LOGGER.debug(
+                            "Resonance grade synchronized: rang={}, gesamt_rp={}",
+                            payload.rang(),
+                            payload.gesamtRp()
+                    );
+                })
+        );
+        ClientPlayNetworking.registerGlobalReceiver(
                 ModPayloads.BeatFxPayload.ID,
                 (payload, context) -> context.client().execute(() -> {
                     ClientResonanceCache.onBeat(payload);

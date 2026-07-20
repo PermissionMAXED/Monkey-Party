@@ -30,6 +30,7 @@ public final class KodexScreen extends Screen {
     private int sidebarWidth;
     private int indexWidth;
     private boolean compact;
+    private int categoryScroll;
 
     public KodexScreen() {
         super(Text.translatable("kodex.aetherklang.title"));
@@ -62,7 +63,13 @@ public final class KodexScreen extends Screen {
         int buttonWidth = sidebarWidth - 20;
         int buttonHeight = compact ? 17 : 26;
         int buttonStep = compact ? 18 : 29;
-        for (KodexCategory value : KodexCategory.values()) {
+        KodexCategory[] categories = KodexCategory.values();
+        int visibleCount = visibleCategoryCount();
+        int maxScroll = Math.max(0, categories.length - visibleCount);
+        categoryScroll = Math.clamp(categoryScroll, 0, maxScroll);
+        int end = Math.min(categories.length, categoryScroll + visibleCount);
+        for (int index = categoryScroll; index < end; index++) {
+            KodexCategory value = categories[index];
             Text label = Text.literal(value.glyph() + "  ").append(value.title());
             addDrawableChild(new TonariumButton(
                     x,
@@ -76,6 +83,48 @@ public final class KodexScreen extends Screen {
             ).selected(category == value));
             y += buttonStep;
         }
+        if (maxScroll > 0) {
+            addCategoryScrollButtons(x, buttonWidth, maxScroll);
+        }
+    }
+
+    private int visibleCategoryCount() {
+        int top = panelY + (compact ? 45 : 63);
+        int controlsTop = panelY + panelHeight - (compact ? 25 : 31);
+        int buttonStep = compact ? 18 : 29;
+        return Math.max(1, (controlsTop - top) / buttonStep);
+    }
+
+    private void addCategoryScrollButtons(int x, int buttonWidth, int maxScroll) {
+        int gap = 4;
+        int buttonY = panelY + panelHeight - (compact ? 24 : 30);
+        int halfWidth = (buttonWidth - gap) / 2;
+
+        TonariumButton previous = new TonariumButton(
+                x,
+                buttonY,
+                halfWidth,
+                18,
+                Text.literal("▲"),
+                TonariumButton.Style.NAVIGATION,
+                CYAN,
+                () -> scrollCategories(-1)
+        );
+        previous.active = categoryScroll > 0;
+        addDrawableChild(previous);
+
+        TonariumButton next = new TonariumButton(
+                x + halfWidth + gap,
+                buttonY,
+                buttonWidth - halfWidth - gap,
+                18,
+                Text.literal("▼"),
+                TonariumButton.Style.NAVIGATION,
+                GOLD,
+                () -> scrollCategories(1)
+        );
+        next.active = categoryScroll < maxScroll;
+        addDrawableChild(next);
     }
 
     private void addEntryButtons() {
@@ -158,6 +207,15 @@ public final class KodexScreen extends Screen {
         rebuildWidgets();
     }
 
+    private void scrollCategories(int direction) {
+        int maxScroll = Math.max(0, KodexCategory.values().length - visibleCategoryCount());
+        int target = Math.clamp(categoryScroll + direction, 0, maxScroll);
+        if (target != categoryScroll) {
+            categoryScroll = target;
+            rebuildWidgets();
+        }
+    }
+
     private void movePage(int direction) {
         List<KodexEntry> categoryEntries = entriesForCategory();
         int index = categoryEntries.indexOf(selectedEntry);
@@ -196,6 +254,24 @@ public final class KodexScreen extends Screen {
         renderPage(context);
         renderFooter(context);
         super.render(context, mouseX, mouseY, deltaTicks);
+    }
+
+    @Override
+    public boolean mouseScrolled(
+            double mouseX,
+            double mouseY,
+            double horizontalAmount,
+            double verticalAmount
+    ) {
+        boolean overSidebar = mouseX >= panelX + 5
+                && mouseX < panelX + sidebarWidth
+                && mouseY >= panelY + (compact ? 40 : 54)
+                && mouseY < panelY + panelHeight - 6;
+        if (overSidebar && verticalAmount != 0.0D) {
+            scrollCategories(verticalAmount > 0.0D ? -1 : 1);
+            return true;
+        }
+        return super.mouseScrolled(mouseX, mouseY, horizontalAmount, verticalAmount);
     }
 
     private void renderTonariumBackground(DrawContext context) {
@@ -299,6 +375,16 @@ public final class KodexScreen extends Screen {
                 y,
                 PAPER
         );
+        if (selectedEntry.status().isMarked()) {
+            Text status = selectedEntry.status().title().copy().formatted(Formatting.BOLD);
+            context.drawTextWithShadow(
+                    textRenderer,
+                    status,
+                    x + availableWidth - textRenderer.getWidth(status),
+                    y,
+                    selectedEntry.status().accent()
+            );
+        }
         y += 16;
         context.drawTextWithShadow(textRenderer, selectedEntry.subtitle(), x, y, category.accent());
         y += 16;

@@ -31,8 +31,10 @@ public final class ResonanceApi {
 
     public static int addRp(ServerPlayerEntity player, int amount) {
         ResonancePlayerData data = getData(player);
+        int previousRp = data.getRp();
         long updated = (long) data.getRp() + amount;
         data.setRp((int) Math.clamp(updated, 0L, ArmorHooks.getRpCap(player)));
+        RangService.recordRpGain(player, data.getRp() - previousRp);
         sync(player);
         return data.getRp();
     }
@@ -115,6 +117,7 @@ public final class ResonanceApi {
 
     public static void sync(ServerPlayerEntity player) {
         ModNetworking.sendResonanceSync(player, getData(player));
+        RangService.sync(player);
     }
 
     static void tickMoodModifier(ServerPlayerEntity player) {

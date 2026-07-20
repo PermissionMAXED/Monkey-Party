@@ -1,6 +1,7 @@
 package de.aetherklang.resonance.client;
 
 import de.aetherklang.registry.ModPayloads;
+import de.aetherklang.resonance.RangService;
 import de.aetherklang.resonance.ResonancePlayerData;
 import de.aetherklang.resonance.Stimmung;
 import java.util.BitSet;
@@ -14,6 +15,8 @@ public final class ClientResonanceCache {
     private static volatile float beatPhase;
     private static volatile float dissonanz;
     private static volatile int lastBeat;
+    private static volatile RangService.Rang rang = RangService.Rang.NOVIZE;
+    private static volatile long gesamtRp;
     private static volatile BitSet unlockedCodexPages = new BitSet();
 
     private ClientResonanceCache() {
@@ -27,6 +30,11 @@ public final class ClientResonanceCache {
         BitSet pages = new BitSet();
         payload.unlockedCodexPages().forEach(pages::set);
         unlockedCodexPages = pages;
+    }
+
+    public static void updateRang(ModPayloads.RangSyncPayload payload) {
+        rang = RangService.fromOrdinal(payload.rang());
+        gesamtRp = Math.max(0L, payload.gesamtRp());
     }
 
     public static void onBeat(ModPayloads.BeatFxPayload payload) {
@@ -52,6 +60,14 @@ public final class ClientResonanceCache {
 
     public static int getLastBeat() {
         return lastBeat;
+    }
+
+    public static RangService.Rang getRang() {
+        return rang;
+    }
+
+    public static long getGesamtRp() {
+        return gesamtRp;
     }
 
     public static boolean isCodexPageUnlocked(int page) {

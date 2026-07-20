@@ -237,6 +237,150 @@
         "kodex.aetherklang.page.commands.body.2"
       ],
       "always_unlocked": true
+    },
+    {
+      "id": "ensemble_listening",
+      "category": "ensemble",
+      "title": "kodex.aetherklang.page.ensemble_listening.title",
+      "subtitle": "kodex.aetherklang.page.ensemble_listening.subtitle",
+      "body": [
+        "kodex.aetherklang.page.ensemble_listening.body.1",
+        "kodex.aetherklang.page.ensemble_listening.body.2"
+      ],
+      "always_unlocked": true,
+      "status": "playable"
+    },
+    {
+      "id": "chord_cadences",
+      "category": "ensemble",
+      "title": "kodex.aetherklang.page.chord_cadences.title",
+      "subtitle": "kodex.aetherklang.page.chord_cadences.subtitle",
+      "body": [
+        "kodex.aetherklang.page.chord_cadences.body.1",
+        "kodex.aetherklang.page.chord_cadences.body.2"
+      ],
+      "always_unlocked": true,
+      "status": "playable"
+    },
+    {
+      "id": "beat_bridges",
+      "category": "tonarium_expansion",
+      "title": "kodex.aetherklang.page.beat_bridges.title",
+      "subtitle": "kodex.aetherklang.page.beat_bridges.subtitle",
+      "body": [
+        "kodex.aetherklang.page.beat_bridges.body.1",
+        "kodex.aetherklang.page.beat_bridges.body.2"
+      ],
+      "always_unlocked": true,
+      "status": "playable"
+    },
+    {
+      "id": "resonance_archives",
+      "category": "tonarium_expansion",
+      "title": "kodex.aetherklang.page.resonance_archives.title",
+      "subtitle": "kodex.aetherklang.page.resonance_archives.subtitle",
+      "body": [
+        "kodex.aetherklang.page.resonance_archives.body.1",
+        "kodex.aetherklang.page.resonance_archives.body.2"
+      ],
+      "always_unlocked": true,
+      "status": "playable"
+    },
+    {
+      "id": "resonance_grades",
+      "category": "ranks",
+      "title": "kodex.aetherklang.page.resonance_grades.title",
+      "subtitle": "kodex.aetherklang.page.resonance_grades.subtitle",
+      "body": [
+        "kodex.aetherklang.page.resonance_grades.body.1",
+        "kodex.aetherklang.page.resonance_grades.body.2"
+      ],
+      "always_unlocked": true,
+      "status": "playable"
+    },
+    {
+      "id": "rank_sigil",
+      "category": "ranks",
+      "title": "kodex.aetherklang.page.rank_sigil.title",
+      "subtitle": "kodex.aetherklang.page.rank_sigil.subtitle",
+      "body": [
+        "kodex.aetherklang.page.rank_sigil.body.1",
+        "kodex.aetherklang.page.rank_sigil.body.2"
+      ],
+      "always_unlocked": true,
+      "status": "playable"
+    },
+    {
+      "id": "organ_horn",
+      "category": "crescendo_instruments",
+      "title": "kodex.aetherklang.page.organ_horn.title",
+      "subtitle": "kodex.aetherklang.page.organ_horn.subtitle",
+      "body": [
+        "kodex.aetherklang.page.organ_horn.body.1",
+        "kodex.aetherklang.page.organ_horn.body.2"
+      ],
+      "always_unlocked": true,
+      "status": "playable"
+    },
+    {
+      "id": "fermata_bell",
+      "category": "crescendo_instruments",
+      "title": "kodex.aetherklang.page.fermata_bell.title",
+      "subtitle": "kodex.aetherklang.page.fermata_bell.subtitle",
+      "body": [
+        "kodex.aetherklang.page.fermata_bell.body.1",
+        "kodex.aetherklang.page.fermata_bell.body.2"
+      ],
+      "always_unlocked": true,
+      "status": "playable"
+    },
+    {
+      "id": "klangweaver_armor",
+      "category": "armor",
+      "title": "kodex.aetherklang.page.klangweaver_armor.title",
+      "subtitle": "kodex.aetherklang.page.klangweaver_armor.subtitle",
+      "body": [
+        "kodex.aetherklang.page.klangweaver_armor.body.1",
+        "kodex.aetherklang.page.klangweaver_armor.body.2"
+      ],
+      "always_unlocked": true,
+      "status": "playable"
+    },
+    {
+      "id": "afterecho",
+      "category": "armor",
+      "title": "kodex.aetherklang.page.afterecho.title",
+      "subtitle": "kodex.aetherklang.page.afterecho.subtitle",
+      "body": [
+        "kodex.aetherklang.page.afterecho.body.1",
+        "kodex.aetherklang.page.afterecho.body.2"
+      ],
+      "always_unlocked": true,
+      "status": "playable"
+    },
+    {
+      "id": "siren",
+      "category": "crescendo_creatures",
+      "title": "kodex.aetherklang.page.siren.title",
+      "subtitle": "kodex.aetherklang.page.siren.subtitle",
+      "body": [
+        "kodex.aetherklang.page.siren.body.1",
+        "kodex.aetherklang.page.siren.body.2"
+      ],
+      "always_unlocked": true,
+      "status": "playable"
+    },
+    {
+      "id": "beatling",
+      "category": "crescendo_creatures",
+      "title": "kodex.aetherklang.page.beatling.title",
+      "subtitle": "kodex.aetherklang.page.beatling.subtitle",
+      "body": [
+        "kodex.aetherklang.page.beatling.body.1",
+        "kodex.aetherklang.page.beatling.body.2"
+      ],
+      "always_unlocked": true,
+      "status": "playable"
     }
   ]
 }

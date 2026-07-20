@@ -49,7 +49,10 @@ public final class KodexContent {
                 object.get("title").getAsString(),
                 object.get("subtitle").getAsString(),
                 List.copyOf(bodyKeys),
-                object.has("always_unlocked") && object.get("always_unlocked").getAsBoolean()
+                object.has("always_unlocked") && object.get("always_unlocked").getAsBoolean(),
+                object.has("status")
+                        ? KodexStatus.byId(object.get("status").getAsString())
+                        : KodexStatus.UNMARKED
         );
     }
 
@@ -60,7 +63,8 @@ public final class KodexContent {
                 "kodex.aetherklang.page.welcome.title",
                 "kodex.aetherklang.page.welcome.subtitle",
                 List.of("kodex.aetherklang.page.welcome.body.1"),
-                true
+                true,
+                KodexStatus.UNMARKED
         ));
     }
 }

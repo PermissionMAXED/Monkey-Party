@@ -161,6 +161,15 @@ public final class ModNetworking {
         }
     }
 
+    public static void sendRangSync(ServerPlayerEntity player, ResonancePlayerData data) {
+        if (ServerPlayNetworking.canSend(player, ModPayloads.RangSyncPayload.ID)) {
+            ServerPlayNetworking.send(
+                    player,
+                    new ModPayloads.RangSyncPayload(data.getRang(), data.getGesamtRp())
+            );
+        }
+    }
+
     public static void sendBeatFx(ServerPlayerEntity player, int beat) {
         if (ServerPlayNetworking.canSend(player, ModPayloads.BeatFxPayload.ID)) {
             ServerPlayNetworking.send(player, new ModPayloads.BeatFxPayload(beat));
