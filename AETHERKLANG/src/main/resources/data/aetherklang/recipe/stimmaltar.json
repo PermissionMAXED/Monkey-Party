@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "key": {
+    "I": "aetherklang:resonanzkristall_indigo",
+    "C": "aetherklang:resonanzkristall_cyan",
+    "G": "aetherklang:resonanzkristall_gold",
+    "A": "minecraft:amethyst_shard",
+    "N": "minecraft:note_block",
+    "O": "minecraft:obsidian",
+    "M": "aetherklang:resonanzkristall_magenta"
+  },
+  "pattern": [
+    "ICG",
+    "ANA",
+    "OMO"
+  ],
+  "result": {
+    "count": 1,
+    "id": "aetherklang:stimmaltar"
+  }
+}

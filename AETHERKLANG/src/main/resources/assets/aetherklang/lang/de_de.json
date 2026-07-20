@@ -26,5 +26,15 @@
   "subtitles.aetherklang.resonance_cast": "Resonanz erklingt",
   "subtitles.aetherklang.dissonanz_hit": "Dissonanz schlägt ein",
   "subtitles.aetherklang.portal_hum": "Das Portal summt",
-  "subtitles.aetherklang.choral_theme": "Chorals Thema erklingt"
+  "subtitles.aetherklang.choral_theme": "Chorals Thema erklingt",
+  "advancements.aetherklang.first_crystal.title": "Erste Resonanz",
+  "advancements.aetherklang.first_crystal.description": "Erlange deinen ersten Resonanzkristall",
+  "advancements.aetherklang.on_beat_hit.title": "Genau im Takt",
+  "advancements.aetherklang.on_beat_hit.description": "Lande deinen ersten Schlag im Rhythmus",
+  "advancements.aetherklang.open_kodex.title": "Eine Welt mit Stimme",
+  "advancements.aetherklang.open_kodex.description": "Öffne den Kodex der Resonanz",
+  "advancements.aetherklang.enter_portal.title": "Durch das Glockenspiel",
+  "advancements.aetherklang.enter_portal.description": "Betritt ein Glockenspiel-Portal",
+  "advancements.aetherklang.defeat_choral.title": "Finale Kadenz",
+  "advancements.aetherklang.defeat_choral.description": "Besiege Choral und beende die Dissonanz"
 }

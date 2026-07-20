@@ -1,0 +1,37 @@
+{
+  "criteria": {
+    "requirement": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "#aetherklang:resonance_crystals"
+          }
+        ]
+      }
+    }
+  },
+  "display": {
+    "icon": {
+      "count": 1,
+      "id": "aetherklang:resonanzkristall_indigo"
+    },
+    "title": {
+      "translate": "advancements.aetherklang.first_crystal.title"
+    },
+    "description": {
+      "translate": "advancements.aetherklang.first_crystal.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false,
+    "background": "minecraft:textures/gui/advancements/backgrounds/end.png"
+  },
+  "requirements": [
+    [
+      "requirement"
+    ]
+  ],
+  "sends_telemetry_event": false
+}

@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "I": "aetherklang:resonanzkristall_indigo",
+    "A": "minecraft:amethyst_shard",
+    "B": "minecraft:blaze_rod"
+  },
+  "pattern": [
+    " I ",
+    " A ",
+    " B "
+  ],
+  "result": {
+    "count": 1,
+    "id": "aetherklang:resonanzklinge"
+  }
+}

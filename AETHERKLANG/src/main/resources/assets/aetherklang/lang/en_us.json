@@ -26,5 +26,15 @@
   "subtitles.aetherklang.resonance_cast": "Resonance rings out",
   "subtitles.aetherklang.dissonanz_hit": "Dissonance strikes",
   "subtitles.aetherklang.portal_hum": "Portal hums",
-  "subtitles.aetherklang.choral_theme": "Choral's theme plays"
+  "subtitles.aetherklang.choral_theme": "Choral's theme plays",
+  "advancements.aetherklang.first_crystal.title": "First Resonance",
+  "advancements.aetherklang.first_crystal.description": "Obtain your first resonance crystal",
+  "advancements.aetherklang.on_beat_hit.title": "Right on the Beat",
+  "advancements.aetherklang.on_beat_hit.description": "Land your first strike in time with the rhythm",
+  "advancements.aetherklang.open_kodex.title": "A World with a Voice",
+  "advancements.aetherklang.open_kodex.description": "Open the Codex of Resonance",
+  "advancements.aetherklang.enter_portal.title": "Through the Glockenspiel",
+  "advancements.aetherklang.enter_portal.description": "Enter a Glockenspiel Portal",
+  "advancements.aetherklang.defeat_choral.title": "Final Cadence",
+  "advancements.aetherklang.defeat_choral.description": "Defeat Choral and end the dissonance"
 }

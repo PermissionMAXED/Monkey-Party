@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "I": "minecraft:iron_ingot",
+    "G": "aetherklang:resonanzkristall_gold",
+    "S": "minecraft:stick"
+  },
+  "pattern": [
+    "IGI",
+    "ISI",
+    " S "
+  ],
+  "result": {
+    "count": 1,
+    "id": "aetherklang:basshammer"
+  }
+}

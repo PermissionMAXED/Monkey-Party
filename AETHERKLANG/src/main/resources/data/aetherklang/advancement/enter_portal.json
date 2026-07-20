@@ -1,0 +1,33 @@
+{
+  "criteria": {
+    "requirement": {
+      "trigger": "minecraft:enter_block",
+      "conditions": {
+        "block": "aetherklang:glockenspiel_portal"
+      }
+    }
+  },
+  "display": {
+    "icon": {
+      "count": 1,
+      "id": "aetherklang:glockenspiel_portal"
+    },
+    "title": {
+      "translate": "advancements.aetherklang.enter_portal.title"
+    },
+    "description": {
+      "translate": "advancements.aetherklang.enter_portal.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "requirements": [
+    [
+      "requirement"
+    ]
+  ],
+  "sends_telemetry_event": false,
+  "parent": "aetherklang:open_kodex"
+}

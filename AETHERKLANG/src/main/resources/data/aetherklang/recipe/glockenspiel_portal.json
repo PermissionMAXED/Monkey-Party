@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "key": {
+    "G": "minecraft:gold_block",
+    "B": "minecraft:bell",
+    "S": "minecraft:crying_obsidian",
+    "A": "aetherklang:stimmaltar"
+  },
+  "pattern": [
+    "GBG",
+    "SAS",
+    "GBG"
+  ],
+  "result": {
+    "count": 1,
+    "id": "aetherklang:glockenspiel_portal"
+  }
+}

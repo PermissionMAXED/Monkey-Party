@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "I": "minecraft:iron_ingot",
+    "A": "minecraft:amethyst_shard"
+  },
+  "pattern": [
+    "I I",
+    "I I",
+    " A "
+  ],
+  "result": {
+    "count": 1,
+    "id": "aetherklang:stimmgabel"
+  }
+}

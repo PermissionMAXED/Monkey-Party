@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "minecraft:book",
+    "minecraft:amethyst_shard",
+    "minecraft:gold_nugget"
+  ],
+  "result": {
+    "count": 1,
+    "id": "aetherklang:kodex"
+  }
+}
