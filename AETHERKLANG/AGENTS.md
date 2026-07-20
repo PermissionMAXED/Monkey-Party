@@ -16,6 +16,11 @@
   follow-up agent may need to test against it.
 - Loom's client and server runs share the ignored `run/` directory, including
   `logs/latest.log`; run them one at a time when clean logs matter.
+- Kammerton's authored arrival islands and first Choral approach trigger are
+  persisted in the dimension itself. Use a fresh development world (or reset
+  only `run/world/dimensions/aetherklang/kammerton`) when validating first-entry
+  generation or the one-shot arena trigger again; quick test commands are in
+  `README.md`.
 - In Cursor Cloud the offline development client can log Mojang/Realms 401s and
   disable OpenAL because no account or audio device is attached. Those host
   limitations do not block rendering; use the client-ready and atlas-load log

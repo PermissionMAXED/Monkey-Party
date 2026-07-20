@@ -50,6 +50,21 @@ Die remappte Mod-JAR liegt danach unter `build/libs/aetherklang-0.1.0.jar`.
 Ein Datengenerator ist in WP1 nicht konfiguriert; die minimalen Blockstates,
 Modelle und Texturen sind eingecheckt.
 
+## Kammerton-Endspiel
+
+Platziere ein `aetherklang:glockenspiel_portal` in der Oberwelt und betrete es
+mit dem Kodex in einer Hand oder mindestens 24 RP. Das Portal führt zur
+Kammerton-Ankunftsinsel. Folge der goldenen Brücke und nähere dich dem
+Stimmaltar in der Arena, um Choral beim ersten Besuch zu erwecken. Das Portal
+hinter dem Ankunftspunkt führt kostenlos zum Oberwelt-Spawn zurück.
+
+Für einen schnellen Entwicklungstest:
+
+```mcfunction
+/execute in aetherklang:kammerton run tp @s 0.5 129 0.5
+/execute in aetherklang:kammerton run summon aetherklang:choral 0.5 140 96.5
+```
+
 ## Eingefrorene Schnittstellen
 
 - Blöcke: vier Resonanzkristalle, Stimmaltar, Dissonanzriss und Glockenspiel-Portal

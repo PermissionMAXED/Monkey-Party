@@ -1,0 +1,54 @@
+{
+  "carvers": [],
+  "downfall": 0.0,
+  "effects": {
+    "additions_sound": {
+      "sound": "aetherklang:resonance_cast",
+      "tick_chance": 0.004
+    },
+    "ambient_sound": "aetherklang:portal_hum",
+    "fog_color": 1050655,
+    "mood_sound": {
+      "block_search_extent": 8,
+      "offset": 2.0,
+      "sound": "aetherklang:portal_hum",
+      "tick_delay": 6000
+    },
+    "music_volume": 0.7,
+    "particle": {
+      "options": {
+        "type": "aetherklang:note_spark"
+      },
+      "probability": 0.012
+    },
+    "sky_color": 1708083,
+    "water_color": 6288864,
+    "water_fog_color": 2432327
+  },
+  "features": [
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    []
+  ],
+  "has_precipitation": false,
+  "spawn_costs": {},
+  "spawners": {
+    "ambient": [],
+    "axolotls": [],
+    "creature": [],
+    "misc": [],
+    "monster": [],
+    "underground_water_creature": [],
+    "water_ambient": [],
+    "water_creature": []
+  },
+  "temperature": 0.35
+}

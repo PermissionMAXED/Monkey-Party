@@ -176,5 +176,8 @@
   "message.aetherklang.rift.seal_failed": "Der Riss widersteht. Zum Versiegeln brauchst du %s RP.",
   "message.aetherklang.rift.sealed": "Die Dissonanz löst sich auf · %s RP verbraucht.",
   "message.aetherklang.portal.denied": "Das Portal verlangt den Kodex oder %s RP.",
-  "message.aetherklang.portal.arrival": "Kammerton-Vorhalle · WP10 kann hier das Tonarium einhängen."
+  "message.aetherklang.portal.unavailable": "Die Kadenz des Kammertons ist nicht erreichbar.",
+  "message.aetherklang.portal.arrival": "Kammerton · Folge der goldenen Kadenz zu Chorals Arena.",
+  "message.aetherklang.portal.return": "Das Glockenspiel bringt dich in die Oberwelt zurück.",
+  "message.aetherklang.choral.awakens": "Choral erwacht · Antworte auf die gebrochene Kadenz!"
 }

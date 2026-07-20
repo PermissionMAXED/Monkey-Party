@@ -5,10 +5,10 @@ import de.aetherklang.registry.ModItems;
 import de.aetherklang.registry.ModParticles;
 import de.aetherklang.registry.ModSounds;
 import de.aetherklang.resonance.ResonanceApi;
+import de.aetherklang.world.KammertonWorld;
 import java.util.Objects;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityCollisionHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -16,24 +16,18 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.TeleportTarget;
 import net.minecraft.world.World;
 
 /**
- * A temporary overworld portal backed by an explicit WP10 destination hook.
- *
- * <p>WP10 can call {@link #setDestinationResolver(PortalDestinationResolver)}
- * during common initialization. Until then, players arrive at the generated
- * Kammerton Antechamber above the overworld.</p>
+ * Two-way gate between the overworld and the Kammerton endgame dimension.
  */
 public final class GlockenspielPortalBlock extends Block {
     public static final MapCodec<GlockenspielPortalBlock> CODEC = createCodec(GlockenspielPortalBlock::new);
 
     private static final int PORTAL_COST = 24;
-    private static final BlockPos ANTECHAMBER_ARRIVAL = new BlockPos(0, 193, 0);
-    private static volatile PortalDestinationResolver destinationResolver = (player, fallback) -> fallback;
+    private static volatile PortalDestinationResolver destinationResolver = player -> null;
 
     public GlockenspielPortalBlock(Settings settings) {
         super(settings);
@@ -45,7 +39,7 @@ public final class GlockenspielPortalBlock extends Block {
     }
 
     /**
-     * Replaces the fallback target resolver. Intended for WP10's dimension implementation.
+     * Installs the Kammerton dimension destination resolver during common initialization.
      */
     public static void setDestinationResolver(PortalDestinationResolver resolver) {
         destinationResolver = Objects.requireNonNull(resolver, "resolver");
@@ -66,28 +60,23 @@ public final class GlockenspielPortalBlock extends Block {
             return;
         }
 
-        boolean carriesKodex = player.getMainHandStack().isOf(ModItems.KODEX)
-                || player.getOffHandStack().isOf(ModItems.KODEX);
-        if (!carriesKodex && !ResonanceApi.spendRp(player, PORTAL_COST)) {
-            player.sendMessage(Text.translatable("message.aetherklang.portal.denied", PORTAL_COST), true);
+        boolean returningToOverworld = KammertonWorld.isKammerton(serverWorld);
+        TeleportTarget target = destinationResolver.resolve(player);
+        if (target == null) {
+            player.sendMessage(Text.translatable("message.aetherklang.portal.unavailable"), true);
             player.setPortalCooldown(40);
             return;
         }
 
-        ServerWorld overworld = Objects.requireNonNull(serverWorld.getServer()).getOverworld();
-        ensureAntechamber(overworld);
-        TeleportTarget fallback = new TeleportTarget(
-                overworld,
-                Vec3d.ofBottomCenter(ANTECHAMBER_ARRIVAL),
-                Vec3d.ZERO,
-                player.getYaw(),
-                player.getPitch(),
-                TeleportTarget.NO_OP
-        );
-        TeleportTarget target = Objects.requireNonNull(
-                destinationResolver.resolve(player, fallback),
-                "Glockenspiel portal destination resolver returned null"
-        );
+        if (!returningToOverworld) {
+            boolean carriesKodex = player.getMainHandStack().isOf(ModItems.KODEX)
+                    || player.getOffHandStack().isOf(ModItems.KODEX);
+            if (!carriesKodex && !ResonanceApi.spendRp(player, PORTAL_COST)) {
+                player.sendMessage(Text.translatable("message.aetherklang.portal.denied", PORTAL_COST), true);
+                player.setPortalCooldown(40);
+                return;
+            }
+        }
 
         serverWorld.spawnParticles(
                 ModParticles.BEAM_MOTE,
@@ -133,7 +122,12 @@ public final class GlockenspielPortalBlock extends Block {
                 1.0F,
                 1.4F
         );
-        player.sendMessage(Text.translatable("message.aetherklang.portal.arrival"), true);
+        player.sendMessage(
+                Text.translatable(returningToOverworld
+                        ? "message.aetherklang.portal.return"
+                        : "message.aetherklang.portal.arrival"),
+                true
+        );
     }
 
     @Override
@@ -161,45 +155,8 @@ public final class GlockenspielPortalBlock extends Block {
         }
     }
 
-    private static void ensureAntechamber(ServerWorld world) {
-        BlockPos marker = ANTECHAMBER_ARRIVAL.down();
-        if (world.getBlockState(marker).isOf(Blocks.CHISELED_QUARTZ_BLOCK)) {
-            return;
-        }
-
-        for (int x = -5; x <= 5; x++) {
-            for (int z = -5; z <= 5; z++) {
-                int radiusSquared = x * x + z * z;
-                if (radiusSquared > 30) {
-                    continue;
-                }
-
-                BlockPos floor = marker.add(x, 0, z);
-                Block floorBlock = radiusSquared >= 22
-                        ? Blocks.AMETHYST_BLOCK
-                        : ((x + z) & 1) == 0 ? Blocks.SMOOTH_QUARTZ : Blocks.POLISHED_DEEPSLATE;
-                world.setBlockState(floor, floorBlock.getDefaultState(), Block.NOTIFY_ALL);
-                for (int y = 1; y <= 5; y++) {
-                    world.setBlockState(floor.up(y), Blocks.AIR.getDefaultState(), Block.NOTIFY_ALL);
-                }
-            }
-        }
-
-        world.setBlockState(marker, Blocks.CHISELED_QUARTZ_BLOCK.getDefaultState(), Block.NOTIFY_ALL);
-        placeBeacon(world, marker.add(4, 1, 0));
-        placeBeacon(world, marker.add(-4, 1, 0));
-        placeBeacon(world, marker.add(0, 1, 4));
-        placeBeacon(world, marker.add(0, 1, -4));
-    }
-
-    private static void placeBeacon(ServerWorld world, BlockPos base) {
-        world.setBlockState(base, Blocks.GOLD_BLOCK.getDefaultState(), Block.NOTIFY_ALL);
-        world.setBlockState(base.up(), Blocks.SEA_LANTERN.getDefaultState(), Block.NOTIFY_ALL);
-        world.setBlockState(base.up(2), Blocks.AMETHYST_CLUSTER.getDefaultState(), Block.NOTIFY_ALL);
-    }
-
     @FunctionalInterface
     public interface PortalDestinationResolver {
-        TeleportTarget resolve(ServerPlayerEntity player, TeleportTarget fallback);
+        TeleportTarget resolve(ServerPlayerEntity player);
     }
 }

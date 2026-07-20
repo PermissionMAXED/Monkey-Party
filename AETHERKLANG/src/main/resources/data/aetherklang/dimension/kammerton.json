@@ -1,0 +1,11 @@
+{
+  "generator": {
+    "biome_source": {
+      "biome": "aetherklang:kammerton",
+      "type": "minecraft:fixed"
+    },
+    "settings": "minecraft:floating_islands",
+    "type": "minecraft:noise"
+  },
+  "type": "aetherklang:kammerton"
+}

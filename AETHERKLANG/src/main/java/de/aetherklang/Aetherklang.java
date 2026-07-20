@@ -12,6 +12,7 @@ import de.aetherklang.registry.ModParticles;
 import de.aetherklang.registry.ModPayloads;
 import de.aetherklang.registry.ModSounds;
 import de.aetherklang.resonance.BeatEngine;
+import de.aetherklang.world.KammertonWorld;
 import net.fabricmc.api.ModInitializer;
 import net.minecraft.util.Identifier;
 import org.slf4j.Logger;
@@ -39,6 +40,7 @@ public final class Aetherklang implements ModInitializer {
         ModNetworking.register();
         ModCommands.register();
         BeatEngine.register();
+        KammertonWorld.register();
 
         LOGGER.info("Aetherklang registriert: Die Welt hat eine Stimme.");
     }

@@ -176,5 +176,8 @@
   "message.aetherklang.rift.seal_failed": "The rift resists. Sealing it requires %s RP.",
   "message.aetherklang.rift.sealed": "The dissonance resolves. %s RP spent.",
   "message.aetherklang.portal.denied": "The portal demands the Codex or %s RP.",
-  "message.aetherklang.portal.arrival": "Kammerton Antechamber · The Tonarium hook awaits WP10."
+  "message.aetherklang.portal.unavailable": "The Kammerton cadence cannot be reached.",
+  "message.aetherklang.portal.arrival": "Kammerton · Follow the golden cadence to Choral's arena.",
+  "message.aetherklang.portal.return": "The Glockenspiel returns you to the Overworld.",
+  "message.aetherklang.choral.awakens": "Choral awakens · Answer the broken cadence!"
 }
