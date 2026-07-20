@@ -17,7 +17,6 @@ public final class ScreenRippleFx {
     private static final int RIPPLE_SEGMENTS = 96;
 
     private static boolean registered;
-    private static int lastObservedBeat = Integer.MIN_VALUE;
     private static int lastPerfectBeat = Integer.MIN_VALUE;
     private static int perfectStreak;
     private static float rippleLife;
@@ -37,25 +36,18 @@ public final class ScreenRippleFx {
     }
 
     /**
-     * A normal beat establishes the beat number. A second payload for that same
-     * beat is the server's perfect-timing confirmation.
+     * Applies an authoritative perfect-timing confirmation from the server.
      */
-    public static void onBeat(int beat) {
-        if (beat == lastObservedBeat) {
-            if (lastPerfectBeat != beat) {
-                perfectStreak = beat == lastPerfectBeat + 1 ? perfectStreak + 1 : 1;
-                lastPerfectBeat = beat;
-                if (perfectStreak >= AuroraHooks.MIN_RIPPLE_STREAK) {
-                    rippleLife = 1.0F;
-                    rippleStrength = MathHelper.clamp(0.72F + perfectStreak * 0.08F, 0.0F, 1.0F);
-                }
-            }
+    public static void onPerfect(int beat, int streak) {
+        if (beat == lastPerfectBeat || streak <= 0) {
             return;
         }
 
-        lastObservedBeat = beat;
-        if (lastPerfectBeat != Integer.MIN_VALUE && beat > lastPerfectBeat + 1) {
-            perfectStreak = 0;
+        lastPerfectBeat = beat;
+        perfectStreak = streak;
+        if (perfectStreak >= AuroraHooks.MIN_RIPPLE_STREAK) {
+            rippleLife = 1.0F;
+            rippleStrength = MathHelper.clamp(0.72F + perfectStreak * 0.08F, 0.0F, 1.0F);
         }
     }
 
@@ -68,7 +60,6 @@ public final class ScreenRippleFx {
         float targetTint = findFermateTint(client);
         fermateTint = MathHelper.lerp(targetTint > fermateTint ? 0.18F : 0.08F, fermateTint, targetTint);
         if (client.world == null) {
-            lastObservedBeat = Integer.MIN_VALUE;
             lastPerfectBeat = Integer.MIN_VALUE;
             perfectStreak = 0;
         }

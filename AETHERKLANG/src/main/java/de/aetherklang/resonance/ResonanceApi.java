@@ -90,7 +90,7 @@ public final class ResonanceApi {
                 0.8F,
                 1.0F
         );
-        ModNetworking.sendBeatFx(player, (int) world(player).getTime());
+        ModNetworking.sendBeatFx(player, BeatEngine.currentBeat(player));
         return true;
     }
 

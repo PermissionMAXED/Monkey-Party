@@ -2,6 +2,7 @@ package de.aetherklang.client;
 
 import de.aetherklang.Aetherklang;
 import de.aetherklang.client.fx.ClientFxController;
+import de.aetherklang.client.fx.ScreenRippleFx;
 import de.aetherklang.registry.ModPayloads;
 import de.aetherklang.registry.ModSounds;
 import de.aetherklang.resonance.client.ClientResonanceCache;
@@ -43,6 +44,12 @@ public final class ClientNetworking {
                         context.client().player.playSound(ModSounds.BEAT_TICK, 0.35F, 1.0F);
                     }
                 })
+        );
+        ClientPlayNetworking.registerGlobalReceiver(
+                ModPayloads.PerfectFxPayload.ID,
+                (payload, context) -> context.client().execute(
+                        () -> ScreenRippleFx.onPerfect(payload.beat(), payload.streak())
+                )
         );
     }
 }

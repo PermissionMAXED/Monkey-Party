@@ -176,6 +176,12 @@ public final class ModNetworking {
         }
     }
 
+    public static void sendPerfectFx(ServerPlayerEntity player, int beat, int streak) {
+        if (ServerPlayNetworking.canSend(player, ModPayloads.PerfectFxPayload.ID)) {
+            ServerPlayNetworking.send(player, new ModPayloads.PerfectFxPayload(beat, streak));
+        }
+    }
+
     public static void sendAkkordFx(ServerPlayerEntity player, int akkord) {
         if (ServerPlayNetworking.canSend(player, ModPayloads.AkkordFxPayload.ID)) {
             ServerPlayNetworking.send(player, new ModPayloads.AkkordFxPayload(akkord));

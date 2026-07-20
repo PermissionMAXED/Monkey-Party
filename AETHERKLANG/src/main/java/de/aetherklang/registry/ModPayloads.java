@@ -16,6 +16,7 @@ public final class ModPayloads {
     public static final Identifier KODEX_OPEN_ID = Aetherklang.id("kodex_open");
     public static final Identifier RESONANCE_SYNC_ID = Aetherklang.id("resonance_sync");
     public static final Identifier BEAT_FX_ID = Aetherklang.id("beat_fx");
+    public static final Identifier PERFECT_FX_ID = Aetherklang.id("perfect_fx");
     public static final Identifier AKKORD_FX_ID = Aetherklang.id("akkord_fx");
     public static final Identifier ENSEMBLE_SYNC_ID = Aetherklang.id("ensemble_sync");
     public static final Identifier RANG_SYNC_ID = Aetherklang.id("rang_sync");
@@ -29,10 +30,11 @@ public final class ModPayloads {
         PayloadTypeRegistry.playC2S().register(KodexOpenPayload.ID, KodexOpenPayload.CODEC);
         PayloadTypeRegistry.playS2C().register(ResonanceSyncPayload.ID, ResonanceSyncPayload.CODEC);
         PayloadTypeRegistry.playS2C().register(BeatFxPayload.ID, BeatFxPayload.CODEC);
+        PayloadTypeRegistry.playS2C().register(PerfectFxPayload.ID, PerfectFxPayload.CODEC);
         PayloadTypeRegistry.playS2C().register(AkkordFxPayload.ID, AkkordFxPayload.CODEC);
         PayloadTypeRegistry.playS2C().register(EnsembleSyncPayload.ID, EnsembleSyncPayload.CODEC);
         PayloadTypeRegistry.playS2C().register(RangSyncPayload.ID, RangSyncPayload.CODEC);
-        Aetherklang.LOGGER.debug("Registered {} Aetherklang play payloads", 8);
+        Aetherklang.LOGGER.debug("Registered {} Aetherklang play payloads", 9);
     }
 
     public record DashPayload(float strength) implements CustomPayload {
@@ -143,6 +145,22 @@ public final class ModPayloads {
         public static final PacketCodec<RegistryByteBuf, BeatFxPayload> CODEC = PacketCodec.of(
                 (payload, buffer) -> buffer.writeVarInt(payload.beat()),
                 buffer -> new BeatFxPayload(buffer.readVarInt())
+        );
+
+        @Override
+        public Id<? extends CustomPayload> getId() {
+            return ID;
+        }
+    }
+
+    public record PerfectFxPayload(int beat, int streak) implements CustomPayload {
+        public static final CustomPayload.Id<PerfectFxPayload> ID = new CustomPayload.Id<>(PERFECT_FX_ID);
+        public static final PacketCodec<RegistryByteBuf, PerfectFxPayload> CODEC = PacketCodec.of(
+                (payload, buffer) -> {
+                    buffer.writeVarInt(payload.beat());
+                    buffer.writeVarInt(payload.streak());
+                },
+                buffer -> new PerfectFxPayload(buffer.readVarInt(), buffer.readVarInt())
         );
 
         @Override

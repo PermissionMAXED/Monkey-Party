@@ -48,7 +48,6 @@ public final class ClientFxController {
 
         beatPulse = 1.0F;
         AuroraSkyFx.onBeat();
-        ScreenRippleFx.onBeat(beat);
         spawnBeatBurst(client.world, client.player, beat);
     }
 

@@ -81,9 +81,9 @@ public final class BeatEngine {
             return false;
         }
 
-        recordPerfect(player);
+        int streak = recordPerfect(player);
         ResonanceApi.addRp(player, PERFECT_RP_REWARD);
-        ModNetworking.sendBeatFx(player, currentBeat(player));
+        ModNetworking.sendPerfectFx(player, currentBeat(player), streak);
         ModCriteria.PERFECT_BEAT.trigger(player);
         ArmorHooks.scheduleNachhall(player, strength -> {
             ResonanceApi.addRp(player, Math.max(1, Math.round(PERFECT_RP_REWARD * strength)));
@@ -131,9 +131,9 @@ public final class BeatEngine {
         data.setDissonanz(data.getDissonanz() - decay);
     }
 
-    private static void recordPerfect(ServerPlayerEntity player) {
+    private static int recordPerfect(ServerPlayerEntity player) {
         int beat = currentBeat(player);
-        PERFECT_STREAKS.compute(player.getUuid(), (uuid, streak) -> {
+        PerfectStreak updated = PERFECT_STREAKS.compute(player.getUuid(), (uuid, streak) -> {
             if (streak == null) {
                 return new PerfectStreak(beat, 1);
             }
@@ -143,6 +143,7 @@ public final class BeatEngine {
             int count = beat == streak.lastBeat() + 1 ? streak.count() + 1 : 1;
             return new PerfectStreak(beat, Math.min(count, 8));
         });
+        return updated.count();
     }
 
     private static boolean hasActivePerfectStreak(ServerPlayerEntity player) {
@@ -152,7 +153,7 @@ public final class BeatEngine {
                 && currentBeat(player) - streak.lastBeat() <= 1;
     }
 
-    private static int currentBeat(ServerPlayerEntity player) {
+    static int currentBeat(ServerPlayerEntity player) {
         return (int) (world(player).getTime() / TICKS_PER_BEAT);
     }
 
