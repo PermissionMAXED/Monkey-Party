@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "key": {
+    "A": "minecraft:amethyst_block",
+    "B": "minecraft:polished_blackstone",
+    "I": "minecraft:iron_block",
+    "R": "aetherklang:resonanzkristall_indigo"
+  },
+  "pattern": [
+    "III",
+    "ARA",
+    "BBB"
+  ],
+  "result": {
+    "count": 1,
+    "id": "aetherklang:klangamboss"
+  }
+}

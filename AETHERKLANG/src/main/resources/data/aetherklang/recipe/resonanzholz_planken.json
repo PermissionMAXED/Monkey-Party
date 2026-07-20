@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "building",
+  "ingredients": [
+    "aetherklang:resonanzholz"
+  ],
+  "result": {
+    "count": 4,
+    "id": "aetherklang:resonanzholz_planken"
+  }
+}

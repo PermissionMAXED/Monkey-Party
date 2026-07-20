@@ -12,7 +12,7 @@ Namespace ist immer `aetherklang`.
 | --- | --- |
 | Instrumente | `pauke`, `sopranfloete`, `kontrabass`, `triangel` |
 | Materialien | `tremolokern`, `saitenherz`, `schwarmauge`, `stillesplitter`, `kaskadenkern`, `notenschluessel`, `klangstaub`, `resonanzbarren` |
-| Relikte | `relikt_metronom`, `relikt_echo`, `relikt_fermate`, `relikt_crescendo`, `relikt_ostinato`, `relikt_cadenz` |
+| Relikte | `relikt_metronom`, `relikt_echo`, `relikt_fermate`, `relikt_crescendo`, `relikt_ostinato`, `relikt_cadenz`, `relikt_legato`, `relikt_staccato`, `relikt_fortissimo`, `relikt_pianissimo`, `relikt_harmonie`, `relikt_dissonanz` |
 | Elixiere | `elixier_freude`, `elixier_zorn`, `elixier_stille` |
 | Partituren | `partitur_disc_1`, `partitur_disc_2`, `partitur_disc_3` |
 
@@ -22,7 +22,9 @@ Namespace ist immer `aetherklang`.
 | --- | --- |
 | Funktion | `notenpult`, `klangamboss`, `stimmpfeiler`, `metronomblock`, `dissonanzanker`, `kristallresonator` |
 | Bassschiefer | `bassschiefer`, `bassschiefer_poliert`, `bassschiefer_ziegel`, `bassschiefer_treppe`, `bassschiefer_stufe` |
-| Resonanzholz | `resonanzholz`, `resonanzholz_planken` |
+| Arpeggienquarzit | `arpeggienquarzit`, `arpeggienquarzit_poliert`, `arpeggienquarzit_ziegel` |
+| Riffbasalt | `riffbasalt`, `riffbasalt_poliert`, `riffbasalt_ziegel` |
+| Resonanzholz | `resonanzholz`, `resonanzholz_planken`, `resonanzholz_treppe`, `resonanzholz_stufe` |
 
 ### Entitäten
 

@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "key": {
+    "A": "minecraft:amethyst_shard",
+    "G": "minecraft:gold_nugget",
+    "X": "minecraft:echo_shard"
+  },
+  "pattern": [
+    "AGA",
+    "GXG",
+    "AGA"
+  ],
+  "result": {
+    "count": 1,
+    "id": "aetherklang:relikt_echo"
+  }
+}

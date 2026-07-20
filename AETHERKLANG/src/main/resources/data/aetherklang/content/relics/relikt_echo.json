@@ -1,0 +1,6 @@
+{
+  "id": "relikt_echo",
+  "operation": "echo",
+  "cooldown_ticks": 600,
+  "rarity": "rare"
+}

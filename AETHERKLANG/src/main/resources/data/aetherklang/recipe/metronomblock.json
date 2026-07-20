@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "key": {
+    "C": "minecraft:copper_ingot",
+    "G": "aetherklang:resonanzkristall_gold",
+    "N": "minecraft:note_block",
+    "R": "minecraft:redstone"
+  },
+  "pattern": [
+    " R ",
+    "CNC",
+    " G "
+  ],
+  "result": {
+    "count": 1,
+    "id": "aetherklang:metronomblock"
+  }
+}

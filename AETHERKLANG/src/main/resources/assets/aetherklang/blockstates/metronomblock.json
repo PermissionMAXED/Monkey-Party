@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "lit=false": {
+      "model": "aetherklang:block/metronomblock"
+    },
+    "lit=true": {
+      "model": "aetherklang:block/metronomblock_lit"
+    }
+  }
+}

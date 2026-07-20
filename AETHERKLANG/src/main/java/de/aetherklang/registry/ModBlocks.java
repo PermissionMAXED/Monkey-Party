@@ -2,16 +2,20 @@ package de.aetherklang.registry;
 
 import de.aetherklang.Aetherklang;
 import de.aetherklang.block.DissonanzrissBlock;
+import de.aetherklang.block.DissonanzankerBlock;
 import de.aetherklang.block.GlockenspielPortalBlock;
+import de.aetherklang.block.KristallresonatorBlock;
 import de.aetherklang.block.KlangblumeBlock;
 import de.aetherklang.block.KlanglaterneBlock;
+import de.aetherklang.block.MetronomBlock;
 import de.aetherklang.block.ResonanceCrystalBlock;
 import de.aetherklang.block.ResonanzarchivBlock;
 import de.aetherklang.block.StimmaltarBlock;
+import de.aetherklang.block.StimmpfeilerBlock;
 import de.aetherklang.block.TaktbrueckeBlock;
 import de.aetherklang.partitur.NotenpultBlock;
-import java.util.function.Function;
 import de.aetherklang.schmiede.KlangambossBlock;
+import java.util.function.Function;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.SlabBlock;
@@ -47,8 +51,16 @@ public final class ModBlocks {
     public static final String BASSSCHIEFER_ZIEGEL_ID = "bassschiefer_ziegel";
     public static final String BASSSCHIEFER_TREPPE_ID = "bassschiefer_treppe";
     public static final String BASSSCHIEFER_STUFE_ID = "bassschiefer_stufe";
+    public static final String ARPEGGIENQUARZIT_ID = "arpeggienquarzit";
+    public static final String ARPEGGIENQUARZIT_POLIERT_ID = "arpeggienquarzit_poliert";
+    public static final String ARPEGGIENQUARZIT_ZIEGEL_ID = "arpeggienquarzit_ziegel";
+    public static final String RIFFBASALT_ID = "riffbasalt";
+    public static final String RIFFBASALT_POLIERT_ID = "riffbasalt_poliert";
+    public static final String RIFFBASALT_ZIEGEL_ID = "riffbasalt_ziegel";
     public static final String RESONANZHOLZ_ID = "resonanzholz";
     public static final String RESONANZHOLZ_PLANKEN_ID = "resonanzholz_planken";
+    public static final String RESONANZHOLZ_TREPPE_ID = "resonanzholz_treppe";
+    public static final String RESONANZHOLZ_STUFE_ID = "resonanzholz_stufe";
 
     public static final ResonanceCrystalBlock RESONANZKRISTALL_INDIGO =
             registerCrystal(RESONANZKRISTALL_INDIGO_ID, DyeColor.PURPLE, 9);
@@ -151,26 +163,43 @@ public final class ModBlocks {
                     .sounds(BlockSoundGroup.ANVIL)
                     .requiresTool()
     );
-    public static final Block STIMMPFEILER = registerStone(STIMMPFEILER_ID, BlockSoundGroup.AMETHYST_BLOCK, 3.0F);
-    public static final Block METRONOMBLOCK = registerStone(METRONOMBLOCK_ID, BlockSoundGroup.WOOD, 2.0F);
-    public static final Block DISSONANZANKER = register(
+    public static final StimmpfeilerBlock STIMMPFEILER = register(
+            STIMMPFEILER_ID,
+            StimmpfeilerBlock::new,
+            settings -> settings
+                    .mapColor(DyeColor.PURPLE)
+                    .strength(3.0F, 8.0F)
+                    .sounds(BlockSoundGroup.AMETHYST_BLOCK)
+                    .luminance(state -> state.get(StimmpfeilerBlock.ATTUNED) ? 9 : 2)
+                    .requiresTool()
+    );
+    public static final MetronomBlock METRONOMBLOCK = register(
+            METRONOMBLOCK_ID,
+            MetronomBlock::new,
+            settings -> settings
+                    .mapColor(DyeColor.BROWN)
+                    .strength(2.0F, 4.0F)
+                    .sounds(BlockSoundGroup.WOOD)
+                    .luminance(MetronomBlock::getLightLevel)
+    );
+    public static final DissonanzankerBlock DISSONANZANKER = register(
             DISSONANZANKER_ID,
-            Block::new,
+            DissonanzankerBlock::new,
             settings -> settings
                     .mapColor(DyeColor.MAGENTA)
                     .strength(4.0F, 12.0F)
                     .sounds(BlockSoundGroup.SCULK)
-                    .luminance(state -> 4)
+                    .luminance(DissonanzankerBlock::getLightLevel)
                     .requiresTool()
     );
-    public static final Block KRISTALLRESONATOR = register(
+    public static final KristallresonatorBlock KRISTALLRESONATOR = register(
             KRISTALLRESONATOR_ID,
-            Block::new,
+            KristallresonatorBlock::new,
             settings -> settings
                     .mapColor(DyeColor.CYAN)
                     .strength(2.5F, 8.0F)
                     .sounds(BlockSoundGroup.AMETHYST_BLOCK)
-                    .luminance(state -> 8)
+                    .luminance(KristallresonatorBlock::getLightLevel)
                     .requiresTool()
     );
     public static final Block BASSSCHIEFER = registerStone(BASSSCHIEFER_ID, BlockSoundGroup.DEEPSLATE, 3.0F);
@@ -196,8 +225,48 @@ public final class ModBlocks {
                     .sounds(BlockSoundGroup.DEEPSLATE_BRICKS)
                     .requiresTool()
     );
+    public static final Block ARPEGGIENQUARZIT = registerStone(
+            ARPEGGIENQUARZIT_ID,
+            BlockSoundGroup.CALCITE,
+            2.4F,
+            DyeColor.WHITE
+    );
+    public static final Block ARPEGGIENQUARZIT_POLIERT = registerStone(
+            ARPEGGIENQUARZIT_POLIERT_ID,
+            BlockSoundGroup.CALCITE,
+            2.6F,
+            DyeColor.WHITE
+    );
+    public static final Block ARPEGGIENQUARZIT_ZIEGEL = registerStone(
+            ARPEGGIENQUARZIT_ZIEGEL_ID,
+            BlockSoundGroup.DEEPSLATE_BRICKS,
+            2.8F,
+            DyeColor.LIGHT_BLUE
+    );
+    public static final Block RIFFBASALT =
+            registerStone(RIFFBASALT_ID, BlockSoundGroup.BASALT, 3.2F, DyeColor.GRAY);
+    public static final Block RIFFBASALT_POLIERT =
+            registerStone(RIFFBASALT_POLIERT_ID, BlockSoundGroup.BASALT, 3.4F, DyeColor.GRAY);
+    public static final Block RIFFBASALT_ZIEGEL =
+            registerStone(RIFFBASALT_ZIEGEL_ID, BlockSoundGroup.DEEPSLATE_BRICKS, 3.6F, DyeColor.BLACK);
     public static final Block RESONANZHOLZ = registerWood(RESONANZHOLZ_ID);
     public static final Block RESONANZHOLZ_PLANKEN = registerWood(RESONANZHOLZ_PLANKEN_ID);
+    public static final StairsBlock RESONANZHOLZ_TREPPE = register(
+            RESONANZHOLZ_TREPPE_ID,
+            settings -> new StairsBlock(RESONANZHOLZ_PLANKEN.getDefaultState(), settings),
+            settings -> settings
+                    .mapColor(DyeColor.PURPLE)
+                    .strength(2.0F, 3.0F)
+                    .sounds(BlockSoundGroup.WOOD)
+    );
+    public static final SlabBlock RESONANZHOLZ_STUFE = register(
+            RESONANZHOLZ_STUFE_ID,
+            SlabBlock::new,
+            settings -> settings
+                    .mapColor(DyeColor.PURPLE)
+                    .strength(2.0F, 3.0F)
+                    .sounds(BlockSoundGroup.WOOD)
+    );
 
     private ModBlocks() {
     }
@@ -218,11 +287,15 @@ public final class ModBlocks {
     }
 
     private static Block registerStone(String path, BlockSoundGroup sounds, float strength) {
+        return registerStone(path, sounds, strength, DyeColor.BLACK);
+    }
+
+    private static Block registerStone(String path, BlockSoundGroup sounds, float strength, DyeColor color) {
         return register(
                 path,
                 Block::new,
                 settings -> settings
-                        .mapColor(DyeColor.BLACK)
+                        .mapColor(color)
                         .strength(strength, 8.0F)
                         .sounds(sounds)
                         .requiresTool()
@@ -252,6 +325,6 @@ public final class ModBlocks {
     }
 
     public static void register() {
-        Aetherklang.LOGGER.debug("Registered {} Aetherklang blocks", 24);
+        Aetherklang.LOGGER.debug("Registered {} Aetherklang blocks", 32);
     }
 }

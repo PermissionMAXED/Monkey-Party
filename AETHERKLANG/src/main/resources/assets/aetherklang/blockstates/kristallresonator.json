@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "charged=false": {
+      "model": "aetherklang:block/kristallresonator"
+    },
+    "charged=true": {
+      "model": "aetherklang:block/kristallresonator_charged"
+    }
+  }
+}

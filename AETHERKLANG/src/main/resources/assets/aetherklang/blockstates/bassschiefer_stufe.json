@@ -1,0 +1,13 @@
+{
+  "variants": {
+    "type=bottom": {
+      "model": "aetherklang:block/bassschiefer_stufe"
+    },
+    "type=double": {
+      "model": "aetherklang:block/bassschiefer_ziegel"
+    },
+    "type=top": {
+      "model": "aetherklang:block/bassschiefer_stufe_top"
+    }
+  }
+}

@@ -21,8 +21,10 @@ import de.aetherklang.item.SireneSpawnEggItem;
 import de.aetherklang.item.StimmgabelItem;
 import de.aetherklang.item.TaktbrueckeBlockItem;
 import de.aetherklang.item.TaktlingSpawnEggItem;
-import java.util.List;
 import de.aetherklang.schmiede.KlanginstrumentItem;
+import de.aetherklang.schmiede.ReliktItem;
+import de.aetherklang.schmiede.ReliktTyp;
+import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import net.minecraft.block.Block;
@@ -79,6 +81,12 @@ public final class ModItems {
     public static final String RELIKT_CRESCENDO_ID = "relikt_crescendo";
     public static final String RELIKT_OSTINATO_ID = "relikt_ostinato";
     public static final String RELIKT_CADENZ_ID = "relikt_cadenz";
+    public static final String RELIKT_LEGATO_ID = "relikt_legato";
+    public static final String RELIKT_STACCATO_ID = "relikt_staccato";
+    public static final String RELIKT_FORTISSIMO_ID = "relikt_fortissimo";
+    public static final String RELIKT_PIANISSIMO_ID = "relikt_pianissimo";
+    public static final String RELIKT_HARMONIE_ID = "relikt_harmonie";
+    public static final String RELIKT_DISSONANZ_ID = "relikt_dissonanz";
     public static final String ELIXIER_FREUDE_ID = "elixier_freude";
     public static final String ELIXIER_ZORN_ID = "elixier_zorn";
     public static final String ELIXIER_STILLE_ID = "elixier_stille";
@@ -180,21 +188,21 @@ public final class ModItems {
             new Item.Settings().spawnEgg(ModEntities.MOTIV_PULSER)
     );
     public static final Item PAUKE =
-            register(PAUKE_ID, settings -> new KlanginstrumentItem(settings, PAUKE_ID), new Item.Settings().maxCount(1));
+            register(PAUKE_ID, settings -> new KlanginstrumentItem(settings, PAUKE_ID), new Item.Settings().maxDamage(256));
     public static final Item SOPRANFLOETE = register(
             SOPRANFLOETE_ID,
             settings -> new KlanginstrumentItem(settings, SOPRANFLOETE_ID),
-            new Item.Settings().maxCount(1)
+            new Item.Settings().maxDamage(256)
     );
     public static final Item KONTRABASS = register(
             KONTRABASS_ID,
             settings -> new KlanginstrumentItem(settings, KONTRABASS_ID),
-            new Item.Settings().maxCount(1)
+            new Item.Settings().maxDamage(320)
     );
     public static final Item TRIANGEL = register(
             TRIANGEL_ID,
             settings -> new KlanginstrumentItem(settings, TRIANGEL_ID),
-            new Item.Settings().maxCount(1)
+            new Item.Settings().maxDamage(224)
     );
     public static final Item TREMOLOKERN = registerStub(TREMOLOKERN_ID, 64);
     public static final Item SAITENHERZ = registerStub(SAITENHERZ_ID, 64);
@@ -204,12 +212,18 @@ public final class ModItems {
     public static final Item NOTENSCHLUESSEL = registerStub(NOTENSCHLUESSEL_ID, 64);
     public static final Item KLANGSTAUB = registerStub(KLANGSTAUB_ID, 64);
     public static final Item RESONANZBARREN = registerStub(RESONANZBARREN_ID, 64);
-    public static final Item RELIKT_METRONOM = registerStub(RELIKT_METRONOM_ID, 1);
-    public static final Item RELIKT_ECHO = registerStub(RELIKT_ECHO_ID, 1);
-    public static final Item RELIKT_FERMATE = registerStub(RELIKT_FERMATE_ID, 1);
-    public static final Item RELIKT_CRESCENDO = registerStub(RELIKT_CRESCENDO_ID, 1);
-    public static final Item RELIKT_OSTINATO = registerStub(RELIKT_OSTINATO_ID, 1);
-    public static final Item RELIKT_CADENZ = registerStub(RELIKT_CADENZ_ID, 1);
+    public static final Item RELIKT_METRONOM = registerRelic(RELIKT_METRONOM_ID, ReliktTyp.METRONOM);
+    public static final Item RELIKT_ECHO = registerRelic(RELIKT_ECHO_ID, ReliktTyp.ECHO);
+    public static final Item RELIKT_FERMATE = registerRelic(RELIKT_FERMATE_ID, ReliktTyp.FERMATE);
+    public static final Item RELIKT_CRESCENDO = registerRelic(RELIKT_CRESCENDO_ID, ReliktTyp.CRESCENDO);
+    public static final Item RELIKT_OSTINATO = registerRelic(RELIKT_OSTINATO_ID, ReliktTyp.OSTINATO);
+    public static final Item RELIKT_CADENZ = registerRelic(RELIKT_CADENZ_ID, ReliktTyp.CADENZ);
+    public static final Item RELIKT_LEGATO = registerRelic(RELIKT_LEGATO_ID, ReliktTyp.LEGATO);
+    public static final Item RELIKT_STACCATO = registerRelic(RELIKT_STACCATO_ID, ReliktTyp.STACCATO);
+    public static final Item RELIKT_FORTISSIMO = registerRelic(RELIKT_FORTISSIMO_ID, ReliktTyp.FORTISSIMO);
+    public static final Item RELIKT_PIANISSIMO = registerRelic(RELIKT_PIANISSIMO_ID, ReliktTyp.PIANISSIMO);
+    public static final Item RELIKT_HARMONIE = registerRelic(RELIKT_HARMONIE_ID, ReliktTyp.HARMONIE);
+    public static final Item RELIKT_DISSONANZ = registerRelic(RELIKT_DISSONANZ_ID, ReliktTyp.DISSONANZ);
     public static final Item ELIXIER_FREUDE = registerStub(ELIXIER_FREUDE_ID, 16);
     public static final Item ELIXIER_ZORN = registerStub(ELIXIER_ZORN_ID, 16);
     public static final Item ELIXIER_STILLE = registerStub(ELIXIER_STILLE_ID, 16);
@@ -254,9 +268,24 @@ public final class ModItems {
             registerBlockItem(ModBlocks.BASSSCHIEFER_TREPPE_ID, ModBlocks.BASSSCHIEFER_TREPPE);
     public static final Item BASSSCHIEFER_STUFE =
             registerBlockItem(ModBlocks.BASSSCHIEFER_STUFE_ID, ModBlocks.BASSSCHIEFER_STUFE);
+    public static final Item ARPEGGIENQUARZIT =
+            registerBlockItem(ModBlocks.ARPEGGIENQUARZIT_ID, ModBlocks.ARPEGGIENQUARZIT);
+    public static final Item ARPEGGIENQUARZIT_POLIERT =
+            registerBlockItem(ModBlocks.ARPEGGIENQUARZIT_POLIERT_ID, ModBlocks.ARPEGGIENQUARZIT_POLIERT);
+    public static final Item ARPEGGIENQUARZIT_ZIEGEL =
+            registerBlockItem(ModBlocks.ARPEGGIENQUARZIT_ZIEGEL_ID, ModBlocks.ARPEGGIENQUARZIT_ZIEGEL);
+    public static final Item RIFFBASALT = registerBlockItem(ModBlocks.RIFFBASALT_ID, ModBlocks.RIFFBASALT);
+    public static final Item RIFFBASALT_POLIERT =
+            registerBlockItem(ModBlocks.RIFFBASALT_POLIERT_ID, ModBlocks.RIFFBASALT_POLIERT);
+    public static final Item RIFFBASALT_ZIEGEL =
+            registerBlockItem(ModBlocks.RIFFBASALT_ZIEGEL_ID, ModBlocks.RIFFBASALT_ZIEGEL);
     public static final Item RESONANZHOLZ = registerBlockItem(ModBlocks.RESONANZHOLZ_ID, ModBlocks.RESONANZHOLZ);
     public static final Item RESONANZHOLZ_PLANKEN =
             registerBlockItem(ModBlocks.RESONANZHOLZ_PLANKEN_ID, ModBlocks.RESONANZHOLZ_PLANKEN);
+    public static final Item RESONANZHOLZ_TREPPE =
+            registerBlockItem(ModBlocks.RESONANZHOLZ_TREPPE_ID, ModBlocks.RESONANZHOLZ_TREPPE);
+    public static final Item RESONANZHOLZ_STUFE =
+            registerBlockItem(ModBlocks.RESONANZHOLZ_STUFE_ID, ModBlocks.RESONANZHOLZ_STUFE);
 
     public static final List<Item> ALL_ITEMS = List.of(
             STIMMGABEL,
@@ -300,6 +329,12 @@ public final class ModItems {
             RELIKT_CRESCENDO,
             RELIKT_OSTINATO,
             RELIKT_CADENZ,
+            RELIKT_LEGATO,
+            RELIKT_STACCATO,
+            RELIKT_FORTISSIMO,
+            RELIKT_PIANISSIMO,
+            RELIKT_HARMONIE,
+            RELIKT_DISSONANZ,
             ELIXIER_FREUDE,
             ELIXIER_ZORN,
             ELIXIER_STILLE,
@@ -328,8 +363,16 @@ public final class ModItems {
             BASSSCHIEFER_ZIEGEL,
             BASSSCHIEFER_TREPPE,
             BASSSCHIEFER_STUFE,
+            ARPEGGIENQUARZIT,
+            ARPEGGIENQUARZIT_POLIERT,
+            ARPEGGIENQUARZIT_ZIEGEL,
+            RIFFBASALT,
+            RIFFBASALT_POLIERT,
+            RIFFBASALT_ZIEGEL,
             RESONANZHOLZ,
-            RESONANZHOLZ_PLANKEN
+            RESONANZHOLZ_PLANKEN,
+            RESONANZHOLZ_TREPPE,
+            RESONANZHOLZ_STUFE
     );
 
     private ModItems() {
@@ -342,6 +385,10 @@ public final class ModItems {
 
     private static Item registerStub(String path, int maxCount) {
         return register(path, Item::new, new Item.Settings().maxCount(maxCount));
+    }
+
+    private static Item registerRelic(String path, ReliktTyp relic) {
+        return register(path, settings -> new ReliktItem(settings, relic), new Item.Settings().maxCount(1));
     }
 
     private static Item registerBlockItem(String path, Block block) {

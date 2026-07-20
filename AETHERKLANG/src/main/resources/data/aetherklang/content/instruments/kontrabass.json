@@ -1,0 +1,10 @@
+{
+  "id": "kontrabass",
+  "family": "saiteninstrument",
+  "rp_cost": 7,
+  "operations": [
+    "halten",
+    "feld",
+    "schutz"
+  ]
+}

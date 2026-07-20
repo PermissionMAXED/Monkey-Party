@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "attuned=false": {
+      "model": "aetherklang:block/stimmpfeiler"
+    },
+    "attuned=true": {
+      "model": "aetherklang:block/stimmpfeiler_attuned"
+    }
+  }
+}

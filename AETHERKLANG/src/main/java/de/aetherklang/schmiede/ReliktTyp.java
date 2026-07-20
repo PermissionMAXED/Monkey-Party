@@ -7,7 +7,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.registry.Registries;
 
 /**
- * The six relics accepted by the Klangamboss. An instrument has one socket.
+ * The twelve relics accepted by the Klangamboss. An instrument has one socket.
  */
 public enum ReliktTyp {
     METRONOM,
@@ -15,7 +15,13 @@ public enum ReliktTyp {
     FERMATE,
     CRESCENDO,
     OSTINATO,
-    CADENZ;
+    CADENZ,
+    LEGATO,
+    STACCATO,
+    FORTISSIMO,
+    PIANISSIMO,
+    HARMONIE,
+    DISSONANZ;
 
     public static final Codec<ReliktTyp> CODEC = Codec.STRING.xmap(
             ReliktTyp::fromId,

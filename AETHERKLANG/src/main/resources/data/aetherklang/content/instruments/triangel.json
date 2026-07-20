@@ -1,0 +1,9 @@
+{
+  "id": "triangel",
+  "family": "schlagwerk",
+  "rp_cost": 4,
+  "operations": [
+    "anschlag",
+    "impuls"
+  ]
+}

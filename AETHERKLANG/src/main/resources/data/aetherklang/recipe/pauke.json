@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "key": {
+    "C": "minecraft:cauldron",
+    "G": "aetherklang:resonanzkristall_gold",
+    "I": "minecraft:iron_ingot",
+    "L": "minecraft:leather"
+  },
+  "pattern": [
+    "LGL",
+    "LCL",
+    " I "
+  ],
+  "result": {
+    "count": 1,
+    "id": "aetherklang:pauke"
+  }
+}

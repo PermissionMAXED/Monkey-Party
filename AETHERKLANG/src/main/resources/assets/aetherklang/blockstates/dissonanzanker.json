@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "active=false": {
+      "model": "aetherklang:block/dissonanzanker"
+    },
+    "active=true": {
+      "model": "aetherklang:block/dissonanzanker_active"
+    }
+  }
+}

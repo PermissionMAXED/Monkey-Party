@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "key": {
+    "G": "aetherklang:resonanzkristall_gold",
+    "I": "minecraft:iron_nugget"
+  },
+  "pattern": [
+    " II",
+    "I G",
+    " II"
+  ],
+  "result": {
+    "count": 1,
+    "id": "aetherklang:triangel"
+  }
+}

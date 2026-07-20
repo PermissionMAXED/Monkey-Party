@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "key": {
+    "L": "minecraft:oak_planks",
+    "R": "aetherklang:resonanzkristall_indigo",
+    "S": "minecraft:string"
+  },
+  "pattern": [
+    " LS",
+    "RLS",
+    " LL"
+  ],
+  "result": {
+    "count": 1,
+    "id": "aetherklang:kontrabass"
+  }
+}

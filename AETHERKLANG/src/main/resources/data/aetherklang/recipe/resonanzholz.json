@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "key": {
+    "A": "minecraft:amethyst_shard",
+    "L": "minecraft:oak_log"
+  },
+  "pattern": [
+    "ALA",
+    "LAL",
+    "ALA"
+  ],
+  "result": {
+    "count": 4,
+    "id": "aetherklang:resonanzholz"
+  }
+}

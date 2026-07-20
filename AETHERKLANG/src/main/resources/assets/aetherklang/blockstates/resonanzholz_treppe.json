@@ -1,0 +1,214 @@
+{
+  "variants": {
+    "facing=north,half=bottom,shape=straight": {
+      "model": "aetherklang:block/resonanzholz_treppe",
+      "uvlock": true
+    },
+    "facing=north,half=bottom,shape=inner_left": {
+      "model": "aetherklang:block/resonanzholz_treppe_inner",
+      "uvlock": true
+    },
+    "facing=north,half=bottom,shape=inner_right": {
+      "model": "aetherklang:block/resonanzholz_treppe_inner",
+      "uvlock": true,
+      "y": 90
+    },
+    "facing=north,half=bottom,shape=outer_left": {
+      "model": "aetherklang:block/resonanzholz_treppe_outer",
+      "uvlock": true
+    },
+    "facing=north,half=bottom,shape=outer_right": {
+      "model": "aetherklang:block/resonanzholz_treppe_outer",
+      "uvlock": true,
+      "y": 90
+    },
+    "facing=north,half=top,shape=straight": {
+      "model": "aetherklang:block/resonanzholz_treppe",
+      "uvlock": true,
+      "x": 180
+    },
+    "facing=north,half=top,shape=inner_left": {
+      "model": "aetherklang:block/resonanzholz_treppe_inner",
+      "uvlock": true,
+      "x": 180
+    },
+    "facing=north,half=top,shape=inner_right": {
+      "model": "aetherklang:block/resonanzholz_treppe_inner",
+      "uvlock": true,
+      "x": 180,
+      "y": 90
+    },
+    "facing=north,half=top,shape=outer_left": {
+      "model": "aetherklang:block/resonanzholz_treppe_outer",
+      "uvlock": true,
+      "x": 180
+    },
+    "facing=north,half=top,shape=outer_right": {
+      "model": "aetherklang:block/resonanzholz_treppe_outer",
+      "uvlock": true,
+      "x": 180,
+      "y": 90
+    },
+    "facing=east,half=bottom,shape=straight": {
+      "model": "aetherklang:block/resonanzholz_treppe",
+      "uvlock": true,
+      "y": 90
+    },
+    "facing=east,half=bottom,shape=inner_left": {
+      "model": "aetherklang:block/resonanzholz_treppe_inner",
+      "uvlock": true,
+      "y": 90
+    },
+    "facing=east,half=bottom,shape=inner_right": {
+      "model": "aetherklang:block/resonanzholz_treppe_inner",
+      "uvlock": true,
+      "y": 180
+    },
+    "facing=east,half=bottom,shape=outer_left": {
+      "model": "aetherklang:block/resonanzholz_treppe_outer",
+      "uvlock": true,
+      "y": 90
+    },
+    "facing=east,half=bottom,shape=outer_right": {
+      "model": "aetherklang:block/resonanzholz_treppe_outer",
+      "uvlock": true,
+      "y": 180
+    },
+    "facing=east,half=top,shape=straight": {
+      "model": "aetherklang:block/resonanzholz_treppe",
+      "uvlock": true,
+      "x": 180,
+      "y": 90
+    },
+    "facing=east,half=top,shape=inner_left": {
+      "model": "aetherklang:block/resonanzholz_treppe_inner",
+      "uvlock": true,
+      "x": 180,
+      "y": 90
+    },
+    "facing=east,half=top,shape=inner_right": {
+      "model": "aetherklang:block/resonanzholz_treppe_inner",
+      "uvlock": true,
+      "x": 180,
+      "y": 180
+    },
+    "facing=east,half=top,shape=outer_left": {
+      "model": "aetherklang:block/resonanzholz_treppe_outer",
+      "uvlock": true,
+      "x": 180,
+      "y": 90
+    },
+    "facing=east,half=top,shape=outer_right": {
+      "model": "aetherklang:block/resonanzholz_treppe_outer",
+      "uvlock": true,
+      "x": 180,
+      "y": 180
+    },
+    "facing=south,half=bottom,shape=straight": {
+      "model": "aetherklang:block/resonanzholz_treppe",
+      "uvlock": true,
+      "y": 180
+    },
+    "facing=south,half=bottom,shape=inner_left": {
+      "model": "aetherklang:block/resonanzholz_treppe_inner",
+      "uvlock": true,
+      "y": 180
+    },
+    "facing=south,half=bottom,shape=inner_right": {
+      "model": "aetherklang:block/resonanzholz_treppe_inner",
+      "uvlock": true,
+      "y": 270
+    },
+    "facing=south,half=bottom,shape=outer_left": {
+      "model": "aetherklang:block/resonanzholz_treppe_outer",
+      "uvlock": true,
+      "y": 180
+    },
+    "facing=south,half=bottom,shape=outer_right": {
+      "model": "aetherklang:block/resonanzholz_treppe_outer",
+      "uvlock": true,
+      "y": 270
+    },
+    "facing=south,half=top,shape=straight": {
+      "model": "aetherklang:block/resonanzholz_treppe",
+      "uvlock": true,
+      "x": 180,
+      "y": 180
+    },
+    "facing=south,half=top,shape=inner_left": {
+      "model": "aetherklang:block/resonanzholz_treppe_inner",
+      "uvlock": true,
+      "x": 180,
+      "y": 180
+    },
+    "facing=south,half=top,shape=inner_right": {
+      "model": "aetherklang:block/resonanzholz_treppe_inner",
+      "uvlock": true,
+      "x": 180,
+      "y": 270
+    },
+    "facing=south,half=top,shape=outer_left": {
+      "model": "aetherklang:block/resonanzholz_treppe_outer",
+      "uvlock": true,
+      "x": 180,
+      "y": 180
+    },
+    "facing=south,half=top,shape=outer_right": {
+      "model": "aetherklang:block/resonanzholz_treppe_outer",
+      "uvlock": true,
+      "x": 180,
+      "y": 270
+    },
+    "facing=west,half=bottom,shape=straight": {
+      "model": "aetherklang:block/resonanzholz_treppe",
+      "uvlock": true,
+      "y": 270
+    },
+    "facing=west,half=bottom,shape=inner_left": {
+      "model": "aetherklang:block/resonanzholz_treppe_inner",
+      "uvlock": true,
+      "y": 270
+    },
+    "facing=west,half=bottom,shape=inner_right": {
+      "model": "aetherklang:block/resonanzholz_treppe_inner",
+      "uvlock": true
+    },
+    "facing=west,half=bottom,shape=outer_left": {
+      "model": "aetherklang:block/resonanzholz_treppe_outer",
+      "uvlock": true,
+      "y": 270
+    },
+    "facing=west,half=bottom,shape=outer_right": {
+      "model": "aetherklang:block/resonanzholz_treppe_outer",
+      "uvlock": true
+    },
+    "facing=west,half=top,shape=straight": {
+      "model": "aetherklang:block/resonanzholz_treppe",
+      "uvlock": true,
+      "x": 180,
+      "y": 270
+    },
+    "facing=west,half=top,shape=inner_left": {
+      "model": "aetherklang:block/resonanzholz_treppe_inner",
+      "uvlock": true,
+      "x": 180,
+      "y": 270
+    },
+    "facing=west,half=top,shape=inner_right": {
+      "model": "aetherklang:block/resonanzholz_treppe_inner",
+      "uvlock": true,
+      "x": 180
+    },
+    "facing=west,half=top,shape=outer_left": {
+      "model": "aetherklang:block/resonanzholz_treppe_outer",
+      "uvlock": true,
+      "x": 180,
+      "y": 270
+    },
+    "facing=west,half=top,shape=outer_right": {
+      "model": "aetherklang:block/resonanzholz_treppe_outer",
+      "uvlock": true,
+      "x": 180
+    }
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "variants": {
+    "type=bottom": {
+      "model": "aetherklang:block/resonanzholz_stufe"
+    },
+    "type=double": {
+      "model": "aetherklang:block/resonanzholz_planken"
+    },
+    "type=top": {
+      "model": "aetherklang:block/resonanzholz_stufe_top"
+    }
+  }
+}
