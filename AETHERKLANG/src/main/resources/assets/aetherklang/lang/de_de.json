@@ -57,5 +57,13 @@
   "advancements.aetherklang.enter_portal.title": "Durch das Glockenspiel",
   "advancements.aetherklang.enter_portal.description": "Betritt ein Glockenspiel-Portal",
   "advancements.aetherklang.defeat_choral.title": "Finale Kadenz",
-  "advancements.aetherklang.defeat_choral.description": "Besiege Choral und beende die Dissonanz"
+  "advancements.aetherklang.defeat_choral.description": "Besiege Choral und beende die Dissonanz",
+  "message.aetherklang.crystal.hint": "Der Kristall singt von %s · RP %s/100",
+  "message.aetherklang.altar.mood": "Der Altar schwingt nun in %s.",
+  "message.aetherklang.altar.no_crystals": "Im Umkreis von sechs Blöcken antwortet kein Resonanzkristall.",
+  "message.aetherklang.altar.attuned": "%s Kristalle auf %s eingestimmt · %s RP verbraucht.",
+  "message.aetherklang.rift.seal_failed": "Der Riss widersteht. Zum Versiegeln brauchst du %s RP.",
+  "message.aetherklang.rift.sealed": "Die Dissonanz löst sich auf · %s RP verbraucht.",
+  "message.aetherklang.portal.denied": "Das Portal verlangt den Kodex oder %s RP.",
+  "message.aetherklang.portal.arrival": "Kammerton-Vorhalle · WP10 kann hier das Tonarium einhängen."
 }

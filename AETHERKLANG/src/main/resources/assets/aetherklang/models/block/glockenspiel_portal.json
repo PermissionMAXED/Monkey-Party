@@ -1,6 +1,109 @@
 {
-  "parent": "minecraft:block/cube_all",
+  "ambientocclusion": false,
+  "gui_light": "front",
+  "render_type": "minecraft:translucent",
   "textures": {
-    "all": "aetherklang:block/glockenspiel_portal"
+    "portal": "aetherklang:block/glockenspiel_portal",
+    "frame": "minecraft:block/gold_block",
+    "amethyst": "minecraft:block/amethyst_block",
+    "particle": "aetherklang:block/glockenspiel_portal"
+  },
+  "elements": [
+    {
+      "from": [1, 0, 1],
+      "to": [15, 2, 15],
+      "faces": {
+        "down": {"texture": "#amethyst"},
+        "up": {"texture": "#frame"},
+        "north": {"texture": "#amethyst"},
+        "south": {"texture": "#amethyst"},
+        "west": {"texture": "#amethyst"},
+        "east": {"texture": "#amethyst"}
+      }
+    },
+    {
+      "from": [1, 2, 6.5],
+      "to": [3, 15, 9.5],
+      "faces": {
+        "up": {"texture": "#frame"},
+        "north": {"texture": "#amethyst"},
+        "south": {"texture": "#amethyst"},
+        "west": {"texture": "#frame"},
+        "east": {"texture": "#frame"}
+      }
+    },
+    {
+      "from": [13, 2, 6.5],
+      "to": [15, 15, 9.5],
+      "faces": {
+        "up": {"texture": "#frame"},
+        "north": {"texture": "#amethyst"},
+        "south": {"texture": "#amethyst"},
+        "west": {"texture": "#frame"},
+        "east": {"texture": "#frame"}
+      }
+    },
+    {
+      "from": [1, 14, 6.5],
+      "to": [15, 16, 9.5],
+      "faces": {
+        "up": {"texture": "#frame"},
+        "north": {"texture": "#amethyst"},
+        "south": {"texture": "#amethyst"},
+        "west": {"texture": "#frame"},
+        "east": {"texture": "#frame"}
+      }
+    },
+    {
+      "from": [2.75, 2, 7.6],
+      "to": [13.25, 14, 8.4],
+      "shade": false,
+      "faces": {
+        "north": {"texture": "#portal"},
+        "south": {"texture": "#portal"},
+        "west": {"texture": "#portal"},
+        "east": {"texture": "#portal"}
+      }
+    },
+    {
+      "from": [7.6, 2, 2.75],
+      "to": [8.4, 14, 13.25],
+      "shade": false,
+      "faces": {
+        "north": {"texture": "#portal"},
+        "south": {"texture": "#portal"},
+        "west": {"texture": "#portal"},
+        "east": {"texture": "#portal"}
+      }
+    },
+    {
+      "from": [0, 8, 7],
+      "to": [2, 12, 9],
+      "shade": false,
+      "faces": {
+        "up": {"texture": "#frame"},
+        "down": {"texture": "#frame"},
+        "north": {"texture": "#frame"},
+        "south": {"texture": "#frame"},
+        "west": {"texture": "#frame"}
+      }
+    },
+    {
+      "from": [14, 8, 7],
+      "to": [16, 12, 9],
+      "shade": false,
+      "faces": {
+        "up": {"texture": "#frame"},
+        "down": {"texture": "#frame"},
+        "north": {"texture": "#frame"},
+        "south": {"texture": "#frame"},
+        "east": {"texture": "#frame"}
+      }
+    }
+  ],
+  "display": {
+    "gui": {"rotation": [20, 225, 0], "translation": [0, -0.5, 0], "scale": [0.7, 0.7, 0.7]},
+    "ground": {"translation": [0, 2, 0], "scale": [0.3, 0.3, 0.3]},
+    "fixed": {"scale": [0.65, 0.65, 0.65]}
   }
 }

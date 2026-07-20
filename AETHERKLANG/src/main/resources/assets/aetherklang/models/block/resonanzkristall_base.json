@@ -1,0 +1,81 @@
+{
+  "ambientocclusion": false,
+  "gui_light": "front",
+  "render_type": "minecraft:cutout",
+  "textures": {
+    "particle": "#crystal"
+  },
+  "elements": [
+    {
+      "from": [3, 0, 3],
+      "to": [13, 3, 13],
+      "shade": false,
+      "faces": {
+        "down": {"texture": "#crystal", "cullface": "down"},
+        "up": {"texture": "#crystal"},
+        "north": {"texture": "#crystal"},
+        "south": {"texture": "#crystal"},
+        "west": {"texture": "#crystal"},
+        "east": {"texture": "#crystal"}
+      }
+    },
+    {
+      "from": [6, 2, 6],
+      "to": [10, 15, 10],
+      "shade": false,
+      "faces": {
+        "up": {"texture": "#crystal"},
+        "north": {"texture": "#crystal"},
+        "south": {"texture": "#crystal"},
+        "west": {"texture": "#crystal"},
+        "east": {"texture": "#crystal"}
+      }
+    },
+    {
+      "from": [3, 2, 5],
+      "to": [6, 11, 8],
+      "rotation": {"origin": [6, 3, 6], "axis": "z", "angle": 22.5},
+      "shade": false,
+      "faces": {
+        "up": {"texture": "#crystal"},
+        "north": {"texture": "#crystal"},
+        "south": {"texture": "#crystal"},
+        "west": {"texture": "#crystal"},
+        "east": {"texture": "#crystal"}
+      }
+    },
+    {
+      "from": [10, 2, 8],
+      "to": [13, 10, 11],
+      "rotation": {"origin": [10, 3, 10], "axis": "z", "angle": -22.5},
+      "shade": false,
+      "faces": {
+        "up": {"texture": "#crystal"},
+        "north": {"texture": "#crystal"},
+        "south": {"texture": "#crystal"},
+        "west": {"texture": "#crystal"},
+        "east": {"texture": "#crystal"}
+      }
+    },
+    {
+      "from": [7, 1, 2],
+      "to": [10, 9, 5],
+      "rotation": {"origin": [8, 3, 5], "axis": "x", "angle": -22.5},
+      "shade": false,
+      "faces": {
+        "up": {"texture": "#crystal"},
+        "north": {"texture": "#crystal"},
+        "south": {"texture": "#crystal"},
+        "west": {"texture": "#crystal"},
+        "east": {"texture": "#crystal"}
+      }
+    }
+  ],
+  "display": {
+    "gui": {"rotation": [30, 225, 0], "translation": [0, 0, 0], "scale": [0.82, 0.82, 0.82]},
+    "ground": {"translation": [0, 3, 0], "scale": [0.35, 0.35, 0.35]},
+    "fixed": {"scale": [0.7, 0.7, 0.7]},
+    "thirdperson_righthand": {"rotation": [75, 45, 0], "translation": [0, 2.5, 0], "scale": [0.45, 0.45, 0.45]},
+    "firstperson_righthand": {"rotation": [0, 45, 0], "translation": [0, 1, 0], "scale": [0.55, 0.55, 0.55]}
+  }
+}

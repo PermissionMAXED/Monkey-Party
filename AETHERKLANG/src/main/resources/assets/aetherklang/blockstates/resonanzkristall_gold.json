@@ -1,7 +1,10 @@
 {
   "variants": {
-    "": {
-      "model": "aetherklang:block/resonanzkristall_gold"
-    }
+    "": [
+      {"model": "aetherklang:block/resonanzkristall_gold"},
+      {"model": "aetherklang:block/resonanzkristall_gold", "y": 90},
+      {"model": "aetherklang:block/resonanzkristall_gold", "y": 180},
+      {"model": "aetherklang:block/resonanzkristall_gold", "y": 270}
+    ]
   }
 }

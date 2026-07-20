@@ -57,5 +57,13 @@
   "advancements.aetherklang.enter_portal.title": "Through the Glockenspiel",
   "advancements.aetherklang.enter_portal.description": "Enter a Glockenspiel Portal",
   "advancements.aetherklang.defeat_choral.title": "Final Cadence",
-  "advancements.aetherklang.defeat_choral.description": "Defeat Choral and end the dissonance"
+  "advancements.aetherklang.defeat_choral.description": "Defeat Choral and end the dissonance",
+  "message.aetherklang.crystal.hint": "The crystal sings of %s · RP %s/100",
+  "message.aetherklang.altar.mood": "The altar settles into %s.",
+  "message.aetherklang.altar.no_crystals": "No resonance crystals answer within six blocks.",
+  "message.aetherklang.altar.attuned": "%s crystals attuned to %s for %s RP.",
+  "message.aetherklang.rift.seal_failed": "The rift resists. Sealing it requires %s RP.",
+  "message.aetherklang.rift.sealed": "The dissonance resolves. %s RP spent.",
+  "message.aetherklang.portal.denied": "The portal demands the Codex or %s RP.",
+  "message.aetherklang.portal.arrival": "Kammerton Antechamber · The Tonarium hook awaits WP10."
 }

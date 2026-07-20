@@ -1,6 +1,49 @@
 {
-  "parent": "minecraft:block/cube_all",
+  "ambientocclusion": false,
+  "gui_light": "front",
+  "render_type": "minecraft:translucent",
   "textures": {
-    "all": "aetherklang:block/dissonanzriss"
+    "rift": "aetherklang:block/dissonanzriss",
+    "particle": "aetherklang:block/dissonanzriss"
+  },
+  "elements": [
+    {
+      "from": [1, 0.05, 1],
+      "to": [15, 0.95, 15],
+      "shade": false,
+      "faces": {
+        "down": {"texture": "#rift"},
+        "up": {"texture": "#rift"}
+      }
+    },
+    {
+      "from": [2, 1, 7.5],
+      "to": [14, 15, 8.5],
+      "rotation": {"origin": [8, 8, 8], "axis": "y", "angle": 45},
+      "shade": false,
+      "faces": {
+        "north": {"texture": "#rift"},
+        "south": {"texture": "#rift"},
+        "west": {"texture": "#rift"},
+        "east": {"texture": "#rift"}
+      }
+    },
+    {
+      "from": [2, 1, 7.5],
+      "to": [14, 15, 8.5],
+      "rotation": {"origin": [8, 8, 8], "axis": "y", "angle": -45},
+      "shade": false,
+      "faces": {
+        "north": {"texture": "#rift"},
+        "south": {"texture": "#rift"},
+        "west": {"texture": "#rift"},
+        "east": {"texture": "#rift"}
+      }
+    }
+  ],
+  "display": {
+    "gui": {"rotation": [30, 225, 0], "scale": [0.75, 0.75, 0.75]},
+    "ground": {"translation": [0, 2, 0], "scale": [0.35, 0.35, 0.35]},
+    "fixed": {"scale": [0.65, 0.65, 0.65]}
   }
 }

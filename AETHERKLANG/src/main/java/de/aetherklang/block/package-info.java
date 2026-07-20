@@ -1,4 +1,4 @@
 /**
- * Custom resonance blocks are implemented by later work packages.
+ * Resonance crystals, the Stimmaltar, dissonance hazards, and portal gameplay.
  */
 package de.aetherklang.block;

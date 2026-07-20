@@ -1,6 +1,6 @@
 {
-  "parent": "minecraft:block/cube_all",
+  "parent": "aetherklang:block/resonanzkristall_base",
   "textures": {
-    "all": "aetherklang:block/resonanzkristall_magenta"
+    "crystal": "aetherklang:block/resonanzkristall_magenta"
   }
 }

@@ -1,6 +1,113 @@
 {
-  "parent": "minecraft:block/cube_all",
+  "ambientocclusion": false,
+  "gui_light": "front",
+  "render_type": "minecraft:cutout",
   "textures": {
-    "all": "aetherklang:block/stimmaltar"
+    "altar": "aetherklang:block/stimmaltar",
+    "stone": "minecraft:block/polished_deepslate",
+    "gold": "minecraft:block/gold_block",
+    "crystal": "aetherklang:block/resonanzkristall_cyan",
+    "particle": "aetherklang:block/stimmaltar"
+  },
+  "elements": [
+    {
+      "from": [1, 0, 1],
+      "to": [15, 3, 15],
+      "faces": {
+        "down": {"texture": "#stone", "cullface": "down"},
+        "up": {"texture": "#stone"},
+        "north": {"texture": "#stone"},
+        "south": {"texture": "#stone"},
+        "west": {"texture": "#stone"},
+        "east": {"texture": "#stone"}
+      }
+    },
+    {
+      "from": [3, 3, 3],
+      "to": [13, 9, 13],
+      "faces": {
+        "up": {"texture": "#altar"},
+        "north": {"texture": "#altar"},
+        "south": {"texture": "#altar"},
+        "west": {"texture": "#altar"},
+        "east": {"texture": "#altar"}
+      }
+    },
+    {
+      "from": [1, 9, 1],
+      "to": [15, 12, 15],
+      "faces": {
+        "up": {"texture": "#gold"},
+        "north": {"texture": "#stone"},
+        "south": {"texture": "#stone"},
+        "west": {"texture": "#stone"},
+        "east": {"texture": "#stone"}
+      }
+    },
+    {
+      "from": [4, 12, 4],
+      "to": [12, 13, 12],
+      "shade": false,
+      "faces": {
+        "up": {"texture": "#altar"},
+        "north": {"texture": "#gold"},
+        "south": {"texture": "#gold"},
+        "west": {"texture": "#gold"},
+        "east": {"texture": "#gold"}
+      }
+    },
+    {
+      "from": [2, 11, 2],
+      "to": [4, 16, 4],
+      "shade": false,
+      "faces": {
+        "up": {"texture": "#crystal"},
+        "north": {"texture": "#crystal"},
+        "south": {"texture": "#crystal"},
+        "west": {"texture": "#crystal"},
+        "east": {"texture": "#crystal"}
+      }
+    },
+    {
+      "from": [12, 11, 2],
+      "to": [14, 16, 4],
+      "shade": false,
+      "faces": {
+        "up": {"texture": "#crystal"},
+        "north": {"texture": "#crystal"},
+        "south": {"texture": "#crystal"},
+        "west": {"texture": "#crystal"},
+        "east": {"texture": "#crystal"}
+      }
+    },
+    {
+      "from": [2, 11, 12],
+      "to": [4, 16, 14],
+      "shade": false,
+      "faces": {
+        "up": {"texture": "#crystal"},
+        "north": {"texture": "#crystal"},
+        "south": {"texture": "#crystal"},
+        "west": {"texture": "#crystal"},
+        "east": {"texture": "#crystal"}
+      }
+    },
+    {
+      "from": [12, 11, 12],
+      "to": [14, 16, 14],
+      "shade": false,
+      "faces": {
+        "up": {"texture": "#crystal"},
+        "north": {"texture": "#crystal"},
+        "south": {"texture": "#crystal"},
+        "west": {"texture": "#crystal"},
+        "east": {"texture": "#crystal"}
+      }
+    }
+  ],
+  "display": {
+    "gui": {"rotation": [30, 225, 0], "scale": [0.72, 0.72, 0.72]},
+    "ground": {"translation": [0, 2, 0], "scale": [0.35, 0.35, 0.35]},
+    "fixed": {"scale": [0.65, 0.65, 0.65]}
   }
 }
