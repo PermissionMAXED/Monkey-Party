@@ -25,6 +25,8 @@ public final class ModPayloads {
     public static final Identifier BOSS_FX_ID = Aetherklang.id("boss_fx");
     public static final Identifier REGION_SYNC_ID = Aetherklang.id("region_sync");
     public static final Identifier LEITMOTIV_SYNC_ID = Aetherklang.id("leitmotiv_sync");
+    public static final Identifier KASKADE_FX_ID = Aetherklang.id("kaskade_fx");
+    public static final Identifier WELTAKKORD_FX_ID = Aetherklang.id("weltakkord_fx");
 
     private ModPayloads() {
     }
@@ -43,7 +45,9 @@ public final class ModPayloads {
         PayloadTypeRegistry.playS2C().register(BossFxPayload.ID, BossFxPayload.CODEC);
         PayloadTypeRegistry.playS2C().register(RegionSyncPayload.ID, RegionSyncPayload.CODEC);
         PayloadTypeRegistry.playS2C().register(LeitmotivSyncPayload.ID, LeitmotivSyncPayload.CODEC);
-        Aetherklang.LOGGER.debug("Registered {} Aetherklang play payloads", 13);
+        PayloadTypeRegistry.playS2C().register(KaskadeFxPayload.ID, KaskadeFxPayload.CODEC);
+        PayloadTypeRegistry.playS2C().register(WeltakkordFxPayload.ID, WeltakkordFxPayload.CODEC);
+        Aetherklang.LOGGER.debug("Registered {} Aetherklang play payloads", 15);
     }
 
     public record DashPayload(float strength) implements CustomPayload {
@@ -269,6 +273,68 @@ public final class ModPayloads {
                 },
                 buffer -> new BossFxPayload(buffer.readVarInt(), buffer.readVarInt())
         );
+
+        @Override
+        public Id<? extends CustomPayload> getId() {
+            return ID;
+        }
+    }
+
+    public record KaskadeFxPayload(int stage, int x, int y, int z) implements CustomPayload {
+        public static final CustomPayload.Id<KaskadeFxPayload> ID =
+                new CustomPayload.Id<>(KASKADE_FX_ID);
+        public static final PacketCodec<RegistryByteBuf, KaskadeFxPayload> CODEC = PacketCodec.of(
+                (payload, buffer) -> {
+                    buffer.writeVarInt(payload.stage());
+                    buffer.writeInt(payload.x());
+                    buffer.writeInt(payload.y());
+                    buffer.writeInt(payload.z());
+                },
+                buffer -> new KaskadeFxPayload(
+                        buffer.readVarInt(),
+                        buffer.readInt(),
+                        buffer.readInt(),
+                        buffer.readInt()
+                )
+        );
+
+        public KaskadeFxPayload {
+            stage = Math.clamp(stage, 0, 4);
+        }
+
+        @Override
+        public Id<? extends CustomPayload> getId() {
+            return ID;
+        }
+    }
+
+    public record WeltakkordFxPayload(double x, double y, double z, int power, boolean reduced)
+            implements CustomPayload {
+        public static final CustomPayload.Id<WeltakkordFxPayload> ID =
+                new CustomPayload.Id<>(WELTAKKORD_FX_ID);
+        public static final PacketCodec<RegistryByteBuf, WeltakkordFxPayload> CODEC = PacketCodec.of(
+                (payload, buffer) -> {
+                    buffer.writeDouble(payload.x());
+                    buffer.writeDouble(payload.y());
+                    buffer.writeDouble(payload.z());
+                    buffer.writeVarInt(payload.power());
+                    buffer.writeBoolean(payload.reduced());
+                },
+                buffer -> new WeltakkordFxPayload(
+                        buffer.readDouble(),
+                        buffer.readDouble(),
+                        buffer.readDouble(),
+                        buffer.readVarInt(),
+                        buffer.readBoolean()
+                )
+        );
+
+        public WeltakkordFxPayload {
+            if (!Double.isFinite(x) || !Double.isFinite(y) || !Double.isFinite(z)) {
+                throw new IllegalArgumentException("Weltakkord FX position must be finite");
+            }
+            power = Math.clamp(power, 1, 8);
+        }
 
         @Override
         public Id<? extends CustomPayload> getId() {

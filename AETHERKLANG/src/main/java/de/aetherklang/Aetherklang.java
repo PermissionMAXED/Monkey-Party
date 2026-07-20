@@ -2,6 +2,7 @@ package de.aetherklang;
 
 import de.aetherklang.command.ModCommands;
 import de.aetherklang.crescendo.CrescendoServerHooks;
+import de.aetherklang.kaskade.KaskadeHooks;
 import de.aetherklang.klangwerk.KlangwerkLoader;
 import de.aetherklang.network.ModNetworking;
 import de.aetherklang.registry.ContentBootstrap;
@@ -53,6 +54,7 @@ public final class Aetherklang implements ModInitializer {
         BeatEngine.register();
         KammertonWorld.register();
         CrescendoServerHooks.register();
+        KaskadeHooks.register();
 
         LOGGER.info("Aetherklang registriert: Die Welt hat eine Stimme.");
     }

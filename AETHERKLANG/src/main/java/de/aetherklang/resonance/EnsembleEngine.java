@@ -71,6 +71,14 @@ public final class EnsembleEngine {
         return link == null ? 0 : link.members().size();
     }
 
+    public static Set<UUID> getEnsembleMembers(ServerPlayerEntity player) {
+        LinkState link = activeLink(
+                player.getUuid(),
+                player.getEntityWorld().getServer().getTicks()
+        );
+        return link == null ? Set.of(player.getUuid()) : link.members();
+    }
+
     public static void removePlayer(MinecraftServer server, UUID playerId) {
         RECENT_ACTIONS.remove(playerId);
         LAST_BONUS_BEATS.remove(playerId);

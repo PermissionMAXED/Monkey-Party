@@ -217,6 +217,11 @@ The link lasts **10 seconds** and refreshes when the players answer together.
 Attacks and use of the Tuning Fork, Blade, Harp, Hammer, Organ Horn, or
 Fermata Bell can count after server-side beat validation.
 
+Joining assigns a voice from the held instrument: Tuning Fork, Soprano Flute,
+and Triangle are **Soprano**; Echo Harp and Fermata Bell are **Alto**;
+Resonance Blade and Organ Horn are **Tenor**; Bass Hammer, Double Bass, and
+Timpani are **Bass**. Uninstrumented members fill the least represented voice.
+
 ### Chords
 
 Every valid on-beat action stores its current mood in a three-slot sequence.
@@ -231,6 +236,20 @@ A recognized sequence immediately resolves within an **8-block radius**:
 
 Chords spend no extra RP, though changing mood may cost RP. The HUD, golden
 glyphs, sound, and chord name confirm a successful resolution.
+
+### World Chord and Cascades
+
+An ensemble can share **Silence → Joy → Wonder → Sorrow → Wrath** to resolve
+the World Chord. Two players are sufficient; three or four players and more
+distinct voices increase its healing, area damage, knockback, and group FX.
+A solo player may use a nearby tamed Beatling as a second voice, or play the
+reduced **Silence → Joy → Wonder** three-note form.
+
+After long quiet periods, Dissonance Cascades can open a rift near players.
+Two Motif waves lead to an elite Dissonance Herald. Clearing all three waves
+closes the rift and rewards nearby participants with Cascade Cores. Operators
+can trigger and inspect the development flow with
+`/aetherklang kaskade start` and `/aetherklang kaskade status`.
 
 ## Resonance grades
 

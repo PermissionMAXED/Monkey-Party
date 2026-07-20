@@ -789,6 +789,12 @@ Als Ensembleaktionen zählen On-Beat-Angriffe und die Verwendung von
 Stimmgabel, Resonanzklinge, Hallharfe, Basshammer, Orgelhorn oder
 Fermatenglocke. Dieselbe Aktion kann im selben Tick nicht doppelt zählen.
 
+Beim Verbinden erhält jede Person eine Stimmlage aus ihrem gehaltenen
+Instrument: Stimmgabel, Sopranflöte und Triangel führen **Sopran**;
+Hallharfe und Fermatenglocke **Alt**; Resonanzklinge und Orgelhorn **Tenor**;
+Basshammer, Kontrabass und Pauke **Bass**. Stimmen ohne Instrument werden
+so verteilt, dass das Ensemble möglichst vollständig klingt.
+
 ### Drei Stimmungen ergeben einen Akkord
 
 Jede gültige On-Beat-Aktion schreibt die aktuelle Stimmung in einen
@@ -807,6 +813,24 @@ Akkorde kosten keine zusätzlichen RP. Ihre Kosten sind Planung, drei
 saubere Aktionen und gegebenenfalls zwei Stimmungswechsel. Goldene Glyphen,
 Auflösungsklang und die ausgeschriebene Akkordbezeichnung bestätigen den
 Treffer.
+
+### Der Weltakkord
+
+Ein Ensemble setzt gemeinsam **Stille → Freude → Wunder → Trauer → Zorn**.
+Schon zwei Spielende können die fünf Noten beitragen; drei oder vier
+Mitglieder und verschiedene Stimmlagen verstärken Heilung, Flächenschaden,
+Rückstoß und den großen Gruppen-Effekt. Ein gezähmter Taktling zählt für eine
+allein spielende Person als zweite Stimme. Ohne Taktling löst
+**Stille → Freude → Wunder** einen schwächeren Drei-Noten-Weltakkord aus.
+
+### Dissonanz-Kaskaden
+
+Nach längeren Ruhephasen können nahe Spielende einen Dissonanzriss-Sturm
+anziehen. Zwei Motivwellen führen zum Dissonanzherold. Sind alle drei Wellen
+bezwungen, schließt sich der Riss und alle Beteiligten im Umkreis erhalten
+Kaskadenkerne. Operatoren können einen Entwicklungstest mit
+`/aetherklang kaskade start` auslösen und mit
+`/aetherklang kaskade status` prüfen.
 
 ---
 
