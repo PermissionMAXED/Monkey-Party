@@ -51,7 +51,8 @@
   `/aetherklang kaskade start|status`, and `/aetherklang klangwerk dump|reload`.
   The fixed Klangmeer anchors are Bassgewölbe `-900/129/0`, Arpeggienmeer
   `900/129/0`, Kakophonie-Riff `0/129/900`, and Generalpause-Öde
-  `0/129/1600` in `aetherklang:kammerton`.
+  `0/129/1600` in `aetherklang:kammerton`; the elite boss islands are
+  Ostinato `-360/129/2000` and Ritardando `360/129/2000`.
 - `tools/generate_sinfonie_content.py` is the deterministic source for the
   large Motiv/Kodex/contract/relic/advancement/recipe JSON set. Regenerate
   after changing its tables; the script validates minimum counts and can be
