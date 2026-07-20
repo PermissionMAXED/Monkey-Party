@@ -63,17 +63,17 @@ public final class ModEntityRenderers {
                 ModEntities.SIRENE,
                 context -> new AetherEntityRenderer<>(
                         context,
-                        AetherEntityStyle.DISSONANZGEIST,
-                        0.72F,
-                        0.35F,
-                        0xD85FF5E0
+                        AetherEntityStyle.SIRENE,
+                        1.05F,
+                        0.5F,
+                        0xE05FF5E0
                 )
         );
         EntityRendererRegistry.register(
                 ModEntities.TAKTLING,
                 context -> new AetherEntityRenderer<>(
                         context,
-                        AetherEntityStyle.ECHONOTE,
+                        AetherEntityStyle.TAKTLING,
                         0.52F,
                         0.25F,
                         0xE8F5C95F

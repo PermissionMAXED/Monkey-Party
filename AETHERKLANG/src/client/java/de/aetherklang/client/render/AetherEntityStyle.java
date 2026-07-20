@@ -4,5 +4,7 @@ public enum AetherEntityStyle {
     DISSONANZGEIST,
     HALLWAECHTER,
     ECHONOTE,
-    CHORAL
+    CHORAL,
+    SIRENE,
+    TAKTLING
 }

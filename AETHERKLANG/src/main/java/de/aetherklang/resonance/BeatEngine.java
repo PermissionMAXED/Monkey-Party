@@ -1,6 +1,7 @@
 package de.aetherklang.resonance;
 
 import de.aetherklang.crescendo.ArmorHooks;
+import de.aetherklang.crescendo.CreatureHooks;
 import de.aetherklang.network.ModNetworking;
 import de.aetherklang.registry.ModCriteria;
 import java.util.HashMap;
@@ -43,7 +44,7 @@ public final class BeatEngine {
 
     public static boolean isOnBeat(ServerPlayerEntity player, float window) {
         float activeWindow = Float.compare(window, GOOD_WINDOW) == 0
-                ? ArmorHooks.getGoodWindow(player, window)
+                ? CreatureHooks.getGoodWindow(player, ArmorHooks.getGoodWindow(player, window))
                 : window;
         return BeatTiming.isWithinWindow(ResonanceApi.getData(player).getBeatPhase(), activeWindow);
     }
@@ -53,7 +54,11 @@ public final class BeatEngine {
         if (BeatTiming.isWithinWindow(phase, PERFECT_WINDOW)) {
             return BeatTiming.PERFECT;
         }
-        if (BeatTiming.isWithinWindow(phase, ArmorHooks.getGoodWindow(player, GOOD_WINDOW))) {
+        float goodWindow = CreatureHooks.getGoodWindow(
+                player,
+                ArmorHooks.getGoodWindow(player, GOOD_WINDOW)
+        );
+        if (BeatTiming.isWithinWindow(phase, goodWindow)) {
             return BeatTiming.GOOD;
         }
         return BeatTiming.MISS;

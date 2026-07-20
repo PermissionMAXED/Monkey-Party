@@ -23,6 +23,12 @@ public final class AetherEntityModel extends Model<AetherEntityRenderState> {
     private final ModelPart choral;
     private final ModelPart choralLeftWings;
     private final ModelPart choralRightWings;
+    private final ModelPart sirene;
+    private final ModelPart sireneLeftVeil;
+    private final ModelPart sireneRightVeil;
+    private final ModelPart taktling;
+    private final ModelPart taktlingLeftEar;
+    private final ModelPart taktlingRightEar;
 
     public AetherEntityModel(ModelPart root) {
         super(root, RenderLayer::getEntityTranslucent);
@@ -37,6 +43,12 @@ public final class AetherEntityModel extends Model<AetherEntityRenderState> {
         choral = root.getChild("choral");
         choralLeftWings = choral.getChild("left_wings");
         choralRightWings = choral.getChild("right_wings");
+        sirene = root.getChild("sirene");
+        sireneLeftVeil = sirene.getChild("left_veil");
+        sireneRightVeil = sirene.getChild("right_veil");
+        taktling = root.getChild("taktling");
+        taktlingLeftEar = taktling.getChild("left_ear");
+        taktlingRightEar = taktling.getChild("right_ear");
     }
 
     public static TexturedModelData getTexturedModelData() {
@@ -46,6 +58,8 @@ public final class AetherEntityModel extends Model<AetherEntityRenderState> {
         buildHallwaechter(root);
         buildEchonote(root);
         buildChoral(root);
+        buildSirene(root);
+        buildTaktling(root);
         return TexturedModelData.of(data, 64, 64);
     }
 
@@ -194,12 +208,90 @@ public final class AetherEntityModel extends Model<AetherEntityRenderState> {
         );
     }
 
+    private static void buildSirene(ModelPartData root) {
+        ModelPartData sirene = root.addChild("sirene", ModelPartBuilder.create(), ModelTransform.NONE);
+        sirene.addChild(
+                "body",
+                ModelPartBuilder.create()
+                        .uv(0, 0).cuboid(-4.0F, -7.0F, -2.5F, 8.0F, 12.0F, 5.0F, new Dilation(0.25F))
+                        .uv(0, 18).cuboid(-3.0F, 5.0F, -2.0F, 6.0F, 9.0F, 4.0F),
+                ModelTransform.origin(0.0F, 10.0F, 0.0F)
+        );
+        sirene.addChild(
+                "mask",
+                ModelPartBuilder.create()
+                        .uv(28, 0).cuboid(-3.5F, -3.5F, -1.0F, 7.0F, 7.0F, 2.0F)
+                        .uv(28, 10).cuboid(-2.0F, -0.5F, -1.7F, 1.0F, 1.0F, 1.0F)
+                        .uv(34, 10).cuboid(1.0F, -0.5F, -1.7F, 1.0F, 1.0F, 1.0F),
+                ModelTransform.origin(0.0F, 3.0F, -2.5F)
+        );
+        sirene.addChild(
+                "crown",
+                ModelPartBuilder.create()
+                        .uv(46, 0).cuboid(-1.0F, -7.0F, -1.0F, 2.0F, 7.0F, 2.0F)
+                        .uv(40, 10).cuboid(-6.0F, -1.0F, -1.0F, 12.0F, 2.0F, 2.0F),
+                ModelTransform.origin(0.0F, 0.0F, 0.0F)
+        );
+        sirene.addChild(
+                "left_veil",
+                ModelPartBuilder.create()
+                        .uv(22, 18).cuboid(0.0F, -1.0F, -0.5F, 13.0F, 2.0F, 5.0F)
+                        .uv(22, 26).cuboid(2.0F, 2.0F, 0.0F, 10.0F, 2.0F, 4.0F),
+                ModelTransform.of(3.0F, 8.0F, 0.0F, 0.0F, 0.18F, -0.3F)
+        );
+        sirene.addChild(
+                "right_veil",
+                ModelPartBuilder.create()
+                        .uv(22, 18).mirrored().cuboid(-13.0F, -1.0F, -0.5F, 13.0F, 2.0F, 5.0F)
+                        .uv(22, 26).mirrored().cuboid(-12.0F, 2.0F, 0.0F, 10.0F, 2.0F, 4.0F),
+                ModelTransform.of(-3.0F, 8.0F, 0.0F, 0.0F, -0.18F, 0.3F)
+        );
+    }
+
+    private static void buildTaktling(ModelPartData root) {
+        ModelPartData taktling = root.addChild("taktling", ModelPartBuilder.create(), ModelTransform.NONE);
+        taktling.addChild(
+                "body",
+                ModelPartBuilder.create()
+                        .uv(0, 34).cuboid(-4.0F, -4.0F, -3.0F, 8.0F, 8.0F, 6.0F, new Dilation(0.2F))
+                        .uv(0, 49).cuboid(-3.0F, -8.0F, -3.0F, 6.0F, 5.0F, 5.0F),
+                ModelTransform.origin(0.0F, 17.0F, 0.0F)
+        );
+        taktling.addChild(
+                "muzzle",
+                ModelPartBuilder.create()
+                        .uv(29, 35).cuboid(-2.0F, -1.5F, -2.0F, 4.0F, 3.0F, 3.0F)
+                        .uv(44, 35).cuboid(-1.5F, -0.5F, -2.6F, 1.0F, 1.0F, 1.0F)
+                        .uv(49, 35).cuboid(0.5F, -0.5F, -2.6F, 1.0F, 1.0F, 1.0F),
+                ModelTransform.origin(0.0F, 12.5F, -2.5F)
+        );
+        taktling.addChild(
+                "left_ear",
+                ModelPartBuilder.create().uv(25, 43).cuboid(-1.0F, -6.0F, -1.0F, 2.0F, 6.0F, 2.0F),
+                ModelTransform.of(2.5F, 10.0F, 0.0F, 0.0F, 0.0F, 0.22F)
+        );
+        taktling.addChild(
+                "right_ear",
+                ModelPartBuilder.create().uv(25, 43).mirrored().cuboid(-1.0F, -6.0F, -1.0F, 2.0F, 6.0F, 2.0F),
+                ModelTransform.of(-2.5F, 10.0F, 0.0F, 0.0F, 0.0F, -0.22F)
+        );
+        taktling.addChild(
+                "tail",
+                ModelPartBuilder.create()
+                        .uv(35, 44).cuboid(-1.0F, -1.0F, 0.0F, 2.0F, 2.0F, 8.0F)
+                        .uv(35, 55).cuboid(-1.0F, -5.0F, 7.0F, 2.0F, 5.0F, 2.0F),
+                ModelTransform.of(0.0F, 17.0F, 2.5F, 0.45F, 0.0F, 0.0F)
+        );
+    }
+
     @Override
     public void setAngles(AetherEntityRenderState state) {
         geist.visible = state.style == AetherEntityStyle.DISSONANZGEIST;
         hallwaechter.visible = state.style == AetherEntityStyle.HALLWAECHTER;
         echonote.visible = state.style == AetherEntityStyle.ECHONOTE;
         choral.visible = state.style == AetherEntityStyle.CHORAL;
+        sirene.visible = state.style == AetherEntityStyle.SIRENE;
+        taktling.visible = state.style == AetherEntityStyle.TAKTLING;
 
         float pulse = MathHelper.sin(state.age * 0.16F);
         geist.originY = pulse * 1.2F;
@@ -221,5 +313,17 @@ public final class AetherEntityModel extends Model<AetherEntityRenderState> {
         choralLeftWings.roll = -0.35F - choralPulse * 0.2F;
         choralRightWings.roll = 0.35F + choralPulse * 0.2F;
         choral.yaw = MathHelper.sin(state.age * 0.025F) * 0.08F;
+
+        float sirenePulse = MathHelper.sin(state.age * 0.14F);
+        sirene.originY = sirenePulse * 0.85F;
+        sireneLeftVeil.roll = -0.3F - sirenePulse * 0.24F;
+        sireneRightVeil.roll = 0.3F + sirenePulse * 0.24F;
+        sirene.yaw = MathHelper.sin(state.age * 0.035F) * 0.1F;
+
+        float beatBob = (MathHelper.cos(state.age * MathHelper.PI / 5.0F) + 1.0F) * 0.5F;
+        taktling.originY = -beatBob * 1.1F;
+        taktlingLeftEar.roll = 0.22F + beatBob * 0.18F;
+        taktlingRightEar.roll = -0.22F - beatBob * 0.18F;
+        taktling.yaw = MathHelper.sin(state.age * 0.08F) * 0.08F;
     }
 }
