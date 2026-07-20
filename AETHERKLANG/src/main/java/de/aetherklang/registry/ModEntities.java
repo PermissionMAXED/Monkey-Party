@@ -4,7 +4,10 @@ import de.aetherklang.Aetherklang;
 import de.aetherklang.entity.ChoralEntity;
 import de.aetherklang.entity.DissonanzgeistEntity;
 import de.aetherklang.entity.EchonoteEntity;
+import de.aetherklang.entity.FermateFeldEntity;
 import de.aetherklang.entity.HallwaechterEntity;
+import de.aetherklang.entity.SireneEntity;
+import de.aetherklang.entity.TaktlingEntity;
 import net.fabricmc.fabric.api.biome.v1.BiomeModifications;
 import net.fabricmc.fabric.api.biome.v1.BiomeSelectors;
 import net.fabricmc.fabric.api.event.player.UseItemCallback;
@@ -25,6 +28,9 @@ public final class ModEntities {
     public static final String HALLWAECHTER_ID = "hallwaechter";
     public static final String ECHONOTE_ID = "echonote";
     public static final String CHORAL_ID = "choral";
+    public static final String SIRENE_ID = "sirene";
+    public static final String TAKTLING_ID = "taktling";
+    public static final String FERMATE_FELD_ID = "fermate_feld";
 
     public static final EntityType<DissonanzgeistEntity> DISSONANZGEIST =
             register(DISSONANZGEIST_ID, SpawnGroup.MONSTER, 0.9F, 1.25F, 10, 3, false, DissonanzgeistEntity::new);
@@ -34,6 +40,12 @@ public final class ModEntities {
             register(ECHONOTE_ID, SpawnGroup.MISC, 0.35F, 0.35F, 8, 1, true, EchonoteEntity::new);
     public static final EntityType<ChoralEntity> CHORAL =
             register(CHORAL_ID, SpawnGroup.MONSTER, 3.6F, 4.5F, 16, 2, false, ChoralEntity::new);
+    public static final EntityType<SireneEntity> SIRENE =
+            register(SIRENE_ID, SpawnGroup.CREATURE, 0.8F, 1.9F, 10, 3, false, SireneEntity::new);
+    public static final EntityType<TaktlingEntity> TAKTLING =
+            register(TAKTLING_ID, SpawnGroup.CREATURE, 0.6F, 0.9F, 8, 3, false, TaktlingEntity::new);
+    public static final EntityType<FermateFeldEntity> FERMATE_FELD =
+            register(FERMATE_FELD_ID, SpawnGroup.MISC, 4.0F, 0.25F, 10, 1, true, FermateFeldEntity::new);
 
     private ModEntities() {
     }
@@ -65,6 +77,8 @@ public final class ModEntities {
         FabricDefaultAttributeRegistry.register(DISSONANZGEIST, DissonanzgeistEntity.createAttributes());
         FabricDefaultAttributeRegistry.register(HALLWAECHTER, HallwaechterEntity.createAttributes());
         FabricDefaultAttributeRegistry.register(CHORAL, ChoralEntity.createAttributes());
+        FabricDefaultAttributeRegistry.register(SIRENE, SireneEntity.createAttributes());
+        FabricDefaultAttributeRegistry.register(TAKTLING, TaktlingEntity.createAttributes());
         BiomeModifications.addSpawn(
                 BiomeSelectors.foundInOverworld(),
                 SpawnGroup.MONSTER,
@@ -74,7 +88,7 @@ public final class ModEntities {
                 1
         );
         registerHallharfe();
-        Aetherklang.LOGGER.debug("Registered {} Aetherklang entity types", 4);
+        Aetherklang.LOGGER.debug("Registered {} Aetherklang entity types", 7);
     }
 
     private static void registerHallharfe() {

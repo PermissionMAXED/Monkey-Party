@@ -3,8 +3,12 @@ package de.aetherklang.registry;
 import de.aetherklang.Aetherklang;
 import de.aetherklang.block.DissonanzrissBlock;
 import de.aetherklang.block.GlockenspielPortalBlock;
+import de.aetherklang.block.KlangblumeBlock;
+import de.aetherklang.block.KlanglaterneBlock;
 import de.aetherklang.block.ResonanceCrystalBlock;
+import de.aetherklang.block.ResonanzarchivBlock;
 import de.aetherklang.block.StimmaltarBlock;
+import de.aetherklang.block.TaktbrueckeBlock;
 import java.util.function.Function;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
@@ -24,6 +28,10 @@ public final class ModBlocks {
     public static final String STIMMALTAR_ID = "stimmaltar";
     public static final String DISSONANZRISS_ID = "dissonanzriss";
     public static final String GLOCKENSPIEL_PORTAL_ID = "glockenspiel_portal";
+    public static final String KLANGLATERNE_ID = "klanglaterne";
+    public static final String TAKTBRUECKE_ID = "taktbruecke";
+    public static final String RESONANZARCHIV_ID = "resonanzarchiv";
+    public static final String KLANGBLUME_ID = "klangblume";
 
     public static final ResonanceCrystalBlock RESONANZKRISTALL_INDIGO =
             registerCrystal(RESONANZKRISTALL_INDIGO_ID, DyeColor.PURPLE, 9);
@@ -71,6 +79,42 @@ public final class ModBlocks {
                     .dropsNothing()
                     .pistonBehavior(PistonBehavior.BLOCK)
     );
+    public static final KlanglaterneBlock KLANGLATERNE = register(
+            KLANGLATERNE_ID,
+            KlanglaterneBlock::new,
+            settings -> settings
+                    .mapColor(DyeColor.YELLOW)
+                    .strength(1.0F)
+                    .sounds(BlockSoundGroup.LANTERN)
+                    .luminance(state -> 15)
+    );
+    public static final TaktbrueckeBlock TAKTBRUECKE = register(
+            TAKTBRUECKE_ID,
+            TaktbrueckeBlock::new,
+            settings -> settings
+                    .mapColor(DyeColor.BROWN)
+                    .strength(2.0F, 3.0F)
+                    .sounds(BlockSoundGroup.BAMBOO_WOOD)
+    );
+    public static final ResonanzarchivBlock RESONANZARCHIV = register(
+            RESONANZARCHIV_ID,
+            ResonanzarchivBlock::new,
+            settings -> settings
+                    .mapColor(DyeColor.PURPLE)
+                    .strength(3.0F, 9.0F)
+                    .sounds(BlockSoundGroup.CHISELED_BOOKSHELF)
+                    .requiresTool()
+    );
+    public static final KlangblumeBlock KLANGBLUME = register(
+            KLANGBLUME_ID,
+            KlangblumeBlock::new,
+            settings -> settings
+                    .mapColor(DyeColor.CYAN)
+                    .strength(0.2F)
+                    .sounds(BlockSoundGroup.FLOWERING_AZALEA)
+                    .luminance(state -> 4)
+                    .nonOpaque()
+    );
 
     private ModBlocks() {
     }
@@ -102,6 +146,6 @@ public final class ModBlocks {
     }
 
     public static void register() {
-        Aetherklang.LOGGER.debug("Registered {} Aetherklang blocks", 7);
+        Aetherklang.LOGGER.debug("Registered {} Aetherklang blocks", 11);
     }
 }

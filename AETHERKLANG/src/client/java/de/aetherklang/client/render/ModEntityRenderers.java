@@ -55,5 +55,35 @@ public final class ModEntityRenderers {
                         0xD89263FF
                 )
         );
+        EntityRendererRegistry.register(
+                ModEntities.SIRENE,
+                context -> new AetherEntityRenderer<>(
+                        context,
+                        AetherEntityStyle.DISSONANZGEIST,
+                        0.72F,
+                        0.35F,
+                        0xD85FF5E0
+                )
+        );
+        EntityRendererRegistry.register(
+                ModEntities.TAKTLING,
+                context -> new AetherEntityRenderer<>(
+                        context,
+                        AetherEntityStyle.ECHONOTE,
+                        0.52F,
+                        0.25F,
+                        0xE8F5C95F
+                )
+        );
+        EntityRendererRegistry.register(
+                ModEntities.FERMATE_FELD,
+                context -> new AetherEntityRenderer<>(
+                        context,
+                        AetherEntityStyle.ECHONOTE,
+                        1.8F,
+                        0.0F,
+                        0x605FF5E0
+                )
+        );
     }
 }

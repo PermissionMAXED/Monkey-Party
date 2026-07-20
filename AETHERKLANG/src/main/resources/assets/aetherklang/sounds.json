@@ -43,5 +43,77 @@
         "type": "event"
       }
     ]
+  },
+  "orgelhorn_blast": {
+    "subtitle": "subtitles.aetherklang.orgelhorn_blast",
+    "sounds": [
+      {
+        "name": "minecraft:item.goat_horn.sound.0",
+        "type": "event"
+      }
+    ]
+  },
+  "fermate_chime": {
+    "subtitle": "subtitles.aetherklang.fermate_chime",
+    "sounds": [
+      {
+        "name": "minecraft:block.note_block.chime",
+        "type": "event"
+      }
+    ]
+  },
+  "akkord_complete": {
+    "subtitle": "subtitles.aetherklang.akkord_complete",
+    "sounds": [
+      {
+        "name": "minecraft:block.note_block.harp",
+        "type": "event"
+      }
+    ]
+  },
+  "ensemble_chime": {
+    "subtitle": "subtitles.aetherklang.ensemble_chime",
+    "sounds": [
+      {
+        "name": "minecraft:block.amethyst_block.chime",
+        "type": "event"
+      }
+    ]
+  },
+  "sirene_song": {
+    "subtitle": "subtitles.aetherklang.sirene_song",
+    "sounds": [
+      {
+        "name": "minecraft:entity.allay.ambient_with_item",
+        "type": "event"
+      }
+    ]
+  },
+  "taktling_chirp": {
+    "subtitle": "subtitles.aetherklang.taktling_chirp",
+    "sounds": [
+      {
+        "name": "minecraft:entity.allay.ambient_without_item",
+        "type": "event"
+      }
+    ]
+  },
+  "archiv_unlock": {
+    "subtitle": "subtitles.aetherklang.archiv_unlock",
+    "sounds": [
+      {
+        "name": "minecraft:block.chiseled_bookshelf.insert.enchanted",
+        "type": "event"
+      }
+    ]
+  },
+  "bruecke_toggle": {
+    "subtitle": "subtitles.aetherklang.bruecke_toggle",
+    "sounds": [
+      {
+        "name": "minecraft:block.copper_bulb.turn_on",
+        "type": "event"
+      }
+    ]
   }
 }

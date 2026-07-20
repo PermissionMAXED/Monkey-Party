@@ -25,7 +25,9 @@ public final class ResonanceState extends ResonancePlayerData {
                 data.getRp(),
                 data.getBeatPhase(),
                 data.getDissonanz(),
-                data.getUnlockedCodexPages()
+                data.getUnlockedCodexPages(),
+                data.getRang(),
+                data.getGesamtRp()
         );
     }
 
@@ -37,6 +39,18 @@ public final class ResonanceState extends ResonancePlayerData {
             BitSet unlockedCodexPages
     ) {
         super(mood, rp, beatPhase, dissonanz, unlockedCodexPages);
+    }
+
+    public ResonanceState(
+            Stimmung mood,
+            int rp,
+            float beatPhase,
+            float dissonanz,
+            BitSet unlockedCodexPages,
+            int rang,
+            long gesamtRp
+    ) {
+        super(mood, rp, beatPhase, dissonanz, unlockedCodexPages, rang, gesamtRp);
     }
 
     public void setMood(ResonanceMood mood) {

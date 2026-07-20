@@ -24,7 +24,11 @@ public class ResonancePlayerData {
                             .forGetter(ResonancePlayerData::getDissonanz),
                     Codec.intRange(0, MAX_CODEX_PAGE).listOf()
                             .optionalFieldOf("unlocked_codex_pages", List.of())
-                            .forGetter(ResonancePlayerData::getUnlockedCodexPageIds)
+                            .forGetter(ResonancePlayerData::getUnlockedCodexPageIds),
+                    Codec.intRange(0, Integer.MAX_VALUE).optionalFieldOf("rang", 0)
+                            .forGetter(ResonancePlayerData::getRang),
+                    Codec.LONG.optionalFieldOf("gesamt_rp", 0L)
+                            .forGetter(ResonancePlayerData::getGesamtRp)
             ).apply(instance, ResonancePlayerData::fromSerialized)
     );
 
@@ -33,9 +37,11 @@ public class ResonancePlayerData {
     private float beatPhase;
     private float dissonanz;
     private final BitSet unlockedCodexPages;
+    private int rang;
+    private long gesamtRp;
 
     public ResonancePlayerData() {
-        this(Stimmung.STILLE, 0, 0.0F, 0.0F, new BitSet());
+        this(Stimmung.STILLE, 0, 0.0F, 0.0F, new BitSet(), 0, 0L);
     }
 
     public ResonancePlayerData(
@@ -45,6 +51,18 @@ public class ResonancePlayerData {
             float dissonanz,
             BitSet unlockedCodexPages
     ) {
+        this(mood, rp, beatPhase, dissonanz, unlockedCodexPages, 0, 0L);
+    }
+
+    public ResonancePlayerData(
+            Stimmung mood,
+            int rp,
+            float beatPhase,
+            float dissonanz,
+            BitSet unlockedCodexPages,
+            int rang,
+            long gesamtRp
+    ) {
         this.mood = mood == null ? Stimmung.STILLE : mood;
         this.rp = clampRp(rp);
         this.beatPhase = clampUnit(beatPhase);
@@ -52,6 +70,8 @@ public class ResonancePlayerData {
         this.unlockedCodexPages = unlockedCodexPages == null
                 ? new BitSet()
                 : (BitSet) unlockedCodexPages.clone();
+        this.rang = Math.max(0, rang);
+        this.gesamtRp = Math.max(0L, gesamtRp);
     }
 
     private static ResonancePlayerData fromSerialized(
@@ -59,11 +79,13 @@ public class ResonancePlayerData {
             int rp,
             float beatPhase,
             float dissonanz,
-            List<Integer> unlockedCodexPages
+            List<Integer> unlockedCodexPages,
+            int rang,
+            long gesamtRp
     ) {
         BitSet pages = new BitSet();
         unlockedCodexPages.forEach(pages::set);
-        return new ResonancePlayerData(mood, rp, beatPhase, dissonanz, pages);
+        return new ResonancePlayerData(mood, rp, beatPhase, dissonanz, pages, rang, gesamtRp);
     }
 
     public Stimmung getMood() {
@@ -118,6 +140,22 @@ public class ResonancePlayerData {
         boolean wasUnlocked = unlockedCodexPages.get(page);
         unlockedCodexPages.set(page);
         return !wasUnlocked;
+    }
+
+    public int getRang() {
+        return rang;
+    }
+
+    public void setRang(int rang) {
+        this.rang = Math.max(0, rang);
+    }
+
+    public long getGesamtRp() {
+        return gesamtRp;
+    }
+
+    public void setGesamtRp(long gesamtRp) {
+        this.gesamtRp = Math.max(0L, gesamtRp);
     }
 
     private static int clampRp(int value) {

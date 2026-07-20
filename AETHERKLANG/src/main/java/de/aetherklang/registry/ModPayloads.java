@@ -16,6 +16,9 @@ public final class ModPayloads {
     public static final Identifier KODEX_OPEN_ID = Aetherklang.id("kodex_open");
     public static final Identifier RESONANCE_SYNC_ID = Aetherklang.id("resonance_sync");
     public static final Identifier BEAT_FX_ID = Aetherklang.id("beat_fx");
+    public static final Identifier AKKORD_FX_ID = Aetherklang.id("akkord_fx");
+    public static final Identifier ENSEMBLE_SYNC_ID = Aetherklang.id("ensemble_sync");
+    public static final Identifier RANG_SYNC_ID = Aetherklang.id("rang_sync");
 
     private ModPayloads() {
     }
@@ -26,7 +29,10 @@ public final class ModPayloads {
         PayloadTypeRegistry.playC2S().register(KodexOpenPayload.ID, KodexOpenPayload.CODEC);
         PayloadTypeRegistry.playS2C().register(ResonanceSyncPayload.ID, ResonanceSyncPayload.CODEC);
         PayloadTypeRegistry.playS2C().register(BeatFxPayload.ID, BeatFxPayload.CODEC);
-        Aetherklang.LOGGER.debug("Registered {} Aetherklang play payloads", 5);
+        PayloadTypeRegistry.playS2C().register(AkkordFxPayload.ID, AkkordFxPayload.CODEC);
+        PayloadTypeRegistry.playS2C().register(EnsembleSyncPayload.ID, EnsembleSyncPayload.CODEC);
+        PayloadTypeRegistry.playS2C().register(RangSyncPayload.ID, RangSyncPayload.CODEC);
+        Aetherklang.LOGGER.debug("Registered {} Aetherklang play payloads", 8);
     }
 
     public record DashPayload(float strength) implements CustomPayload {
@@ -137,6 +143,49 @@ public final class ModPayloads {
         public static final PacketCodec<RegistryByteBuf, BeatFxPayload> CODEC = PacketCodec.of(
                 (payload, buffer) -> buffer.writeVarInt(payload.beat()),
                 buffer -> new BeatFxPayload(buffer.readVarInt())
+        );
+
+        @Override
+        public Id<? extends CustomPayload> getId() {
+            return ID;
+        }
+    }
+
+    public record AkkordFxPayload(int akkord) implements CustomPayload {
+        public static final CustomPayload.Id<AkkordFxPayload> ID = new CustomPayload.Id<>(AKKORD_FX_ID);
+        public static final PacketCodec<RegistryByteBuf, AkkordFxPayload> CODEC = PacketCodec.of(
+                (payload, buffer) -> buffer.writeVarInt(payload.akkord()),
+                buffer -> new AkkordFxPayload(buffer.readVarInt())
+        );
+
+        @Override
+        public Id<? extends CustomPayload> getId() {
+            return ID;
+        }
+    }
+
+    public record EnsembleSyncPayload(int ensembleSize) implements CustomPayload {
+        public static final CustomPayload.Id<EnsembleSyncPayload> ID =
+                new CustomPayload.Id<>(ENSEMBLE_SYNC_ID);
+        public static final PacketCodec<RegistryByteBuf, EnsembleSyncPayload> CODEC = PacketCodec.of(
+                (payload, buffer) -> buffer.writeVarInt(payload.ensembleSize()),
+                buffer -> new EnsembleSyncPayload(buffer.readVarInt())
+        );
+
+        @Override
+        public Id<? extends CustomPayload> getId() {
+            return ID;
+        }
+    }
+
+    public record RangSyncPayload(int rang, long gesamtRp) implements CustomPayload {
+        public static final CustomPayload.Id<RangSyncPayload> ID = new CustomPayload.Id<>(RANG_SYNC_ID);
+        public static final PacketCodec<RegistryByteBuf, RangSyncPayload> CODEC = PacketCodec.of(
+                (payload, buffer) -> {
+                    buffer.writeVarInt(payload.rang());
+                    buffer.writeVarLong(payload.gesamtRp());
+                },
+                buffer -> new RangSyncPayload(buffer.readVarInt(), buffer.readVarLong())
         );
 
         @Override

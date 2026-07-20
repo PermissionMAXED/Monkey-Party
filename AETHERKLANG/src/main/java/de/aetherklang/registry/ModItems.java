@@ -2,12 +2,26 @@ package de.aetherklang.registry;
 
 import de.aetherklang.Aetherklang;
 import de.aetherklang.item.BasshammerItem;
+import de.aetherklang.item.ChorherzItem;
 import de.aetherklang.item.EchostiefelItem;
+import de.aetherklang.item.FermatenglockeItem;
 import de.aetherklang.item.HallharfeItem;
+import de.aetherklang.item.KlangblumeBlockItem;
+import de.aetherklang.item.KlanglaterneBlockItem;
+import de.aetherklang.item.KlangweberBeineItem;
+import de.aetherklang.item.KlangweberBrustItem;
+import de.aetherklang.item.KlangweberHelmItem;
+import de.aetherklang.item.KlangweberStiefelItem;
 import de.aetherklang.item.KodexItem;
+import de.aetherklang.item.OrgelhornItem;
+import de.aetherklang.item.ResonanzarchivBlockItem;
 import de.aetherklang.item.ResonanzklingeItem;
+import de.aetherklang.item.SireneSpawnEggItem;
 import de.aetherklang.item.StimmgabelItem;
+import de.aetherklang.item.TaktbrueckeBlockItem;
+import de.aetherklang.item.TaktlingSpawnEggItem;
 import java.util.List;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 import net.minecraft.block.Block;
 import net.minecraft.item.BlockItem;
@@ -32,6 +46,15 @@ public final class ModItems {
     public static final String HALLWAECHTER_SPAWN_EGG_ID = "hallwaechter_spawn_egg";
     public static final String ECHONOTE_SPAWN_EGG_ID = "echonote_spawn_egg";
     public static final String CHORAL_SPAWN_EGG_ID = "choral_spawn_egg";
+    public static final String ORGELHORN_ID = "orgelhorn";
+    public static final String FERMATENGLOCKE_ID = "fermatenglocke";
+    public static final String CHORHERZ_ID = "chorherz";
+    public static final String KLANGWEBER_HELM_ID = "klangweber_helm";
+    public static final String KLANGWEBER_BRUST_ID = "klangweber_brust";
+    public static final String KLANGWEBER_BEINE_ID = "klangweber_beine";
+    public static final String KLANGWEBER_STIEFEL_ID = "klangweber_stiefel";
+    public static final String SIRENE_SPAWN_EGG_ID = "sirene_spawn_egg";
+    public static final String TAKTLING_SPAWN_EGG_ID = "taktling_spawn_egg";
 
     public static final Item STIMMGABEL =
             register(STIMMGABEL_ID, StimmgabelItem::new, new Item.Settings().maxCount(1));
@@ -73,6 +96,42 @@ public final class ModItems {
             SpawnEggItem::new,
             new Item.Settings().spawnEgg(ModEntities.CHORAL)
     );
+    public static final Item ORGELHORN =
+            register(ORGELHORN_ID, OrgelhornItem::new, new Item.Settings().maxCount(1).maxDamage(384));
+    public static final Item FERMATENGLOCKE =
+            register(FERMATENGLOCKE_ID, FermatenglockeItem::new, new Item.Settings().maxCount(1).maxDamage(256));
+    public static final Item CHORHERZ =
+            register(CHORHERZ_ID, ChorherzItem::new, new Item.Settings().maxCount(16));
+    public static final Item KLANGWEBER_HELM = register(
+            KLANGWEBER_HELM_ID,
+            KlangweberHelmItem::new,
+            new Item.Settings().armor(ArmorMaterials.DIAMOND, EquipmentType.HELMET)
+    );
+    public static final Item KLANGWEBER_BRUST = register(
+            KLANGWEBER_BRUST_ID,
+            KlangweberBrustItem::new,
+            new Item.Settings().armor(ArmorMaterials.DIAMOND, EquipmentType.CHESTPLATE)
+    );
+    public static final Item KLANGWEBER_BEINE = register(
+            KLANGWEBER_BEINE_ID,
+            KlangweberBeineItem::new,
+            new Item.Settings().armor(ArmorMaterials.DIAMOND, EquipmentType.LEGGINGS)
+    );
+    public static final Item KLANGWEBER_STIEFEL = register(
+            KLANGWEBER_STIEFEL_ID,
+            KlangweberStiefelItem::new,
+            new Item.Settings().armor(ArmorMaterials.DIAMOND, EquipmentType.BOOTS)
+    );
+    public static final Item SIRENE_SPAWN_EGG = register(
+            SIRENE_SPAWN_EGG_ID,
+            SireneSpawnEggItem::new,
+            new Item.Settings().spawnEgg(ModEntities.SIRENE)
+    );
+    public static final Item TAKTLING_SPAWN_EGG = register(
+            TAKTLING_SPAWN_EGG_ID,
+            TaktlingSpawnEggItem::new,
+            new Item.Settings().spawnEgg(ModEntities.TAKTLING)
+    );
 
     public static final Item RESONANZKRISTALL_INDIGO =
             registerBlockItem(ModBlocks.RESONANZKRISTALL_INDIGO_ID, ModBlocks.RESONANZKRISTALL_INDIGO);
@@ -86,6 +145,14 @@ public final class ModItems {
     public static final Item DISSONANZRISS = registerBlockItem(ModBlocks.DISSONANZRISS_ID, ModBlocks.DISSONANZRISS);
     public static final Item GLOCKENSPIEL_PORTAL =
             registerBlockItem(ModBlocks.GLOCKENSPIEL_PORTAL_ID, ModBlocks.GLOCKENSPIEL_PORTAL);
+    public static final Item KLANGLATERNE =
+            registerBlockItem(ModBlocks.KLANGLATERNE_ID, ModBlocks.KLANGLATERNE, KlanglaterneBlockItem::new);
+    public static final Item TAKTBRUECKE =
+            registerBlockItem(ModBlocks.TAKTBRUECKE_ID, ModBlocks.TAKTBRUECKE, TaktbrueckeBlockItem::new);
+    public static final Item RESONANZARCHIV =
+            registerBlockItem(ModBlocks.RESONANZARCHIV_ID, ModBlocks.RESONANZARCHIV, ResonanzarchivBlockItem::new);
+    public static final Item KLANGBLUME =
+            registerBlockItem(ModBlocks.KLANGBLUME_ID, ModBlocks.KLANGBLUME, KlangblumeBlockItem::new);
 
     public static final List<Item> ALL_ITEMS = List.of(
             STIMMGABEL,
@@ -98,13 +165,26 @@ public final class ModItems {
             HALLWAECHTER_SPAWN_EGG,
             ECHONOTE_SPAWN_EGG,
             CHORAL_SPAWN_EGG,
+            ORGELHORN,
+            FERMATENGLOCKE,
+            CHORHERZ,
+            KLANGWEBER_HELM,
+            KLANGWEBER_BRUST,
+            KLANGWEBER_BEINE,
+            KLANGWEBER_STIEFEL,
+            SIRENE_SPAWN_EGG,
+            TAKTLING_SPAWN_EGG,
             RESONANZKRISTALL_INDIGO,
             RESONANZKRISTALL_CYAN,
             RESONANZKRISTALL_GOLD,
             RESONANZKRISTALL_MAGENTA,
             STIMMALTAR,
             DISSONANZRISS,
-            GLOCKENSPIEL_PORTAL
+            GLOCKENSPIEL_PORTAL,
+            KLANGLATERNE,
+            TAKTBRUECKE,
+            RESONANZARCHIV,
+            KLANGBLUME
     );
 
     private ModItems() {
@@ -116,9 +196,17 @@ public final class ModItems {
     }
 
     private static Item registerBlockItem(String path, Block block) {
+        return registerBlockItem(path, block, BlockItem::new);
+    }
+
+    private static Item registerBlockItem(
+            String path,
+            Block block,
+            BiFunction<Block, Item.Settings, ? extends Item> factory
+    ) {
         RegistryKey<Item> key = RegistryKey.of(RegistryKeys.ITEM, Aetherklang.id(path));
         Item.Settings settings = new Item.Settings().useBlockPrefixedTranslationKey().registryKey(key);
-        return Registry.register(Registries.ITEM, key, new BlockItem(block, settings));
+        return Registry.register(Registries.ITEM, key, factory.apply(block, settings));
     }
 
     public static void register() {
