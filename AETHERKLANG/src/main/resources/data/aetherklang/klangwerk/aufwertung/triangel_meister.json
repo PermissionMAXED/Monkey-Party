@@ -1,0 +1,13 @@
+{
+  "id": "triangel_meister",
+  "type": "aufwertung",
+  "parameters": {
+    "instrument": "aetherklang:triangel",
+    "from": "basis",
+    "to": "meister",
+    "resonanzbarren": "2",
+    "klangstaub": "8",
+    "boss_drop": "aetherklang:schwarmauge",
+    "boss_drop_count": "1"
+  }
+}

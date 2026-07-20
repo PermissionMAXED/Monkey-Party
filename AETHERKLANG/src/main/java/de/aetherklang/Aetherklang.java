@@ -17,6 +17,8 @@ import de.aetherklang.registry.ModPayloads;
 import de.aetherklang.registry.ModSounds;
 import de.aetherklang.resonance.BeatEngine;
 import de.aetherklang.world.KammertonWorld;
+import de.aetherklang.schmiede.SchmiedeComponents;
+import de.aetherklang.schmiede.SchmiedeRezepte;
 import net.fabricmc.api.ModInitializer;
 import net.minecraft.util.Identifier;
 import org.slf4j.Logger;
@@ -33,12 +35,14 @@ public final class Aetherklang implements ModInitializer {
     @Override
     public void onInitialize() {
         ModBlocks.register();
+        SchmiedeComponents.register();
         ModItems.register();
         ModItemGroups.register();
         ModBlockEntities.register();
         ModEntities.register();
         ContentBootstrap.register();
         KlangwerkLoader.register();
+        SchmiedeRezepte.register();
         ModParticles.register();
         ModSounds.register();
         ModAttachments.register();

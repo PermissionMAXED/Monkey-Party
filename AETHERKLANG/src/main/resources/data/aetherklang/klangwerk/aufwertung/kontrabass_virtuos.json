@@ -1,0 +1,13 @@
+{
+  "id": "kontrabass_virtuos",
+  "type": "aufwertung",
+  "parameters": {
+    "instrument": "aetherklang:kontrabass",
+    "from": "meister",
+    "to": "virtuos",
+    "resonanzbarren": "4",
+    "klangstaub": "16",
+    "boss_drop": "aetherklang:tremolokern",
+    "boss_drop_count": "2"
+  }
+}

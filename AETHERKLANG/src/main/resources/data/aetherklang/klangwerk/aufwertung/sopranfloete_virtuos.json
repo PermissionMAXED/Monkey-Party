@@ -1,0 +1,13 @@
+{
+  "id": "sopranfloete_virtuos",
+  "type": "aufwertung",
+  "parameters": {
+    "instrument": "aetherklang:sopranfloete",
+    "from": "meister",
+    "to": "virtuos",
+    "resonanzbarren": "4",
+    "klangstaub": "16",
+    "boss_drop": "aetherklang:notenschluessel",
+    "boss_drop_count": "1"
+  }
+}

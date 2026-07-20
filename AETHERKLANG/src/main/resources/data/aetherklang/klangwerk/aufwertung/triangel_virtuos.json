@@ -1,0 +1,13 @@
+{
+  "id": "triangel_virtuos",
+  "type": "aufwertung",
+  "parameters": {
+    "instrument": "aetherklang:triangel",
+    "from": "meister",
+    "to": "virtuos",
+    "resonanzbarren": "4",
+    "klangstaub": "16",
+    "boss_drop": "aetherklang:stillesplitter",
+    "boss_drop_count": "2"
+  }
+}

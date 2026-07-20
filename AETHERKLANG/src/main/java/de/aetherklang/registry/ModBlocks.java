@@ -10,6 +10,7 @@ import de.aetherklang.block.ResonanzarchivBlock;
 import de.aetherklang.block.StimmaltarBlock;
 import de.aetherklang.block.TaktbrueckeBlock;
 import java.util.function.Function;
+import de.aetherklang.schmiede.KlangambossBlock;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.SlabBlock;
@@ -131,7 +132,15 @@ public final class ModBlocks {
                     .nonOpaque()
     );
     public static final Block NOTENPULT = registerStone(NOTENPULT_ID, BlockSoundGroup.CHISELED_BOOKSHELF, 2.5F);
-    public static final Block KLANGAMBOSS = registerStone(KLANGAMBOSS_ID, BlockSoundGroup.ANVIL, 5.0F);
+    public static final KlangambossBlock KLANGAMBOSS = register(
+            KLANGAMBOSS_ID,
+            KlangambossBlock::new,
+            settings -> settings
+                    .mapColor(DyeColor.BLACK)
+                    .strength(5.0F, 8.0F)
+                    .sounds(BlockSoundGroup.ANVIL)
+                    .requiresTool()
+    );
     public static final Block STIMMPFEILER = registerStone(STIMMPFEILER_ID, BlockSoundGroup.AMETHYST_BLOCK, 3.0F);
     public static final Block METRONOMBLOCK = registerStone(METRONOMBLOCK_ID, BlockSoundGroup.WOOD, 2.0F);
     public static final Block DISSONANZANKER = register(

@@ -22,6 +22,7 @@ import de.aetherklang.item.StimmgabelItem;
 import de.aetherklang.item.TaktbrueckeBlockItem;
 import de.aetherklang.item.TaktlingSpawnEggItem;
 import java.util.List;
+import de.aetherklang.schmiede.KlanginstrumentItem;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import net.minecraft.block.Block;
@@ -160,10 +161,23 @@ public final class ModItems {
             TaktlingSpawnEggItem::new,
             new Item.Settings().spawnEgg(ModEntities.TAKTLING)
     );
-    public static final Item PAUKE = registerStub(PAUKE_ID, 1);
-    public static final Item SOPRANFLOETE = registerStub(SOPRANFLOETE_ID, 1);
-    public static final Item KONTRABASS = registerStub(KONTRABASS_ID, 1);
-    public static final Item TRIANGEL = registerStub(TRIANGEL_ID, 1);
+    public static final Item PAUKE =
+            register(PAUKE_ID, settings -> new KlanginstrumentItem(settings, PAUKE_ID), new Item.Settings().maxCount(1));
+    public static final Item SOPRANFLOETE = register(
+            SOPRANFLOETE_ID,
+            settings -> new KlanginstrumentItem(settings, SOPRANFLOETE_ID),
+            new Item.Settings().maxCount(1)
+    );
+    public static final Item KONTRABASS = register(
+            KONTRABASS_ID,
+            settings -> new KlanginstrumentItem(settings, KONTRABASS_ID),
+            new Item.Settings().maxCount(1)
+    );
+    public static final Item TRIANGEL = register(
+            TRIANGEL_ID,
+            settings -> new KlanginstrumentItem(settings, TRIANGEL_ID),
+            new Item.Settings().maxCount(1)
+    );
     public static final Item TREMOLOKERN = registerStub(TREMOLOKERN_ID, 64);
     public static final Item SAITENHERZ = registerStub(SAITENHERZ_ID, 64);
     public static final Item SCHWARMAUGE = registerStub(SCHWARMAUGE_ID, 64);

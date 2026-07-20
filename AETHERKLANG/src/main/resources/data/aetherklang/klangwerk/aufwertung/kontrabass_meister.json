@@ -1,0 +1,13 @@
+{
+  "id": "kontrabass_meister",
+  "type": "aufwertung",
+  "parameters": {
+    "instrument": "aetherklang:kontrabass",
+    "from": "basis",
+    "to": "meister",
+    "resonanzbarren": "2",
+    "klangstaub": "8",
+    "boss_drop": "aetherklang:saitenherz",
+    "boss_drop_count": "1"
+  }
+}
