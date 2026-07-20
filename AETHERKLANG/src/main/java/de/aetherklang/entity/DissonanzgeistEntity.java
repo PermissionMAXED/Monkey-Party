@@ -14,12 +14,16 @@ import net.minecraft.entity.mob.PhantomEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.storage.ReadView;
+import net.minecraft.storage.WriteView;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
+import net.minecraft.world.Heightmap;
 
 public final class DissonanzgeistEntity extends PhantomEntity {
     private static final int RIFT_SEARCH_RADIUS = 8;
+    private boolean riftSeeded;
 
     public DissonanzgeistEntity(EntityType<? extends DissonanzgeistEntity> type, World world) {
         super(type, world);
@@ -40,6 +44,10 @@ public final class DissonanzgeistEntity extends PhantomEntity {
             return;
         }
 
+        if (!riftSeeded) {
+            riftSeeded = true;
+            seedDissonanzriss(world);
+        }
         if (age % 3 == 0) {
             world.spawnParticles(
                     ParticleTypes.WITCH,
@@ -114,6 +122,36 @@ public final class DissonanzgeistEntity extends PhantomEntity {
                 && (world.getLightLevel(getBlockPos()) <= 6 || isNearDissonanzriss(world, getBlockPos()));
     }
 
+    private void seedDissonanzriss(ServerWorld world) {
+        if (world.getRegistryKey() != World.OVERWORLD || isNearDissonanzriss(world, getBlockPos())) {
+            return;
+        }
+
+        for (int attempt = 0; attempt < 8; attempt++) {
+            BlockPos horizontal = getBlockPos().add(
+                    getRandom().nextInt(7) - 3,
+                    0,
+                    getRandom().nextInt(7) - 3
+            );
+            BlockPos riftPos = world.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, horizontal);
+            if (world.getBlockState(riftPos).isAir()) {
+                world.setBlockState(riftPos, ModBlocks.DISSONANZRISS.getDefaultState());
+                world.spawnParticles(
+                        ModParticles.DISSONANZ_SMOKE,
+                        riftPos.getX() + 0.5D,
+                        riftPos.getY() + 0.5D,
+                        riftPos.getZ() + 0.5D,
+                        16,
+                        0.45D,
+                        0.45D,
+                        0.45D,
+                        0.035D
+                );
+                return;
+            }
+        }
+    }
+
     private static boolean isNearDissonanzriss(WorldAccess world, BlockPos center) {
         for (BlockPos pos : BlockPos.iterateOutwards(
                 center,
@@ -126,5 +164,17 @@ public final class DissonanzgeistEntity extends PhantomEntity {
             }
         }
         return false;
+    }
+
+    @Override
+    protected void writeCustomData(WriteView view) {
+        super.writeCustomData(view);
+        view.putBoolean("RiftSeeded", riftSeeded);
+    }
+
+    @Override
+    protected void readCustomData(ReadView view) {
+        super.readCustomData(view);
+        riftSeeded = view.getBoolean("RiftSeeded", false);
     }
 }

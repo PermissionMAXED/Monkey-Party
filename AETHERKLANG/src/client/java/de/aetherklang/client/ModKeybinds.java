@@ -3,8 +3,6 @@ package de.aetherklang.client;
 import de.aetherklang.Aetherklang;
 import de.aetherklang.registry.ModItems;
 import de.aetherklang.registry.ModPayloads;
-import de.aetherklang.resonance.Stimmung;
-import de.aetherklang.resonance.client.ClientResonanceCache;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
@@ -12,11 +10,9 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.entity.EquipmentSlot;
-import net.minecraft.text.Text;
 import org.lwjgl.glfw.GLFW;
 
 public final class ModKeybinds {
-    private static final int MOOD_CYCLE_COST = 2;
     private static final KeyBinding.Category CATEGORY =
             KeyBinding.Category.create(Aetherklang.id("controls"));
 
@@ -67,17 +63,8 @@ public final class ModKeybinds {
         if (client.player == null || client.getNetworkHandler() == null) {
             return;
         }
-        if (!client.player.isCreative() && ClientResonanceCache.getRp() < MOOD_CYCLE_COST) {
-            client.player.sendMessage(
-                    Text.translatable("message.aetherklang.rp.missing", MOOD_CYCLE_COST),
-                    true
-            );
-            return;
+        if (ClientPlayNetworking.canSend(ModPayloads.MoodCyclePayload.ID)) {
+            ClientPlayNetworking.send(new ModPayloads.MoodCyclePayload(1));
         }
-
-        Stimmung current = ClientResonanceCache.getMood();
-        Stimmung[] moods = Stimmung.values();
-        Stimmung next = moods[(current.ordinal() + 1) % moods.length];
-        client.getNetworkHandler().sendChatCommand("aetherklang mood " + next.asString());
     }
 }

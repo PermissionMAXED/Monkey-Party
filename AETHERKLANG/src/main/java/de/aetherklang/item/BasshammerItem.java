@@ -1,6 +1,7 @@
 package de.aetherklang.item;
 
 import de.aetherklang.registry.ModParticles;
+import de.aetherklang.resonance.BeatEngine;
 import java.util.List;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -8,6 +9,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.particle.BlockStateParticleEffect;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
@@ -22,14 +24,19 @@ public final class BasshammerItem extends Item {
     @Override
     public void postHit(ItemStack stack, LivingEntity target, LivingEntity attacker) {
         super.postHit(stack, target, attacker);
-        if (!(attacker instanceof PlayerEntity player)
-                || !(attacker.getEntityWorld() instanceof ServerWorld serverWorld)
-                || !ResonanceItemUtil.isOnBeat(player)) {
+        if (!(attacker instanceof ServerPlayerEntity player)
+                || !(attacker.getEntityWorld() instanceof ServerWorld serverWorld)) {
+            return;
+        }
+        boolean perfect = BeatEngine.grantPerfectTimingRp(player);
+        if (!BeatEngine.isOnBeat(player, BeatEngine.GOOD_WINDOW)) {
             return;
         }
 
         smash(serverWorld, player, target.getEntityPos(), 3.25, ResonanceItemUtil.hasZorn(player) ? 5.0F : 3.0F);
-        ResonanceItemUtil.gainRp(player, 2);
+        if (!perfect) {
+            ResonanceItemUtil.gainRp(player, 2);
+        }
     }
 
     @Override

@@ -1,14 +1,7 @@
 {
   "criteria": {
     "requirement": {
-      "trigger": "minecraft:inventory_changed",
-      "conditions": {
-        "items": [
-          {
-            "items": "aetherklang:kodex"
-          }
-        ]
-      }
+      "trigger": "aetherklang:kodex_opened"
     }
   },
   "display": {

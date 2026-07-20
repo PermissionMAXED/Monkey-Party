@@ -12,6 +12,7 @@ import java.util.function.Function;
 import net.minecraft.block.Block;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
+import net.minecraft.item.SpawnEggItem;
 import net.minecraft.item.ToolMaterial;
 import net.minecraft.item.equipment.ArmorMaterials;
 import net.minecraft.item.equipment.EquipmentType;
@@ -27,6 +28,10 @@ public final class ModItems {
     public static final String BASSHAMMER_ID = "basshammer";
     public static final String ECHOSTIEFEL_ID = "echostiefel";
     public static final String KODEX_ID = "kodex";
+    public static final String DISSONANZGEIST_SPAWN_EGG_ID = "dissonanzgeist_spawn_egg";
+    public static final String HALLWAECHTER_SPAWN_EGG_ID = "hallwaechter_spawn_egg";
+    public static final String ECHONOTE_SPAWN_EGG_ID = "echonote_spawn_egg";
+    public static final String CHORAL_SPAWN_EGG_ID = "choral_spawn_egg";
 
     public static final Item STIMMGABEL =
             register(STIMMGABEL_ID, StimmgabelItem::new, new Item.Settings().maxCount(1));
@@ -48,6 +53,26 @@ public final class ModItems {
             new Item.Settings().armor(ArmorMaterials.IRON, EquipmentType.BOOTS).maxDamage(429)
     );
     public static final Item KODEX = register(KODEX_ID, KodexItem::new, new Item.Settings().maxCount(1));
+    public static final Item DISSONANZGEIST_SPAWN_EGG = register(
+            DISSONANZGEIST_SPAWN_EGG_ID,
+            SpawnEggItem::new,
+            new Item.Settings().spawnEgg(ModEntities.DISSONANZGEIST)
+    );
+    public static final Item HALLWAECHTER_SPAWN_EGG = register(
+            HALLWAECHTER_SPAWN_EGG_ID,
+            SpawnEggItem::new,
+            new Item.Settings().spawnEgg(ModEntities.HALLWAECHTER)
+    );
+    public static final Item ECHONOTE_SPAWN_EGG = register(
+            ECHONOTE_SPAWN_EGG_ID,
+            SpawnEggItem::new,
+            new Item.Settings().spawnEgg(ModEntities.ECHONOTE)
+    );
+    public static final Item CHORAL_SPAWN_EGG = register(
+            CHORAL_SPAWN_EGG_ID,
+            SpawnEggItem::new,
+            new Item.Settings().spawnEgg(ModEntities.CHORAL)
+    );
 
     public static final Item RESONANZKRISTALL_INDIGO =
             registerBlockItem(ModBlocks.RESONANZKRISTALL_INDIGO_ID, ModBlocks.RESONANZKRISTALL_INDIGO);
@@ -69,6 +94,10 @@ public final class ModItems {
             BASSHAMMER,
             ECHOSTIEFEL,
             KODEX,
+            DISSONANZGEIST_SPAWN_EGG,
+            HALLWAECHTER_SPAWN_EGG,
+            ECHONOTE_SPAWN_EGG,
+            CHORAL_SPAWN_EGG,
             RESONANZKRISTALL_INDIGO,
             RESONANZKRISTALL_CYAN,
             RESONANZKRISTALL_GOLD,

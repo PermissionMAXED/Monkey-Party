@@ -16,6 +16,9 @@
   follow-up agent may need to test against it.
 - Loom's client and server runs share the ignored `run/` directory, including
   `logs/latest.log`; run them one at a time when clean logs matter.
+- If switching run targets leaves Loom reporting a missing
+  `build/loom-cache/argFiles/runServer` (or `runClient`), rerun that target with
+  `--no-configuration-cache`; a clean build is not required.
 - Kammerton's authored arrival islands and first Choral approach trigger are
   persisted in the dimension itself. Use a fresh development world (or reset
   only `run/world/dimensions/aetherklang/kammerton`) when validating first-entry

@@ -1,7 +1,6 @@
 package de.aetherklang.client.kodex;
 
-import de.aetherklang.registry.ModAttachments;
-import de.aetherklang.resonance.ResonancePlayerData;
+import de.aetherklang.resonance.client.ClientResonanceCache;
 import java.util.List;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
@@ -185,8 +184,7 @@ public final class KodexScreen extends Screen {
         if (player.getAbilities().creativeMode) {
             return true;
         }
-        ResonancePlayerData state = player.getAttached(ModAttachments.RESONANCE);
-        return state != null && state.isCodexPageUnlocked(entries.indexOf(entry));
+        return ClientResonanceCache.isCodexPageUnlocked(entries.indexOf(entry));
     }
 
     @Override

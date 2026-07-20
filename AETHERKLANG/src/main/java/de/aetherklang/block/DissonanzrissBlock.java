@@ -135,6 +135,9 @@ public final class DissonanzrissBlock extends Block {
             serverPlayer.sendMessage(Text.translatable("message.aetherklang.rift.seal_failed", SEAL_COST), true);
             return ActionResult.SUCCESS_SERVER;
         }
+        var resonance = ResonanceApi.getData(serverPlayer);
+        resonance.setDissonanz(resonance.getDissonanz() - 0.2F);
+        ResonanceApi.sync(serverPlayer);
 
         serverWorld.spawnParticles(
                 ModParticles.BEAM_MOTE,

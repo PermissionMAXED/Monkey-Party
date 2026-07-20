@@ -5,6 +5,7 @@ import de.aetherklang.network.ModNetworking;
 import de.aetherklang.registry.ModAttachments;
 import de.aetherklang.registry.ModBlockEntities;
 import de.aetherklang.registry.ModBlocks;
+import de.aetherklang.registry.ModCriteria;
 import de.aetherklang.registry.ModEntities;
 import de.aetherklang.registry.ModItemGroups;
 import de.aetherklang.registry.ModItems;
@@ -36,6 +37,7 @@ public final class Aetherklang implements ModInitializer {
         ModParticles.register();
         ModSounds.register();
         ModAttachments.register();
+        ModCriteria.register();
         ModPayloads.register();
         ModNetworking.register();
         ModCommands.register();
