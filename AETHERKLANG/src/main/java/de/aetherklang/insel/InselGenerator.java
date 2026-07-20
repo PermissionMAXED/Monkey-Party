@@ -55,7 +55,7 @@ public final class InselGenerator {
     }
 
     private int decorate(ServerWorld world, InselParameter parameter) {
-        return switch (parameter.archetyp()) {
+        int placed = switch (parameter.archetyp()) {
             case BASSGEWOELBE, KADENZ_BASTION -> bassgewoelbe(world, parameter);
             case ARPEGGIEN_GARTEN, CRESCENDO_SPITZE -> arpeggienGarten(world, parameter);
             case KAKOPHONIE_RIFF, STACCATO_KLIPPEN -> kakophonieRiff(world, parameter);
@@ -65,6 +65,76 @@ public final class InselGenerator {
             case ECHO_TERRASSEN, NOCTURNE_ATOLL -> echoTerrassen(world, parameter);
             case TAKT_RONDELL, OSTINATO_STEPPE -> taktRondell(world, parameter);
         };
+        return placed + placeStructurePiece(world, parameter);
+    }
+
+    private int placeStructurePiece(ServerWorld world, InselParameter parameter) {
+        return switch (tone(parameter.formSeed(), 9, 0, 0, 3)) {
+            case 0 -> placeRuin(world, parameter);
+            case 1 -> placeOrganHall(world, parameter);
+            default -> placeChoirLoft(world, parameter);
+        };
+    }
+
+    private int placeRuin(ServerWorld world, InselParameter parameter) {
+        int placed = 0;
+        int span = Math.max(3, Math.min(parameter.radiusX(), parameter.radiusZ()) / 3);
+        for (int x = -span; x <= span; x += span) {
+            int height = 2 + tone(parameter.formSeed(), x, 1, 0, 4);
+            BlockPos column = parameter.mitte().add(x, 1, 0);
+            placed += column(world, column, ModBlocks.BASSSCHIEFER_ZIEGEL, height);
+            if (tone(parameter.formSeed(), x, 2, 0, 3) == 0) {
+                set(world, column.up(height), Blocks.COBBLESTONE);
+                placed++;
+            }
+        }
+        for (int z = -span; z <= span; z += 2) {
+            set(world, parameter.mitte().add(0, 2, z), ModBlocks.BASSSCHIEFER_POLIERT);
+            placed++;
+        }
+        return placed;
+    }
+
+    private int placeOrganHall(ServerWorld world, InselParameter parameter) {
+        int placed = 0;
+        int width = Math.min(6, parameter.radiusX() - 2);
+        for (int x = -width; x <= width; x++) {
+            BlockPos foot = parameter.mitte().add(x, 1, -2);
+            placed += column(world, foot, ModBlocks.RESONANZHOLZ, 2 + Math.abs(x) % 3);
+            if (x % 3 == 0) {
+                set(world, foot.up(3), ModBlocks.NOTENPULT);
+                placed++;
+            }
+        }
+        set(world, parameter.mitte().add(0, 1, 2), ModBlocks.STIMMPFEILER);
+        set(world, parameter.mitte().add(0, 4, 0), ModBlocks.KLANGLATERNE);
+        return placed + 2;
+    }
+
+    private int placeChoirLoft(ServerWorld world, InselParameter parameter) {
+        int placed = 0;
+        int loftRadius = Math.max(3, Math.min(parameter.radiusX(), parameter.radiusZ()) / 3);
+        for (int x = -loftRadius; x <= loftRadius; x++) {
+            for (int z = -loftRadius; z <= loftRadius; z++) {
+                if (Math.abs(x) != loftRadius && Math.abs(z) != loftRadius) {
+                    continue;
+                }
+                set(world, parameter.mitte().add(x, 4, z), ModBlocks.RESONANZHOLZ_PLANKEN);
+                placed++;
+            }
+        }
+        for (int index = 0; index < 4; index++) {
+            double angle = Math.PI * 2.0D * index / 4.0D;
+            BlockPos seat = parameter.mitte().add(
+                    (int) Math.round(Math.cos(angle) * (loftRadius - 1)),
+                    5,
+                    (int) Math.round(Math.sin(angle) * (loftRadius - 1))
+            );
+            set(world, seat, ModBlocks.KLANGLATERNE);
+            placed++;
+        }
+        placed += column(world, parameter.mitte().add(0, 1, 0), ModBlocks.RESONANZHOLZ, 3);
+        return placed;
     }
 
     private int bassgewoelbe(ServerWorld world, InselParameter parameter) {

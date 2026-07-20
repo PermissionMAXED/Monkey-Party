@@ -1,0 +1,15 @@
+{
+  "id": "mega_weber_schleier",
+  "type": "motiv",
+  "parameters": {
+    "archetype": "weber",
+    "operation": "impuls",
+    "tempo": "113",
+    "tier": "gewoehnlich",
+    "health": "50.0",
+    "attack": "8.5",
+    "primary_color": "#E03A8C",
+    "secondary_color": "#5FF5E0",
+    "loot": "aetherklang:klangstaub"
+  }
+}

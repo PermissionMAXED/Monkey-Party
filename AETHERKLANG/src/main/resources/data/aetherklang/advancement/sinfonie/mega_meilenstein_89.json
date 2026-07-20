@@ -1,0 +1,37 @@
+{
+  "criteria": {
+    "requirement": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "aetherklang:tremolokern"
+          }
+        ]
+      }
+    }
+  },
+  "display": {
+    "icon": {
+      "count": 1,
+      "id": "aetherklang:tremolokern"
+    },
+    "title": {
+      "translate": "advancements.aetherklang.sinfonie.mega_meilenstein_89.title"
+    },
+    "description": {
+      "translate": "advancements.aetherklang.sinfonie.mega_meilenstein_89.description"
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "requirements": [
+    [
+      "requirement"
+    ]
+  ],
+  "sends_telemetry_event": false,
+  "parent": "aetherklang:sinfonie/root"
+}

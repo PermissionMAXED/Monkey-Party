@@ -1,0 +1,15 @@
+{
+  "id": "mega_schuetze_fernchor",
+  "type": "motiv",
+  "parameters": {
+    "archetype": "schuetze",
+    "operation": "welle",
+    "tempo": "156",
+    "tier": "selten",
+    "health": "35.0",
+    "attack": "9.5",
+    "primary_color": "#FF7A90",
+    "secondary_color": "#72A7FF",
+    "loot": "aetherklang:notenschluessel"
+  }
+}

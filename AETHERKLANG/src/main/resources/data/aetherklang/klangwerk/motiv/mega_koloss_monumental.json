@@ -1,0 +1,15 @@
+{
+  "id": "mega_koloss_monumental",
+  "type": "motiv",
+  "parameters": {
+    "archetype": "koloss",
+    "operation": "bewegung",
+    "tempo": "98",
+    "tier": "gewoehnlich",
+    "health": "78.0",
+    "attack": "10.0",
+    "primary_color": "#FF7A90",
+    "secondary_color": "#72A7FF",
+    "loot": "aetherklang:klangstaub"
+  }
+}

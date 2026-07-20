@@ -1,0 +1,15 @@
+{
+  "id": "mega_pulser_sforzando",
+  "type": "motiv",
+  "parameters": {
+    "archetype": "pulser",
+    "operation": "bewegung",
+    "tempo": "170",
+    "tier": "selten",
+    "health": "36.0",
+    "attack": "7.25",
+    "primary_color": "#5FF5E0",
+    "secondary_color": "#F5C95F",
+    "loot": "aetherklang:notenschluessel"
+  }
+}

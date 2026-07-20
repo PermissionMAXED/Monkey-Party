@@ -1,0 +1,37 @@
+{
+  "criteria": {
+    "requirement": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "aetherklang:triangel"
+          }
+        ]
+      }
+    }
+  },
+  "display": {
+    "icon": {
+      "count": 1,
+      "id": "aetherklang:triangel"
+    },
+    "title": {
+      "translate": "advancements.aetherklang.sinfonie.mega_meilenstein_96.title"
+    },
+    "description": {
+      "translate": "advancements.aetherklang.sinfonie.mega_meilenstein_96.description"
+    },
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "requirements": [
+    [
+      "requirement"
+    ]
+  ],
+  "sends_telemetry_event": false,
+  "parent": "aetherklang:sinfonie/root"
+}

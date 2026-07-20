@@ -1,0 +1,15 @@
+{
+  "id": "mega_koloss_glockensturm",
+  "type": "motiv",
+  "parameters": {
+    "archetype": "koloss",
+    "operation": "welle",
+    "tempo": "106",
+    "tier": "selten",
+    "health": "85.0",
+    "attack": "11.5",
+    "primary_color": "#5FF5E0",
+    "secondary_color": "#F5C95F",
+    "loot": "aetherklang:notenschluessel"
+  }
+}

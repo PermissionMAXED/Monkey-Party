@@ -1,0 +1,15 @@
+{
+  "id": "mega_auftrag_62",
+  "type": "auftrag",
+  "parameters": {
+    "title": "partitur.aetherklang.contract.mega_auftrag_62.title",
+    "description": "partitur.aetherklang.contract.mega_auftrag_62.description",
+    "objective": "visit_region",
+    "target": "resonanzgarten",
+    "amount": "7",
+    "reward_rp": "15",
+    "reward_notenschluessel": "2",
+    "reward_material": "aetherklang:resonanzbarren",
+    "reward_material_count": "2"
+  }
+}

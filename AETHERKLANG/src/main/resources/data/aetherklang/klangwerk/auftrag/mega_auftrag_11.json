@@ -4,8 +4,8 @@
   "parameters": {
     "title": "partitur.aetherklang.contract.mega_auftrag_11.title",
     "description": "partitur.aetherklang.contract.mega_auftrag_11.description",
-    "objective": "kill_motiv",
-    "target": "motiv_laeufer",
+    "objective": "visit_region",
+    "target": "fermatenring",
     "amount": "5",
     "reward_rp": "16",
     "reward_notenschluessel": "2",

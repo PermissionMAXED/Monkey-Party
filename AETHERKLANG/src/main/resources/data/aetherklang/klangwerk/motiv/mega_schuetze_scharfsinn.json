@@ -1,0 +1,15 @@
+{
+  "id": "mega_schuetze_scharfsinn",
+  "type": "motiv",
+  "parameters": {
+    "archetype": "schuetze",
+    "operation": "bewegung",
+    "tempo": "160",
+    "tier": "episch",
+    "health": "38.5",
+    "attack": "6.5",
+    "primary_color": "#BFA7FF",
+    "secondary_color": "#5FF5E0",
+    "loot": "aetherklang:kaskadenkern"
+  }
+}

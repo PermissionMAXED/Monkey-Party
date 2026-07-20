@@ -1,0 +1,15 @@
+{
+  "id": "mega_weber_spindel",
+  "type": "motiv",
+  "parameters": {
+    "archetype": "weber",
+    "operation": "welle",
+    "tempo": "105",
+    "tier": "selten",
+    "health": "43.0",
+    "attack": "7.0",
+    "primary_color": "#BFA7FF",
+    "secondary_color": "#5FF5E0",
+    "loot": "aetherklang:notenschluessel"
+  }
+}

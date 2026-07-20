@@ -1,0 +1,15 @@
+{
+  "id": "mega_weber_masche",
+  "type": "motiv",
+  "parameters": {
+    "archetype": "weber",
+    "operation": "bewegung",
+    "tempo": "109",
+    "tier": "episch",
+    "health": "46.5",
+    "attack": "7.75",
+    "primary_color": "#5FF5E0",
+    "secondary_color": "#F5C95F",
+    "loot": "aetherklang:kaskadenkern"
+  }
+}

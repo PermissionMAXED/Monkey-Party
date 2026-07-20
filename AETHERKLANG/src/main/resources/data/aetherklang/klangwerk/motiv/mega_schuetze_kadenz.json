@@ -1,0 +1,15 @@
+{
+  "id": "mega_schuetze_kadenz",
+  "type": "motiv",
+  "parameters": {
+    "archetype": "schuetze",
+    "operation": "bewegung",
+    "tempo": "100",
+    "tier": "gewoehnlich",
+    "health": "24.0",
+    "attack": "6.5",
+    "primary_color": "#5FF5E0",
+    "secondary_color": "#F5C95F",
+    "loot": "aetherklang:klangstaub"
+  }
+}

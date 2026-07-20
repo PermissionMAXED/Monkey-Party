@@ -60,6 +60,13 @@
 - A fresh development world composes 120 Klangmeer islands (roughly 166,000
   blocks) before the server reports `Done`; this can take about one minute in
   Cursor Cloud. Do not mistake that bounded first-world generation for a hang.
+- The outer **Fermatenring** belt adds another 100 islands (80–120 target band;
+  currently 100) between roughly 1300–2100 blocks from center. Generation
+  completes only after both `GENERATION_MARKER` and `FERMATENRING_MARKER` are
+  lodestones.
+- `tools/generate_palette_textures.py` batch-generates unique palette-shifted
+  PNGs for items/blocks that still pointed at Minecraft placeholders; rerun
+  after adding new stub models.
 - The client Kodex still loads the single
   `assets/aetherklang/kodex/pages.json`; preserve existing order because list
   indices are persisted folio IDs, and add matching keys to both language files.

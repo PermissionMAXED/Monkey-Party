@@ -4,8 +4,8 @@
   "parameters": {
     "title": "partitur.aetherklang.contract.mega_auftrag_22.title",
     "description": "partitur.aetherklang.contract.mega_auftrag_22.description",
-    "objective": "kill_motiv",
-    "target": "motiv_pulser",
+    "objective": "visit_region",
+    "target": "kammerton",
     "amount": "2",
     "reward_rp": "14",
     "reward_notenschluessel": "1",

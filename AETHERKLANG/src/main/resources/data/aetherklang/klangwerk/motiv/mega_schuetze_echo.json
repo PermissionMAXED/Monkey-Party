@@ -1,0 +1,15 @@
+{
+  "id": "mega_schuetze_echo",
+  "type": "motiv",
+  "parameters": {
+    "archetype": "schuetze",
+    "operation": "impuls",
+    "tempo": "116",
+    "tier": "gewoehnlich",
+    "health": "38.0",
+    "attack": "9.5",
+    "primary_color": "#F5C95F",
+    "secondary_color": "#BFA7FF",
+    "loot": "aetherklang:klangstaub"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "id": "mega_schuetze_glissando",
+  "type": "motiv",
+  "parameters": {
+    "archetype": "schuetze",
+    "operation": "impuls",
+    "tempo": "140",
+    "tier": "selten",
+    "health": "40.0",
+    "attack": "6.5",
+    "primary_color": "#4A6FA5",
+    "secondary_color": "#F5C95F",
+    "loot": "aetherklang:notenschluessel"
+  }
+}

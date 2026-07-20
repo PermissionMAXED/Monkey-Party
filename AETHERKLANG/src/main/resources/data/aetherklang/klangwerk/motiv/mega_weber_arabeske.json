@@ -1,0 +1,15 @@
+{
+  "id": "mega_weber_arabeske",
+  "type": "motiv",
+  "parameters": {
+    "archetype": "weber",
+    "operation": "impuls",
+    "tempo": "137",
+    "tier": "selten",
+    "health": "52.0",
+    "attack": "5.5",
+    "primary_color": "#BFA7FF",
+    "secondary_color": "#5FF5E0",
+    "loot": "aetherklang:notenschluessel"
+  }
+}

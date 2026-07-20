@@ -1,0 +1,15 @@
+{
+  "id": "mega_koloss_schwerpunkt",
+  "type": "motiv",
+  "parameters": {
+    "archetype": "koloss",
+    "operation": "bewegung",
+    "tempo": "134",
+    "tier": "ungewoehnlich",
+    "health": "90.5",
+    "attack": "13.0",
+    "primary_color": "#BFA7FF",
+    "secondary_color": "#5FF5E0",
+    "loot": "aetherklang:resonanzbarren"
+  }
+}

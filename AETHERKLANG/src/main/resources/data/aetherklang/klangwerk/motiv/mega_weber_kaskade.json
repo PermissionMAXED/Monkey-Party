@@ -1,0 +1,15 @@
+{
+  "id": "mega_weber_kaskade",
+  "type": "motiv",
+  "parameters": {
+    "archetype": "weber",
+    "operation": "bewegung",
+    "tempo": "133",
+    "tier": "ungewoehnlich",
+    "health": "48.5",
+    "attack": "8.5",
+    "primary_color": "#FF7A90",
+    "secondary_color": "#72A7FF",
+    "loot": "aetherklang:resonanzbarren"
+  }
+}

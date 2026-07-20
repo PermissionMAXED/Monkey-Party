@@ -1,0 +1,15 @@
+{
+  "id": "mega_auftrag_40",
+  "type": "auftrag",
+  "parameters": {
+    "title": "partitur.aetherklang.contract.mega_auftrag_40.title",
+    "description": "partitur.aetherklang.contract.mega_auftrag_40.description",
+    "objective": "kill_motiv",
+    "target": "any",
+    "amount": "6",
+    "reward_rp": "6",
+    "reward_notenschluessel": "1",
+    "reward_material": "aetherklang:kaskadenkern",
+    "reward_material_count": "4"
+  }
+}

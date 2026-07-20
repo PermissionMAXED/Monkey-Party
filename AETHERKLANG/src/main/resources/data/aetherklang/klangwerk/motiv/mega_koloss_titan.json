@@ -1,0 +1,15 @@
+{
+  "id": "mega_koloss_titan",
+  "type": "motiv",
+  "parameters": {
+    "archetype": "koloss",
+    "operation": "welle",
+    "tempo": "130",
+    "tier": "gewoehnlich",
+    "health": "87.0",
+    "attack": "12.25",
+    "primary_color": "#FF7A90",
+    "secondary_color": "#72A7FF",
+    "loot": "aetherklang:klangstaub"
+  }
+}

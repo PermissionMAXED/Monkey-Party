@@ -67,6 +67,9 @@ public final class ModItems {
     public static final String MOTIV_LAEUFER_SPAWN_EGG_ID = "motiv_laeufer_spawn_egg";
     public static final String MOTIV_SCHWINGE_SPAWN_EGG_ID = "motiv_schwinge_spawn_egg";
     public static final String MOTIV_PULSER_SPAWN_EGG_ID = "motiv_pulser_spawn_egg";
+    public static final String MOTIV_KOLOSS_SPAWN_EGG_ID = "motiv_koloss_spawn_egg";
+    public static final String MOTIV_WEBER_SPAWN_EGG_ID = "motiv_weber_spawn_egg";
+    public static final String MOTIV_SCHUETZE_SPAWN_EGG_ID = "motiv_schuetze_spawn_egg";
     public static final String PAUKE_ID = "pauke";
     public static final String PAUKE_MEISTER_ID = "pauke_meister";
     public static final String PAUKE_VIRTUOS_ID = "pauke_virtuos";
@@ -198,6 +201,21 @@ public final class ModItems {
             MOTIV_PULSER_SPAWN_EGG_ID,
             SpawnEggItem::new,
             new Item.Settings().spawnEgg(ModEntities.MOTIV_PULSER)
+    );
+    public static final Item MOTIV_KOLOSS_SPAWN_EGG = register(
+            MOTIV_KOLOSS_SPAWN_EGG_ID,
+            SpawnEggItem::new,
+            new Item.Settings().spawnEgg(ModEntities.MOTIV_KOLOSS)
+    );
+    public static final Item MOTIV_WEBER_SPAWN_EGG = register(
+            MOTIV_WEBER_SPAWN_EGG_ID,
+            SpawnEggItem::new,
+            new Item.Settings().spawnEgg(ModEntities.MOTIV_WEBER)
+    );
+    public static final Item MOTIV_SCHUETZE_SPAWN_EGG = register(
+            MOTIV_SCHUETZE_SPAWN_EGG_ID,
+            SpawnEggItem::new,
+            new Item.Settings().spawnEgg(ModEntities.MOTIV_SCHUETZE)
     );
     public static final Item PAUKE =
             register(PAUKE_ID, settings -> new KlanginstrumentItem(settings, PAUKE_ID), new Item.Settings().maxDamage(256));
@@ -339,6 +357,9 @@ public final class ModItems {
             MOTIV_LAEUFER_SPAWN_EGG,
             MOTIV_SCHWINGE_SPAWN_EGG,
             MOTIV_PULSER_SPAWN_EGG,
+            MOTIV_KOLOSS_SPAWN_EGG,
+            MOTIV_WEBER_SPAWN_EGG,
+            MOTIV_SCHUETZE_SPAWN_EGG,
             PAUKE,
             PAUKE_MEISTER,
             PAUKE_VIRTUOS,

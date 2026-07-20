@@ -1,0 +1,15 @@
+{
+  "id": "mega_laeufer_moderato",
+  "type": "motiv",
+  "parameters": {
+    "archetype": "laeufer",
+    "operation": "welle",
+    "tempo": "167",
+    "tier": "ungewoehnlich",
+    "health": "43.5",
+    "attack": "6.0",
+    "primary_color": "#5FF5E0",
+    "secondary_color": "#F5C95F",
+    "loot": "aetherklang:resonanzbarren"
+  }
+}

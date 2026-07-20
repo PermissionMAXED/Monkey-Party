@@ -1,0 +1,15 @@
+{
+  "id": "mega_koloss_marcato",
+  "type": "motiv",
+  "parameters": {
+    "archetype": "koloss",
+    "operation": "welle",
+    "tempo": "166",
+    "tier": "ungewoehnlich",
+    "health": "99.5",
+    "attack": "11.5",
+    "primary_color": "#BFA7FF",
+    "secondary_color": "#5FF5E0",
+    "loot": "aetherklang:resonanzbarren"
+  }
+}

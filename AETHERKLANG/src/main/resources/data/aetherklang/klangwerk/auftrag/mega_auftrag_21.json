@@ -4,8 +4,8 @@
   "parameters": {
     "title": "partitur.aetherklang.contract.mega_auftrag_21.title",
     "description": "partitur.aetherklang.contract.mega_auftrag_21.description",
-    "objective": "kill_motiv",
-    "target": "motiv_schwinge",
+    "objective": "play_akkord",
+    "target": "any",
     "amount": "8",
     "reward_rp": "13",
     "reward_notenschluessel": "3",

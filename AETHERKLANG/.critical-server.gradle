@@ -1,0 +1,6 @@
+gradle.projectsEvaluated {
+    gradle.rootProject.extensions.getByName('loom').runs.getByName('server').runDir = 'run-critical'
+    gradle.rootProject.tasks.matching { it.name == 'runServer' }.configureEach {
+        jvmArgs '-Xms256m', '-Xmx768m'
+    }
+}

@@ -3,17 +3,21 @@ package de.aetherklang.motiv;
 import de.aetherklang.entity.ResonanceEntityEffects;
 import de.aetherklang.insel.KlangmeerRegion;
 import de.aetherklang.klangwerk.KlangwerkReloadDef;
+import de.aetherklang.registry.ModEntities;
 import de.aetherklang.registry.ModParticles;
 import de.aetherklang.registry.ModSounds;
 import de.aetherklang.world.KammertonWorld;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
@@ -71,15 +75,22 @@ public final class MotivEntity extends HostileEntity {
             Random random
     ) {
         return KammertonWorld.isKammerton(world.toServerWorld())
-                && KlangmeerRegion.at(pos).isPresent()
+                && KlangmeerRegion.allowsMotivSpawn(pos)
                 && HostileEntity.canSpawnIgnoreLightLevel(type, world, spawnReason, pos, random);
     }
 
     @Override
     protected void initGoals() {
         goalSelector.add(1, new SwimGoal(this));
-        goalSelector.add(2, new MeleeAttackGoal(this, 1.0D, false));
-        goalSelector.add(7, new WanderAroundFarGoal(this, 0.9D));
+        if ("schuetze".equals(archetype)) {
+            goalSelector.add(2, new MotivSchuetzeGoal(this));
+            goalSelector.add(7, new WanderAroundFarGoal(this, 0.85D));
+        } else {
+            double speed = "koloss".equals(archetype) ? 0.82D : 1.0D;
+            boolean pause = "koloss".equals(archetype);
+            goalSelector.add(2, new MeleeAttackGoal(this, speed, pause));
+            goalSelector.add(7, new WanderAroundFarGoal(this, "koloss".equals(archetype) ? 0.65D : 0.9D));
+        }
         goalSelector.add(8, new LookAtEntityGoal(this, PlayerEntity.class, 8.0F));
         goalSelector.add(9, new LookAroundGoal(this));
         targetSelector.add(1, new RevengeGoal(this));
@@ -112,6 +123,11 @@ public final class MotivEntity extends HostileEntity {
             setVariant(MotivEngine.randomVariant(archetype, getRandom()).id(), true);
         }
         super.tick();
+        if (getEntityWorld() instanceof ServerWorld world) {
+            if ("weber".equals(archetype)) {
+                tickWeberCombat(world);
+            }
+        }
         if (getEntityWorld() instanceof ServerWorld world && age % 20 == 0) {
             MotivAffixEngine.get(getAffixId())
                     .flatMap(MotivAffixEngine::particle)
@@ -187,7 +203,12 @@ public final class MotivEntity extends HostileEntity {
         setBaseValue(EntityAttributes.MAX_HEALTH, variant.health());
         setBaseValue(EntityAttributes.ATTACK_DAMAGE, variant.attack());
         setBaseValue(EntityAttributes.MOVEMENT_SPEED, variant.movementSpeed());
-        setBaseValue(EntityAttributes.ARMOR, 0.0D);
+        double armor = switch (archetype) {
+            case "koloss" -> 8.0D + variant.scale();
+            case "weber" -> 2.0D;
+            default -> 0.0D;
+        };
+        setBaseValue(EntityAttributes.ARMOR, armor);
         MotivAffixEngine.get(getAffixId()).ifPresent(affix -> applyAffixStats(variant, affix));
         if (healToFull) {
             setHealth(getMaxHealth());
@@ -247,6 +268,23 @@ public final class MotivEntity extends HostileEntity {
             return false;
         }
 
+        if ("koloss".equals(archetype)) {
+            performKolossSmash(world, target);
+        } else if ("weber".equals(archetype) && target instanceof LivingEntity living) {
+            living.addStatusEffect(new StatusEffectInstance(StatusEffects.SLOWNESS, 80, 2));
+            world.spawnParticles(
+                    ModParticles.SIRENEN_SCHLEIER,
+                    living.getX(),
+                    living.getBodyY(0.5D),
+                    living.getZ(),
+                    16,
+                    0.55D,
+                    0.35D,
+                    0.55D,
+                    0.02D
+            );
+        }
+
         MotivAffixEngine.get(getAffixId()).ifPresent(affix -> {
             double modifier = MotivAffixEngine.modifier(affix);
             switch (MotivAffixEngine.attribute(affix)) {
@@ -267,6 +305,65 @@ public final class MotivEntity extends HostileEntity {
             }
         });
         return true;
+    }
+
+    private void performKolossSmash(ServerWorld world, Entity primaryTarget) {
+        double radius = 3.5D;
+        float smashDamage = (float) Math.max(2.0D, getAttributeValue(EntityAttributes.ATTACK_DAMAGE) * 0.65D);
+        world.spawnParticles(
+                ModParticles.BEAT_RING,
+                getX(),
+                getBodyY(0.2D),
+                getZ(),
+                24,
+                radius * 0.45D,
+                0.25D,
+                radius * 0.45D,
+                0.05D
+        );
+        playSound(ModSounds.BEAT_TICK, 1.1F, 0.55F);
+        for (LivingEntity nearby : world.getEntitiesByClass(
+                LivingEntity.class,
+                getBoundingBox().expand(radius),
+                candidate -> candidate != this && candidate.isAlive()
+        )) {
+            nearby.damage(world, world.getDamageSources().mobAttack(this), smashDamage);
+            nearby.takeKnockback(0.85D, getX() - nearby.getX(), getZ() - nearby.getZ());
+        }
+        if (primaryTarget instanceof LivingEntity living && living.isAlive()) {
+            living.takeKnockback(1.1D, getX() - living.getX(), getZ() - living.getZ());
+        }
+    }
+
+    private void tickWeberCombat(ServerWorld world) {
+        if (age % 120 != 0 || getTarget() == null) {
+            return;
+        }
+        MotivEntity spawn = ModEntities.MOTIV_LAEUFER.create(world, SpawnReason.MOB_SUMMONED);
+        if (spawn == null) {
+            return;
+        }
+        spawn.refreshPositionAndAngles(
+                getX() + getRandom().nextTriangular(0.0D, 1.8D),
+                getY(),
+                getZ() + getRandom().nextTriangular(0.0D, 1.8D),
+                getRandom().nextFloat() * 360.0F,
+                0.0F
+        );
+        spawn.initialize(world, world.getLocalDifficulty(spawn.getBlockPos()), SpawnReason.MOB_SUMMONED, null);
+        spawn.setTarget(getTarget());
+        world.spawnEntity(spawn);
+        world.spawnParticles(
+                ModParticles.SIRENEN_SCHLEIER,
+                getX(),
+                getBodyY(0.55D),
+                getZ(),
+                10,
+                0.35D,
+                0.25D,
+                0.35D,
+                0.015D
+        );
     }
 
     @Override

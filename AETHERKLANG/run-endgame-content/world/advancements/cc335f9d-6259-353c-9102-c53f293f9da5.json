@@ -1,0 +1,57 @@
+{
+  "minecraft:recipes/decorations/crafting_table": {
+    "criteria": {
+      "unlock_right_away": "2026-07-20 20:45:50 +0000"
+    },
+    "done": true
+  },
+  "aetherklang:sinfonie/mega_meilenstein_15": {
+    "criteria": {
+      "requirement": "2026-07-20 20:46:26 +0000"
+    },
+    "done": true
+  },
+  "aetherklang:sinfonie/mega_meilenstein_39": {
+    "criteria": {
+      "requirement": "2026-07-20 20:46:26 +0000"
+    },
+    "done": true
+  },
+  "aetherklang:sinfonie/welt_bassgewoelbe": {
+    "criteria": {
+      "requirement": "2026-07-20 21:00:44 +0000"
+    },
+    "done": true
+  },
+  "aetherklang:open_kodex": {
+    "criteria": {
+      "requirement": "2026-07-20 20:46:26 +0000"
+    },
+    "done": true
+  },
+  "aetherklang:sinfonie/welt_arpeggienmeer": {
+    "criteria": {
+      "requirement": "2026-07-20 20:51:58 +0000"
+    },
+    "done": true
+  },
+  "aetherklang:sinfonie/welt_kammerton": {
+    "criteria": {
+      "requirement": "2026-07-20 20:51:59 +0000"
+    },
+    "done": true
+  },
+  "minecraft:adventure/adventuring_time": {
+    "criteria": {
+      "minecraft:pale_garden": "2026-07-20 20:45:51 +0000"
+    },
+    "done": false
+  },
+  "aetherklang:sinfonie/welt_kakophonie_riff": {
+    "criteria": {
+      "requirement": "2026-07-20 21:01:44 +0000"
+    },
+    "done": true
+  },
+  "DataVersion": 4554
+}

@@ -1,0 +1,15 @@
+{
+  "id": "mega_schuetze_legato",
+  "type": "motiv",
+  "parameters": {
+    "archetype": "schuetze",
+    "operation": "welle",
+    "tempo": "132",
+    "tier": "gewoehnlich",
+    "health": "33.0",
+    "attack": "8.75",
+    "primary_color": "#5FF5E0",
+    "secondary_color": "#F5C95F",
+    "loot": "aetherklang:klangstaub"
+  }
+}

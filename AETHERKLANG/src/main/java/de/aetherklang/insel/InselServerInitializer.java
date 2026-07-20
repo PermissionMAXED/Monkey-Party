@@ -28,8 +28,9 @@ public final class InselServerInitializer implements ModInitializer {
         ServerTickEvents.END_WORLD_TICK.register(OverworldResonanzorte::tick);
         RegionSyncHooks.register();
         Aetherklang.LOGGER.info(
-                "Insel-Komponist registered: {} Klangmeer islands across {} archetypes",
+                "Insel-Komponist registered: {} inner + {} Fermatenring islands across {} archetypes",
                 KlangmeerKomponist.INSEL_ANZAHL,
+                KlangmeerKomponist.FERMATENRING_ANZAHL,
                 InselArchetyp.values().length
         );
     }

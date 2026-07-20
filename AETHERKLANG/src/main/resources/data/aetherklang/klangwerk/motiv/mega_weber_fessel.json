@@ -1,0 +1,15 @@
+{
+  "id": "mega_weber_fessel",
+  "type": "motiv",
+  "parameters": {
+    "archetype": "weber",
+    "operation": "welle",
+    "tempo": "153",
+    "tier": "selten",
+    "health": "47.0",
+    "attack": "8.5",
+    "primary_color": "#72A7FF",
+    "secondary_color": "#E03A8C",
+    "loot": "aetherklang:notenschluessel"
+  }
+}

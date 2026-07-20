@@ -1,0 +1,15 @@
+{
+  "id": "mega_weber_echo",
+  "type": "motiv",
+  "parameters": {
+    "archetype": "weber",
+    "operation": "welle",
+    "tempo": "129",
+    "tier": "gewoehnlich",
+    "health": "45.0",
+    "attack": "7.75",
+    "primary_color": "#61D095",
+    "secondary_color": "#4A6FA5",
+    "loot": "aetherklang:klangstaub"
+  }
+}

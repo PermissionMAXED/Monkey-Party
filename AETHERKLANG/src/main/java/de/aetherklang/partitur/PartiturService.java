@@ -1,6 +1,7 @@
 package de.aetherklang.partitur;
 
 import de.aetherklang.Aetherklang;
+import de.aetherklang.insel.KlangmeerRegion;
 import de.aetherklang.registry.ModAttachments;
 import de.aetherklang.registry.ModCriteria;
 import de.aetherklang.registry.ModItems;
@@ -209,6 +210,11 @@ public final class PartiturService {
         }
         ModCriteria.KAMMERTON_ENTERED.trigger(player);
         record(player, AuftragObjective.VISIT_REGION, "kammerton");
+        KlangmeerRegion.at(player.getBlockPos()).ifPresent(region -> {
+            if (region == KlangmeerRegion.FERMATENRING) {
+                record(player, AuftragObjective.VISIT_REGION, "fermatenring");
+            }
+        });
         if (Math.abs(player.getX()) <= GARDEN_RADIUS
                 && Math.abs(player.getZ() - GARDEN_CENTER_Z) <= GARDEN_RADIUS) {
             record(player, AuftragObjective.VISIT_REGION, "resonanzgarten");

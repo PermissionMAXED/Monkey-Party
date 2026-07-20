@@ -1,0 +1,15 @@
+{
+  "id": "mega_auftrag_35",
+  "type": "auftrag",
+  "parameters": {
+    "title": "partitur.aetherklang.contract.mega_auftrag_35.title",
+    "description": "partitur.aetherklang.contract.mega_auftrag_35.description",
+    "objective": "visit_region",
+    "target": "kammerton",
+    "amount": "8",
+    "reward_rp": "14",
+    "reward_notenschluessel": "2",
+    "reward_material": "aetherklang:notenschluessel",
+    "reward_material_count": "3"
+  }
+}

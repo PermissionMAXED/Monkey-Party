@@ -1,0 +1,15 @@
+{
+  "id": "mega_koloss_larghetto",
+  "type": "motiv",
+  "parameters": {
+    "archetype": "koloss",
+    "operation": "bewegung",
+    "tempo": "170",
+    "tier": "selten",
+    "health": "84.0",
+    "attack": "12.25",
+    "primary_color": "#5FF5E0",
+    "secondary_color": "#F5C95F",
+    "loot": "aetherklang:notenschluessel"
+  }
+}

@@ -1,0 +1,7 @@
+gradle.projectsEvaluated {
+    gradle.rootProject.extensions.getByName('loom').runs.getByName('client').runDir = 'run-critical-client'
+    gradle.rootProject.tasks.matching { it.name == 'runClient' }.configureEach {
+        jvmArgs '-Xms256m', '-Xmx768m'
+        args '--quickPlayMultiplayer', 'localhost:25575'
+    }
+}

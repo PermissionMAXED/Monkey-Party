@@ -1,0 +1,15 @@
+{
+  "id": "mega_schuetze_fernfeuer",
+  "type": "motiv",
+  "parameters": {
+    "archetype": "schuetze",
+    "operation": "welle",
+    "tempo": "168",
+    "tier": "ungewoehnlich",
+    "health": "45.5",
+    "attack": "8.0",
+    "primary_color": "#E03A8C",
+    "secondary_color": "#5FF5E0",
+    "loot": "aetherklang:resonanzbarren"
+  }
+}

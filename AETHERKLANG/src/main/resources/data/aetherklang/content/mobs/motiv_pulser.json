@@ -139,7 +139,7 @@
       "attack": 8.0,
       "movement_speed": 0.228,
       "scale": 1.11,
-      "primary_color": "#1A1033",
+      "primary_color": "#4A6FA5",
       "secondary_color": "#F5C95F",
       "loot": "aetherklang:klangstaub",
       "loot_min": 1,
@@ -179,7 +179,7 @@
       "movement_speed": 0.196,
       "scale": 1.02,
       "primary_color": "#61D095",
-      "secondary_color": "#1A1033",
+      "secondary_color": "#4A6FA5",
       "loot": "aetherklang:kaskadenkern",
       "loot_min": 0,
       "loot_max": 1
@@ -243,7 +243,7 @@
       "attack": 6.5,
       "movement_speed": 0.236,
       "scale": 1.02,
-      "primary_color": "#1A1033",
+      "primary_color": "#4A6FA5",
       "secondary_color": "#F5C95F",
       "loot": "aetherklang:klangstaub",
       "loot_min": 1,
@@ -283,7 +283,7 @@
       "movement_speed": 0.204,
       "scale": 0.93,
       "primary_color": "#61D095",
-      "secondary_color": "#1A1033",
+      "secondary_color": "#4A6FA5",
       "loot": "aetherklang:kaskadenkern",
       "loot_min": 0,
       "loot_max": 1
@@ -313,6 +313,19 @@
       "loot": "aetherklang:resonanzbarren",
       "loot_min": 1,
       "loot_max": 2
+    },
+    {
+      "id": "mega_pulser_sforzando",
+      "name": "entity.aetherklang.motiv_variant.mega_pulser_sforzando",
+      "health": 36.0,
+      "attack": 7.25,
+      "movement_speed": 0.228,
+      "scale": 1.065,
+      "primary_color": "#5FF5E0",
+      "secondary_color": "#F5C95F",
+      "loot": "aetherklang:notenschluessel",
+      "loot_min": 0,
+      "loot_max": 1
     }
   ]
 }

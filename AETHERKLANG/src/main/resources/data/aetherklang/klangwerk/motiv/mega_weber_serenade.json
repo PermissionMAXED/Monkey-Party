@@ -1,0 +1,15 @@
+{
+  "id": "mega_weber_serenade",
+  "type": "motiv",
+  "parameters": {
+    "archetype": "weber",
+    "operation": "impuls",
+    "tempo": "161",
+    "tier": "gewoehnlich",
+    "health": "54.0",
+    "attack": "6.25",
+    "primary_color": "#61D095",
+    "secondary_color": "#4A6FA5",
+    "loot": "aetherklang:klangstaub"
+  }
+}

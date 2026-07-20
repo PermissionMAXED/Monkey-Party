@@ -1,0 +1,15 @@
+{
+  "id": "mega_schuetze_fernakkord",
+  "type": "motiv",
+  "parameters": {
+    "archetype": "schuetze",
+    "operation": "welle",
+    "tempo": "120",
+    "tier": "ungewoehnlich",
+    "health": "41.5",
+    "attack": "6.5",
+    "primary_color": "#61D095",
+    "secondary_color": "#4A6FA5",
+    "loot": "aetherklang:resonanzbarren"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "id": "mega_koloss_pesante",
+  "type": "motiv",
+  "parameters": {
+    "archetype": "koloss",
+    "operation": "impuls",
+    "tempo": "150",
+    "tier": "ungewoehnlich",
+    "health": "85.5",
+    "attack": "12.25",
+    "primary_color": "#72A7FF",
+    "secondary_color": "#E03A8C",
+    "loot": "aetherklang:resonanzbarren"
+  }
+}

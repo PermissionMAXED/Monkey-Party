@@ -4,7 +4,7 @@
   "parameters": {
     "title": "partitur.aetherklang.contract.mega_auftrag_14.title",
     "description": "partitur.aetherklang.contract.mega_auftrag_14.description",
-    "objective": "play_akkord",
+    "objective": "kill_motiv",
     "target": "any",
     "amount": "8",
     "reward_rp": "6",

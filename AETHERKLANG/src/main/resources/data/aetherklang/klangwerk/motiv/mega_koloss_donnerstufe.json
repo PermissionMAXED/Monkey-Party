@@ -1,0 +1,15 @@
+{
+  "id": "mega_koloss_donnerstufe",
+  "type": "motiv",
+  "parameters": {
+    "archetype": "koloss",
+    "operation": "bewegung",
+    "tempo": "122",
+    "tier": "selten",
+    "health": "80.0",
+    "attack": "10.75",
+    "primary_color": "#F5C95F",
+    "secondary_color": "#BFA7FF",
+    "loot": "aetherklang:notenschluessel"
+  }
+}

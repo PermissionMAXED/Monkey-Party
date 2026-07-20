@@ -1,0 +1,15 @@
+{
+  "id": "mega_koloss_resonanzblock",
+  "type": "motiv",
+  "parameters": {
+    "archetype": "koloss",
+    "operation": "impuls",
+    "tempo": "126",
+    "tier": "episch",
+    "health": "83.5",
+    "attack": "11.5",
+    "primary_color": "#61D095",
+    "secondary_color": "#4A6FA5",
+    "loot": "aetherklang:kaskadenkern"
+  }
+}

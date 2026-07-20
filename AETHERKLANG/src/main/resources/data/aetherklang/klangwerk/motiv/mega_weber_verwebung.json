@@ -1,0 +1,15 @@
+{
+  "id": "mega_weber_verwebung",
+  "type": "motiv",
+  "parameters": {
+    "archetype": "weber",
+    "operation": "impuls",
+    "tempo": "149",
+    "tier": "ungewoehnlich",
+    "health": "43.5",
+    "attack": "7.75",
+    "primary_color": "#4A6FA5",
+    "secondary_color": "#F5C95F",
+    "loot": "aetherklang:resonanzbarren"
+  }
+}

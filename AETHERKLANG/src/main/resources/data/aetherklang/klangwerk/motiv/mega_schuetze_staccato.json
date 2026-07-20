@@ -1,0 +1,15 @@
+{
+  "id": "mega_schuetze_staccato",
+  "type": "motiv",
+  "parameters": {
+    "archetype": "schuetze",
+    "operation": "impuls",
+    "tempo": "128",
+    "tier": "episch",
+    "health": "29.5",
+    "attack": "8.0",
+    "primary_color": "#BFA7FF",
+    "secondary_color": "#5FF5E0",
+    "loot": "aetherklang:kaskadenkern"
+  }
+}

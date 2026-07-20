@@ -1,0 +1,15 @@
+{
+  "id": "mega_schuetze_arpeggio",
+  "type": "motiv",
+  "parameters": {
+    "archetype": "schuetze",
+    "operation": "welle",
+    "tempo": "144",
+    "tier": "episch",
+    "health": "43.5",
+    "attack": "7.25",
+    "primary_color": "#72A7FF",
+    "secondary_color": "#E03A8C",
+    "loot": "aetherklang:kaskadenkern"
+  }
+}

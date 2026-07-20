@@ -40,6 +40,9 @@ public final class ModEntities {
     public static final String MOTIV_LAEUFER_ID = "motiv_laeufer";
     public static final String MOTIV_SCHWINGE_ID = "motiv_schwinge";
     public static final String MOTIV_PULSER_ID = "motiv_pulser";
+    public static final String MOTIV_KOLOSS_ID = "motiv_koloss";
+    public static final String MOTIV_WEBER_ID = "motiv_weber";
+    public static final String MOTIV_SCHUETZE_ID = "motiv_schuetze";
     public static final String BOSS_TREMOLO_ID = "boss_tremolo";
     public static final String BOSS_GLISSANDA_ID = "boss_glissanda";
     public static final String BOSS_KAKOPHON_ID = "boss_kakophon";
@@ -91,6 +94,36 @@ public final class ModEntities {
             false,
             (type, world) -> new MotivEntity(type, world, "pulser")
     );
+    public static final EntityType<MotivEntity> MOTIV_KOLOSS = register(
+            MOTIV_KOLOSS_ID,
+            SpawnGroup.MONSTER,
+            1.35F,
+            2.2F,
+            10,
+            3,
+            false,
+            (type, world) -> new MotivEntity(type, world, "koloss")
+    );
+    public static final EntityType<MotivEntity> MOTIV_WEBER = register(
+            MOTIV_WEBER_ID,
+            SpawnGroup.MONSTER,
+            1.05F,
+            1.45F,
+            10,
+            3,
+            false,
+            (type, world) -> new MotivEntity(type, world, "weber")
+    );
+    public static final EntityType<MotivEntity> MOTIV_SCHUETZE = register(
+            MOTIV_SCHUETZE_ID,
+            SpawnGroup.MONSTER,
+            0.85F,
+            1.55F,
+            10,
+            3,
+            false,
+            (type, world) -> new MotivEntity(type, world, "schuetze")
+    );
     public static final EntityType<BosswerkBossEntity> BOSS_TREMOLO =
             register(BOSS_TREMOLO_ID, SpawnGroup.MONSTER, 2.2F, 3.2F, 16, 2, false, BosswerkBossEntity::new);
     public static final EntityType<BosswerkBossEntity> BOSS_GLISSANDA =
@@ -139,9 +172,15 @@ public final class ModEntities {
         FabricDefaultAttributeRegistry.register(MOTIV_LAEUFER, MotivEntity.createAttributes());
         FabricDefaultAttributeRegistry.register(MOTIV_SCHWINGE, MotivEntity.createAttributes());
         FabricDefaultAttributeRegistry.register(MOTIV_PULSER, MotivEntity.createAttributes());
+        FabricDefaultAttributeRegistry.register(MOTIV_KOLOSS, MotivEntity.createAttributes());
+        FabricDefaultAttributeRegistry.register(MOTIV_WEBER, MotivEntity.createAttributes());
+        FabricDefaultAttributeRegistry.register(MOTIV_SCHUETZE, MotivEntity.createAttributes());
         registerMotivSpawnRestriction(MOTIV_LAEUFER);
         registerMotivSpawnRestriction(MOTIV_SCHWINGE);
         registerMotivSpawnRestriction(MOTIV_PULSER);
+        registerMotivSpawnRestriction(MOTIV_KOLOSS);
+        registerMotivSpawnRestriction(MOTIV_WEBER);
+        registerMotivSpawnRestriction(MOTIV_SCHUETZE);
         FabricDefaultAttributeRegistry.register(BOSS_TREMOLO, BosswerkBossEntity.createAttributes());
         FabricDefaultAttributeRegistry.register(BOSS_GLISSANDA, BosswerkBossEntity.createAttributes());
         FabricDefaultAttributeRegistry.register(BOSS_KAKOPHON, BosswerkBossEntity.createAttributes());
@@ -157,7 +196,7 @@ public final class ModEntities {
                 1
         );
         registerHallharfe();
-        Aetherklang.LOGGER.debug("Registered {} Aetherklang entity types", 16);
+        Aetherklang.LOGGER.debug("Registered {} Aetherklang entity types", 19);
     }
 
     private static void registerMotivSpawnRestriction(EntityType<MotivEntity> type) {

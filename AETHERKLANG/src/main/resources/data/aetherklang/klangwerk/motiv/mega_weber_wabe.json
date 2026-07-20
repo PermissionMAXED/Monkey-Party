@@ -1,0 +1,15 @@
+{
+  "id": "mega_weber_wabe",
+  "type": "motiv",
+  "parameters": {
+    "archetype": "weber",
+    "operation": "welle",
+    "tempo": "117",
+    "tier": "ungewoehnlich",
+    "health": "53.5",
+    "attack": "5.5",
+    "primary_color": "#4A6FA5",
+    "secondary_color": "#F5C95F",
+    "loot": "aetherklang:resonanzbarren"
+  }
+}

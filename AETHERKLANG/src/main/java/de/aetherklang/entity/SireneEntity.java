@@ -135,4 +135,5 @@ public final class SireneEntity extends PhantomEntity {
         }
         return super.damage(world, source, amount);
     }
+
 }

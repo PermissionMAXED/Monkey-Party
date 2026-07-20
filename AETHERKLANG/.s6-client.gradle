@@ -1,0 +1,5 @@
+gradle.projectsEvaluated {
+    gradle.rootProject.tasks.matching { it.name == 'runClient' }.configureEach {
+        jvmArgs '-Xms256m', '-Xmx768m'
+    }
+}

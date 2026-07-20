@@ -112,6 +112,24 @@ public final class ModEntityRenderers {
                 )
         );
         EntityRendererRegistry.register(
+                ModEntities.MOTIV_KOLOSS,
+                context -> new MotivEntityRenderer(
+                        context, AetherEntityStyle.CHORAL, 1.15F, 0.55F
+                )
+        );
+        EntityRendererRegistry.register(
+                ModEntities.MOTIV_WEBER,
+                context -> new MotivEntityRenderer(
+                        context, AetherEntityStyle.DISSONANZGEIST, 0.95F, 0.4F
+                )
+        );
+        EntityRendererRegistry.register(
+                ModEntities.MOTIV_SCHUETZE,
+                context -> new MotivEntityRenderer(
+                        context, AetherEntityStyle.HALLWAECHTER, 0.78F, 0.32F
+                )
+        );
+        EntityRendererRegistry.register(
                 ModEntities.BOSS_TREMOLO,
                 context -> new AetherEntityRenderer<>(
                         context, AetherEntityStyle.CHORAL, 1.55F, 0.9F, 0xE8E03A8C

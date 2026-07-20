@@ -1,0 +1,15 @@
+{
+  "id": "mega_koloss_gravitas",
+  "type": "motiv",
+  "parameters": {
+    "archetype": "koloss",
+    "operation": "welle",
+    "tempo": "142",
+    "tier": "episch",
+    "health": "97.5",
+    "attack": "10.75",
+    "primary_color": "#E03A8C",
+    "secondary_color": "#5FF5E0",
+    "loot": "aetherklang:kaskadenkern"
+  }
+}

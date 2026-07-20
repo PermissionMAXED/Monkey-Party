@@ -1,0 +1,15 @@
+{
+  "id": "mega_weber_lamentoso",
+  "type": "motiv",
+  "parameters": {
+    "archetype": "weber",
+    "operation": "bewegung",
+    "tempo": "169",
+    "tier": "selten",
+    "health": "42.0",
+    "attack": "7.75",
+    "primary_color": "#BFA7FF",
+    "secondary_color": "#5FF5E0",
+    "loot": "aetherklang:notenschluessel"
+  }
+}

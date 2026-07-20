@@ -1,0 +1,15 @@
+{
+  "id": "mega_auftrag_63",
+  "type": "auftrag",
+  "parameters": {
+    "title": "partitur.aetherklang.contract.mega_auftrag_63.title",
+    "description": "partitur.aetherklang.contract.mega_auftrag_63.description",
+    "objective": "visit_region",
+    "target": "fermatenring",
+    "amount": "8",
+    "reward_rp": "16",
+    "reward_notenschluessel": "3",
+    "reward_material": "aetherklang:notenschluessel",
+    "reward_material_count": "3"
+  }
+}

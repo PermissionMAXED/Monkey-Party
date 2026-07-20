@@ -1,0 +1,15 @@
+{
+  "id": "mega_koloss_grandioso",
+  "type": "motiv",
+  "parameters": {
+    "archetype": "koloss",
+    "operation": "bewegung",
+    "tempo": "158",
+    "tier": "episch",
+    "health": "92.5",
+    "attack": "10.0",
+    "primary_color": "#61D095",
+    "secondary_color": "#4A6FA5",
+    "loot": "aetherklang:kaskadenkern"
+  }
+}

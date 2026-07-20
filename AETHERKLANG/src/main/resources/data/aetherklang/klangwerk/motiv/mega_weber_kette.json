@@ -1,0 +1,15 @@
+{
+  "id": "mega_weber_kette",
+  "type": "motiv",
+  "parameters": {
+    "archetype": "weber",
+    "operation": "impuls",
+    "tempo": "101",
+    "tier": "ungewoehnlich",
+    "health": "39.5",
+    "attack": "6.25",
+    "primary_color": "#FF7A90",
+    "secondary_color": "#72A7FF",
+    "loot": "aetherklang:resonanzbarren"
+  }
+}

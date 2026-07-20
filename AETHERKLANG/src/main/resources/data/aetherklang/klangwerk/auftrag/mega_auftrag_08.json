@@ -4,7 +4,7 @@
   "parameters": {
     "title": "partitur.aetherklang.contract.mega_auftrag_08.title",
     "description": "partitur.aetherklang.contract.mega_auftrag_08.description",
-    "objective": "seal_rift",
+    "objective": "play_akkord",
     "target": "any",
     "amount": "2",
     "reward_rp": "13",

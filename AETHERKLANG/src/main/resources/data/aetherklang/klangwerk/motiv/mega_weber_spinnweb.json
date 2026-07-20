@@ -1,0 +1,15 @@
+{
+  "id": "mega_weber_spinnweb",
+  "type": "motiv",
+  "parameters": {
+    "archetype": "weber",
+    "operation": "bewegung",
+    "tempo": "145",
+    "tier": "gewoehnlich",
+    "health": "40.0",
+    "attack": "7.0",
+    "primary_color": "#E03A8C",
+    "secondary_color": "#5FF5E0",
+    "loot": "aetherklang:klangstaub"
+  }
+}

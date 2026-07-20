@@ -1,0 +1,15 @@
+{
+  "id": "mega_schuetze_cantus",
+  "type": "motiv",
+  "parameters": {
+    "archetype": "schuetze",
+    "operation": "bewegung",
+    "tempo": "124",
+    "tier": "selten",
+    "health": "26.0",
+    "attack": "7.25",
+    "primary_color": "#FF7A90",
+    "secondary_color": "#72A7FF",
+    "loot": "aetherklang:notenschluessel"
+  }
+}

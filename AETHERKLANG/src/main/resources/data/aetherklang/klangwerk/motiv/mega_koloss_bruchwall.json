@@ -1,0 +1,15 @@
+{
+  "id": "mega_koloss_bruchwall",
+  "type": "motiv",
+  "parameters": {
+    "archetype": "koloss",
+    "operation": "impuls",
+    "tempo": "114",
+    "tier": "gewoehnlich",
+    "health": "92.0",
+    "attack": "13.0",
+    "primary_color": "#4A6FA5",
+    "secondary_color": "#F5C95F",
+    "loot": "aetherklang:klangstaub"
+  }
+}

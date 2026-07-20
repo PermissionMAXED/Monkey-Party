@@ -1,0 +1,15 @@
+{
+  "id": "mega_schuetze_praezise",
+  "type": "motiv",
+  "parameters": {
+    "archetype": "schuetze",
+    "operation": "impuls",
+    "tempo": "164",
+    "tier": "gewoehnlich",
+    "health": "42.0",
+    "attack": "7.25",
+    "primary_color": "#5FF5E0",
+    "secondary_color": "#F5C95F",
+    "loot": "aetherklang:klangstaub"
+  }
+}

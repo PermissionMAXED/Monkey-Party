@@ -1,0 +1,15 @@
+{
+  "id": "mega_weber_filigran",
+  "type": "motiv",
+  "parameters": {
+    "archetype": "weber",
+    "operation": "welle",
+    "tempo": "141",
+    "tier": "episch",
+    "health": "55.5",
+    "attack": "6.25",
+    "primary_color": "#5FF5E0",
+    "secondary_color": "#F5C95F",
+    "loot": "aetherklang:kaskadenkern"
+  }
+}

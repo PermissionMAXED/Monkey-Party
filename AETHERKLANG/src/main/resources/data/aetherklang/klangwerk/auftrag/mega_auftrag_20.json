@@ -5,7 +5,7 @@
     "title": "partitur.aetherklang.contract.mega_auftrag_20.title",
     "description": "partitur.aetherklang.contract.mega_auftrag_20.description",
     "objective": "kill_motiv",
-    "target": "motiv_laeufer",
+    "target": "motiv_schuetze",
     "amount": "7",
     "reward_rp": "12",
     "reward_notenschluessel": "2",

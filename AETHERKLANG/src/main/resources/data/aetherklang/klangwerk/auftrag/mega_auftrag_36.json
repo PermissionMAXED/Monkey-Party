@@ -1,0 +1,15 @@
+{
+  "id": "mega_auftrag_36",
+  "type": "auftrag",
+  "parameters": {
+    "title": "partitur.aetherklang.contract.mega_auftrag_36.title",
+    "description": "partitur.aetherklang.contract.mega_auftrag_36.description",
+    "objective": "visit_region",
+    "target": "resonanzgarten",
+    "amount": "2",
+    "reward_rp": "15",
+    "reward_notenschluessel": "3",
+    "reward_material": "aetherklang:kaskadenkern",
+    "reward_material_count": "4"
+  }
+}

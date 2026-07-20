@@ -1,0 +1,15 @@
+{
+  "id": "mega_schuetze_fernmelodie",
+  "type": "motiv",
+  "parameters": {
+    "archetype": "schuetze",
+    "operation": "welle",
+    "tempo": "108",
+    "tier": "selten",
+    "health": "31.0",
+    "attack": "8.0",
+    "primary_color": "#4A6FA5",
+    "secondary_color": "#F5C95F",
+    "loot": "aetherklang:notenschluessel"
+  }
+}

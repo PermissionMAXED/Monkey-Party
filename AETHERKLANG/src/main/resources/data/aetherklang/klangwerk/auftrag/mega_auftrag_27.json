@@ -1,0 +1,15 @@
+{
+  "id": "mega_auftrag_27",
+  "type": "auftrag",
+  "parameters": {
+    "title": "partitur.aetherklang.contract.mega_auftrag_27.title",
+    "description": "partitur.aetherklang.contract.mega_auftrag_27.description",
+    "objective": "kill_motiv",
+    "target": "any",
+    "amount": "7",
+    "reward_rp": "6",
+    "reward_notenschluessel": "3",
+    "reward_material": "aetherklang:notenschluessel",
+    "reward_material_count": "3"
+  }
+}

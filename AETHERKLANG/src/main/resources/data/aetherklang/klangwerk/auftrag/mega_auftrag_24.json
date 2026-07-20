@@ -5,7 +5,7 @@
     "title": "partitur.aetherklang.contract.mega_auftrag_24.title",
     "description": "partitur.aetherklang.contract.mega_auftrag_24.description",
     "objective": "visit_region",
-    "target": "kammerton",
+    "target": "fermatenring",
     "amount": "4",
     "reward_rp": "16",
     "reward_notenschluessel": "3",

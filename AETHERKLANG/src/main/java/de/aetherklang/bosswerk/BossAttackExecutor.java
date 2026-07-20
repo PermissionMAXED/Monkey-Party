@@ -24,7 +24,10 @@ final class BossAttackExecutor {
     private static final List<EntityType<? extends HostileEntity>> MOTIFS = List.of(
             ModEntities.MOTIV_LAEUFER,
             ModEntities.MOTIV_SCHWINGE,
-            ModEntities.MOTIV_PULSER
+            ModEntities.MOTIV_PULSER,
+            ModEntities.MOTIV_KOLOSS,
+            ModEntities.MOTIV_WEBER,
+            ModEntities.MOTIV_SCHUETZE
     );
 
     private BossAttackExecutor() {

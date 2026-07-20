@@ -1,0 +1,15 @@
+{
+  "id": "mega_weber_garn",
+  "type": "motiv",
+  "parameters": {
+    "archetype": "weber",
+    "operation": "bewegung",
+    "tempo": "97",
+    "tier": "gewoehnlich",
+    "health": "36.0",
+    "attack": "5.5",
+    "primary_color": "#61D095",
+    "secondary_color": "#4A6FA5",
+    "loot": "aetherklang:klangstaub"
+  }
+}

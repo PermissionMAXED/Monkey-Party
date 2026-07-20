@@ -1,0 +1,15 @@
+{
+  "id": "mega_schuetze_signal",
+  "type": "motiv",
+  "parameters": {
+    "archetype": "schuetze",
+    "operation": "impuls",
+    "tempo": "152",
+    "tier": "ungewoehnlich",
+    "health": "31.5",
+    "attack": "8.75",
+    "primary_color": "#61D095",
+    "secondary_color": "#4A6FA5",
+    "loot": "aetherklang:resonanzbarren"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "id": "mega_auftrag_33",
+  "type": "auftrag",
+  "parameters": {
+    "title": "partitur.aetherklang.contract.mega_auftrag_33.title",
+    "description": "partitur.aetherklang.contract.mega_auftrag_33.description",
+    "objective": "kill_motiv",
+    "target": "motiv_schuetze",
+    "amount": "6",
+    "reward_rp": "12",
+    "reward_notenschluessel": "3",
+    "reward_material": "aetherklang:klangstaub",
+    "reward_material_count": "1"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "id": "mega_weber_netz",
+  "type": "motiv",
+  "parameters": {
+    "archetype": "weber",
+    "operation": "impuls",
+    "tempo": "125",
+    "tier": "episch",
+    "health": "41.5",
+    "attack": "7.0",
+    "primary_color": "#F5C95F",
+    "secondary_color": "#BFA7FF",
+    "loot": "aetherklang:kaskadenkern"
+  }
+}

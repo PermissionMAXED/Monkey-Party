@@ -1,0 +1,15 @@
+{
+  "id": "mega_schuetze_notenregen",
+  "type": "motiv",
+  "parameters": {
+    "archetype": "schuetze",
+    "operation": "bewegung",
+    "tempo": "172",
+    "tier": "selten",
+    "health": "30.0",
+    "attack": "8.75",
+    "primary_color": "#4A6FA5",
+    "secondary_color": "#F5C95F",
+    "loot": "aetherklang:notenschluessel"
+  }
+}

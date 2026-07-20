@@ -4,8 +4,8 @@
   "parameters": {
     "title": "partitur.aetherklang.contract.mega_auftrag_06.title",
     "description": "partitur.aetherklang.contract.mega_auftrag_06.description",
-    "objective": "visit_region",
-    "target": "kammerton",
+    "objective": "kill_motiv",
+    "target": "motiv_weber",
     "amount": "7",
     "reward_rp": "11",
     "reward_notenschluessel": "3",

@@ -10,6 +10,8 @@ from typing import Any
 
 
 ROOT = Path(__file__).resolve().parents[1]
+INNER_ISLAND_COUNT = 120
+FERMATENRING_ISLAND_COUNT = 100
 RESOURCES = ROOT / "src/main/resources"
 DATA = RESOURCES / "data/aetherklang"
 ASSETS = RESOURCES / "assets/aetherklang"
@@ -103,6 +105,94 @@ ARCHETYPE_DATA = {
             ("grandioso", "Grandioso-Kern", "Grandioso Core"),
             ("misterioso", "Misterioso-Pulser", "Misterioso Pulser"),
             ("trionfale", "Trionfale-Kern", "Trionfale Core"),
+            ("sforzando", "Sforzando-Kern", "Sforzando Core"),
+        ],
+    },
+    "koloss": {
+        "de": "Koloss",
+        "en": "Colossus",
+        "health": 78.0,
+        "attack": 10.0,
+        "speed": 0.14,
+        "scale": 1.62,
+        "names": [
+            ("monumental", "Monumental-Koloss", "Monumental Colossus"),
+            ("bastion", "Bastions-Koloss", "Bastion Colossus"),
+            ("glockensturm", "Glockensturm-Koloss", "Bellstorm Colossus"),
+            ("pfeilerwacht", "Pfeilerwacht-Koloss", "Pillar Warden Colossus"),
+            ("bruchwall", "Bruchwall-Koloss", "Breached Wall Colossus"),
+            ("fundament", "Fundament-Koloss", "Foundation Colossus"),
+            ("donnerstufe", "Donnerstufe-Koloss", "Thunderstep Colossus"),
+            ("resonanzblock", "Resonanzblock-Koloss", "Resonance Block Colossus"),
+            ("titan", "Titan-Koloss", "Titan Colossus"),
+            ("schwerpunkt", "Schwerpunkt-Koloss", "Center Mass Colossus"),
+            ("maestoso", "Maestoso-Koloss", "Maestoso Colossus"),
+            ("gravitas", "Gravitas-Koloss", "Gravitas Colossus"),
+            ("solenne", "Solenne-Koloss", "Solenne Colossus"),
+            ("pesante", "Pesante-Koloss", "Pesante Colossus"),
+            ("profondo", "Profondo-Koloss", "Profondo Colossus"),
+            ("grandioso", "Grandioso-Koloss", "Grandioso Colossus"),
+            ("fortissimo", "Fortissimo-Koloss", "Fortissimo Colossus"),
+            ("marcato", "Marcato-Koloss", "Marcato Colossus"),
+            ("larghetto", "Larghetto-Koloss", "Larghetto Colossus"),
+        ],
+    },
+    "weber": {
+        "de": "Weber",
+        "en": "Weaver",
+        "health": 36.0,
+        "attack": 5.5,
+        "speed": 0.24,
+        "scale": 1.08,
+        "names": [
+            ("garn", "Garn-Weber", "Thread Weaver"),
+            ("kette", "Ketten-Weber", "Chain Weaver"),
+            ("spindel", "Spindel-Weber", "Spindle Weaver"),
+            ("masche", "Maschen-Weber", "Mesh Weaver"),
+            ("schleier", "Schleier-Weber", "Veil Weaver"),
+            ("wabe", "Waben-Weber", "Comb Weaver"),
+            ("faden", "Faden-Weber", "Strand Weaver"),
+            ("netz", "Netz-Weber", "Net Weaver"),
+            ("echo", "Echo-Weber", "Echo Weaver"),
+            ("kaskade", "Kaskaden-Weber", "Cascade Weaver"),
+            ("arabeske", "Arabesken-Weber", "Arabesque Weaver"),
+            ("filigran", "Filigran-Weber", "Filigree Weaver"),
+            ("spinnweb", "Spinnweb-Weber", "Cobweb Weaver"),
+            ("verwebung", "Verwebungs-Weber", "Entwine Weaver"),
+            ("fessel", "Fessel-Weber", "Bind Weaver"),
+            ("nebel", "Nebel-Weber", "Mist Weaver"),
+            ("serenade", "Seraden-Weber", "Serenade Weaver"),
+            ("nocturne", "Nocturne-Weber", "Nocturne Weaver"),
+            ("lamentoso", "Lamentoso-Weber", "Lamentoso Weaver"),
+        ],
+    },
+    "schuetze": {
+        "de": "Schütze",
+        "en": "Marksman",
+        "health": 24.0,
+        "attack": 6.5,
+        "speed": 0.28,
+        "scale": 0.9,
+        "names": [
+            ("kadenz", "Kadenz-Schütze", "Cadence Marksman"),
+            ("takt", "Takt-Schütze", "Beat Marksman"),
+            ("fernmelodie", "Fernmelodie-Schütze", "Distant Melody Marksman"),
+            ("salve", "Salven-Schütze", "Volley Marksman"),
+            ("echo", "Echo-Schütze", "Echo Marksman"),
+            ("fernakkord", "Fernakkord-Schütze", "Distant Chord Marksman"),
+            ("cantus", "Cantus-Schütze", "Cantus Marksman"),
+            ("staccato", "Staccato-Schütze", "Staccato Marksman"),
+            ("legato", "Legato-Schütze", "Legato Marksman"),
+            ("vibrato", "Vibrato-Schütze", "Vibrato Marksman"),
+            ("glissando", "Glissando-Schütze", "Glissando Marksman"),
+            ("arpeggio", "Arpeggio-Schütze", "Arpeggio Marksman"),
+            ("fanfare", "Fanfare-Schütze", "Fanfare Marksman"),
+            ("signal", "Signal-Schütze", "Signal Marksman"),
+            ("fernchor", "Fernchor-Schütze", "Distant Choir Marksman"),
+            ("scharfsinn", "Scharfsinn-Schütze", "Keen Marksman"),
+            ("praezise", "Präzise-Schütze", "Precise Marksman"),
+            ("fernfeuer", "Fernfeuer-Schütze", "Ranged Fire Marksman"),
+            ("notenregen", "Notenregen-Schütze", "Note Rain Marksman"),
         ],
     },
 }
@@ -110,10 +200,10 @@ ARCHETYPE_DATA = {
 PALETTES = [
     ("#5FF5E0", "#F5C95F"),
     ("#E03A8C", "#5FF5E0"),
-    ("#1A1033", "#F5C95F"),
+    ("#4A6FA5", "#F5C95F"),
     ("#72A7FF", "#E03A8C"),
     ("#F5C95F", "#BFA7FF"),
-    ("#61D095", "#1A1033"),
+    ("#61D095", "#4A6FA5"),
     ("#FF7A90", "#72A7FF"),
     ("#BFA7FF", "#5FF5E0"),
 ]
@@ -230,7 +320,7 @@ def generate_variants(languages: dict[str, dict[str, str]]) -> list[dict[str, An
             variant for variant in document["variants"]
             if not variant["id"].startswith("mega_")
         ]
-        generated_count = 24 - len(base_variants)
+        generated_count = 25 - len(base_variants)
         generated: list[dict[str, Any]] = []
         for index, (slug, de_name, en_name) in enumerate(metadata["names"][:generated_count]):
             variant_id = f"mega_{archetype}_{slug}"
@@ -351,9 +441,13 @@ def generate_contracts(languages: dict[str, dict[str, str]]) -> None:
         ("kill_motiv", "motiv_laeufer", "Läuferpartitur", "Runner Score", "Besiege {amount} Motiv-Läufer.", "Defeat {amount} Motif Runners."),
         ("kill_motiv", "motiv_schwinge", "Schwingenpartitur", "Wing Score", "Besiege {amount} Motiv-Schwingen.", "Defeat {amount} Motif Wings."),
         ("kill_motiv", "motiv_pulser", "Pulspartitur", "Pulse Score", "Besiege {amount} Motiv-Pulser.", "Defeat {amount} Motif Pulsers."),
+        ("kill_motiv", "motiv_koloss", "Kolosspartitur", "Colossus Score", "Besiege {amount} Motiv-Kolosse.", "Defeat {amount} Motif Colossi."),
+        ("kill_motiv", "motiv_weber", "Weberpartitur", "Weaver Score", "Besiege {amount} Motiv-Weber.", "Defeat {amount} Motif Weavers."),
+        ("kill_motiv", "motiv_schuetze", "Schützenpartitur", "Marksman Score", "Besiege {amount} Motiv-Schützen.", "Defeat {amount} Motif Marksmen."),
         ("play_akkord", "any", "Akkordstudie", "Chord Study", "Spiele {amount} beliebige Akkorde.", "Play {amount} chords."),
         ("visit_region", "kammerton", "Kammertonreise", "Concert Pitch Journey", "Betritt den Kammerton {amount}-mal.", "Enter Concert Pitch {amount} times."),
         ("visit_region", "resonanzgarten", "Gartenrunde", "Garden Circuit", "Besuche den Resonanzgarten {amount}-mal.", "Visit the Resonance Garden {amount} times."),
+        ("visit_region", "fermatenring", "Fermatenring", "Fermata Ring", "Erkunde den Fermatenring {amount}-mal.", "Explore the Fermata Ring {amount} times."),
         ("seal_rift", "any", "Risswache", "Rift Watch", "Versiegle {amount} Dissonanzrisse.", "Seal {amount} dissonance rifts."),
         ("earn_resonance", "any", "Resonanzernte", "Resonance Harvest", "Sammle {amount} RP.", "Earn {amount} RP."),
     ]
@@ -363,7 +457,7 @@ def generate_contracts(languages: dict[str, dict[str, str]]) -> None:
         "aetherklang:notenschluessel",
         "aetherklang:kaskadenkern",
     ]
-    for index in range(25):
+    for index in range(69):
         contract_id = f"mega_auftrag_{index + 1:02d}"
         objective, target, de_title, en_title, de_template, en_template = objectives[index % len(objectives)]
         amount = 2 + index % 7
@@ -464,7 +558,7 @@ def generate_advancements(languages: dict[str, dict[str, str]]) -> None:
         ("Motivarchiv", "Motif Archive"),
         ("Kadenzprobe", "Cadence Trial"),
     ]
-    for index in range(60):
+    for index in range(124):
         advancement_id = f"mega_meilenstein_{index + 1:02d}"
         icon = icons[index % len(icons)]
         de_theme, en_theme = themes[index % len(themes)]
@@ -533,11 +627,20 @@ def generate_folios(all_variants: list[dict[str, Any]], languages: dict[str, dic
             "regionen",
             de_name,
             en_name,
-            f"{de_name} ist eine von sechzehn Inselstimmen im Gürtel aus 120 schwebenden Partiturfragmenten.",
-            f"{en_name} is one of sixteen island voices in the belt of 120 floating score fragments.",
+            f"{de_name} ist eine von sechzehn Inselstimmen im inneren Gürtel aus {INNER_ISLAND_COUNT} schwebenden Partiturfragmenten.",
+            f"{en_name} is one of sixteen island voices in the inner belt of {INNER_ISLAND_COUNT} floating score fragments.",
         ))
 
-    required = max(0, 180 - len(base_pages))
+    topics.append((
+        "mega_folio_fermatenring",
+        "regionen",
+        "Fermatenring",
+        "Fermata Ring",
+        f"Der Fermatenring umschließt {FERMATENRING_ISLAND_COUNT} äußere Inseln zwischen 1300 und 2100 Blöcken vom Zentrum.",
+        f"The Fermata Ring wraps {FERMATENRING_ISLAND_COUNT} outer islands between 1300 and 2100 blocks from center.",
+    ))
+
+    required = max(0, 250 - len(base_pages))
     generated_pages = []
     for page_id, category, de_title, en_title, de_body, en_body in topics[:required]:
         key = f"kodex.aetherklang.page.{page_id}"
@@ -591,17 +694,17 @@ def count_files(directory: Path) -> int:
 
 def validate_generated(all_variants: list[dict[str, Any]], languages: dict[str, dict[str, str]]) -> None:
     variant_ids = [variant["id"] for variant in all_variants]
-    if len(variant_ids) < 60 or len(variant_ids) != len(set(variant_ids)):
-        raise ValueError("Motiv variants must provide at least 60 unique ids")
+    if len(variant_ids) < 150 or len(variant_ids) != len(set(variant_ids)):
+        raise ValueError("Motiv variants must provide at least 150 unique ids")
     if any(variant["name"] not in languages["de"] or variant["name"] not in languages["en"]
            for variant in all_variants if variant["id"].startswith("mega_")):
         raise ValueError("Every generated Motiv name must exist in de_de and en_us")
 
     targets = {
-        "Kodex folios": (len(load_json(ASSETS / "kodex/pages.json")["pages"]), 150),
+        "Kodex folios": (len(load_json(ASSETS / "kodex/pages.json")["pages"]), 250),
         "relics": (count_files(CONTENT / "relics"), 24),
-        "contracts": (count_files(KLANGWERK / "auftrag"), 30),
-        "Sinfonie advancements": (count_files(DATA / "advancement/sinfonie"), 80),
+        "contracts": (count_files(KLANGWERK / "auftrag"), 80),
+        "Sinfonie advancements": (count_files(DATA / "advancement/sinfonie"), 150),
         "recipes": (count_files(DATA / "recipe"), 120),
     }
     for label, (actual, minimum) in targets.items():

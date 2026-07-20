@@ -41,6 +41,9 @@ public final class KlangmeerLandmarks {
         }
 
         for (KlangmeerRegion region : KlangmeerRegion.values()) {
+            if (region == KlangmeerRegion.FERMATENRING) {
+                continue;
+            }
             BlockPos marker = generationMarker(region);
             if (!world.getBlockState(marker).isOf(Blocks.LODESTONE)) {
                 switch (region) {
@@ -48,6 +51,9 @@ public final class KlangmeerLandmarks {
                     case ARPEGGIENMEER -> placeSaitenbruecken(world, region.anker());
                     case KAKOPHONIE_RIFF -> placeSchwarmthron(world, region.anker());
                     case GENERALPAUSE_OEDE -> placeLeeresPodium(world, region.anker());
+                    case FERMATENRING -> {
+                        // Outer belt anchor; landmark art comes from InselGenerator.
+                    }
                 }
                 set(world, encounterMarker(region), Blocks.REINFORCED_DEEPSLATE);
                 set(world, marker, Blocks.LODESTONE);
@@ -68,6 +74,9 @@ public final class KlangmeerLandmarks {
             return;
         }
         for (KlangmeerRegion region : KlangmeerRegion.values()) {
+            if (region == KlangmeerRegion.FERMATENRING) {
+                continue;
+            }
             tryStartEncounter(world, region);
         }
     }
@@ -125,6 +134,7 @@ public final class KlangmeerLandmarks {
                     case ARPEGGIENMEER -> ModParticles.GLISSANDO_SPUR;
                     case KAKOPHONIE_RIFF -> ModParticles.KAKOPHON_FUNKE;
                     case GENERALPAUSE_OEDE -> ModParticles.GENERALPAUSE_NEBEL;
+                    case FERMATENRING -> ModParticles.FERMATE_GLIMMER;
                 },
                 spawn.getX() + 0.5D,
                 spawn.getY() + 1.0D,
@@ -342,6 +352,7 @@ public final class KlangmeerLandmarks {
             case ARPEGGIENMEER -> ModEntities.BOSS_GLISSANDA;
             case KAKOPHONIE_RIFF -> ModEntities.BOSS_KAKOPHON;
             case GENERALPAUSE_OEDE -> ModEntities.BOSS_GENERALPAUSE;
+            case FERMATENRING -> ModEntities.BOSS_RITARDANDO;
         };
     }
 
@@ -351,6 +362,7 @@ public final class KlangmeerLandmarks {
             case ARPEGGIENMEER -> "Saitenbrücken";
             case KAKOPHONIE_RIFF -> "Schwarmthron";
             case GENERALPAUSE_OEDE -> "Leeres Podium";
+            case FERMATENRING -> "Fermatenring";
         };
     }
 

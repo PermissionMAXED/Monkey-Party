@@ -1,0 +1,15 @@
+{
+  "id": "mega_schuetze_fanfare",
+  "type": "motiv",
+  "parameters": {
+    "archetype": "schuetze",
+    "operation": "bewegung",
+    "tempo": "148",
+    "tier": "gewoehnlich",
+    "health": "28.0",
+    "attack": "8.0",
+    "primary_color": "#F5C95F",
+    "secondary_color": "#BFA7FF",
+    "loot": "aetherklang:klangstaub"
+  }
+}

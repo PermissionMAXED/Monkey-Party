@@ -1,0 +1,15 @@
+{
+  "id": "mega_weber_faden",
+  "type": "motiv",
+  "parameters": {
+    "archetype": "weber",
+    "operation": "bewegung",
+    "tempo": "121",
+    "tier": "selten",
+    "health": "38.0",
+    "attack": "6.25",
+    "primary_color": "#72A7FF",
+    "secondary_color": "#E03A8C",
+    "loot": "aetherklang:notenschluessel"
+  }
+}

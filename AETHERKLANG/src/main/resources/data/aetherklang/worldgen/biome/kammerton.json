@@ -51,6 +51,18 @@
     "aetherklang:motiv_schwinge": {
       "charge": 0.8,
       "energy_budget": 0.12
+    },
+    "aetherklang:motiv_koloss": {
+      "charge": 1.4,
+      "energy_budget": 0.08
+    },
+    "aetherklang:motiv_weber": {
+      "charge": 1.0,
+      "energy_budget": 0.1
+    },
+    "aetherklang:motiv_schuetze": {
+      "charge": 0.9,
+      "energy_budget": 0.11
     }
   },
   "spawners": {
@@ -76,6 +88,24 @@
         "maxCount": 2,
         "minCount": 1,
         "weight": 7
+      },
+      {
+        "type": "aetherklang:motiv_koloss",
+        "maxCount": 1,
+        "minCount": 1,
+        "weight": 4
+      },
+      {
+        "type": "aetherklang:motiv_weber",
+        "maxCount": 2,
+        "minCount": 1,
+        "weight": 6
+      },
+      {
+        "type": "aetherklang:motiv_schuetze",
+        "maxCount": 2,
+        "minCount": 1,
+        "weight": 8
       }
     ],
     "underground_water_creature": [],

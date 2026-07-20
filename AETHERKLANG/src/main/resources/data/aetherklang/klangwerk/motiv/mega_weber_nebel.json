@@ -1,0 +1,15 @@
+{
+  "id": "mega_weber_nebel",
+  "type": "motiv",
+  "parameters": {
+    "archetype": "weber",
+    "operation": "bewegung",
+    "tempo": "157",
+    "tier": "episch",
+    "health": "50.5",
+    "attack": "5.5",
+    "primary_color": "#F5C95F",
+    "secondary_color": "#BFA7FF",
+    "loot": "aetherklang:kaskadenkern"
+  }
+}

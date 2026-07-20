@@ -1,0 +1,15 @@
+{
+  "id": "mega_koloss_fortissimo",
+  "type": "motiv",
+  "parameters": {
+    "archetype": "koloss",
+    "operation": "impuls",
+    "tempo": "162",
+    "tier": "gewoehnlich",
+    "health": "96.0",
+    "attack": "10.75",
+    "primary_color": "#FF7A90",
+    "secondary_color": "#72A7FF",
+    "loot": "aetherklang:klangstaub"
+  }
+}

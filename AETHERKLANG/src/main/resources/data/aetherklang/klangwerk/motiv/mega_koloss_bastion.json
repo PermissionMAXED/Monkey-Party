@@ -1,0 +1,15 @@
+{
+  "id": "mega_koloss_bastion",
+  "type": "motiv",
+  "parameters": {
+    "archetype": "koloss",
+    "operation": "impuls",
+    "tempo": "102",
+    "tier": "ungewoehnlich",
+    "health": "81.5",
+    "attack": "10.75",
+    "primary_color": "#BFA7FF",
+    "secondary_color": "#5FF5E0",
+    "loot": "aetherklang:resonanzbarren"
+  }
+}
