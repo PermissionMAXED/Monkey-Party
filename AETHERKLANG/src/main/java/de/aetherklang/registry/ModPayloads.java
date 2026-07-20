@@ -1,6 +1,7 @@
 package de.aetherklang.registry;
 
 import de.aetherklang.Aetherklang;
+import de.aetherklang.resonance.ResonancePlayerData;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
@@ -57,6 +58,15 @@ public final class ModPayloads {
                         buffer.readFloat()
                 )
         );
+
+        public static ResonanceSyncPayload from(ResonancePlayerData data) {
+            return new ResonanceSyncPayload(
+                    data.getMood().asString(),
+                    data.getRp(),
+                    data.getBeatPhase(),
+                    data.getDissonanz()
+            );
+        }
 
         @Override
         public Id<? extends CustomPayload> getId() {

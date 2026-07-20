@@ -2,6 +2,8 @@ package de.aetherklang.client;
 
 import de.aetherklang.Aetherklang;
 import de.aetherklang.registry.ModPayloads;
+import de.aetherklang.registry.ModSounds;
+import de.aetherklang.resonance.client.ClientResonanceCache;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 
 public final class ClientNetworking {
@@ -11,15 +13,23 @@ public final class ClientNetworking {
     public static void register() {
         ClientPlayNetworking.registerGlobalReceiver(
                 ModPayloads.ResonanceSyncPayload.ID,
-                (payload, context) -> Aetherklang.LOGGER.debug(
-                        "Resonance sync stub: mood={}, rp={}",
-                        payload.mood(),
-                        payload.rp()
-                )
+                (payload, context) -> context.client().execute(() -> {
+                    ClientResonanceCache.update(payload);
+                    Aetherklang.LOGGER.debug(
+                            "Resonance synchronized: mood={}, rp={}",
+                            payload.mood(),
+                            payload.rp()
+                    );
+                })
         );
         ClientPlayNetworking.registerGlobalReceiver(
                 ModPayloads.BeatFxPayload.ID,
-                (payload, context) -> Aetherklang.LOGGER.debug("Beat FX stub: {}", payload.beat())
+                (payload, context) -> context.client().execute(() -> {
+                    ClientResonanceCache.onBeat(payload);
+                    if (context.client().player != null) {
+                        context.client().player.playSound(ModSounds.BEAT_TICK, 0.35F, 1.0F);
+                    }
+                })
         );
     }
 }
