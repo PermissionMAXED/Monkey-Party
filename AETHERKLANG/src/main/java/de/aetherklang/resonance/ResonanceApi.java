@@ -1,5 +1,6 @@
 package de.aetherklang.resonance;
 
+import de.aetherklang.crescendo.ArmorHooks;
 import de.aetherklang.network.ModNetworking;
 import de.aetherklang.registry.ModAttachments;
 import de.aetherklang.registry.ModParticles;
@@ -31,13 +32,13 @@ public final class ResonanceApi {
     public static int addRp(ServerPlayerEntity player, int amount) {
         ResonancePlayerData data = getData(player);
         long updated = (long) data.getRp() + amount;
-        data.setRp((int) Math.clamp(updated, 0L, ResonancePlayerData.MAX_RP));
+        data.setRp((int) Math.clamp(updated, 0L, ArmorHooks.getRpCap(player)));
         sync(player);
         return data.getRp();
     }
 
     public static void setRp(ServerPlayerEntity player, int amount) {
-        getData(player).setRp(amount);
+        getData(player).setRp(Math.clamp(amount, 0, ArmorHooks.getRpCap(player)));
         sync(player);
     }
 

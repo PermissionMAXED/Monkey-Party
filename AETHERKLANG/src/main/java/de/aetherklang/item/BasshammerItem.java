@@ -28,12 +28,17 @@ public final class BasshammerItem extends Item {
                 || !(attacker.getEntityWorld() instanceof ServerWorld serverWorld)) {
             return;
         }
-        boolean perfect = BeatEngine.grantPerfectTimingRp(player);
+        float damage = ResonanceItemUtil.hasZorn(player) ? 5.0F : 3.0F;
+        boolean perfect = BeatEngine.grantPerfectTimingRp(player, strength -> {
+            if (target.isAlive()) {
+                smash(serverWorld, player, target.getEntityPos(), 3.25, damage * strength);
+            }
+        });
         if (!BeatEngine.isOnBeat(player, BeatEngine.GOOD_WINDOW)) {
             return;
         }
 
-        smash(serverWorld, player, target.getEntityPos(), 3.25, ResonanceItemUtil.hasZorn(player) ? 5.0F : 3.0F);
+        smash(serverWorld, player, target.getEntityPos(), 3.25, damage);
         if (!perfect) {
             ResonanceItemUtil.gainRp(player, 2);
         }

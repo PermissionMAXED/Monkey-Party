@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "C": "#aetherklang:resonance_crystals",
+    "H": "aetherklang:chorherz"
+  },
+  "pattern": [
+    "C C",
+    "CHC",
+    "CCC"
+  ],
+  "result": {
+    "count": 1,
+    "id": "aetherklang:klangweber_brust"
+  }
+}

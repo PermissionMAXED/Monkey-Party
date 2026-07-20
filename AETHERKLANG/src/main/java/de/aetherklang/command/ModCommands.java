@@ -33,7 +33,7 @@ public final class ModCommands {
                                         .requires(source -> source.hasPermissionLevel(2))
                                         .then(argument(
                                                 "amount",
-                                                IntegerArgumentType.integer(0, ResonancePlayerData.MAX_RP)
+                                                IntegerArgumentType.integer(0, ResonancePlayerData.MAX_RP_WITH_BONUS)
                                         ).executes(context -> setRp(
                                                 context.getSource(),
                                                 IntegerArgumentType.getInteger(context, "amount")
@@ -43,8 +43,8 @@ public final class ModCommands {
                                         .then(argument(
                                                 "amount",
                                                 IntegerArgumentType.integer(
-                                                        -ResonancePlayerData.MAX_RP,
-                                                        ResonancePlayerData.MAX_RP
+                                                        -ResonancePlayerData.MAX_RP_WITH_BONUS,
+                                                        ResonancePlayerData.MAX_RP_WITH_BONUS
                                                 )
                                         ).executes(context -> addRp(
                                                 context.getSource(),

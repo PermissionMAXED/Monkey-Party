@@ -1,7 +1,7 @@
 package de.aetherklang.client;
 
 import de.aetherklang.Aetherklang;
-import de.aetherklang.registry.ModItems;
+import de.aetherklang.crescendo.ArmorHooks;
 import de.aetherklang.registry.ModPayloads;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
@@ -51,7 +51,7 @@ public final class ModKeybinds {
     private static void dash(MinecraftClient client) {
         if (client.player == null
                 || client.getNetworkHandler() == null
-                || !client.player.getEquippedStack(EquipmentSlot.FEET).isOf(ModItems.ECHOSTIEFEL)) {
+                || !ArmorHooks.canDash(client.player.getEquippedStack(EquipmentSlot.FEET))) {
             return;
         }
         if (ClientPlayNetworking.canSend(ModPayloads.DashPayload.ID)) {

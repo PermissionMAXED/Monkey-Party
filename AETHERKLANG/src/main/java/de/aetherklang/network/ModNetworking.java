@@ -1,7 +1,7 @@
 package de.aetherklang.network;
 
+import de.aetherklang.crescendo.ArmorHooks;
 import de.aetherklang.registry.ModCriteria;
-import de.aetherklang.registry.ModItems;
 import de.aetherklang.registry.ModParticles;
 import de.aetherklang.registry.ModPayloads;
 import de.aetherklang.registry.ModSounds;
@@ -26,7 +26,6 @@ import net.minecraft.text.Text;
 import net.minecraft.util.math.Vec3d;
 
 public final class ModNetworking {
-    private static final int DASH_COST = 8;
     private static final int DASH_COOLDOWN_TICKS = 60;
     private static final int MOOD_CYCLE_COST = 2;
     private static final Map<UUID, Integer> LAST_DASH_TICKS = new HashMap<>();
@@ -63,7 +62,7 @@ public final class ModNetworking {
         if (!player.isAlive()
                 || player.isSpectator()
                 || strength <= 0.0F
-                || !boots.isOf(ModItems.ECHOSTIEFEL)) {
+                || !ArmorHooks.canDash(boots)) {
             return;
         }
 
@@ -72,8 +71,9 @@ public final class ModNetworking {
         if (lastDashTick != null && currentTick - lastDashTick < DASH_COOLDOWN_TICKS) {
             return;
         }
-        if (!ResonanceApi.spendRp(player, DASH_COST)) {
-            player.sendMessage(Text.translatable("message.aetherklang.rp.missing", DASH_COST), true);
+        int dashCost = ArmorHooks.getDashCost(boots);
+        if (!ResonanceApi.spendRp(player, dashCost)) {
+            player.sendMessage(Text.translatable("message.aetherklang.rp.missing", dashCost), true);
             return;
         }
         LAST_DASH_TICKS.put(player.getUuid(), currentTick);

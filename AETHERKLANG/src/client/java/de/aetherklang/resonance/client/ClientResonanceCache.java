@@ -21,7 +21,7 @@ public final class ClientResonanceCache {
 
     public static void update(ModPayloads.ResonanceSyncPayload payload) {
         mood = Stimmung.fromId(payload.mood());
-        rp = Math.clamp(payload.rp(), 0, ResonancePlayerData.MAX_RP);
+        rp = Math.clamp(payload.rp(), 0, ResonancePlayerData.MAX_RP_WITH_BONUS);
         beatPhase = clampUnit(payload.beatPhase());
         dissonanz = clampUnit(payload.dissonanz());
         BitSet pages = new BitSet();

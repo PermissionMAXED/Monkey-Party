@@ -10,13 +10,14 @@ import java.util.List;
  */
 public class ResonancePlayerData {
     public static final int MAX_RP = 100;
+    public static final int MAX_RP_WITH_BONUS = 120;
     public static final int MAX_CODEX_PAGE = 255;
 
     public static final Codec<ResonancePlayerData> CODEC = RecordCodecBuilder.create(instance ->
             instance.group(
                     Stimmung.CODEC.optionalFieldOf("mood", Stimmung.STILLE)
                             .forGetter(ResonancePlayerData::getMood),
-                    Codec.intRange(0, MAX_RP).optionalFieldOf("rp", 0)
+                    Codec.intRange(0, MAX_RP_WITH_BONUS).optionalFieldOf("rp", 0)
                             .forGetter(ResonancePlayerData::getRp),
                     Codec.floatRange(0.0F, 1.0F).optionalFieldOf("beat_phase", 0.0F)
                             .forGetter(ResonancePlayerData::getBeatPhase),
@@ -159,7 +160,7 @@ public class ResonancePlayerData {
     }
 
     private static int clampRp(int value) {
-        return Math.clamp(value, 0, MAX_RP);
+        return Math.clamp(value, 0, MAX_RP_WITH_BONUS);
     }
 
     private static float clampUnit(float value) {

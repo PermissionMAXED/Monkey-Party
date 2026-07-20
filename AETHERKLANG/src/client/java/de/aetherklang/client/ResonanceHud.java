@@ -1,6 +1,7 @@
 package de.aetherklang.client;
 
 import de.aetherklang.Aetherklang;
+import de.aetherklang.crescendo.ArmorHooks;
 import de.aetherklang.resonance.BeatEngine;
 import de.aetherklang.resonance.Stimmung;
 import de.aetherklang.resonance.client.ClientResonanceCache;
@@ -47,6 +48,7 @@ public final class ResonanceHud {
         Stimmung mood = ClientResonanceCache.getMood();
         int moodColor = moodColor(mood);
         int rp = ClientResonanceCache.getRp();
+        int rpCap = ArmorHooks.getRpCap(client.player);
         float dissonanz = ClientResonanceCache.getDissonanz();
         float phase = currentBeatPhase();
         float beatDistance = Math.min(phase, 1.0F - phase);
@@ -55,7 +57,7 @@ public final class ResonanceHud {
 
         drawPanel(context, x, y);
         drawMood(context, client, x, y, mood, moodColor);
-        drawRp(context, client, x, y, rp);
+        drawRp(context, client, x, y, rp, rpCap);
         drawBeat(context, client, x, y, phase, pulse);
         drawDissonanz(context, client, x, y, dissonanz);
     }
@@ -93,13 +95,20 @@ public final class ResonanceHud {
         );
     }
 
-    private static void drawRp(DrawContext context, MinecraftClient client, int x, int y, int rp) {
+    private static void drawRp(
+            DrawContext context,
+            MinecraftClient client,
+            int x,
+            int y,
+            int rp,
+            int rpCap
+    ) {
         int barX = x + 43;
         int barY = y + 22;
         int barWidth = 111;
-        int fill = Math.round(barWidth * rp / 100.0F);
+        int fill = Math.round(barWidth * rp / (float) rpCap);
         context.drawTextWithShadow(client.textRenderer, Text.literal("RP"), barX, barY - 1, PAPER);
-        Text amount = Text.literal(rp + " / 100");
+        Text amount = Text.literal(rp + " / " + rpCap);
         context.drawTextWithShadow(
                 client.textRenderer,
                 amount,

@@ -18,6 +18,7 @@ import net.minecraft.world.World;
 
 public final class ResonanzklingeItem extends Item {
     private static final int SLASH_COST = 12;
+    private static final float RESONANT_HIT_DAMAGE = 3.0F;
 
     public ResonanzklingeItem(Settings settings) {
         super(settings);
@@ -30,27 +31,41 @@ public final class ResonanzklingeItem extends Item {
                 || !(attacker.getEntityWorld() instanceof ServerWorld serverWorld)) {
             return;
         }
-        boolean perfect = BeatEngine.grantPerfectTimingRp(player);
+        boolean perfect = BeatEngine.grantPerfectTimingRp(player, strength -> {
+            if (target.isAlive()) {
+                resonantHit(serverWorld, player, target, RESONANT_HIT_DAMAGE * strength, 6);
+            }
+        });
         if (!BeatEngine.isOnBeat(player, BeatEngine.GOOD_WINDOW)) {
             return;
         }
 
-        target.damage(serverWorld, player.getDamageSources().magic(), 3.0F);
+        resonantHit(serverWorld, player, target, RESONANT_HIT_DAMAGE, 12);
         if (!perfect) {
             ResonanceItemUtil.gainRp(player, 2);
         }
-        serverWorld.spawnParticles(
+        ResonanceItemUtil.playCast(serverWorld, player, 1.6F);
+    }
+
+    private static void resonantHit(
+            ServerWorld world,
+            ServerPlayerEntity player,
+            LivingEntity target,
+            float damage,
+            int particles
+    ) {
+        target.damage(world, player.getDamageSources().magic(), damage);
+        world.spawnParticles(
                 ModParticles.NOTE_SPARK,
                 target.getX(),
                 target.getBodyY(0.65),
                 target.getZ(),
-                12,
+                particles,
                 0.35,
                 0.45,
                 0.35,
                 0.08
         );
-        ResonanceItemUtil.playCast(serverWorld, player, 1.6F);
     }
 
     @Override

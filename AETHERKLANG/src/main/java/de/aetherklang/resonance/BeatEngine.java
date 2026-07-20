@@ -1,5 +1,6 @@
 package de.aetherklang.resonance;
 
+import de.aetherklang.crescendo.ArmorHooks;
 import de.aetherklang.network.ModNetworking;
 import de.aetherklang.registry.ModCriteria;
 import java.util.HashMap;
@@ -7,6 +8,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.function.Consumer;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
 import net.minecraft.server.MinecraftServer;
@@ -40,17 +42,35 @@ public final class BeatEngine {
     }
 
     public static boolean isOnBeat(ServerPlayerEntity player, float window) {
-        return BeatTiming.isWithinWindow(ResonanceApi.getData(player).getBeatPhase(), window);
+        float activeWindow = Float.compare(window, GOOD_WINDOW) == 0
+                ? ArmorHooks.getGoodWindow(player, window)
+                : window;
+        return BeatTiming.isWithinWindow(ResonanceApi.getData(player).getBeatPhase(), activeWindow);
     }
 
     public static BeatTiming getTiming(ServerPlayerEntity player) {
-        return BeatTiming.fromPhase(ResonanceApi.getData(player).getBeatPhase());
+        float phase = ResonanceApi.getData(player).getBeatPhase();
+        if (BeatTiming.isWithinWindow(phase, PERFECT_WINDOW)) {
+            return BeatTiming.PERFECT;
+        }
+        if (BeatTiming.isWithinWindow(phase, ArmorHooks.getGoodWindow(player, GOOD_WINDOW))) {
+            return BeatTiming.GOOD;
+        }
+        return BeatTiming.MISS;
     }
 
     /**
      * Item and weapon timing hooks can call this after a successful action.
      */
     public static boolean grantPerfectTimingRp(ServerPlayerEntity player) {
+        return grantPerfectTimingRp(player, ignored -> {
+        });
+    }
+
+    /**
+     * Rewards a perfect action and supplies its half-strength replay to Klangweber's Nachhall.
+     */
+    public static boolean grantPerfectTimingRp(ServerPlayerEntity player, Consumer<Float> echoAction) {
         if (getTiming(player) != BeatTiming.PERFECT) {
             PERFECT_STREAKS.remove(player.getUuid());
             return false;
@@ -60,6 +80,10 @@ public final class BeatEngine {
         ResonanceApi.addRp(player, PERFECT_RP_REWARD);
         ModNetworking.sendBeatFx(player, currentBeat(player));
         ModCriteria.PERFECT_BEAT.trigger(player);
+        ArmorHooks.scheduleNachhall(player, strength -> {
+            ResonanceApi.addRp(player, Math.max(1, Math.round(PERFECT_RP_REWARD * strength)));
+            echoAction.accept(strength);
+        });
         return true;
     }
 
