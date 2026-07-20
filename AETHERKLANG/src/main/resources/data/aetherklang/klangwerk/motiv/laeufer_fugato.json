@@ -1,0 +1,10 @@
+{
+  "id": "laeufer_fugato",
+  "type": "motiv",
+  "parameters": {
+    "archetype": "laeufer",
+    "operation": "verfolgung",
+    "tempo": "132",
+    "tier": "selten"
+  }
+}

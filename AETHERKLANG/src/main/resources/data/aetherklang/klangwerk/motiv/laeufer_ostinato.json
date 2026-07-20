@@ -1,0 +1,10 @@
+{
+  "id": "laeufer_ostinato",
+  "type": "motiv",
+  "parameters": {
+    "archetype": "laeufer",
+    "operation": "standfestigkeit",
+    "tempo": "92",
+    "tier": "elite"
+  }
+}

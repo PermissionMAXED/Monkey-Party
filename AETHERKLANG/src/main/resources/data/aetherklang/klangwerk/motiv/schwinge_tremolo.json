@@ -1,0 +1,10 @@
+{
+  "id": "schwinge_tremolo",
+  "type": "motiv",
+  "parameters": {
+    "archetype": "schwinge",
+    "operation": "mehrfachschlag",
+    "tempo": "152",
+    "tier": "elite"
+  }
+}

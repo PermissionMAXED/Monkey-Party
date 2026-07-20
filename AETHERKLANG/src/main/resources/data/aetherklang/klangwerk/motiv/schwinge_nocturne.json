@@ -1,0 +1,10 @@
+{
+  "id": "schwinge_nocturne",
+  "type": "motiv",
+  "parameters": {
+    "archetype": "schwinge",
+    "operation": "verdunkelung",
+    "tempo": "84",
+    "tier": "elite"
+  }
+}

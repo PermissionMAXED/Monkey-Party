@@ -2,7 +2,10 @@
   "id": "hallend",
   "type": "affix",
   "parameters": {
+    "elite": "true",
+    "weight": "12",
     "attribute": "echo_chance",
-    "modifier": "0.15"
+    "modifier": "0.15",
+    "particle": "aetherklang:leitmotiv_note"
   }
 }

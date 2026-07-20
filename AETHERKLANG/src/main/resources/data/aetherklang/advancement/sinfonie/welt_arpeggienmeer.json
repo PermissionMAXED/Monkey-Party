@@ -1,0 +1,30 @@
+{
+  "criteria": {
+    "requirement": {
+      "trigger": "aetherklang:region_arpeggienmeer"
+    }
+  },
+  "display": {
+    "icon": {
+      "count": 1,
+      "id": "aetherklang:resonanzkristall_cyan"
+    },
+    "title": {
+      "translate": "advancements.aetherklang.sinfonie.welt_arpeggienmeer.title"
+    },
+    "description": {
+      "translate": "advancements.aetherklang.sinfonie.welt_arpeggienmeer.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "requirements": [
+    [
+      "requirement"
+    ]
+  ],
+  "sends_telemetry_event": false,
+  "parent": "aetherklang:sinfonie/welt_bassgewoelbe"
+}

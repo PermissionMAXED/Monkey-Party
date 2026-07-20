@@ -17,7 +17,9 @@ import net.fabricmc.fabric.api.event.player.UseItemCallback;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRegistry;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.SpawnLocationTypes;
 import net.minecraft.entity.SpawnGroup;
+import net.minecraft.entity.SpawnRestriction;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
@@ -25,6 +27,7 @@ import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.ActionResult;
+import net.minecraft.world.Heightmap;
 
 public final class ModEntities {
     public static final String DISSONANZGEIST_ID = "dissonanzgeist";
@@ -130,6 +133,9 @@ public final class ModEntities {
         FabricDefaultAttributeRegistry.register(MOTIV_LAEUFER, MotivEntity.createAttributes());
         FabricDefaultAttributeRegistry.register(MOTIV_SCHWINGE, MotivEntity.createAttributes());
         FabricDefaultAttributeRegistry.register(MOTIV_PULSER, MotivEntity.createAttributes());
+        registerMotivSpawnRestriction(MOTIV_LAEUFER);
+        registerMotivSpawnRestriction(MOTIV_SCHWINGE);
+        registerMotivSpawnRestriction(MOTIV_PULSER);
         FabricDefaultAttributeRegistry.register(BOSS_TREMOLO, BosswerkBossEntity.createAttributes());
         FabricDefaultAttributeRegistry.register(BOSS_GLISSANDA, BosswerkBossEntity.createAttributes());
         FabricDefaultAttributeRegistry.register(BOSS_KAKOPHON, BosswerkBossEntity.createAttributes());
@@ -144,6 +150,15 @@ public final class ModEntities {
         );
         registerHallharfe();
         Aetherklang.LOGGER.debug("Registered {} Aetherklang entity types", 14);
+    }
+
+    private static void registerMotivSpawnRestriction(EntityType<MotivEntity> type) {
+        SpawnRestriction.register(
+                type,
+                SpawnLocationTypes.ON_GROUND,
+                Heightmap.Type.MOTION_BLOCKING_NO_LEAVES,
+                MotivEntity::canSpawnInKammertonRegion
+        );
     }
 
     private static void registerHallharfe() {

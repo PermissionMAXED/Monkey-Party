@@ -1,5 +1,6 @@
 package de.aetherklang.schmiede;
 
+import de.aetherklang.registry.ModCriteria;
 import de.aetherklang.registry.ModParticles;
 import de.aetherklang.registry.ModSounds;
 import java.util.Map;
@@ -80,6 +81,7 @@ public final class SchmiedeService {
                 ),
                 false
         );
+        ModCriteria.RELIC_SOCKETED.trigger(player);
         return true;
     }
 
@@ -142,6 +144,10 @@ public final class SchmiedeService {
                 ),
                 false
         );
+        ModCriteria.FIRST_UPGRADE.trigger(player);
+        if (recipe.to() == Klangstufe.VIRTUOS) {
+            ModCriteria.VIRTUOS_UPGRADE.trigger(player);
+        }
         return true;
     }
 

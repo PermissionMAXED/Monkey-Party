@@ -1,0 +1,10 @@
+{
+  "id": "laeufer_synkope",
+  "type": "motiv",
+  "parameters": {
+    "archetype": "laeufer",
+    "operation": "kritischer_schlag",
+    "tempo": "126",
+    "tier": "selten"
+  }
+}

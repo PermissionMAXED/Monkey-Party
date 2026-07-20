@@ -27,6 +27,58 @@
       "loot": "aetherklang:tremolokern",
       "loot_min": 1,
       "loot_max": 1
+    },
+    {
+      "id": "pulser_fortissimo",
+      "name": "Fortissimo-Pulser",
+      "health": 54.0,
+      "attack": 10.0,
+      "movement_speed": 0.16,
+      "scale": 1.45,
+      "primary_color": "#E03A8C",
+      "secondary_color": "#F5C95F",
+      "loot": "aetherklang:resonanzbarren",
+      "loot_min": 2,
+      "loot_max": 4
+    },
+    {
+      "id": "pulser_diminuendo",
+      "name": "Diminuendo-Kern",
+      "health": 30.0,
+      "attack": 5.0,
+      "movement_speed": 0.24,
+      "scale": 1.0,
+      "primary_color": "#5FF5E0",
+      "secondary_color": "#1A1033",
+      "loot": "aetherklang:klangstaub",
+      "loot_min": 2,
+      "loot_max": 5
+    },
+    {
+      "id": "pulser_polyrhythmus",
+      "name": "Polyrhythmus-Pulser",
+      "health": 38.0,
+      "attack": 8.0,
+      "movement_speed": 0.27,
+      "scale": 1.18,
+      "primary_color": "#F5C95F",
+      "secondary_color": "#E03A8C",
+      "loot": "aetherklang:notenschluessel",
+      "loot_min": 0,
+      "loot_max": 1
+    },
+    {
+      "id": "pulser_fermate",
+      "name": "Fermaten-Pulser",
+      "health": 60.0,
+      "attack": 7.0,
+      "movement_speed": 0.13,
+      "scale": 1.55,
+      "primary_color": "#1A1033",
+      "secondary_color": "#5FF5E0",
+      "loot": "aetherklang:stillesplitter",
+      "loot_min": 1,
+      "loot_max": 2
     }
   ]
 }

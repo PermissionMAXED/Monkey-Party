@@ -1,0 +1,11 @@
+{
+  "id": "vampirisch",
+  "type": "affix",
+  "parameters": {
+    "elite": "true",
+    "weight": "6",
+    "attribute": "life_steal",
+    "modifier": "0.20",
+    "particle": "aetherklang:dissonanz_smoke"
+  }
+}

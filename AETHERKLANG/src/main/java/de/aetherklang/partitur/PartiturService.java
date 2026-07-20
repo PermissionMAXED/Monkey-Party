@@ -2,6 +2,7 @@ package de.aetherklang.partitur;
 
 import de.aetherklang.Aetherklang;
 import de.aetherklang.registry.ModAttachments;
+import de.aetherklang.registry.ModCriteria;
 import de.aetherklang.registry.ModItems;
 import de.aetherklang.registry.ModSounds;
 import de.aetherklang.resonance.AkkordEngine;
@@ -137,6 +138,10 @@ public final class PartiturService {
                 ),
                 false
         );
+        ModCriteria.FIRST_CONTRACT.trigger(player);
+        if (data.activeIds().stream().filter(data::isClaimed).count() >= PartiturCatalog.CONTRACTS_PER_ROTATION) {
+            ModCriteria.THREE_CONTRACTS.trigger(player);
+        }
         PartiturNetworking.send(player, false);
     }
 
@@ -202,6 +207,7 @@ public final class PartiturService {
         if (!KammertonWorld.isKammerton(player.getEntityWorld())) {
             return;
         }
+        ModCriteria.KAMMERTON_ENTERED.trigger(player);
         record(player, AuftragObjective.VISIT_REGION, "kammerton");
         if (Math.abs(player.getX()) <= GARDEN_RADIUS
                 && Math.abs(player.getZ() - GARDEN_CENTER_Z) <= GARDEN_RADIUS) {

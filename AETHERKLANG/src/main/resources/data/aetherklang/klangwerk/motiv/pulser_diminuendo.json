@@ -1,0 +1,10 @@
+{
+  "id": "pulser_diminuendo",
+  "type": "motiv",
+  "parameters": {
+    "archetype": "pulser",
+    "operation": "schwaechung",
+    "tempo": "96",
+    "tier": "gewoehnlich"
+  }
+}

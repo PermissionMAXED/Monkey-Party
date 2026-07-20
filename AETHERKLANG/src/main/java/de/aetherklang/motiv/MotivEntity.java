@@ -1,8 +1,10 @@
 package de.aetherklang.motiv;
 
 import de.aetherklang.entity.ResonanceEntityEffects;
+import de.aetherklang.insel.KlangmeerRegion;
 import de.aetherklang.registry.ModParticles;
 import de.aetherklang.registry.ModSounds;
+import de.aetherklang.world.KammertonWorld;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnReason;
@@ -29,6 +31,8 @@ import net.minecraft.storage.ReadView;
 import net.minecraft.storage.WriteView;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
@@ -53,6 +57,18 @@ public final class MotivEntity extends HostileEntity {
                 .add(EntityAttributes.ATTACK_DAMAGE, 5.0)
                 .add(EntityAttributes.MOVEMENT_SPEED, 0.25)
                 .add(EntityAttributes.FOLLOW_RANGE, 32.0);
+    }
+
+    public static boolean canSpawnInKammertonRegion(
+            EntityType<? extends MotivEntity> type,
+            ServerWorldAccess world,
+            SpawnReason spawnReason,
+            BlockPos pos,
+            Random random
+    ) {
+        return KammertonWorld.isKammerton(world.toServerWorld())
+                && KlangmeerRegion.at(pos).isPresent()
+                && HostileEntity.canSpawnIgnoreLightLevel(type, world, spawnReason, pos, random);
     }
 
     @Override
@@ -160,6 +176,7 @@ public final class MotivEntity extends HostileEntity {
 
     @Override
     protected void dropLoot(ServerWorld world, DamageSource damageSource, boolean causedByPlayer) {
+        super.dropLoot(world, damageSource, causedByPlayer);
         MotivVariantDef variant = getVariant();
         int count = variant.lootMin();
         if (variant.lootMax() > variant.lootMin()) {

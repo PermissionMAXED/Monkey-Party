@@ -1,0 +1,30 @@
+{
+  "criteria": {
+    "requirement": {
+      "trigger": "aetherklang:kammerton_entered"
+    }
+  },
+  "display": {
+    "icon": {
+      "count": 1,
+      "id": "aetherklang:glockenspiel_portal"
+    },
+    "title": {
+      "translate": "advancements.aetherklang.sinfonie.welt_kammerton.title"
+    },
+    "description": {
+      "translate": "advancements.aetherklang.sinfonie.welt_kammerton.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "requirements": [
+    [
+      "requirement"
+    ]
+  ],
+  "sends_telemetry_event": false,
+  "parent": "aetherklang:sinfonie/root"
+}

@@ -1,0 +1,10 @@
+{
+  "id": "schwinge_arpeggio",
+  "type": "motiv",
+  "parameters": {
+    "archetype": "schwinge",
+    "operation": "projektilfolge",
+    "tempo": "128",
+    "tier": "selten"
+  }
+}

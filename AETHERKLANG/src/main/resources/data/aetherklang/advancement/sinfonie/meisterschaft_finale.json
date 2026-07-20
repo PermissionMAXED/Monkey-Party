@@ -1,0 +1,30 @@
+{
+  "criteria": {
+    "requirement": {
+      "trigger": "aetherklang:leitmotiv_finale"
+    }
+  },
+  "display": {
+    "icon": {
+      "count": 1,
+      "id": "aetherklang:partitur_disc_3"
+    },
+    "title": {
+      "translate": "advancements.aetherklang.sinfonie.meisterschaft_finale.title"
+    },
+    "description": {
+      "translate": "advancements.aetherklang.sinfonie.meisterschaft_finale.description"
+    },
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "requirements": [
+    [
+      "requirement"
+    ]
+  ],
+  "sends_telemetry_event": false,
+  "parent": "aetherklang:sinfonie/meisterschaft_leitmotiv"
+}

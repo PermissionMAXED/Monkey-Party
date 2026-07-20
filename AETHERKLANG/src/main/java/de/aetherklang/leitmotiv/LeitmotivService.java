@@ -2,6 +2,7 @@ package de.aetherklang.leitmotiv;
 
 import de.aetherklang.Aetherklang;
 import de.aetherklang.network.ModNetworking;
+import de.aetherklang.registry.ModCriteria;
 import de.aetherklang.registry.ModItems;
 import de.aetherklang.resonance.ResonanceApi;
 import de.aetherklang.resonance.ResonancePlayerData;
@@ -77,6 +78,10 @@ public final class LeitmotivService {
         );
         ResonanceApi.sync(player);
         sync(player);
+        ModCriteria.FIRST_LEITMOTIV.trigger(player);
+        if (node.tier() == LeitmotivTree.NODES_PER_BRANCH - 1) {
+            ModCriteria.LEITMOTIV_FINALE.trigger(player);
+        }
     }
 
     public static void grantAdvancementKey(ServerPlayerEntity player, String rewardId) {

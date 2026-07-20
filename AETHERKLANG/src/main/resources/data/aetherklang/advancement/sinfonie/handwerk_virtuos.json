@@ -1,0 +1,30 @@
+{
+  "criteria": {
+    "requirement": {
+      "trigger": "aetherklang:virtuos_upgrade"
+    }
+  },
+  "display": {
+    "icon": {
+      "count": 1,
+      "id": "aetherklang:notenschluessel"
+    },
+    "title": {
+      "translate": "advancements.aetherklang.sinfonie.handwerk_virtuos.title"
+    },
+    "description": {
+      "translate": "advancements.aetherklang.sinfonie.handwerk_virtuos.description"
+    },
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "requirements": [
+    [
+      "requirement"
+    ]
+  ],
+  "sends_telemetry_event": false,
+  "parent": "aetherklang:sinfonie/handwerk_erste_aufwertung"
+}

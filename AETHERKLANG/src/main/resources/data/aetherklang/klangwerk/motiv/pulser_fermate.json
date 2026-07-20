@@ -1,0 +1,10 @@
+{
+  "id": "pulser_fermate",
+  "type": "motiv",
+  "parameters": {
+    "archetype": "pulser",
+    "operation": "stillefeld",
+    "tempo": "52",
+    "tier": "elite"
+  }
+}

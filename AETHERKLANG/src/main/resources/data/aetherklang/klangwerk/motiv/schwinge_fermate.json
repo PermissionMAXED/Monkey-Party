@@ -1,0 +1,10 @@
+{
+  "id": "schwinge_fermate",
+  "type": "motiv",
+  "parameters": {
+    "archetype": "schwinge",
+    "operation": "verlangsamung",
+    "tempo": "64",
+    "tier": "elite"
+  }
+}

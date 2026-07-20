@@ -1,0 +1,37 @@
+{
+  "criteria": {
+    "requirement": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "aetherklang:klangamboss"
+          }
+        ]
+      }
+    }
+  },
+  "display": {
+    "icon": {
+      "count": 1,
+      "id": "aetherklang:klangamboss"
+    },
+    "title": {
+      "translate": "advancements.aetherklang.sinfonie.handwerk_klangamboss.title"
+    },
+    "description": {
+      "translate": "advancements.aetherklang.sinfonie.handwerk_klangamboss.description"
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "requirements": [
+    [
+      "requirement"
+    ]
+  ],
+  "sends_telemetry_event": false,
+  "parent": "aetherklang:sinfonie/handwerk_instrument"
+}

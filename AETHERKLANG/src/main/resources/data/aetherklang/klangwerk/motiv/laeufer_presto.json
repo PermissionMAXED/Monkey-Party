@@ -1,0 +1,10 @@
+{
+  "id": "laeufer_presto",
+  "type": "motiv",
+  "parameters": {
+    "archetype": "laeufer",
+    "operation": "bewegung",
+    "tempo": "148",
+    "tier": "gewoehnlich"
+  }
+}

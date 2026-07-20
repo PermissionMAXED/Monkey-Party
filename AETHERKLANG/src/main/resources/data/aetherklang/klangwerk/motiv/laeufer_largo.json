@@ -1,0 +1,10 @@
+{
+  "id": "laeufer_largo",
+  "type": "motiv",
+  "parameters": {
+    "archetype": "laeufer",
+    "operation": "ruestung",
+    "tempo": "72",
+    "tier": "elite"
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "id": "rasend",
+  "type": "affix",
+  "parameters": {
+    "elite": "true",
+    "weight": "9",
+    "attribute": "movement_speed",
+    "modifier": "0.25",
+    "particle": "aetherklang:glissando_spur"
+  }
+}

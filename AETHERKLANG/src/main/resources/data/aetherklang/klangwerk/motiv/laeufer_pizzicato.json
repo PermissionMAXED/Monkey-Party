@@ -1,0 +1,10 @@
+{
+  "id": "laeufer_pizzicato",
+  "type": "motiv",
+  "parameters": {
+    "archetype": "laeufer",
+    "operation": "sprung",
+    "tempo": "136",
+    "tier": "gewoehnlich"
+  }
+}

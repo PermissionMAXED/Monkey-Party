@@ -1,0 +1,30 @@
+{
+  "criteria": {
+    "requirement": {
+      "trigger": "aetherklang:first_contract"
+    }
+  },
+  "display": {
+    "icon": {
+      "count": 1,
+      "id": "aetherklang:partitur_disc_1"
+    },
+    "title": {
+      "translate": "advancements.aetherklang.sinfonie.meisterschaft_auftrag.title"
+    },
+    "description": {
+      "translate": "advancements.aetherklang.sinfonie.meisterschaft_auftrag.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "requirements": [
+    [
+      "requirement"
+    ]
+  ],
+  "sends_telemetry_event": false,
+  "parent": "aetherklang:sinfonie/root"
+}

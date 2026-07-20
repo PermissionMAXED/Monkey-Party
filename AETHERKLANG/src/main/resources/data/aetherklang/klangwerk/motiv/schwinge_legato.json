@@ -1,0 +1,10 @@
+{
+  "id": "schwinge_legato",
+  "type": "motiv",
+  "parameters": {
+    "archetype": "schwinge",
+    "operation": "gleiten",
+    "tempo": "118",
+    "tier": "gewoehnlich"
+  }
+}

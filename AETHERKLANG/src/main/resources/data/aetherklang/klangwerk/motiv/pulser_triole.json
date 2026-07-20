@@ -1,0 +1,10 @@
+{
+  "id": "pulser_triole",
+  "type": "motiv",
+  "parameters": {
+    "archetype": "pulser",
+    "operation": "dreifachpuls",
+    "tempo": "132",
+    "tier": "selten"
+  }
+}

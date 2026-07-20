@@ -1,6 +1,7 @@
 package de.aetherklang.insel;
 
 import de.aetherklang.Aetherklang;
+import de.aetherklang.registry.ModCriteria;
 import de.aetherklang.registry.ModPayloads;
 import de.aetherklang.world.KammertonWorld;
 import java.util.HashMap;
@@ -58,6 +59,13 @@ final class RegionSyncHooks {
         }
 
         ACTIVE_REGIONS.put(playerId, current);
+        switch (current) {
+            case BASSGEWOELBE -> ModCriteria.REGION_BASSGEWOELBE.trigger(player);
+            case ARPEGGIENMEER -> ModCriteria.REGION_ARPEGGIENMEER.trigger(player);
+            case KAKOPHONIE_RIFF -> ModCriteria.REGION_KAKOPHONIE_RIFF.trigger(player);
+            default -> {
+            }
+        }
         if (ServerPlayNetworking.canSend(player, ModPayloads.RegionSyncPayload.ID)) {
             ServerPlayNetworking.send(
                     player,

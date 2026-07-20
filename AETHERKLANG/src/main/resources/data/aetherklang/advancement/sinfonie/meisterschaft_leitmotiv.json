@@ -1,0 +1,30 @@
+{
+  "criteria": {
+    "requirement": {
+      "trigger": "aetherklang:first_leitmotiv"
+    }
+  },
+  "display": {
+    "icon": {
+      "count": 1,
+      "id": "aetherklang:notenschluessel"
+    },
+    "title": {
+      "translate": "advancements.aetherklang.sinfonie.meisterschaft_leitmotiv.title"
+    },
+    "description": {
+      "translate": "advancements.aetherklang.sinfonie.meisterschaft_leitmotiv.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "requirements": [
+    [
+      "requirement"
+    ]
+  ],
+  "sends_telemetry_event": false,
+  "parent": "aetherklang:sinfonie/meisterschaft_drei_auftraege"
+}

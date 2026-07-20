@@ -1,0 +1,10 @@
+{
+  "id": "pulser_fortissimo",
+  "type": "motiv",
+  "parameters": {
+    "archetype": "pulser",
+    "operation": "explosion",
+    "tempo": "58",
+    "tier": "elite"
+  }
+}

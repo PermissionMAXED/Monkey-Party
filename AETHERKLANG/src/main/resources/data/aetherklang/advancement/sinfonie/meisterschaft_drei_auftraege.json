@@ -1,0 +1,30 @@
+{
+  "criteria": {
+    "requirement": {
+      "trigger": "aetherklang:three_contracts"
+    }
+  },
+  "display": {
+    "icon": {
+      "count": 1,
+      "id": "aetherklang:partitur_disc_2"
+    },
+    "title": {
+      "translate": "advancements.aetherklang.sinfonie.meisterschaft_drei_auftraege.title"
+    },
+    "description": {
+      "translate": "advancements.aetherklang.sinfonie.meisterschaft_drei_auftraege.description"
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "requirements": [
+    [
+      "requirement"
+    ]
+  ],
+  "sends_telemetry_event": false,
+  "parent": "aetherklang:sinfonie/meisterschaft_auftrag"
+}

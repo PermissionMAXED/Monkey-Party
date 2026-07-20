@@ -39,13 +39,45 @@
     []
   ],
   "has_precipitation": false,
-  "spawn_costs": {},
+  "spawn_costs": {
+    "aetherklang:motiv_laeufer": {
+      "charge": 0.7,
+      "energy_budget": 0.15
+    },
+    "aetherklang:motiv_pulser": {
+      "charge": 1.1,
+      "energy_budget": 0.1
+    },
+    "aetherklang:motiv_schwinge": {
+      "charge": 0.8,
+      "energy_budget": 0.12
+    }
+  },
   "spawners": {
     "ambient": [],
     "axolotls": [],
     "creature": [],
     "misc": [],
-    "monster": [],
+    "monster": [
+      {
+        "type": "aetherklang:motiv_laeufer",
+        "maxCount": 4,
+        "minCount": 2,
+        "weight": 18
+      },
+      {
+        "type": "aetherklang:motiv_schwinge",
+        "maxCount": 3,
+        "minCount": 1,
+        "weight": 12
+      },
+      {
+        "type": "aetherklang:motiv_pulser",
+        "maxCount": 2,
+        "minCount": 1,
+        "weight": 7
+      }
+    ],
     "underground_water_creature": [],
     "water_ambient": [],
     "water_creature": []

@@ -1,0 +1,30 @@
+{
+  "criteria": {
+    "requirement": {
+      "trigger": "aetherklang:first_upgrade"
+    }
+  },
+  "display": {
+    "icon": {
+      "count": 1,
+      "id": "aetherklang:resonanzbarren"
+    },
+    "title": {
+      "translate": "advancements.aetherklang.sinfonie.handwerk_erste_aufwertung.title"
+    },
+    "description": {
+      "translate": "advancements.aetherklang.sinfonie.handwerk_erste_aufwertung.description"
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "requirements": [
+    [
+      "requirement"
+    ]
+  ],
+  "sends_telemetry_event": false,
+  "parent": "aetherklang:sinfonie/handwerk_klangamboss"
+}

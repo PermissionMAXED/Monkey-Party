@@ -1,0 +1,30 @@
+{
+  "criteria": {
+    "requirement": {
+      "trigger": "aetherklang:region_kakophonie_riff"
+    }
+  },
+  "display": {
+    "icon": {
+      "count": 1,
+      "id": "aetherklang:resonanzkristall_magenta"
+    },
+    "title": {
+      "translate": "advancements.aetherklang.sinfonie.welt_kakophonie_riff.title"
+    },
+    "description": {
+      "translate": "advancements.aetherklang.sinfonie.welt_kakophonie_riff.description"
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "requirements": [
+    [
+      "requirement"
+    ]
+  ],
+  "sends_telemetry_event": false,
+  "parent": "aetherklang:sinfonie/welt_arpeggienmeer"
+}

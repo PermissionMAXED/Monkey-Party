@@ -1,0 +1,30 @@
+{
+  "criteria": {
+    "requirement": {
+      "trigger": "aetherklang:region_bassgewoelbe"
+    }
+  },
+  "display": {
+    "icon": {
+      "count": 1,
+      "id": "aetherklang:resonanzkristall_indigo"
+    },
+    "title": {
+      "translate": "advancements.aetherklang.sinfonie.welt_bassgewoelbe.title"
+    },
+    "description": {
+      "translate": "advancements.aetherklang.sinfonie.welt_bassgewoelbe.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "requirements": [
+    [
+      "requirement"
+    ]
+  ],
+  "sends_telemetry_event": false,
+  "parent": "aetherklang:sinfonie/welt_kammerton"
+}

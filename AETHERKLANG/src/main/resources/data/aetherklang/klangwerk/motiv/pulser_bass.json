@@ -1,0 +1,10 @@
+{
+  "id": "pulser_bass",
+  "type": "motiv",
+  "parameters": {
+    "archetype": "pulser",
+    "operation": "druckwelle",
+    "tempo": "70",
+    "tier": "elite"
+  }
+}

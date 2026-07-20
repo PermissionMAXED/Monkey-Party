@@ -1,0 +1,10 @@
+{
+  "id": "pulser_polyrhythmus",
+  "type": "motiv",
+  "parameters": {
+    "archetype": "pulser",
+    "operation": "taktwechsel",
+    "tempo": "124",
+    "tier": "elite"
+  }
+}

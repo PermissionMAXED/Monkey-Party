@@ -1,0 +1,10 @@
+{
+  "id": "laeufer_marcato",
+  "type": "motiv",
+  "parameters": {
+    "archetype": "laeufer",
+    "operation": "wucht",
+    "tempo": "112",
+    "tier": "elite"
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "id": "schwinge_staccato",
+  "type": "motiv",
+  "parameters": {
+    "archetype": "schwinge",
+    "operation": "sturzflug",
+    "tempo": "156",
+    "tier": "selten"
+  }
+}

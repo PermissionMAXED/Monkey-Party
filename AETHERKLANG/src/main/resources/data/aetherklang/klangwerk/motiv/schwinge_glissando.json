@@ -1,0 +1,10 @@
+{
+  "id": "schwinge_glissando",
+  "type": "motiv",
+  "parameters": {
+    "archetype": "schwinge",
+    "operation": "ausweichen",
+    "tempo": "144",
+    "tier": "gewoehnlich"
+  }
+}

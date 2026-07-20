@@ -24,6 +24,28 @@ public final class ModCriteria {
             register("tame_taktling", new ActionCriterion("tame_taktling"));
     public static final ActionCriterion UNSEAL_ARCHIVE =
             register("unseal_archive", new ActionCriterion("unseal_archive"));
+    public static final ActionCriterion KAMMERTON_ENTERED =
+            register("kammerton_entered", new ActionCriterion("kammerton_entered"));
+    public static final ActionCriterion REGION_BASSGEWOELBE =
+            register("region_bassgewoelbe", new ActionCriterion("region_bassgewoelbe"));
+    public static final ActionCriterion REGION_ARPEGGIENMEER =
+            register("region_arpeggienmeer", new ActionCriterion("region_arpeggienmeer"));
+    public static final ActionCriterion REGION_KAKOPHONIE_RIFF =
+            register("region_kakophonie_riff", new ActionCriterion("region_kakophonie_riff"));
+    public static final ActionCriterion FIRST_UPGRADE =
+            register("first_upgrade", new ActionCriterion("first_upgrade"));
+    public static final ActionCriterion VIRTUOS_UPGRADE =
+            register("virtuos_upgrade", new ActionCriterion("virtuos_upgrade"));
+    public static final ActionCriterion RELIC_SOCKETED =
+            register("relic_socketed", new ActionCriterion("relic_socketed"));
+    public static final ActionCriterion FIRST_CONTRACT =
+            register("first_contract", new ActionCriterion("first_contract"));
+    public static final ActionCriterion THREE_CONTRACTS =
+            register("three_contracts", new ActionCriterion("three_contracts"));
+    public static final ActionCriterion FIRST_LEITMOTIV =
+            register("first_leitmotiv", new ActionCriterion("first_leitmotiv"));
+    public static final ActionCriterion LEITMOTIV_FINALE =
+            register("leitmotiv_finale", new ActionCriterion("leitmotiv_finale"));
 
     private ModCriteria() {
     }

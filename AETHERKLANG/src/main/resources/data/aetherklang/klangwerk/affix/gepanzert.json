@@ -1,0 +1,11 @@
+{
+  "id": "gepanzert",
+  "type": "affix",
+  "parameters": {
+    "elite": "true",
+    "weight": "10",
+    "attribute": "armor",
+    "modifier": "6.0",
+    "particle": "aetherklang:fermate_glimmer"
+  }
+}

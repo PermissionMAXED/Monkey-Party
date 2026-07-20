@@ -1,0 +1,11 @@
+{
+  "id": "dissonant",
+  "type": "affix",
+  "parameters": {
+    "elite": "true",
+    "weight": "7",
+    "attribute": "attack_damage",
+    "modifier": "0.30",
+    "particle": "aetherklang:kakophon_funke"
+  }
+}
