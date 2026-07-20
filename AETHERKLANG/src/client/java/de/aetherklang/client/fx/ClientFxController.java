@@ -1,5 +1,6 @@
 package de.aetherklang.client.fx;
 
+import de.aetherklang.client.fx.sky.AuroraSkyFx;
 import de.aetherklang.registry.ModBlocks;
 import de.aetherklang.registry.ModItems;
 import de.aetherklang.registry.ModParticles;
@@ -46,6 +47,8 @@ public final class ClientFxController {
         }
 
         beatPulse = 1.0F;
+        AuroraSkyFx.onBeat();
+        ScreenRippleFx.onBeat(beat);
         spawnBeatBurst(client.world, client.player, beat);
     }
 
