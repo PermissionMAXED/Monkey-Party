@@ -1,8 +1,8 @@
 package de.aetherklang.client.fx.sky;
 
 import de.aetherklang.client.fx.FxPalette;
+import de.aetherklang.client.fx.geo.GeoBeamRenderer;
 import de.aetherklang.crescendo.AuroraHooks;
-import de.aetherklang.registry.ModParticles;
 import de.aetherklang.registry.ModPayloads;
 import java.util.Comparator;
 import java.util.List;
@@ -13,8 +13,6 @@ import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.client.network.ClientPlayerEntity;
-import net.minecraft.client.world.ClientWorld;
-import net.minecraft.particle.DustParticleEffect;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 
@@ -26,8 +24,6 @@ import net.minecraft.util.math.Vec3d;
  * nearest-player fallback.</p>
  */
 public final class EnsembleBeamFx {
-    private static final double SAMPLE_STEP = 0.38D;
-
     private static boolean registered;
     private static int ensembleSize = 1;
     private static Set<UUID> ensembleMembers;
@@ -41,6 +37,7 @@ public final class EnsembleBeamFx {
             return;
         }
         registered = true;
+        GeoBeamRenderer.register();
         ClientPlayNetworking.registerGlobalReceiver(
                 ModPayloads.EnsembleSyncPayload.ID,
                 (payload, context) -> context.client().execute(() ->
@@ -82,6 +79,7 @@ public final class EnsembleBeamFx {
         long linkLimit = ensembleMembers == null
                 ? ensembleSize - 1L
                 : Math.min(ensembleMembers.size() - 1L, AuroraHooks.MAX_ENSEMBLE_SIZE - 1L);
+        linkLimit = Math.min(linkLimit, GeoBeamRenderer.MAX_BEAMS);
         List<AbstractClientPlayerEntity> links = client.world.getPlayers().stream()
                 .filter(candidate -> candidate != player)
                 .filter(AbstractClientPlayerEntity::isAlive)
@@ -94,12 +92,11 @@ public final class EnsembleBeamFx {
                 .toList();
 
         for (int link = 0; link < links.size(); link++) {
-            drawLink(client.world, player, links.get(link), link);
+            drawLink(player, links.get(link), link);
         }
     }
 
     private static void drawLink(
-            ClientWorld world,
             AbstractClientPlayerEntity fromPlayer,
             AbstractClientPlayerEntity toPlayer,
             int linkIndex
@@ -120,52 +117,22 @@ public final class EnsembleBeamFx {
             return;
         }
 
-        Vec3d direction = delta.normalize();
-        Vec3d side = direction.crossProduct(new Vec3d(0.0D, 1.0D, 0.0D));
-        if (side.lengthSquared() < 0.001D) {
-            side = direction.crossProduct(new Vec3d(1.0D, 0.0D, 0.0D));
-        }
-        side = side.normalize();
-        Vec3d up = side.crossProduct(direction).normalize();
-        int steps = Math.max(3, (int) Math.ceil(length / SAMPLE_STEP));
-        double phase = clientTicks * 0.22D + linkIndex * 1.91D;
+        GeoBeamRenderer.beam(
+                beamKey(fromPlayer.getUuid(), toPlayer.getUuid()),
+                from,
+                to,
+                0.14D,
+                0.048D,
+                4.0D,
+                clientTicks * 0.22D + linkIndex * 1.91D,
+                FxPalette.CYAN,
+                FxPalette.GOLD
+        );
+    }
 
-        for (int step = 0; step <= steps; step++) {
-            double progress = step / (double) steps;
-            Vec3d center = from.add(delta.multiply(progress));
-            double envelope = MathHelper.sin((float) (Math.PI * progress));
-            double radius = 0.045D + envelope * 0.14D;
-
-            for (int strand = 0; strand < 2; strand++) {
-                double angle = phase + progress * Math.PI * 8.0D + strand * Math.PI;
-                Vec3d point = center
-                        .add(side.multiply(Math.cos(angle) * radius))
-                        .add(up.multiply(Math.sin(angle) * radius));
-                int color = strand == 0 ? FxPalette.CYAN : FxPalette.GOLD;
-                world.addParticleClient(
-                        new DustParticleEffect(color, 0.62F),
-                        point.x,
-                        point.y,
-                        point.z,
-                        0.0D,
-                        0.0D,
-                        0.0D
-                );
-            }
-
-            if ((step + linkIndex) % 4 == 0) {
-                double lift = Math.sin(phase + progress * Math.PI * 5.0D) * radius * 1.7D;
-                Vec3d spark = center.add(up.multiply(lift));
-                world.addParticleClient(
-                        ModParticles.ENSEMBLE_FUNKE,
-                        spark.x,
-                        spark.y,
-                        spark.z,
-                        direction.x * 0.006D,
-                        0.012D + envelope * 0.008D,
-                        direction.z * 0.006D
-                );
-            }
-        }
+    private static String beamKey(UUID first, UUID second) {
+        return first.compareTo(second) < 0
+                ? "ensemble:" + first + ':' + second
+                : "ensemble:" + second + ':' + first;
     }
 }

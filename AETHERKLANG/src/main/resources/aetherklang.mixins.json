@@ -3,7 +3,9 @@
   "package": "de.aetherklang.mixin",
   "compatibilityLevel": "JAVA_21",
   "mixins": [],
-  "client": [],
+  "client": [
+    "client.WorldRendererMixin"
+  ],
   "injectors": {
     "defaultRequire": 1
   }
