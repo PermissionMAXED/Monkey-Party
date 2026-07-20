@@ -77,7 +77,7 @@ public final class AdaptiveMusicSequencer {
                 "key.aetherklang.toggle_music",
                 InputUtil.Type.KEYSYM,
                 GLFW.GLFW_KEY_N,
-                KeyBinding.Category.create(Aetherklang.id("controls"))
+                KeyBinding.Category.MISC
         ));
         ClientTickEvents.END_CLIENT_TICK.register(AdaptiveMusicSequencer::tick);
         ClientPlayNetworking.registerGlobalReceiver(
