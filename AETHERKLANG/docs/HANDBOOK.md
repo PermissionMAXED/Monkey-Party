@@ -171,7 +171,8 @@ page.
 | Toggle adaptive music | **N** | local audio only; no server-side effect |
 | Close Codex | **Esc** | game keeps running |
 
-All keys are rebindable under the Aetherklang controls category.
+**K**, **R**, and **M** are rebindable under the Aetherklang controls
+category. The **N** music toggle is listed under **Miscellaneous (MISC)**.
 
 ## Advancements
 
@@ -263,6 +264,7 @@ Hold use for at least **10 ticks**, then release in the GOOD window.
 Throw the Bell for **16 RP**. On first impact it anchors an eight-second,
 six-block dome:
 
+- requires at least **Adept grade** (`150` lifetime RP),
 - living entities are heavily slowed and retain 18% velocity,
 - projectiles retain only 5% velocity,
 - the thrower is unaffected by their own field,
@@ -363,6 +365,7 @@ crafting recipe** and come from world content or the Creative inventory.
 - **Adaptive music:** N; local only
 - **Beat:** 120 BPM; PERFECT ±40 ms; GOOD ±100 ms
 - **RP:** 0–100, or 120 with chestplate; Horn 10; Bell 16; fan/rift 12
+- **Fermata Bell:** usable from Adept grade (`150` lifetime RP)
 - **Grades:** Novice 0; Adept 150; Virtuoso 400; Maestro 900 lifetime RP
 - **Ensemble:** same beat, within 12 blocks, 10 seconds, +1 RP/action
 - **Chord:** three on-beat moods, effect within 8 blocks

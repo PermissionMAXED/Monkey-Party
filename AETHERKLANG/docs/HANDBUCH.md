@@ -662,8 +662,9 @@ Kreativinventar.
 | Vorige/nächste Seite | `‹` / `›` | Innerhalb des gewählten Registers |
 | Kodex schließen | **Esc** oder `×` | Das Spiel läuft im Hintergrund weiter |
 
-Alle Belegungen findest du unter
-**Optionen → Steuerung → Tastenbelegung → Aetherklang**.
+**K**, **R** und **M** findest du unter
+**Optionen → Steuerung → Tastenbelegung → Aetherklang**. Der Musikschalter
+**N** steht stattdessen in der Kategorie **MISC (Sonstiges)**.
 
 ---
 
@@ -847,6 +848,7 @@ außerhalb des Kegels bleiben unberührt.
 Die Glocke wird als Projektil geworfen und verankert sich am ersten
 Aufprall.
 
+- Voraussetzung: mindestens **Grad Adept** (`150` Gesamt-RP)
 - Kosten: **16 RP**
 - Feldradius: **6 Blöcke**
 - Dauer: **8 Sekunden**
@@ -1011,6 +1013,7 @@ Danke an alle, die den ersten Beat nicht nur treffen, sondern ihm zuhören.
 - **Beat:** 120 BPM · **Perfekt:** ±40 ms (`+2 RP`) · **Gut:** ±100 ms
 - **RP:** 0–100, mit Klangweberharnisch 120 · Horn 10 · Fermate 16 ·
   Fächer/Riss 12 · Schritt 8/6 · Altar 6 · Portal 24
+- **Fermatenglocke:** erst ab Grad Adept (`150` Gesamt-RP) einsetzbar
 - **Grade:** Novize 0 · Adept 150 · Virtuose 400 · Maestro 900 Gesamt-RP
 - **Ensemble:** gleicher Beat + höchstens 12 Blöcke · 10 s · +1 RP/Aktion
 - **Akkorde:** drei On-Beat-Stimmungen · Wirkung in 8 Blöcken

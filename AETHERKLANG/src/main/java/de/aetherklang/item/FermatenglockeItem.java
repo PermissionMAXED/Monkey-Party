@@ -40,7 +40,7 @@ public final class FermatenglockeItem extends Item {
         }
         if (!InstrumentHooks.canUseFermatenglocke(serverPlayer)) {
             serverPlayer.sendMessage(
-                    Text.translatable("rang.aetherklang.adept"),
+                    Text.translatable("message.aetherklang.fermatenglocke.rang_required"),
                     true
             );
             return ActionResult.FAIL;
