@@ -1,6 +1,7 @@
 {
   "replace": false,
   "values": [
-    "aetherklang:taktbruecke"
+    "aetherklang:taktbruecke",
+    "aetherklang:notenpult"
   ]
 }
