@@ -15,6 +15,10 @@ public final class ModEntityRenderers {
 
     public static void register() {
         EntityModelLayerRegistry.registerModelLayer(MODEL_LAYER, AetherEntityModel::getTexturedModelData);
+        EntityModelLayerRegistry.registerModelLayer(
+                FermateFeldRenderer.MODEL_LAYER,
+                FermateFeldRenderer::getTexturedModelData
+        );
         EntityRendererRegistry.register(
                 ModEntities.DISSONANZGEIST,
                 context -> new AetherEntityRenderer<>(
@@ -77,13 +81,7 @@ public final class ModEntityRenderers {
         );
         EntityRendererRegistry.register(
                 ModEntities.FERMATE_FELD,
-                context -> new AetherEntityRenderer<>(
-                        context,
-                        AetherEntityStyle.ECHONOTE,
-                        1.8F,
-                        0.0F,
-                        0x605FF5E0
-                )
+                FermateFeldRenderer::new
         );
     }
 }

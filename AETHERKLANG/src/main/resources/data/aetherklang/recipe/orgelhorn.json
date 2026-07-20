@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "C": "minecraft:copper_ingot",
+    "G": "aetherklang:resonanzkristall_gold",
+    "H": "minecraft:goat_horn"
+  },
+  "pattern": [
+    " CG",
+    "CHC",
+    "CC "
+  ],
+  "result": {
+    "count": 1,
+    "id": "aetherklang:orgelhorn"
+  }
+}

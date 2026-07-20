@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "A": "minecraft:amethyst_shard",
+    "B": "minecraft:bell",
+    "C": "aetherklang:resonanzkristall_cyan",
+    "G": "minecraft:gold_ingot"
+  },
+  "pattern": [
+    " A ",
+    "GCG",
+    " B "
+  ],
+  "result": {
+    "count": 1,
+    "id": "aetherklang:fermatenglocke"
+  }
+}

@@ -45,7 +45,7 @@ public final class ModEntities {
     public static final EntityType<TaktlingEntity> TAKTLING =
             register(TAKTLING_ID, SpawnGroup.CREATURE, 0.6F, 0.9F, 8, 3, false, TaktlingEntity::new);
     public static final EntityType<FermateFeldEntity> FERMATE_FELD =
-            register(FERMATE_FELD_ID, SpawnGroup.MISC, 4.0F, 0.25F, 10, 1, true, FermateFeldEntity::new);
+            register(FERMATE_FELD_ID, SpawnGroup.MISC, 0.35F, 0.35F, 10, 1, true, FermateFeldEntity::new);
 
     private ModEntities() {
     }
