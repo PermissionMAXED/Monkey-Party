@@ -1,0 +1,15 @@
+{
+  "id": "akkordfolge",
+  "type": "auftrag",
+  "parameters": {
+    "title": "partitur.aetherklang.contract.akkordfolge.title",
+    "description": "partitur.aetherklang.contract.akkordfolge.description",
+    "objective": "play_akkord",
+    "target": "any",
+    "amount": "2",
+    "reward_rp": "16",
+    "reward_notenschluessel": "1",
+    "reward_material": "minecraft:amethyst_shard",
+    "reward_material_count": "4"
+  }
+}

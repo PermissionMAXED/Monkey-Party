@@ -1,0 +1,15 @@
+{
+  "id": "motiv_refrain",
+  "type": "auftrag",
+  "parameters": {
+    "title": "partitur.aetherklang.contract.motiv_refrain.title",
+    "description": "partitur.aetherklang.contract.motiv_refrain.description",
+    "objective": "kill_motiv",
+    "target": "any",
+    "amount": "6",
+    "reward_rp": "18",
+    "reward_notenschluessel": "2",
+    "reward_material": "aetherklang:resonanzbarren",
+    "reward_material_count": "1"
+  }
+}

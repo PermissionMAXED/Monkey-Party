@@ -1,6 +1,7 @@
 package de.aetherklang.block;
 
 import com.mojang.serialization.MapCodec;
+import de.aetherklang.partitur.PartiturService;
 import de.aetherklang.registry.ModItems;
 import de.aetherklang.registry.ModParticles;
 import de.aetherklang.registry.ModSounds;
@@ -159,6 +160,7 @@ public final class DissonanzrissBlock extends Block {
                 0.65F
         );
         serverWorld.removeBlock(pos, false);
+        PartiturService.onRiftSealed(serverPlayer);
         serverPlayer.sendMessage(Text.translatable("message.aetherklang.rift.sealed", SEAL_COST), true);
         return ActionResult.SUCCESS_SERVER;
     }

@@ -7,6 +7,8 @@ import de.aetherklang.kaskade.KaskadeHooks;
 import de.aetherklang.klangwerk.KlangwerkLoader;
 import de.aetherklang.leitmotiv.LeitmotivService;
 import de.aetherklang.network.ModNetworking;
+import de.aetherklang.partitur.PartiturNetworking;
+import de.aetherklang.partitur.PartiturService;
 import de.aetherklang.registry.ContentBootstrap;
 import de.aetherklang.registry.ModAttachments;
 import de.aetherklang.registry.ModBlockEntities;
@@ -53,12 +55,14 @@ public final class Aetherklang implements ModInitializer {
         LeitmotivService.register();
         ModCriteria.register();
         ModPayloads.register();
+        PartiturNetworking.register();
         ModNetworking.register();
         ModCommands.register();
         BeatEngine.register();
         KammertonWorld.register();
         CrescendoServerHooks.register();
         KaskadeHooks.register();
+        PartiturService.register();
 
         LOGGER.info("Aetherklang registriert: Die Welt hat eine Stimme.");
     }

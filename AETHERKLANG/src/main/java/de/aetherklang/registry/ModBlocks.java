@@ -9,6 +9,7 @@ import de.aetherklang.block.ResonanceCrystalBlock;
 import de.aetherklang.block.ResonanzarchivBlock;
 import de.aetherklang.block.StimmaltarBlock;
 import de.aetherklang.block.TaktbrueckeBlock;
+import de.aetherklang.partitur.NotenpultBlock;
 import java.util.function.Function;
 import de.aetherklang.schmiede.KlangambossBlock;
 import net.minecraft.block.AbstractBlock;
@@ -131,7 +132,16 @@ public final class ModBlocks {
                     .luminance(state -> 4)
                     .nonOpaque()
     );
-    public static final Block NOTENPULT = registerStone(NOTENPULT_ID, BlockSoundGroup.CHISELED_BOOKSHELF, 2.5F);
+    public static final NotenpultBlock NOTENPULT = register(
+            NOTENPULT_ID,
+            NotenpultBlock::new,
+            settings -> settings
+                    .mapColor(DyeColor.PURPLE)
+                    .strength(2.5F, 8.0F)
+                    .sounds(BlockSoundGroup.CHISELED_BOOKSHELF)
+                    .luminance(state -> 3)
+                    .requiresTool()
+    );
     public static final KlangambossBlock KLANGAMBOSS = register(
             KLANGAMBOSS_ID,
             KlangambossBlock::new,

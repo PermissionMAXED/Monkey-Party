@@ -6,6 +6,7 @@ import com.google.gson.JsonParser;
 import com.mojang.serialization.JsonOps;
 import de.aetherklang.Aetherklang;
 import de.aetherklang.data.ContentCatalog;
+import de.aetherklang.partitur.PartiturCatalog;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.EnumMap;
@@ -53,7 +54,9 @@ public final class KlangwerkLoader implements SimpleSynchronousResourceReloadLis
 
     private int loadAndInstall(ResourceManager resourceManager) {
         Map<KlangwerkType, Map<String, KlangwerkReloadDef>> definitions = load(resourceManager);
-        ContentCatalog.install(ContentCatalog.current().withKlangwerk(definitions));
+        ContentCatalog nextCatalog = ContentCatalog.current().withKlangwerk(definitions);
+        PartiturCatalog.install(nextCatalog.klangwerk(KlangwerkType.AUFTRAG));
+        ContentCatalog.install(nextCatalog);
 
         int count = definitions.values().stream().mapToInt(Map::size).sum();
         Aetherklang.LOGGER.info("Klangwerk catalog loaded: {} definitions", count);

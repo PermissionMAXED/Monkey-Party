@@ -3,6 +3,8 @@ package de.aetherklang.resonance;
 import de.aetherklang.crescendo.ArmorHooks;
 import de.aetherklang.leitmotiv.LeitmotivEffects;
 import de.aetherklang.network.ModNetworking;
+import de.aetherklang.partitur.AuftragObjective;
+import de.aetherklang.partitur.PartiturService;
 import de.aetherklang.registry.ModAttachments;
 import de.aetherklang.registry.ModParticles;
 import de.aetherklang.registry.ModSounds;
@@ -36,7 +38,9 @@ public final class ResonanceApi {
         int adjustedAmount = LeitmotivEffects.adjustRpGain(player, amount);
         long updated = (long) data.getRp() + adjustedAmount;
         data.setRp((int) Math.clamp(updated, 0L, ArmorHooks.getRpCap(player)));
-        RangService.recordRpGain(player, data.getRp() - previousRp);
+        int credited = data.getRp() - previousRp;
+        RangService.recordRpGain(player, credited);
+        PartiturService.record(player, AuftragObjective.EARN_RESONANCE, "any", credited);
         sync(player);
         return data.getRp();
     }

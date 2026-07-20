@@ -1,0 +1,15 @@
+{
+  "id": "motiv_schwingen_brechen",
+  "type": "auftrag",
+  "parameters": {
+    "title": "partitur.aetherklang.contract.motiv_schwingen_brechen.title",
+    "description": "partitur.aetherklang.contract.motiv_schwingen_brechen.description",
+    "objective": "kill_motiv",
+    "target": "motiv_schwinge",
+    "amount": "3",
+    "reward_rp": "14",
+    "reward_notenschluessel": "1",
+    "reward_material": "aetherklang:stillesplitter",
+    "reward_material_count": "2"
+  }
+}

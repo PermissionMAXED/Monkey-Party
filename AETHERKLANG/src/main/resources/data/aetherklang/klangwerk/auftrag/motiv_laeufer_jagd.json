@@ -1,0 +1,15 @@
+{
+  "id": "motiv_laeufer_jagd",
+  "type": "auftrag",
+  "parameters": {
+    "title": "partitur.aetherklang.contract.motiv_laeufer_jagd.title",
+    "description": "partitur.aetherklang.contract.motiv_laeufer_jagd.description",
+    "objective": "kill_motiv",
+    "target": "motiv_laeufer",
+    "amount": "4",
+    "reward_rp": "12",
+    "reward_notenschluessel": "1",
+    "reward_material": "aetherklang:klangstaub",
+    "reward_material_count": "3"
+  }
+}

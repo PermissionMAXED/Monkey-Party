@@ -1,0 +1,15 @@
+{
+  "id": "sternenfortissimo",
+  "type": "auftrag",
+  "parameters": {
+    "title": "partitur.aetherklang.contract.sternenfortissimo.title",
+    "description": "partitur.aetherklang.contract.sternenfortissimo.description",
+    "objective": "play_akkord",
+    "target": "sternenfortissimo",
+    "amount": "1",
+    "reward_rp": "20",
+    "reward_notenschluessel": "2",
+    "reward_material": "aetherklang:kaskadenkern",
+    "reward_material_count": "1"
+  }
+}

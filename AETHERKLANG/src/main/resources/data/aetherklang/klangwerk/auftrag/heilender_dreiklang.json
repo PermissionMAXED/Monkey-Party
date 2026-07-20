@@ -1,0 +1,15 @@
+{
+  "id": "heilender_dreiklang",
+  "type": "auftrag",
+  "parameters": {
+    "title": "partitur.aetherklang.contract.heilender_dreiklang.title",
+    "description": "partitur.aetherklang.contract.heilender_dreiklang.description",
+    "objective": "play_akkord",
+    "target": "heilender_dreiklang",
+    "amount": "1",
+    "reward_rp": "14",
+    "reward_notenschluessel": "1",
+    "reward_material": "aetherklang:klangstaub",
+    "reward_material_count": "4"
+  }
+}

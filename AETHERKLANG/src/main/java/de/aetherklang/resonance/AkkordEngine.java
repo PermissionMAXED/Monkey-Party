@@ -1,6 +1,7 @@
 package de.aetherklang.resonance;
 
 import de.aetherklang.network.ModNetworking;
+import de.aetherklang.partitur.PartiturService;
 import de.aetherklang.registry.ModCriteria;
 import de.aetherklang.registry.ModParticles;
 import de.aetherklang.registry.ModSounds;
@@ -120,6 +121,7 @@ public final class AkkordEngine {
         player.sendMessage(Text.literal(akkord.displayName()), true);
         ModCriteria.FIRST_AKKORD.trigger(player);
         ModNetworking.broadcastAkkordFx(player, akkord.networkId());
+        PartiturService.onAkkord(player, akkord);
     }
 
     private static void healGroup(ServerPlayerEntity source, float amount) {

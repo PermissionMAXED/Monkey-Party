@@ -1,0 +1,15 @@
+{
+  "id": "risse_versiegeln",
+  "type": "auftrag",
+  "parameters": {
+    "title": "partitur.aetherklang.contract.risse_versiegeln.title",
+    "description": "partitur.aetherklang.contract.risse_versiegeln.description",
+    "objective": "seal_rift",
+    "target": "any",
+    "amount": "2",
+    "reward_rp": "18",
+    "reward_notenschluessel": "2",
+    "reward_material": "aetherklang:stillesplitter",
+    "reward_material_count": "3"
+  }
+}

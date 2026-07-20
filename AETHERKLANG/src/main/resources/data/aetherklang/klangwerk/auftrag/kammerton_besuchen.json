@@ -1,0 +1,15 @@
+{
+  "id": "kammerton_besuchen",
+  "type": "auftrag",
+  "parameters": {
+    "title": "partitur.aetherklang.contract.kammerton_besuchen.title",
+    "description": "partitur.aetherklang.contract.kammerton_besuchen.description",
+    "objective": "visit_region",
+    "target": "kammerton",
+    "amount": "1",
+    "reward_rp": "12",
+    "reward_notenschluessel": "1",
+    "reward_material": "aetherklang:klangstaub",
+    "reward_material_count": "2"
+  }
+}
