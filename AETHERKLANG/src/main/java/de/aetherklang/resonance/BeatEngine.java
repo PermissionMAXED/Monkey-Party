@@ -25,7 +25,7 @@ public final class BeatEngine {
     public static final float GOOD_WINDOW = BeatTiming.GOOD_WINDOW;
     public static final int PERFECT_RP_REWARD = 2;
 
-    private static final float PHASE_PER_TICK = TEMPO_BPM / 60.0F / 20.0F;
+    private static final int TICKS_PER_BEAT = Math.round(20.0F * 60.0F / TEMPO_BPM);
     private static final float DISSONANZ_DECAY_PER_TICK = 0.000025F;
     private static final double BEAT_FX_RADIUS = 32.0D;
     private static final Map<UUID, PerfectStreak> PERFECT_STREAKS = new HashMap<>();
@@ -97,9 +97,9 @@ public final class BeatEngine {
 
         for (ServerPlayerEntity player : server.getPlayerManager().getPlayerList()) {
             ResonancePlayerData data = ResonanceApi.getData(player);
-            float advancedPhase = data.getBeatPhase() + PHASE_PER_TICK;
-            boolean crossedBeat = advancedPhase >= 1.0F;
-            data.setBeatPhase(crossedBeat ? advancedPhase % 1.0F : advancedPhase);
+            int phaseTick = Math.floorMod(world(player).getTime(), TICKS_PER_BEAT);
+            boolean crossedBeat = phaseTick == 0;
+            data.setBeatPhase(phaseTick / (float) TICKS_PER_BEAT);
             ResonanceApi.tickMoodModifier(player);
             decayDissonanz(player, data);
 
@@ -153,8 +153,7 @@ public final class BeatEngine {
     }
 
     private static int currentBeat(ServerPlayerEntity player) {
-        float ticksPerBeat = 20.0F / (TEMPO_BPM / 60.0F);
-        return (int) (world(player).getTime() / ticksPerBeat);
+        return (int) (world(player).getTime() / TICKS_PER_BEAT);
     }
 
     private static ServerWorld world(ServerPlayerEntity player) {
