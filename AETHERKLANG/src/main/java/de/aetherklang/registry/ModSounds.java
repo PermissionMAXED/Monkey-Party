@@ -30,6 +30,8 @@ public final class ModSounds {
     public static final String BOSS_GENERALPAUSE_ID = "boss_generalpause";
     public static final String BOSS_OSTINATO_ID = "boss_ostinato";
     public static final String BOSS_RITARDANDO_ID = "boss_ritardando";
+    public static final String BOSS_NOVA_ID = "boss_nova";
+    public static final String ARENA_FANFARE_ID = "arena_fanfare";
     public static final String REGION_ENTER_ID = "region_enter";
 
     public static final SoundEvent BEAT_TICK = register(BEAT_TICK_ID);
@@ -56,6 +58,8 @@ public final class ModSounds {
     public static final SoundEvent BOSS_GENERALPAUSE = register(BOSS_GENERALPAUSE_ID);
     public static final SoundEvent BOSS_OSTINATO = register(BOSS_OSTINATO_ID);
     public static final SoundEvent BOSS_RITARDANDO = register(BOSS_RITARDANDO_ID);
+    public static final SoundEvent BOSS_NOVA = register(BOSS_NOVA_ID);
+    public static final SoundEvent ARENA_FANFARE = register(ARENA_FANFARE_ID);
     public static final SoundEvent REGION_ENTER = register(REGION_ENTER_ID);
 
     private ModSounds() {
@@ -67,6 +71,6 @@ public final class ModSounds {
     }
 
     public static void register() {
-        Aetherklang.LOGGER.debug("Registered {} Aetherklang sound events", 25);
+        Aetherklang.LOGGER.debug("Registered {} Aetherklang sound events", 27);
     }
 }

@@ -215,6 +215,24 @@
       }
     ]
   },
+  "boss_nova": {
+    "subtitle": "subtitles.aetherklang.boss_nova",
+    "sounds": [
+      {
+        "name": "minecraft:entity.warden.sonic_boom",
+        "type": "event"
+      }
+    ]
+  },
+  "arena_fanfare": {
+    "subtitle": "subtitles.aetherklang.arena_fanfare",
+    "sounds": [
+      {
+        "name": "minecraft:item.goat_horn.sound.1",
+        "type": "event"
+      }
+    ]
+  },
   "region_enter": {
     "subtitle": "subtitles.aetherklang.region_enter",
     "sounds": [
