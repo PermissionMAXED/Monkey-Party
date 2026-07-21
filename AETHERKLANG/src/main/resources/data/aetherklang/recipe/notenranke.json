@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "key": {
+    "A": "minecraft:amethyst_shard",
+    "G": "minecraft:gold_nugget",
+    "V": "minecraft:twisting_vines"
+  },
+  "pattern": [
+    " V ",
+    "VGV",
+    " A "
+  ],
+  "result": {
+    "count": 4,
+    "id": "aetherklang:notenranke"
+  }
+}

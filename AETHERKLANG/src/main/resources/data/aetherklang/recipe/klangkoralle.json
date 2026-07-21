@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "key": {
+    "A": "minecraft:amethyst_shard",
+    "C": "aetherklang:resonanzkristall_cyan",
+    "P": "minecraft:prismarine_crystals"
+  },
+  "pattern": [
+    " P ",
+    "PCP",
+    " A "
+  ],
+  "result": {
+    "count": 4,
+    "id": "aetherklang:klangkoralle"
+  }
+}

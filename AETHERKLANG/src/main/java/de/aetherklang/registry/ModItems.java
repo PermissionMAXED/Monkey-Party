@@ -332,6 +332,21 @@ public final class ModItems {
             registerBlockItem(ModBlocks.RESONANZHOLZ_TREPPE_ID, ModBlocks.RESONANZHOLZ_TREPPE);
     public static final Item RESONANZHOLZ_STUFE =
             registerBlockItem(ModBlocks.RESONANZHOLZ_STUFE_ID, ModBlocks.RESONANZHOLZ_STUFE);
+    public static final Item KLANGKORALLE = registerBlockItem(ModBlocks.KLANGKORALLE_ID, ModBlocks.KLANGKORALLE);
+    public static final Item NOTENRANKE = registerBlockItem(ModBlocks.NOTENRANKE_ID, ModBlocks.NOTENRANKE);
+    public static final Item KLANGGRAS = registerBlockItem(ModBlocks.KLANGGRAS_ID, ModBlocks.KLANGGRAS);
+    public static final Item RESONANZGLAS = registerBlockItem(ModBlocks.RESONANZGLAS_ID, ModBlocks.RESONANZGLAS);
+    public static final Item RESONANZGLAS_CYAN =
+            registerBlockItem(ModBlocks.RESONANZGLAS_CYAN_ID, ModBlocks.RESONANZGLAS_CYAN);
+    public static final Item RESONANZGLAS_GOLD =
+            registerBlockItem(ModBlocks.RESONANZGLAS_GOLD_ID, ModBlocks.RESONANZGLAS_GOLD);
+    public static final Item RESONANZGLAS_MAGENTA =
+            registerBlockItem(ModBlocks.RESONANZGLAS_MAGENTA_ID, ModBlocks.RESONANZGLAS_MAGENTA);
+    public static final Item STERNENQUARZ = registerBlockItem(ModBlocks.STERNENQUARZ_ID, ModBlocks.STERNENQUARZ);
+    public static final Item STERNENQUARZ_POLIERT =
+            registerBlockItem(ModBlocks.STERNENQUARZ_POLIERT_ID, ModBlocks.STERNENQUARZ_POLIERT);
+    public static final Item STERNENQUARZ_ZIEGEL =
+            registerBlockItem(ModBlocks.STERNENQUARZ_ZIEGEL_ID, ModBlocks.STERNENQUARZ_ZIEGEL);
 
     public static final List<Item> ALL_ITEMS = List.of(
             STIMMGABEL,
@@ -429,7 +444,17 @@ public final class ModItems {
             RESONANZHOLZ,
             RESONANZHOLZ_PLANKEN,
             RESONANZHOLZ_TREPPE,
-            RESONANZHOLZ_STUFE
+            RESONANZHOLZ_STUFE,
+            KLANGKORALLE,
+            NOTENRANKE,
+            KLANGGRAS,
+            RESONANZGLAS,
+            RESONANZGLAS_CYAN,
+            RESONANZGLAS_GOLD,
+            RESONANZGLAS_MAGENTA,
+            STERNENQUARZ,
+            STERNENQUARZ_POLIERT,
+            STERNENQUARZ_ZIEGEL
     );
 
     private ModItems() {

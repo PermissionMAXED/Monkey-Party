@@ -24,6 +24,13 @@
     "aetherklang:arpeggienquarzit_ziegel",
     "aetherklang:riffbasalt",
     "aetherklang:riffbasalt_poliert",
-    "aetherklang:riffbasalt_ziegel"
+    "aetherklang:riffbasalt_ziegel",
+    "aetherklang:resonanzglas",
+    "aetherklang:resonanzglas_cyan",
+    "aetherklang:resonanzglas_gold",
+    "aetherklang:resonanzglas_magenta",
+    "aetherklang:sternenquarz",
+    "aetherklang:sternenquarz_poliert",
+    "aetherklang:sternenquarz_ziegel"
   ]
 }

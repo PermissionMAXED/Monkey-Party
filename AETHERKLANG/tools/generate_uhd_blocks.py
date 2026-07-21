@@ -62,6 +62,16 @@ STATIC_TEXTURES = (
     "riffbasalt_poliert",
     "riffbasalt_ziegel",
     "taktbruecke",
+    "klangkoralle",
+    "notenranke",
+    "klanggras",
+    "resonanzglas",
+    "resonanzglas_cyan",
+    "resonanzglas_gold",
+    "resonanzglas_magenta",
+    "sternenquarz",
+    "sternenquarz_poliert",
+    "sternenquarz_ziegel",
 )
 
 Color = tuple[int, int, int, int]
@@ -108,11 +118,15 @@ class Canvas:
             return
         index = y * SIZE + x
         base = self.pixels[index]
+        base_alpha = base[3] / 255.0
+        output_alpha = source_alpha + base_alpha * (1.0 - source_alpha)
+        if output_alpha <= 0.0:
+            return
         self.pixels[index] = (
-            round(base[0] * (1.0 - source_alpha) + color[0] * source_alpha),
-            round(base[1] * (1.0 - source_alpha) + color[1] * source_alpha),
-            round(base[2] * (1.0 - source_alpha) + color[2] * source_alpha),
-            255,
+            round((color[0] * source_alpha + base[0] * base_alpha * (1.0 - source_alpha)) / output_alpha),
+            round((color[1] * source_alpha + base[1] * base_alpha * (1.0 - source_alpha)) / output_alpha),
+            round((color[2] * source_alpha + base[2] * base_alpha * (1.0 - source_alpha)) / output_alpha),
+            round(output_alpha * 255),
         )
 
     def brush(
@@ -268,6 +282,9 @@ PALETTES = {
     ),
     "resonanzholz": Palette(
         rgba("#102D36"), rgba("#1D5962"), rgba("#58A79E"), rgba("#F0C96A")
+    ),
+    "sternenquarz": Palette(
+        rgba("#1B1734"), rgba("#4B4B78"), rgba("#B6C8E7"), rgba("#F7D878")
     ),
 }
 
@@ -682,6 +699,123 @@ def paint_bridge() -> Canvas:
     return canvas
 
 
+def transparent_canvas() -> Canvas:
+    return Canvas((0, 0, 0, 0))
+
+
+def paint_coral() -> Canvas:
+    name = "klangkoralle"
+    canvas = transparent_canvas()
+    shadow = rgba("#18314B", 230)
+    cyan = rgba("#5FF5E0", 245)
+    magenta = rgba("#E03A8C", 235)
+    gold = rgba("#F5C95F", 245)
+    branches = (
+        ((31, 61), (31, 18)),
+        ((31, 44), (13, 29)),
+        ((31, 39), (49, 21)),
+        ((22, 36), (17, 14)),
+        ((40, 31), (49, 9)),
+    )
+    for index, (start, end) in enumerate(branches):
+        canvas.line(start, end, shadow, 6.0, 0.82, seed=seed_for(name, f"shadow-{index}"))
+        canvas.line(
+            start,
+            end,
+            cyan if index % 2 == 0 else magenta,
+            3.5,
+            0.96,
+            seed=seed_for(name, f"branch-{index}"),
+        )
+        canvas.brush(*end, 4.0, 4.0, gold, 0.9, seed=seed_for(name, f"bell-{index}"))
+    canvas.ring((31, 33), 12, 12, cyan, 1.4, 0.62, seed=seed_for(name, "resonance"))
+    return canvas
+
+
+def paint_vine() -> Canvas:
+    name = "notenranke"
+    canvas = transparent_canvas()
+    vine = rgba("#50BFA2", 235)
+    cyan = rgba("#75FFF0", 245)
+    gold = rgba("#F5D06D", 245)
+    path = ((28, 64), (37, 52), (25, 40), (38, 27), (30, 14), (36, -2))
+    canvas.polyline(path, rgba("#123B42", 230), 6.0, 0.86, seed=seed_for(name, "shadow"))
+    canvas.polyline(path, vine, 3.2, 0.96, seed=seed_for(name, "stem"))
+    for index, (x, y) in enumerate(path[1:-1]):
+        direction = -1 if index % 2 == 0 else 1
+        canvas.line(
+            (x, y),
+            (x + direction * 12, y - 6),
+            vine,
+            3.0,
+            0.9,
+            seed=seed_for(name, f"leaf-{index}"),
+        )
+        note_x = x + direction * 13
+        note_y = y - 7
+        canvas.line(
+            (note_x + 3, note_y),
+            (note_x + 3, note_y - 10),
+            cyan,
+            2.2,
+            0.95,
+            seed=seed_for(name, f"note-stem-{index}"),
+        )
+        canvas.brush(note_x, note_y, 3.8, 2.8, gold, 0.96, seed=seed_for(name, f"note-{index}"))
+    return canvas
+
+
+def paint_grass() -> Canvas:
+    name = "klanggras"
+    canvas = transparent_canvas()
+    shadow = rgba("#163B3E", 225)
+    green = rgba("#65C987", 240)
+    cyan = rgba("#5FF5E0", 245)
+    gold = rgba("#F5C95F", 240)
+    for index, offset in enumerate((-22, -15, -8, 0, 8, 15, 22)):
+        top_x = 32 + offset + (-4 if index % 2 == 0 else 4)
+        top_y = 15 + abs(offset) // 3
+        canvas.line(
+            (32 + offset // 3, 63),
+            (top_x, top_y),
+            shadow,
+            5.0,
+            0.78,
+            seed=seed_for(name, f"shadow-{index}"),
+        )
+        canvas.line(
+            (32 + offset // 3, 63),
+            (top_x, top_y),
+            green if index % 3 else cyan,
+            2.8,
+            0.95,
+            seed=seed_for(name, f"blade-{index}"),
+        )
+        if index % 2 == 1:
+            canvas.brush(top_x, top_y, 2.8, 2.8, gold, 0.88, seed=seed_for(name, f"tip-{index}"))
+    return canvas
+
+
+def paint_glass(name: str, palette_name: str) -> Canvas:
+    palette = FUNCTION_PALETTES[palette_name]
+    canvas = Canvas((*palette.base[:3], 72))
+    rng = random.Random(seed_for(name, "glass"))
+    for y in range(SIZE):
+        for x in range(SIZE):
+            shimmer = periodic_noise(seed_for(name, "glass-noise"), x, y, 8)
+            alpha = 54 + round(shimmer * 38)
+            color = mix(palette.shadow, palette.light, shimmer * 0.55)
+            canvas.pixels[y * SIZE + x] = (*color[:3], alpha)
+    for coordinate in (1, 3, 60, 62):
+        canvas.line((coordinate, 0), (coordinate, 63), palette.accent, 1.2, 0.7, seed=rng.randrange(1 << 30))
+        canvas.line((0, coordinate), (63, coordinate), palette.accent, 1.2, 0.7, seed=rng.randrange(1 << 30))
+    canvas.ring((32, 32), 18, 18, palette.accent, 1.5, 0.55, seed=seed_for(name, "ring"))
+    canvas.line((27, 20), (27, 43), palette.accent, 2.0, 0.72, seed=seed_for(name, "note-stem"))
+    canvas.line((27, 20), (42, 17), palette.accent, 2.0, 0.72, seed=seed_for(name, "note-flag"))
+    canvas.brush(23, 45, 4.5, 3.2, palette.accent, 0.76, seed=seed_for(name, "note-head"))
+    return canvas
+
+
 def render_texture(name: str) -> Canvas:
     for material, palette in PALETTES.items():
         if name == material:
@@ -710,6 +844,13 @@ def render_texture(name: str) -> Canvas:
         "stimmpfeiler": lambda: paint_pillar(False),
         "stimmpfeiler_attuned": lambda: paint_pillar(True),
         "taktbruecke": paint_bridge,
+        "klangkoralle": paint_coral,
+        "notenranke": paint_vine,
+        "klanggras": paint_grass,
+        "resonanzglas": lambda: paint_glass("resonanzglas", "indigo"),
+        "resonanzglas_cyan": lambda: paint_glass("resonanzglas_cyan", "cyan"),
+        "resonanzglas_gold": lambda: paint_glass("resonanzglas_gold", "gold"),
+        "resonanzglas_magenta": lambda: paint_glass("resonanzglas_magenta", "magenta"),
     }
     try:
         return renderers[name]()

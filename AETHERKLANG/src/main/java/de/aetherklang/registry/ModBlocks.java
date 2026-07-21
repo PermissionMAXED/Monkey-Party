@@ -61,6 +61,16 @@ public final class ModBlocks {
     public static final String RESONANZHOLZ_PLANKEN_ID = "resonanzholz_planken";
     public static final String RESONANZHOLZ_TREPPE_ID = "resonanzholz_treppe";
     public static final String RESONANZHOLZ_STUFE_ID = "resonanzholz_stufe";
+    public static final String KLANGKORALLE_ID = "klangkoralle";
+    public static final String NOTENRANKE_ID = "notenranke";
+    public static final String KLANGGRAS_ID = "klanggras";
+    public static final String RESONANZGLAS_ID = "resonanzglas";
+    public static final String RESONANZGLAS_CYAN_ID = "resonanzglas_cyan";
+    public static final String RESONANZGLAS_GOLD_ID = "resonanzglas_gold";
+    public static final String RESONANZGLAS_MAGENTA_ID = "resonanzglas_magenta";
+    public static final String STERNENQUARZ_ID = "sternenquarz";
+    public static final String STERNENQUARZ_POLIERT_ID = "sternenquarz_poliert";
+    public static final String STERNENQUARZ_ZIEGEL_ID = "sternenquarz_ziegel";
 
     public static final ResonanceCrystalBlock RESONANZKRISTALL_INDIGO =
             registerCrystal(RESONANZKRISTALL_INDIGO_ID, DyeColor.PURPLE, 9);
@@ -267,6 +277,22 @@ public final class ModBlocks {
                     .strength(2.0F, 3.0F)
                     .sounds(BlockSoundGroup.WOOD)
     );
+    public static final Block KLANGKORALLE =
+            registerPlant(KLANGKORALLE_ID, DyeColor.CYAN, BlockSoundGroup.CORAL, 5);
+    public static final Block NOTENRANKE =
+            registerPlant(NOTENRANKE_ID, DyeColor.PURPLE, BlockSoundGroup.VINE, 3);
+    public static final Block KLANGGRAS =
+            registerPlant(KLANGGRAS_ID, DyeColor.GREEN, BlockSoundGroup.GRASS, 2);
+    public static final Block RESONANZGLAS = registerGlass(RESONANZGLAS_ID, DyeColor.PURPLE, 4);
+    public static final Block RESONANZGLAS_CYAN = registerGlass(RESONANZGLAS_CYAN_ID, DyeColor.CYAN, 6);
+    public static final Block RESONANZGLAS_GOLD = registerGlass(RESONANZGLAS_GOLD_ID, DyeColor.YELLOW, 7);
+    public static final Block RESONANZGLAS_MAGENTA = registerGlass(RESONANZGLAS_MAGENTA_ID, DyeColor.MAGENTA, 6);
+    public static final Block STERNENQUARZ =
+            registerStone(STERNENQUARZ_ID, BlockSoundGroup.CALCITE, 2.2F, DyeColor.WHITE);
+    public static final Block STERNENQUARZ_POLIERT =
+            registerStone(STERNENQUARZ_POLIERT_ID, BlockSoundGroup.CALCITE, 2.4F, DyeColor.WHITE);
+    public static final Block STERNENQUARZ_ZIEGEL =
+            registerStone(STERNENQUARZ_ZIEGEL_ID, BlockSoundGroup.DEEPSLATE_BRICKS, 2.6F, DyeColor.LIGHT_BLUE);
 
     private ModBlocks() {
     }
@@ -313,6 +339,34 @@ public final class ModBlocks {
         );
     }
 
+    private static Block registerPlant(String path, DyeColor color, BlockSoundGroup sounds, int luminance) {
+        return register(
+                path,
+                Block::new,
+                settings -> settings
+                        .mapColor(color)
+                        .breakInstantly()
+                        .sounds(sounds)
+                        .luminance(state -> luminance)
+                        .noCollision()
+                        .nonOpaque()
+                        .pistonBehavior(PistonBehavior.DESTROY)
+        );
+    }
+
+    private static Block registerGlass(String path, DyeColor color, int luminance) {
+        return register(
+                path,
+                Block::new,
+                settings -> settings
+                        .mapColor(color)
+                        .strength(0.3F)
+                        .sounds(BlockSoundGroup.GLASS)
+                        .luminance(state -> luminance)
+                        .nonOpaque()
+        );
+    }
+
     private static <T extends Block> T register(
             String path,
             Function<AbstractBlock.Settings, T> factory,
@@ -325,6 +379,6 @@ public final class ModBlocks {
     }
 
     public static void register() {
-        Aetherklang.LOGGER.debug("Registered {} Aetherklang blocks", 32);
+        Aetherklang.LOGGER.debug("Registered {} Aetherklang blocks", 42);
     }
 }

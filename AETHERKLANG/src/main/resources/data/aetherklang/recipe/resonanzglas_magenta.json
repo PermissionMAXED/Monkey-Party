@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "building",
+  "ingredients": [
+    "aetherklang:resonanzglas",
+    "minecraft:magenta_dye"
+  ],
+  "result": {
+    "count": 1,
+    "id": "aetherklang:resonanzglas_magenta"
+  }
+}
