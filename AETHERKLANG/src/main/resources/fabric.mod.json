@@ -14,11 +14,13 @@
   "entrypoints": {
     "main": [
       "de.aetherklang.Aetherklang",
-      "de.aetherklang.insel.InselServerInitializer"
+      "de.aetherklang.insel.InselServerInitializer",
+      "de.aetherklang.komposition.Komposition"
     ],
     "client": [
       "de.aetherklang.client.AetherklangClient",
-      "de.aetherklang.insel.client.InselClientInitializer"
+      "de.aetherklang.insel.client.InselClientInitializer",
+      "de.aetherklang.komposition.client.KompositionClient"
     ]
   },
   "mixins": [

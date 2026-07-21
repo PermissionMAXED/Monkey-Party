@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "C": "aetherklang:resonanzkristall_gold",
+    "D": "aetherklang:klangstaub",
+    "P": "minecraft:paper"
+  },
+  "pattern": [
+    " D ",
+    "PCP",
+    " P "
+  ],
+  "result": {
+    "count": 1,
+    "id": "aetherklang:zauberpartitur_harmonie"
+  }
+}

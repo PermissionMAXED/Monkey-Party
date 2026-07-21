@@ -1,6 +1,8 @@
 package de.aetherklang.partitur;
 
 import com.mojang.serialization.MapCodec;
+import de.aetherklang.komposition.KompositionNetworking;
+import de.aetherklang.komposition.ZauberpartiturItem;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
@@ -33,6 +35,17 @@ public final class NotenpultBlock extends Block {
             PlayerEntity player,
             BlockHitResult hit
     ) {
+        boolean holdsScore = player.getMainHandStack().getItem() instanceof ZauberpartiturItem
+                || player.getOffHandStack().getItem() instanceof ZauberpartiturItem;
+        if (holdsScore) {
+            if (world.isClient()) {
+                return ActionResult.SUCCESS;
+            }
+            if (player instanceof ServerPlayerEntity serverPlayer
+                    && KompositionNetworking.openHeldEditor(serverPlayer)) {
+                return ActionResult.SUCCESS_SERVER;
+            }
+        }
         if (world.isClient()) {
             return ActionResult.SUCCESS;
         }

@@ -2,6 +2,10 @@ package de.aetherklang.registry;
 
 import de.aetherklang.Aetherklang;
 import de.aetherklang.dirigent.TaktstockItem;
+import de.aetherklang.klangwerk.Klangoperation;
+import de.aetherklang.komposition.KompositionComponents;
+import de.aetherklang.komposition.Zauberpartitur;
+import de.aetherklang.komposition.ZauberpartiturItem;
 import de.aetherklang.item.BasshammerItem;
 import de.aetherklang.item.ChorherzItem;
 import de.aetherklang.item.EchostiefelItem;
@@ -110,6 +114,9 @@ public final class ModItems {
     public static final String PARTITUR_DISC_1_ID = "partitur_disc_1";
     public static final String PARTITUR_DISC_2_ID = "partitur_disc_2";
     public static final String PARTITUR_DISC_3_ID = "partitur_disc_3";
+    public static final String ZAUBERPARTITUR_STURM_ID = "zauberpartitur_sturm";
+    public static final String ZAUBERPARTITUR_HARMONIE_ID = "zauberpartitur_harmonie";
+    public static final String ZAUBERPARTITUR_ECHO_ID = "zauberpartitur_echo";
 
     public static final Item STIMMGABEL =
             register(STIMMGABEL_ID, StimmgabelItem::new, new Item.Settings().maxCount(1));
@@ -280,6 +287,18 @@ public final class ModItems {
     public static final Item PARTITUR_DISC_1 = registerStub(PARTITUR_DISC_1_ID, 1);
     public static final Item PARTITUR_DISC_2 = registerStub(PARTITUR_DISC_2_ID, 1);
     public static final Item PARTITUR_DISC_3 = registerStub(PARTITUR_DISC_3_ID, 1);
+    public static final Item ZAUBERPARTITUR_STURM = registerScore(
+            ZAUBERPARTITUR_STURM_ID,
+            Zauberpartitur.of(Klangoperation.IMPULS, Klangoperation.WELLE, Klangoperation.STRAHL)
+    );
+    public static final Item ZAUBERPARTITUR_HARMONIE = registerScore(
+            ZAUBERPARTITUR_HARMONIE_ID,
+            Zauberpartitur.of(Klangoperation.SCHUTZ, Klangoperation.FELD, Klangoperation.HEILUNG)
+    );
+    public static final Item ZAUBERPARTITUR_ECHO = registerScore(
+            ZAUBERPARTITUR_ECHO_ID,
+            Zauberpartitur.of(Klangoperation.ANSCHLAG, Klangoperation.ECHO, Klangoperation.KADENZ)
+    );
 
     public static final Item RESONANZKRISTALL_INDIGO =
             registerBlockItem(ModBlocks.RESONANZKRISTALL_INDIGO_ID, ModBlocks.RESONANZKRISTALL_INDIGO);
@@ -418,6 +437,9 @@ public final class ModItems {
             PARTITUR_DISC_1,
             PARTITUR_DISC_2,
             PARTITUR_DISC_3,
+            ZAUBERPARTITUR_STURM,
+            ZAUBERPARTITUR_HARMONIE,
+            ZAUBERPARTITUR_ECHO,
             RESONANZKRISTALL_INDIGO,
             RESONANZKRISTALL_CYAN,
             RESONANZKRISTALL_GOLD,
@@ -495,6 +517,16 @@ public final class ModItems {
 
     private static Item registerMoodElixir(String path, Stimmung mood) {
         return register(path, settings -> new MoodElixirItem(settings, mood), new Item.Settings().maxCount(16));
+    }
+
+    private static Item registerScore(String path, Zauberpartitur score) {
+        return register(
+                path,
+                settings -> new ZauberpartiturItem(settings, score),
+                new Item.Settings()
+                        .maxCount(1)
+                        .component(KompositionComponents.ZAUBERPARTITUR, score)
+        );
     }
 
     private static Item registerBlockItem(String path, Block block) {
