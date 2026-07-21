@@ -1,6 +1,8 @@
 {
   "textures": [
-    "minecraft:glitter_2",
-    "minecraft:glitter_6"
+    "aetherklang:fermate_glimmer_0",
+    "aetherklang:fermate_glimmer_1",
+    "aetherklang:fermate_glimmer_2",
+    "aetherklang:fermate_glimmer_3"
   ]
 }

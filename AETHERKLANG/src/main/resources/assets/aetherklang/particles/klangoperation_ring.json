@@ -1,9 +1,8 @@
 {
   "textures": [
-    "minecraft:glow",
-    "minecraft:sonic_boom_0",
-    "minecraft:sonic_boom_4",
-    "minecraft:sonic_boom_8",
-    "minecraft:sonic_boom_12"
+    "aetherklang:klangoperation_ring_0",
+    "aetherklang:klangoperation_ring_1",
+    "aetherklang:klangoperation_ring_2",
+    "aetherklang:klangoperation_ring_3"
   ]
 }

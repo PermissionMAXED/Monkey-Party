@@ -1,5 +1,8 @@
 {
   "textures": [
-    "minecraft:note"
+    "aetherklang:leitmotiv_note_0",
+    "aetherklang:leitmotiv_note_1",
+    "aetherklang:leitmotiv_note_2",
+    "aetherklang:leitmotiv_note_3"
   ]
 }

@@ -1,6 +1,8 @@
 {
   "textures": [
-    "minecraft:glitter_0",
-    "minecraft:glitter_4"
+    "aetherklang:aurora_wisp_0",
+    "aetherklang:aurora_wisp_1",
+    "aetherklang:aurora_wisp_2",
+    "aetherklang:aurora_wisp_3"
   ]
 }

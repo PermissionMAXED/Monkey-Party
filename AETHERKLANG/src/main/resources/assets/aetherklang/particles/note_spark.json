@@ -1,7 +1,8 @@
 {
   "textures": [
-    "minecraft:note",
-    "minecraft:glitter_0",
-    "minecraft:glitter_4"
+    "aetherklang:note_spark_0",
+    "aetherklang:note_spark_1",
+    "aetherklang:note_spark_2",
+    "aetherklang:note_spark_3"
   ]
 }

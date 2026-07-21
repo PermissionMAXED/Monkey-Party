@@ -1,13 +1,8 @@
 {
   "textures": [
-    "minecraft:glow",
-    "minecraft:spark_1",
-    "minecraft:spark_3",
-    "minecraft:spark_5",
-    "minecraft:spark_7",
-    "minecraft:sweep_0",
-    "minecraft:sweep_2",
-    "minecraft:sweep_4",
-    "minecraft:sweep_6"
+    "aetherklang:glissando_spur_0",
+    "aetherklang:glissando_spur_1",
+    "aetherklang:glissando_spur_2",
+    "aetherklang:glissando_spur_3"
   ]
 }

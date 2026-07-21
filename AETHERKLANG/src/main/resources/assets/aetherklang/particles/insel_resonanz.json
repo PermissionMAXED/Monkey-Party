@@ -1,5 +1,8 @@
 {
   "textures": [
-    "minecraft:glow"
+    "aetherklang:insel_resonanz_0",
+    "aetherklang:insel_resonanz_1",
+    "aetherklang:insel_resonanz_2",
+    "aetherklang:insel_resonanz_3"
   ]
 }

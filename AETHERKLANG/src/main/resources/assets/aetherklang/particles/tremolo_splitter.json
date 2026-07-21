@@ -1,13 +1,8 @@
 {
   "textures": [
-    "minecraft:note",
-    "minecraft:glitter_0",
-    "minecraft:glitter_2",
-    "minecraft:glitter_4",
-    "minecraft:glitter_6",
-    "minecraft:spark_0",
-    "minecraft:spark_2",
-    "minecraft:spark_4",
-    "minecraft:spark_6"
+    "aetherklang:tremolo_splitter_0",
+    "aetherklang:tremolo_splitter_1",
+    "aetherklang:tremolo_splitter_2",
+    "aetherklang:tremolo_splitter_3"
   ]
 }

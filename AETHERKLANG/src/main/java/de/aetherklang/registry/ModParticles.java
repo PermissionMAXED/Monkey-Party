@@ -24,6 +24,12 @@ public final class ModParticles {
     public static final String INSEL_RESONANZ_ID = "insel_resonanz";
     public static final String LEITMOTIV_NOTE_ID = "leitmotiv_note";
     public static final String KLANGOPERATION_RING_ID = "klangoperation_ring";
+    public static final String STERNENFUNKE_ID = "sternenfunke";
+    public static final String NEBELSCHLEIER_ID = "nebelschleier";
+    public static final String RESONANZ_BLITZ_ID = "resonanz_blitz";
+    public static final String HARMONIE_STAUB_ID = "harmonie_staub";
+    public static final String BASSWELLE_ID = "basswelle";
+    public static final String CHOR_GLYPHE_ID = "chor_glyphe";
 
     public static final SimpleParticleType NOTE_SPARK = register(NOTE_SPARK_ID);
     public static final SimpleParticleType BEAT_RING = register(BEAT_RING_ID);
@@ -42,6 +48,12 @@ public final class ModParticles {
     public static final SimpleParticleType INSEL_RESONANZ = register(INSEL_RESONANZ_ID);
     public static final SimpleParticleType LEITMOTIV_NOTE = register(LEITMOTIV_NOTE_ID);
     public static final SimpleParticleType KLANGOPERATION_RING = register(KLANGOPERATION_RING_ID);
+    public static final SimpleParticleType STERNENFUNKE = register(STERNENFUNKE_ID);
+    public static final SimpleParticleType NEBELSCHLEIER = register(NEBELSCHLEIER_ID);
+    public static final SimpleParticleType RESONANZ_BLITZ = register(RESONANZ_BLITZ_ID);
+    public static final SimpleParticleType HARMONIE_STAUB = register(HARMONIE_STAUB_ID);
+    public static final SimpleParticleType BASSWELLE = register(BASSWELLE_ID);
+    public static final SimpleParticleType CHOR_GLYPHE = register(CHOR_GLYPHE_ID);
 
     private ModParticles() {
     }
@@ -55,6 +67,6 @@ public final class ModParticles {
     }
 
     public static void register() {
-        Aetherklang.LOGGER.debug("Registered {} Aetherklang particle types", 17);
+        Aetherklang.LOGGER.debug("Registered {} Aetherklang particle types", 23);
     }
 }
