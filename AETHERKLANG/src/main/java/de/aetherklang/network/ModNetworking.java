@@ -1,6 +1,7 @@
 package de.aetherklang.network;
 
 import de.aetherklang.crescendo.ArmorHooks;
+import de.aetherklang.kanon.KanonEngine;
 import de.aetherklang.leitmotiv.LeitmotivEffects;
 import de.aetherklang.leitmotiv.LeitmotivService;
 import de.aetherklang.leitmotiv.LeitmotivTree;
@@ -144,7 +145,9 @@ public final class ModNetworking {
         if (!player.isAlive() || player.isSpectator() || payload.direction() == 0) {
             return;
         }
-        if (!player.isCreative() && !ResonanceApi.spendRp(player, MOOD_CYCLE_COST)) {
+        if (!player.isCreative()
+                && !KanonEngine.isActive(player)
+                && !ResonanceApi.spendRp(player, MOOD_CYCLE_COST)) {
             player.sendMessage(Text.translatable("message.aetherklang.rp.missing", MOOD_CYCLE_COST), true);
             return;
         }

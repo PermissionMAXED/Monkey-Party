@@ -6,6 +6,7 @@ import static net.minecraft.server.command.CommandManager.literal;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import de.aetherklang.kanon.KanonCommands;
 import de.aetherklang.klangwerk.KlangwerkCommands;
 import de.aetherklang.partitur.PartiturCommands;
 import de.aetherklang.resonance.BeatEngine;
@@ -71,6 +72,7 @@ public final class ModCommands {
                                         ))))
                                 .then(literal("list")
                                         .executes(context -> listCodexPages(context.getSource()))))
+                        .then(KanonCommands.command())
                         .then(KlangwerkCommands.command())
                         .then(PartiturCommands.command())
                 )

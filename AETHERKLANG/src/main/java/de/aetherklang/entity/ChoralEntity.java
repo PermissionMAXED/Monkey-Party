@@ -1,6 +1,7 @@
 package de.aetherklang.entity;
 
 import de.aetherklang.bosswerk.ChoralRepriseService;
+import de.aetherklang.kanon.KanonEngine;
 import de.aetherklang.registry.ModParticles;
 import de.aetherklang.registry.ModSounds;
 import net.minecraft.entity.Entity;
@@ -142,6 +143,9 @@ public final class ChoralEntity extends PhantomEntity {
                     1.2,
                     0.02
             );
+        }
+        if (KanonEngine.isStaggered(this)) {
+            return;
         }
 
         switch (phase) {

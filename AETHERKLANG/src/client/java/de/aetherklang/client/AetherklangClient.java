@@ -12,6 +12,7 @@ import de.aetherklang.crescendo.CrescendoClientHooks;
 import de.aetherklang.dirigent.client.DirigentHud;
 import de.aetherklang.echographie.client.EchographieClient;
 import de.aetherklang.kaskade.KaskadeClientFx;
+import de.aetherklang.kanon.client.KanonHud;
 import de.aetherklang.leitmotiv.client.LeitmotivOpener;
 import de.aetherklang.partitur.client.PartiturClient;
 import de.aetherklang.sturmfront.SturmfrontClient;
@@ -26,6 +27,7 @@ public final class AetherklangClient implements ClientModInitializer {
         LeitmotivOpener.register();
         ResonanceHud.register();
         DirigentHud.register();
+        KanonHud.register();
         ModParticleFactories.register();
         ModEntityRenderers.register();
         EchographieClient.register();

@@ -1,11 +1,14 @@
 package de.aetherklang.item;
 
 import de.aetherklang.Aetherklang;
+import de.aetherklang.kanon.KanonEngine;
+import de.aetherklang.registry.ModItems;
 import de.aetherklang.registry.ModParticles;
 import de.aetherklang.resonance.BeatEngine;
 import de.aetherklang.resonance.BeatTiming;
 import java.util.Locale;
 import net.minecraft.block.Block;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -24,6 +27,33 @@ public final class StimmgabelItem extends Item {
 
     public StimmgabelItem(Settings settings) {
         super(settings);
+    }
+
+    @Override
+    public ActionResult useOnEntity(
+            ItemStack stack,
+            PlayerEntity user,
+            LivingEntity entity,
+            Hand hand
+    ) {
+        if (!(user instanceof ServerPlayerEntity challenger)
+                || !(entity instanceof ServerPlayerEntity opponent)) {
+            return user.getEntityWorld().isClient() ? ActionResult.SUCCESS : ActionResult.PASS;
+        }
+        if (!opponent.getMainHandStack().isOf(ModItems.STIMMGABEL)
+                && !opponent.getOffHandStack().isOf(ModItems.STIMMGABEL)) {
+            challenger.sendMessage(
+                    Text.translatable("message.aetherklang.kanon.duel.needs_stimmgabel"),
+                    true
+            );
+            return ActionResult.FAIL;
+        }
+        if (!KanonEngine.startDuel(challenger, opponent)) {
+            challenger.sendMessage(Text.translatable("message.aetherklang.kanon.duel.unavailable"), true);
+            return ActionResult.FAIL;
+        }
+        challenger.getItemCooldownManager().set(stack, 20);
+        return ActionResult.SUCCESS_SERVER;
     }
 
     @Override

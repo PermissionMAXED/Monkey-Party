@@ -3,6 +3,8 @@ package de.aetherklang.crescendo;
 import de.aetherklang.Aetherklang;
 import de.aetherklang.echographie.EchoCylinderService;
 import de.aetherklang.kaskade.KaskadeHooks;
+import de.aetherklang.kanon.KanonAction;
+import de.aetherklang.kanon.KanonEngine;
 import de.aetherklang.network.ModNetworking;
 import de.aetherklang.registry.ModItems;
 import de.aetherklang.resonance.AkkordEngine;
@@ -53,6 +55,14 @@ public final class EnsembleAkkordHooks {
      * Minimal public hook for future instruments that already validated an on-beat action.
      */
     public static boolean notifyOnBeatAction(ServerPlayerEntity player, Stimmung mood) {
+        return notifyOnBeatAction(player, mood, KanonAction.RESONATE);
+    }
+
+    public static boolean notifyOnBeatAction(
+            ServerPlayerEntity player,
+            Stimmung mood,
+            KanonAction action
+    ) {
         if (!player.isAlive()
                 || player.isSpectator()
                 || !BeatEngine.isOnBeat(player, BeatEngine.GOOD_WINDOW)) {
@@ -66,6 +76,7 @@ public final class EnsembleAkkordHooks {
         }
 
         EchoCylinderService.recordOnBeatAction(player, mood);
+        KanonEngine.onOnBeatAction(player, mood, action);
         EnsembleEngine.onOnBeatAction(player);
         AkkordEngine.onOnBeatAction(player, mood);
         KaskadeHooks.onOnBeatAction(player, mood);
@@ -75,7 +86,11 @@ public final class EnsembleAkkordHooks {
     private static void registerPlayerActions() {
         AttackEntityCallback.EVENT.register((player, world, hand, entity, hitResult) -> {
             if (player instanceof ServerPlayerEntity serverPlayer && world instanceof ServerWorld) {
-                notifyOnBeatAction(serverPlayer, ResonanceApi.getMood(serverPlayer));
+                notifyOnBeatAction(
+                        serverPlayer,
+                        ResonanceApi.getMood(serverPlayer),
+                        KanonAction.STRIKE
+                );
             }
             return ActionResult.PASS;
         });
@@ -86,7 +101,13 @@ public final class EnsembleAkkordHooks {
                     && world instanceof ServerWorld
                     && isImmediateResonanceInstrument(stack)
                     && !player.getItemCooldownManager().isCoolingDown(stack)) {
-                notifyOnBeatAction(serverPlayer, ResonanceApi.getMood(serverPlayer));
+                notifyOnBeatAction(
+                        serverPlayer,
+                        ResonanceApi.getMood(serverPlayer),
+                        stack.isOf(ModItems.STIMMGABEL)
+                                ? KanonAction.STIMMGABEL
+                                : KanonAction.RESONATE
+                );
             }
             return ActionResult.PASS;
         });

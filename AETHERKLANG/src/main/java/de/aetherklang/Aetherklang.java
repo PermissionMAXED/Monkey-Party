@@ -7,6 +7,7 @@ import de.aetherklang.crescendo.CrescendoServerHooks;
 import de.aetherklang.dirigent.DirigentService;
 import de.aetherklang.echographie.Echographie;
 import de.aetherklang.kaskade.KaskadeHooks;
+import de.aetherklang.kanon.KanonEngine;
 import de.aetherklang.klangbahn.Klangbahn;
 import de.aetherklang.klangwerk.KlangwerkLoader;
 import de.aetherklang.leitmotiv.LeitmotivService;
@@ -69,6 +70,7 @@ public final class Aetherklang implements ModInitializer {
         DirigentService.register();
         ModCommands.register();
         BeatEngine.register();
+        KanonEngine.register();
         KammertonWorld.register();
         CrescendoServerHooks.register();
         KaskadeHooks.register();

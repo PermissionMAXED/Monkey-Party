@@ -1,6 +1,7 @@
 package de.aetherklang.bosswerk;
 
 import de.aetherklang.Aetherklang;
+import de.aetherklang.kanon.KanonEngine;
 import de.aetherklang.registry.ModEntities;
 import de.aetherklang.registry.ModParticles;
 import de.aetherklang.registry.ModSounds;
@@ -86,6 +87,10 @@ public final class BosswerkBossEntity extends HostileEntity {
         }
         updatePhase(world);
         spawnAmbientFx(world);
+        if (KanonEngine.isStaggered(this)) {
+            pendingAttack = null;
+            return;
+        }
 
         if (pendingAttack != null && age % 3 == 0) {
             BossAttackExecutor.telegraph(world, this, pendingAttack.attack(), pendingAttack.targetPosition());
