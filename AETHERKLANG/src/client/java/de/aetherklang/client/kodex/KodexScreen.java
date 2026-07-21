@@ -1,5 +1,6 @@
 package de.aetherklang.client.kodex;
 
+import de.aetherklang.client.PaintedScreenArt;
 import de.aetherklang.leitmotiv.client.LeitmotivOpener;
 import de.aetherklang.resonance.client.ClientResonanceCache;
 import java.util.List;
@@ -11,10 +12,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 
 public final class KodexScreen extends Screen {
-    private static final int INDIGO = 0xFF1A1033;
-    private static final int DEEP_INDIGO = 0xFF100820;
-    private static final int PANEL = 0xF2221642;
-    private static final int PANEL_LIGHT = 0xD02B1B50;
+    private static final int PANEL = 0xD8221642;
     private static final int CYAN = 0xFF5FF5E0;
     private static final int GOLD = 0xFFF5C95F;
     private static final int MAGENTA = 0xFFE03A8C;
@@ -41,8 +39,8 @@ public final class KodexScreen extends Screen {
 
     @Override
     protected void init() {
-        panelWidth = Math.min(width - 24, 920);
-        panelHeight = Math.min(height - 24, 520);
+        panelWidth = Math.min(width - 24, Math.max(920, Math.min(1440, width * 4 / 5)));
+        panelHeight = Math.min(height - 24, Math.max(520, Math.min(780, height * 4 / 5)));
         panelX = (width - panelWidth) / 2;
         panelY = (height - panelHeight) / 2;
         compact = panelWidth < 560;
@@ -287,31 +285,14 @@ public final class KodexScreen extends Screen {
     }
 
     private void renderTonariumBackground(DrawContext context) {
-        context.fill(0, 0, width, height, INDIGO);
-        context.fillGradient(0, 0, width, height, 0xFF24134A, DEEP_INDIGO);
-
-        long time = System.currentTimeMillis() / 80L;
-        for (int i = 0; i < 42; i++) {
-            int x = Math.floorMod(i * 97 + 31, Math.max(1, width));
-            int y = Math.floorMod(i * 53 + 17, Math.max(1, height));
-            int pulse = (int) ((time + i * 11L) % 40L);
-            int alpha = 45 + Math.abs(20 - pulse) * 3;
-            int color = (Math.min(120, alpha) << 24) | (i % 3 == 0 ? 0x5FF5E0 : 0xBFA7FF);
-            context.fill(x, y, x + 1, y + 1, color);
-        }
-
-        int waveY = panelY + panelHeight + 8;
-        for (int x = 0; x < width; x += 4) {
-            int y = waveY + (int) (Math.sin((x + time) * 0.055) * 5.0);
-            context.fill(x, y, x + 3, y + 1, 0x405FF5E0);
-        }
+        PaintedScreenArt.draw(context, PaintedScreenArt.Scene.KODEX, width, height);
     }
 
     private void renderFrame(DrawContext context) {
         context.fill(panelX - 2, panelY - 2, panelX + panelWidth + 2, panelY + panelHeight + 2, 0x905FF5E0);
         context.fill(panelX - 1, panelY - 1, panelX + panelWidth + 1, panelY + panelHeight + 1, 0xFFF5C95F);
         context.fill(panelX, panelY, panelX + panelWidth, panelY + panelHeight, PANEL);
-        context.fill(panelX + 4, panelY + 4, panelX + panelWidth - 4, panelY + panelHeight - 4, 0x302E1B52);
+        context.fill(panelX + 4, panelY + 4, panelX + panelWidth - 4, panelY + panelHeight - 4, 0x482E1B52);
 
         int sidebarEdge = panelX + sidebarWidth;
         int indexEdge = sidebarEdge + indexWidth;

@@ -1,5 +1,6 @@
 package de.aetherklang.leitmotiv.client;
 
+import de.aetherklang.client.PaintedScreenArt;
 import de.aetherklang.leitmotiv.LeitmotivBranch;
 import de.aetherklang.leitmotiv.LeitmotivNode;
 import de.aetherklang.leitmotiv.LeitmotivTree;
@@ -16,8 +17,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 
 public final class LeitmotivScreen extends Screen {
-    private static final int BACKGROUND = 0xFF100820;
-    private static final int PANEL = 0xF21A1033;
+    private static final int PANEL = 0xD81A1033;
     private static final int PAPER = 0xFFF4EEFF;
     private static final int MUTED = 0xFFB4A7C6;
     private static final int GOLD = 0xFFF5C95F;
@@ -37,8 +37,8 @@ public final class LeitmotivScreen extends Screen {
 
     @Override
     protected void init() {
-        panelWidth = Math.min(width - 20, 900);
-        panelHeight = Math.min(height - 20, 560);
+        panelWidth = Math.min(width - 20, Math.max(900, Math.min(1400, width * 4 / 5)));
+        panelHeight = Math.min(height - 20, Math.max(560, Math.min(800, height * 4 / 5)));
         panelX = (width - panelWidth) / 2;
         panelY = (height - panelHeight) / 2;
         rebuildWidgets();
@@ -119,13 +119,7 @@ public final class LeitmotivScreen extends Screen {
     }
 
     private void renderBackground(DrawContext context) {
-        context.fill(0, 0, width, height, BACKGROUND);
-        context.fillGradient(0, 0, width, height, 0xFF24134A, BACKGROUND);
-        for (int index = 0; index < 36; index++) {
-            int x = Math.floorMod(index * 83 + 19, Math.max(1, width));
-            int y = Math.floorMod(index * 47 + 31, Math.max(1, height));
-            context.fill(x, y, x + 1, y + 1, index % 3 == 0 ? 0x805FF5E0 : 0x60F5C95F);
-        }
+        PaintedScreenArt.draw(context, PaintedScreenArt.Scene.LEITMOTIV, width, height);
     }
 
     private void renderFrame(DrawContext context) {

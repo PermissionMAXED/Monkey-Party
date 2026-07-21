@@ -1,5 +1,6 @@
 package de.aetherklang.partitur.client;
 
+import de.aetherklang.client.PaintedScreenArt;
 import de.aetherklang.partitur.PartiturPayloads;
 import java.util.ArrayList;
 import java.util.List;
@@ -15,11 +16,9 @@ import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 
 public final class NotenpultScreen extends Screen {
-    private static final int INDIGO = 0xFF1A1033;
-    private static final int DEEP_INDIGO = 0xFF0B0718;
-    private static final int PANEL = 0xF21D1238;
-    private static final int CARD = 0xD02B1B50;
-    private static final int CARD_COMPLETE = 0xD01B4B49;
+    private static final int PANEL = 0xD81D1238;
+    private static final int CARD = 0xC02B1B50;
+    private static final int CARD_COMPLETE = 0xC01B4B49;
     private static final int CYAN = 0xFF5FF5E0;
     private static final int GOLD = 0xFFF5C95F;
     private static final int MAGENTA = 0xFFE03A8C;
@@ -39,8 +38,8 @@ public final class NotenpultScreen extends Screen {
 
     @Override
     protected void init() {
-        panelWidth = Math.min(width - 20, 820);
-        panelHeight = Math.min(height - 20, 440);
+        panelWidth = Math.min(width - 20, Math.max(820, Math.min(1260, width * 4 / 5)));
+        panelHeight = Math.min(height - 20, Math.max(440, Math.min(700, height * 4 / 5)));
         panelX = (width - panelWidth) / 2;
         panelY = (height - panelHeight) / 2;
         wide = panelWidth >= 610;
@@ -128,14 +127,7 @@ public final class NotenpultScreen extends Screen {
     }
 
     private void renderBackdrop(DrawContext context) {
-        context.fill(0, 0, width, height, DEEP_INDIGO);
-        context.fillGradient(0, 0, width, height, 0xFF28144C, INDIGO);
-        long time = System.currentTimeMillis() / 100L;
-        for (int note = 0; note < 30; note++) {
-            int x = Math.floorMod(note * 83 + 17, Math.max(1, width));
-            int y = Math.floorMod(note * 47 + (int) time, Math.max(1, height));
-            context.fill(x, y, x + 1, y + 1, note % 4 == 0 ? 0x805FF5E0 : 0x60F5C95F);
-        }
+        PaintedScreenArt.draw(context, PaintedScreenArt.Scene.NOTENPULT, width, height);
     }
 
     private void renderFrame(DrawContext context) {
