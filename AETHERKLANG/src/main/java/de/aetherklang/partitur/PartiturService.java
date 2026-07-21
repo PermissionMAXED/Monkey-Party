@@ -11,6 +11,7 @@ import de.aetherklang.resonance.ResonanceApi;
 import de.aetherklang.world.KammertonWorld;
 import java.util.List;
 import java.util.Locale;
+import net.fabricmc.fabric.api.attachment.v1.AttachmentTarget;
 import net.fabricmc.fabric.api.entity.event.v1.ServerEntityCombatEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
@@ -52,7 +53,7 @@ public final class PartiturService {
     }
 
     public static PartiturPlayerData getData(ServerPlayerEntity player) {
-        return player.getAttachedOrCreate(ModAttachments.PARTITUR);
+        return ((AttachmentTarget) player).getAttachedOrCreate(ModAttachments.PARTITUR);
     }
 
     public static void open(ServerPlayerEntity player) {

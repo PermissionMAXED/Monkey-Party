@@ -82,6 +82,7 @@ public final class EnsembleBeamFx {
         linkLimit = Math.min(linkLimit, GeoBeamRenderer.MAX_BEAMS);
         List<AbstractClientPlayerEntity> links = client.world.getPlayers().stream()
                 .filter(candidate -> candidate != player)
+                .map(AbstractClientPlayerEntity.class::cast)
                 .filter(AbstractClientPlayerEntity::isAlive)
                 .filter(candidate -> ensembleMembers == null || ensembleMembers.contains(candidate.getUuid()))
                 .filter(candidate -> candidate.squaredDistanceTo(player) <= maxLinkDistance * maxLinkDistance)

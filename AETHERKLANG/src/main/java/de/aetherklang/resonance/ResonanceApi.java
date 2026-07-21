@@ -11,6 +11,7 @@ import de.aetherklang.registry.ModSounds;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
+import net.fabricmc.fabric.api.attachment.v1.AttachmentTarget;
 import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
@@ -29,7 +30,7 @@ public final class ResonanceApi {
     }
 
     public static ResonancePlayerData getData(ServerPlayerEntity player) {
-        return player.getAttachedOrCreate(ModAttachments.RESONANCE);
+        return ((AttachmentTarget) player).getAttachedOrCreate(ModAttachments.RESONANCE);
     }
 
     public static int addRp(ServerPlayerEntity player, int amount) {

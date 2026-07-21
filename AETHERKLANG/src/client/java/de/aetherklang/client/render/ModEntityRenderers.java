@@ -1,6 +1,7 @@
 package de.aetherklang.client.render;
 
 import de.aetherklang.Aetherklang;
+import de.aetherklang.client.render.holo.KristallresonatorBlockEntityRenderer;
 import de.aetherklang.registry.ModBlockEntities;
 import de.aetherklang.registry.ModEntities;
 import net.fabricmc.fabric.api.client.rendering.v1.BlockEntityRendererRegistry;
@@ -28,6 +29,10 @@ public final class ModEntityRenderers {
         BlockEntityRendererRegistry.register(
                 ModBlockEntities.STIMMALTAR,
                 StimmaltarBlockEntityRenderer::new
+        );
+        BlockEntityRendererRegistry.register(
+                ModBlockEntities.KRISTALLRESONATOR,
+                KristallresonatorBlockEntityRenderer::new
         );
         EntityRendererRegistry.register(
                 ModEntities.DISSONANZGEIST,

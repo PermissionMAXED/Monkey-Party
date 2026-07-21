@@ -1,11 +1,17 @@
 package de.aetherklang.block;
 
 import com.mojang.serialization.MapCodec;
+import de.aetherklang.registry.ModBlockEntities;
 import de.aetherklang.registry.ModParticles;
 import de.aetherklang.registry.ModSounds;
 import de.aetherklang.resonance.ResonanceApi;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.BlockWithEntity;
+import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.block.entity.BlockEntityTicker;
+import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
@@ -18,11 +24,12 @@ import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Converts the chorus of nearby resonance crystals into a rechargeable RP pulse.
  */
-public final class KristallresonatorBlock extends Block {
+public final class KristallresonatorBlock extends BlockWithEntity {
     public static final MapCodec<KristallresonatorBlock> CODEC = createCodec(KristallresonatorBlock::new);
     public static final BooleanProperty CHARGED = BooleanProperty.of("charged");
 
@@ -45,6 +52,31 @@ public final class KristallresonatorBlock extends Block {
     }
 
     @Override
+    protected BlockRenderType getRenderType(BlockState state) {
+        return BlockRenderType.MODEL;
+    }
+
+    @Nullable
+    @Override
+    public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
+        return new KristallresonatorBlockEntity(pos, state);
+    }
+
+    @Nullable
+    @Override
+    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(
+            World world,
+            BlockState state,
+            BlockEntityType<T> type
+    ) {
+        return validateTicker(
+                type,
+                ModBlockEntities.KRISTALLRESONATOR,
+                KristallresonatorBlockEntity::tick
+        );
+    }
+
+    @Override
     protected ActionResult onUse(
             BlockState state,
             World world,
@@ -52,24 +84,41 @@ public final class KristallresonatorBlock extends Block {
             PlayerEntity player,
             BlockHitResult hit
     ) {
-        if (!(world instanceof ServerWorld serverWorld) || !(player instanceof ServerPlayerEntity serverPlayer)) {
+        if (!(world.getBlockEntity(pos) instanceof KristallresonatorBlockEntity resonator)) {
+            return ActionResult.PASS;
+        }
+        if (!(world instanceof ServerWorld serverWorld)
+                || !(player instanceof ServerPlayerEntity serverPlayer)) {
             return ActionResult.SUCCESS;
+        }
+        if (player.isSneaking()) {
+            KristallresonatorBlockEntity.HologramMode mode = resonator.cycleHologramMode();
+            serverPlayer.sendMessage(
+                    Text.translatable(
+                            "message.aetherklang.kristallresonator.mode",
+                            Text.translatable(mode.getTranslationKey())
+                    ),
+                    true
+            );
+            serverWorld.playSound(null, pos, ModSounds.BEAT_TICK, SoundCategory.BLOCKS, 0.55F, 1.7F);
+            return ActionResult.SUCCESS_SERVER;
         }
         if (!state.get(CHARGED)) {
             serverPlayer.sendMessage(Text.translatable("message.aetherklang.kristallresonator.recharging"), true);
             return ActionResult.SUCCESS_SERVER;
         }
 
-        int crystals = countCrystals(serverWorld, pos);
+        int crystals = resonator.refreshCrystalCount(serverWorld);
         if (crystals == 0) {
             serverPlayer.sendMessage(Text.translatable("message.aetherklang.kristallresonator.no_crystals"), true);
             return ActionResult.SUCCESS_SERVER;
         }
 
-        int reward = Math.min(6, crystals);
+        int reward = rewardFor(crystals);
         ResonanceApi.addRp(serverPlayer, reward);
         serverWorld.setBlockState(pos, state.with(CHARGED, false), Block.NOTIFY_ALL);
         serverWorld.scheduleBlockTick(pos, this, RECHARGE_TICKS);
+        resonator.beginRecharge(serverWorld.getTime() + RECHARGE_TICKS);
         serverWorld.spawnParticles(
                 ModParticles.NOTE_SPARK,
                 pos.getX() + 0.5D,
@@ -93,6 +142,10 @@ public final class KristallresonatorBlock extends Block {
     protected void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
         if (!state.get(CHARGED)) {
             world.setBlockState(pos, state.with(CHARGED, true), Block.NOTIFY_ALL);
+            if (world.getBlockEntity(pos) instanceof KristallresonatorBlockEntity resonator) {
+                resonator.finishRecharge();
+                resonator.refreshCrystalCount(world);
+            }
             world.spawnParticles(
                     ModParticles.LEITMOTIV_NOTE,
                     pos.getX() + 0.5D,
@@ -126,7 +179,7 @@ public final class KristallresonatorBlock extends Block {
         return state.get(CHARGED) ? 12 : 3;
     }
 
-    private static int countCrystals(ServerWorld world, BlockPos origin) {
+    static int countCrystals(World world, BlockPos origin) {
         int crystals = 0;
         for (BlockPos target : BlockPos.iterateOutwards(
                 origin,
@@ -139,5 +192,9 @@ public final class KristallresonatorBlock extends Block {
             }
         }
         return crystals;
+    }
+
+    static int rewardFor(int crystals) {
+        return Math.min(6, Math.max(0, crystals));
     }
 }
