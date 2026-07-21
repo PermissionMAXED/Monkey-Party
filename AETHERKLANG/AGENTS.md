@@ -67,6 +67,9 @@
 - `tools/generate_palette_textures.py` batch-generates unique palette-shifted
   PNGs for items/blocks that still pointed at Minecraft placeholders; rerun
   after adding new stub models.
+- `tools/generate_uhd_items.py` deterministically owns all item PNGs and their
+  shimmer metadata. Replace a generated PNG with a square 16px or 32px RGBA
+  source before regenerating; use `--check` to detect stale 64px output.
 - The client Kodex still loads the single
   `assets/aetherklang/kodex/pages.json`; preserve existing order because list
   indices are persisted folio IDs, and add matching keys to both language files.
