@@ -73,3 +73,28 @@
 - The client Kodex still loads the single
   `assets/aetherklang/kodex/pages.json`; preserve existing order because list
   indices are persisted folio IDs, and add matching keys to both language files.
+- Client keybinds: `K` Kodex, `L` Leitmotiv, `R` Dash, `M` Mood-Zyklus,
+  `N` adaptive music toggle, `O` Fotomodus (cinematic camera, hides HUD, adds
+  film treatment), `I` Resonanzlinse (resonance overlay). `O`/`I` live in
+  `src/client/java/de/aetherklang/client/photo/`; they are client-only and need
+  no server payloads.
+- Feature one-liners (post-Sinfonie wave): **Photo** — `PhotoModus`/
+  `Resonanzlinse` cinematic camera + lens overlay (keys `O`/`I`).
+  **Klangflora** — decorative block kit (Klanggras, Klangkoralle, Notenranke,
+  Resonanzglas variants, Sternenquarz set) in `registry/ModBlocks.java`.
+  **Dirigent** — Taktstock conductor item calls ensemble Akkorde; requires the
+  Dirigent rank (`dirigent/DirigentService.java`). **Echographie** — Echo
+  cylinder records player runs and replays them as ghost `EchoEntity`s.
+  **Kanon** — call-and-response note duels via `/aetherklang kanon
+  start|status|stop`. **Klangbahn** — Bahnanker spawns rideable beat-light
+  rails to attuned Stimmpfeiler within 64 blocks. **Sturmfront** — roaming
+  dissonance weather front in Kammerton, pushed back by Akkorde
+  (`/aetherklang sturmfront summon|status|push`). **Zauberpartitur** — compose
+  spell scores at the Notenpult (`KomponistenScreen`); three cast items.
+  **Resonanzfeld** — territory field from ≥3 linked resonators with siege
+  events (`/aetherklang resonanzfeld status|siege`). **Hologram** —
+  Kristallresonator block entity projects a 3-mode holographic status display.
+  **Music v2** — `AdaptiveMusicSequencer` layers generative note-block music
+  over the beat FX stream (toggle `N`).
+- All new client FX must draw through `client/fx/FxBudget` so the global
+  per-frame particle/render budget stays enforced.
