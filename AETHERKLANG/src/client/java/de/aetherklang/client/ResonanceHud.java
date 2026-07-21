@@ -12,12 +12,9 @@ import net.minecraft.text.Text;
 import net.minecraft.util.math.ColorHelper;
 
 public final class ResonanceHud {
-    private static final int PANEL_WIDTH = 194;
-    private static final int PANEL_HEIGHT = 58;
-    private static final int INDIGO = 0xE61A1033;
-    private static final int DEEP_INDIGO = 0xF20D071D;
+    public static final int PANEL_WIDTH = 202;
+    public static final int PANEL_HEIGHT = 60;
     private static final int CYAN = 0xFF5FF5E0;
-    private static final int CYAN_DARK = 0xFF237E86;
     private static final int GOLD = 0xFFF5C95F;
     private static final int MAGENTA = 0xFFE03A8C;
     private static final int PAPER = 0xFFF4EEFF;
@@ -55,21 +52,28 @@ public final class ResonanceHud {
         boolean onBeat = beatDistance <= BeatEngine.PERFECT_WINDOW;
         float pulse = onBeat ? 1.0F - beatDistance / BeatEngine.PERFECT_WINDOW : 0.0F;
 
-        drawPanel(context, x, y);
+        drawPanel(context, x, y, moodColor, pulse);
         drawMood(context, client, x, y, mood, moodColor);
         drawRp(context, client, x, y, rp, rpCap);
         drawBeat(context, client, x, y, phase, pulse);
         drawDissonanz(context, client, x, y, dissonanz);
     }
 
-    private static void drawPanel(DrawContext context, int x, int y) {
-        cutCornerFill(context, x + 2, y + 3, PANEL_WIDTH, PANEL_HEIGHT, 0x70000000);
-        cutCornerFill(context, x, y, PANEL_WIDTH, PANEL_HEIGHT, 0xD0F5C95F);
-        cutCornerFill(context, x + 1, y + 1, PANEL_WIDTH - 2, PANEL_HEIGHT - 2, INDIGO);
-        context.fill(x + 5, y + 5, x + PANEL_WIDTH - 5, y + PANEL_HEIGHT - 5, DEEP_INDIGO);
-        context.fill(x + 5, y + 5, x + PANEL_WIDTH - 5, y + 6, 0xA05FF5E0);
-        context.fill(x + 5, y + 6, x + 37, y + 7, GOLD);
-        context.fill(x + PANEL_WIDTH - 18, y + PANEL_HEIGHT - 6, x + PANEL_WIDTH - 5, y + PANEL_HEIGHT - 5, GOLD);
+    private static void drawPanel(DrawContext context, int x, int y, int moodColor, float pulse) {
+        GlassHud.drawPanel(context, x, y, PANEL_WIDTH, PANEL_HEIGHT, moodColor, 226);
+        context.fill(x + 41, y + 10, x + 42, y + PANEL_HEIGHT - 9, 0x465FF5E0);
+        context.fill(x + 158, y + 10, x + 159, y + PANEL_HEIGHT - 9, 0x36FFFFFF);
+        if (pulse > 0.0F) {
+            int alpha = Math.round(48.0F + pulse * 104.0F);
+            GlassHud.cutCornerFill(
+                    context,
+                    x + 160,
+                    y + 7,
+                    35,
+                    45,
+                    GlassHud.withAlpha(GOLD, alpha)
+            );
+        }
     }
 
     private static void drawMood(
@@ -81,18 +85,20 @@ public final class ResonanceHud {
             int moodColor
     ) {
         int iconX = x + 9;
-        int iconY = y + 12;
-        context.fill(iconX, iconY, iconX + 27, iconY + 27, 0x802E1B52);
-        context.fill(iconX + 1, iconY + 1, iconX + 26, iconY + 26, 0xC0140A28);
+        int iconY = y + 17;
+        GlassHud.drawInset(context, iconX, iconY, 27, 27, moodColor, true);
         drawMoodIcon(context, mood, iconX + 7, iconY + 6, moodColor);
 
         context.drawTextWithShadow(
                 client.textRenderer,
                 Text.translatable(mood.getTranslationKey()),
                 x + 43,
-                y + 8,
+                y + 7,
                 moodColor
         );
+        GlassHud.drawPip(context, x + 14, y + 10, moodColor, true);
+        GlassHud.drawPip(context, x + 21, y + 10, moodColor, false);
+        GlassHud.drawPip(context, x + 28, y + 10, moodColor, false);
     }
 
     private static void drawRp(
@@ -104,9 +110,9 @@ public final class ResonanceHud {
             int rpCap
     ) {
         int barX = x + 43;
-        int barY = y + 22;
+        int barY = y + 20;
         int barWidth = 111;
-        int fill = Math.round(barWidth * rp / (float) rpCap);
+        float progress = rp / (float) Math.max(1, rpCap);
         context.drawTextWithShadow(client.textRenderer, Text.literal("RP"), barX, barY - 1, PAPER);
         Text amount = Text.literal(rp + " / " + rpCap);
         context.drawTextWithShadow(
@@ -117,13 +123,7 @@ public final class ResonanceHud {
                 MUTED
         );
         barY += 10;
-        context.fill(barX, barY, barX + barWidth, barY + 7, 0xFF080413);
-        context.fill(barX + 1, barY + 1, barX + barWidth - 1, barY + 6, 0xFF261745);
-        if (fill > 0) {
-            context.fill(barX + 1, barY + 1, barX + fill, barY + 6, CYAN_DARK);
-            context.fill(barX + 1, barY + 1, barX + fill, barY + 3, CYAN);
-            context.fill(barX + Math.max(1, fill - 1), barY + 1, barX + fill, barY + 6, GOLD);
-        }
+        GlassHud.drawBar(context, barX, barY, barWidth, 7, progress, CYAN, GOLD);
     }
 
     private static void drawBeat(
@@ -134,7 +134,7 @@ public final class ResonanceHud {
             float phase,
             float pulse
     ) {
-        int centerX = x + 173;
+        int centerX = x + 177;
         int top = y + 10;
         int pulseAlpha = Math.round(95 + pulse * 160.0F);
         int beatColor = ColorHelper.withAlpha(pulseAlpha, GOLD);
@@ -147,10 +147,10 @@ public final class ResonanceHud {
             context.fill(centerX + radius, top - 2, centerX + radius + 1, top + 20, beatColor);
         }
 
-        context.fill(centerX - 8, top + 17, centerX + 9, top + 19, 0xFF6D568A);
-        context.fill(centerX - 5, top + 15, centerX + 6, top + 17, 0xFFB99B55);
-        context.fill(centerX - 4, top + 3, centerX - 3, top + 15, 0xA0F5C95F);
-        context.fill(centerX + 3, top + 3, centerX + 4, top + 15, 0xA0F5C95F);
+        context.fill(centerX - 8, top + 17, centerX + 9, top + 19, 0xA06D568A);
+        context.fill(centerX - 5, top + 15, centerX + 6, top + 17, 0xD0B99B55);
+        context.fill(centerX - 4, top + 3, centerX - 3, top + 15, 0xB0F5C95F);
+        context.fill(centerX + 3, top + 3, centerX + 4, top + 15, 0xB0F5C95F);
 
         float swing = (float) Math.sin(phase * Math.PI * 2.0D);
         int pendulumX = centerX + Math.round(swing * 7.0F);
@@ -160,7 +160,7 @@ public final class ResonanceHud {
                 client.textRenderer,
                 Text.literal(pulse > 0.0F ? "TAKT" : "· · ·"),
                 centerX,
-                y + 40,
+                y + 42,
                 pulse > 0.0F ? GOLD : MUTED
         );
     }
@@ -173,18 +173,12 @@ public final class ResonanceHud {
             float dissonanz
     ) {
         int meterX = x + 43;
-        int meterY = y + 45;
+        int meterY = y + 47;
         int meterWidth = 111;
-        int fill = Math.round(meterWidth * dissonanz);
         context.drawTextWithShadow(client.textRenderer, Text.literal("DIS"), meterX, meterY - 2, MUTED);
         int trackX = meterX + 22;
         int trackWidth = meterWidth - 22;
-        context.fill(trackX, meterY, trackX + trackWidth, meterY + 4, 0xFF261745);
-        int dissonanzFill = Math.round(trackWidth * dissonanz);
-        if (dissonanzFill > 0) {
-            context.fill(trackX, meterY, trackX + dissonanzFill, meterY + 4, MAGENTA);
-            context.fill(trackX, meterY, trackX + dissonanzFill, meterY + 1, 0xFFF59AC7);
-        }
+        GlassHud.drawBar(context, trackX, meterY, trackWidth, 5, dissonanz, MAGENTA, 0xFFF59AC7);
 
         Text amount = Text.literal(Math.round(dissonanz * 100.0F) + "%");
         context.drawTextWithShadow(
@@ -192,7 +186,7 @@ public final class ResonanceHud {
                 amount,
                 meterX + meterWidth - client.textRenderer.getWidth(amount),
                 meterY - 2,
-                fill >= 78 ? MAGENTA : MUTED
+                dissonanz >= 0.78F ? MAGENTA : MUTED
         );
     }
 
@@ -249,11 +243,6 @@ public final class ResonanceHud {
                 context.fill(x + 9, y + 9, x + 11, y + 11, color);
             }
         }
-    }
-
-    private static void cutCornerFill(DrawContext context, int x, int y, int width, int height, int color) {
-        context.fill(x + 2, y, x + width - 2, y + height, color);
-        context.fill(x, y + 2, x + width, y + height - 2, color);
     }
 
     private static void drawLine(DrawContext context, int x0, int y0, int x1, int y1, int color) {
