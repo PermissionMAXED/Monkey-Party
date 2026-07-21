@@ -5,6 +5,7 @@ import de.aetherklang.registry.ModParticles;
 import de.aetherklang.registry.ModSounds;
 import de.aetherklang.resonance.EnsembleEngine;
 import de.aetherklang.resonance.Stimmung;
+import de.aetherklang.sturmfront.SturmfrontEngine;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -176,6 +177,7 @@ public final class WeltakkordEngine {
             );
         }
         KaskadeNetworking.broadcastWeltakkord(world, center, participants, power, reduced);
+        SturmfrontEngine.onWeltakkord(world, center, power, reduced);
     }
 
     private static void spawnFx(ServerWorld world, Vec3d center, int power, boolean reduced) {

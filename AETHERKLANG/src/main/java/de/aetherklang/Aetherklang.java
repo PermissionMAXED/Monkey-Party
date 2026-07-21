@@ -24,6 +24,7 @@ import de.aetherklang.registry.ModParticles;
 import de.aetherklang.registry.ModPayloads;
 import de.aetherklang.registry.ModSounds;
 import de.aetherklang.resonance.BeatEngine;
+import de.aetherklang.sturmfront.SturmfrontEngine;
 import de.aetherklang.world.KammertonWorld;
 import de.aetherklang.schmiede.SchmiedeComponents;
 import de.aetherklang.schmiede.SchmiedeRezepte;
@@ -68,6 +69,7 @@ public final class Aetherklang implements ModInitializer {
         KammertonWorld.register();
         CrescendoServerHooks.register();
         KaskadeHooks.register();
+        SturmfrontEngine.register();
         PartiturService.register();
 
         LOGGER.info("Aetherklang registriert: Die Welt hat eine Stimme.");

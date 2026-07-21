@@ -29,6 +29,7 @@ public final class ModPayloads {
     public static final Identifier LEITMOTIV_UNLOCK_ID = Aetherklang.id("leitmotiv_unlock");
     public static final Identifier KASKADE_FX_ID = Aetherklang.id("kaskade_fx");
     public static final Identifier WELTAKKORD_FX_ID = Aetherklang.id("weltakkord_fx");
+    public static final Identifier STURMFRONT_SYNC_ID = Aetherklang.id("sturmfront_sync");
 
     private ModPayloads() {
     }
@@ -51,7 +52,8 @@ public final class ModPayloads {
         PayloadTypeRegistry.playS2C().register(LeitmotivSyncPayload.ID, LeitmotivSyncPayload.CODEC);
         PayloadTypeRegistry.playS2C().register(KaskadeFxPayload.ID, KaskadeFxPayload.CODEC);
         PayloadTypeRegistry.playS2C().register(WeltakkordFxPayload.ID, WeltakkordFxPayload.CODEC);
-        Aetherklang.LOGGER.debug("Registered {} Aetherklang play payloads", 17);
+        PayloadTypeRegistry.playS2C().register(SturmfrontSyncPayload.ID, SturmfrontSyncPayload.CODEC);
+        Aetherklang.LOGGER.debug("Registered {} Aetherklang play payloads", 18);
     }
 
     public record DashPayload(float strength) implements CustomPayload {
@@ -397,6 +399,61 @@ public final class ModPayloads {
                 throw new IllegalArgumentException("Weltakkord FX position must be finite");
             }
             power = Math.clamp(power, 1, 8);
+        }
+
+        @Override
+        public Id<? extends CustomPayload> getId() {
+            return ID;
+        }
+    }
+
+    public record SturmfrontSyncPayload(
+            boolean active,
+            double centerX,
+            double centerZ,
+            float radius,
+            float directionX,
+            float directionZ,
+            float intensity,
+            long revision
+    ) implements CustomPayload {
+        public static final CustomPayload.Id<SturmfrontSyncPayload> ID =
+                new CustomPayload.Id<>(STURMFRONT_SYNC_ID);
+        public static final PacketCodec<RegistryByteBuf, SturmfrontSyncPayload> CODEC = PacketCodec.of(
+                (payload, buffer) -> {
+                    buffer.writeBoolean(payload.active());
+                    buffer.writeDouble(payload.centerX());
+                    buffer.writeDouble(payload.centerZ());
+                    buffer.writeFloat(payload.radius());
+                    buffer.writeFloat(payload.directionX());
+                    buffer.writeFloat(payload.directionZ());
+                    buffer.writeFloat(payload.intensity());
+                    buffer.writeVarLong(payload.revision());
+                },
+                buffer -> new SturmfrontSyncPayload(
+                        buffer.readBoolean(),
+                        buffer.readDouble(),
+                        buffer.readDouble(),
+                        buffer.readFloat(),
+                        buffer.readFloat(),
+                        buffer.readFloat(),
+                        buffer.readFloat(),
+                        buffer.readVarLong()
+                )
+        );
+
+        public SturmfrontSyncPayload {
+            if (!Double.isFinite(centerX)
+                    || !Double.isFinite(centerZ)
+                    || !Float.isFinite(radius)
+                    || !Float.isFinite(directionX)
+                    || !Float.isFinite(directionZ)
+                    || !Float.isFinite(intensity)) {
+                throw new IllegalArgumentException("Sturmfront sync values must be finite");
+            }
+            radius = Math.clamp(radius, 0.0F, 512.0F);
+            intensity = Math.clamp(intensity, 0.0F, 1.0F);
+            revision = Math.max(0L, revision);
         }
 
         @Override

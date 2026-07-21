@@ -6,6 +6,7 @@ import de.aetherklang.partitur.PartiturService;
 import de.aetherklang.registry.ModCriteria;
 import de.aetherklang.registry.ModParticles;
 import de.aetherklang.registry.ModSounds;
+import de.aetherklang.sturmfront.SturmfrontEngine;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
@@ -127,6 +128,7 @@ public final class AkkordEngine {
         ModCriteria.FIRST_AKKORD.trigger(player);
         ModNetworking.broadcastAkkordFx(player, akkord.networkId());
         PartiturService.onAkkord(player, akkord);
+        SturmfrontEngine.onAkkord(player, akkord);
     }
 
     private static void healGroup(ServerPlayerEntity source, float amount) {

@@ -13,6 +13,7 @@ import de.aetherklang.dirigent.client.DirigentHud;
 import de.aetherklang.kaskade.KaskadeClientFx;
 import de.aetherklang.leitmotiv.client.LeitmotivOpener;
 import de.aetherklang.partitur.client.PartiturClient;
+import de.aetherklang.sturmfront.SturmfrontClient;
 import net.fabricmc.api.ClientModInitializer;
 
 public final class AetherklangClient implements ClientModInitializer {
@@ -30,6 +31,7 @@ public final class AetherklangClient implements ClientModInitializer {
         ClientNetworking.register();
         BossFxClient.register();
         KaskadeClientFx.register();
+        SturmfrontClient.register();
         PartiturClient.register();
         CrescendoClientHooks.register();
         PhotoModus.register();
