@@ -85,7 +85,7 @@ public final class PhotoModus {
         int secondaryColor = FxPalette.secondary(ClientResonanceCache.getMood());
         long frame = client.inGameHud.getTicks();
 
-        if (FxBudget.tryClaimScreen(5, FxBudget.Priority.CRITICAL)) {
+        if (FxBudget.tryEmit(FxBudget.Effect.OVERLAY, 5, FxBudget.Priority.CRITICAL)) {
             int breathing = Math.round((MathHelper.sin(frame * 0.035F) + 1.0F) * 2.0F);
             context.fill(0, 0, width, height, FxPalette.withAlpha(moodColor, 13 + breathing));
             drawLetterbox(context, width, height, secondaryColor);
@@ -108,7 +108,7 @@ public final class PhotoModus {
             long frame,
             int moodColor
     ) {
-        int budget = FxBudget.claimScreen(GRAIN_SAMPLES, FxBudget.Priority.CRITICAL);
+        int budget = FxBudget.scale(FxBudget.Effect.OVERLAY, GRAIN_SAMPLES, FxBudget.Priority.CRITICAL);
         int seed = mix((int) frame * 0x45D9F3B);
         for (int sample = 0; sample < budget; sample++) {
             seed = mix(seed + sample * 0x9E3779B9);

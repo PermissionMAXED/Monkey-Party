@@ -91,7 +91,8 @@ public final class SturmfrontClient {
 
     private static void spawnWeather(ClientWorld world, ClientPlayerEntity player, float exposure) {
         Random random = world.getRandom();
-        int budget = FxBudget.claimParticles(
+        int budget = FxBudget.scale(
+                FxBudget.Effect.PARTICLE,
                 2 + Math.round(exposure * 6.0F),
                 exposure >= 0.55F ? FxBudget.Priority.NORMAL : FxBudget.Priority.AMBIENT
         );
@@ -117,7 +118,7 @@ public final class SturmfrontClient {
         if (client.world == null || client.player == null || !isKammerton(client.world)) {
             return;
         }
-        int budget = FxBudget.claimParticles(72, FxBudget.Priority.CRITICAL);
+        int budget = FxBudget.scale(FxBudget.Effect.PARTICLE, 72, FxBudget.Priority.CRITICAL);
         Vec3d center = client.player.getEntityPos().add(0.0D, 0.45D, 0.0D);
         for (int particle = 0; particle < budget; particle++) {
             double angle = particle * 2.399963229728653D;
@@ -178,6 +179,9 @@ public final class SturmfrontClient {
     }
 
     private static void renderStormFrame(DrawContext context, float exposure) {
+        if (!FxBudget.tryEmit(FxBudget.Effect.OVERLAY, 4, FxBudget.Priority.NORMAL)) {
+            return;
+        }
         float strength = MathHelper.clamp(exposure + responsePulse * 0.65F, 0.0F, 1.0F);
         int width = context.getScaledWindowWidth();
         int height = context.getScaledWindowHeight();

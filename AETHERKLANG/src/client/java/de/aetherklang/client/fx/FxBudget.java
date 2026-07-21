@@ -42,52 +42,96 @@ public final class FxBudget {
      * Claims up to {@code requested} particle emissions for the current client tick.
      */
     public static int claimParticles(int requested, Priority priority) {
-        int granted = claim(requested, priority, particlesRemaining, PARTICLE_CRITICAL_RESERVE,
-                PARTICLE_NORMAL_RESERVE);
-        particlesRemaining -= granted;
-        return granted;
+        return scale(Effect.PARTICLE, requested, priority);
     }
 
     /**
      * Atomically claims a particle batch that cannot be rendered partially.
      */
     public static boolean tryClaimParticles(int requested, Priority priority) {
-        if (requested <= 0) {
-            return true;
-        }
-        int granted = claim(requested, priority, particlesRemaining, PARTICLE_CRITICAL_RESERVE,
-                PARTICLE_NORMAL_RESERVE);
-        if (granted != requested) {
-            return false;
-        }
-        particlesRemaining -= granted;
-        return true;
+        return tryEmitBatch(Effect.PARTICLE, requested, priority);
     }
 
     /**
      * Claims up to {@code requested} HUD fill operations for the current frame.
      */
     public static int claimScreen(int requested, Priority priority) {
-        int granted = claim(requested, priority, screenPrimitivesRemaining, SCREEN_CRITICAL_RESERVE,
-                SCREEN_NORMAL_RESERVE);
-        screenPrimitivesRemaining -= granted;
-        return granted;
+        return scale(Effect.OVERLAY, requested, priority);
     }
 
     /**
      * Atomically claims a screen batch that cannot be rendered partially.
      */
     public static boolean tryClaimScreen(int requested, Priority priority) {
+        return tryEmitBatch(Effect.OVERLAY, requested, priority);
+    }
+
+    /**
+     * Reserves one emission from the selected budget.
+     *
+     * <p>Callers outside the shared FX package should guard individual particle
+     * or overlay primitives with this method instead of bypassing the global
+     * budget.</p>
+     */
+    public static boolean tryEmit(Effect effect, Priority priority) {
+        return tryEmitBatch(effect, 1, priority);
+    }
+
+    /**
+     * Atomically reserves a group of primitives that cannot be rendered partially.
+     */
+    public static boolean tryEmit(Effect effect, int requested, Priority priority) {
+        return tryEmitBatch(effect, requested, priority);
+    }
+
+    /**
+     * Scales a repeatable effect down to the amount that fits its current budget.
+     *
+     * <p>The returned amount is already reserved and may be emitted without
+     * further claims.</p>
+     */
+    public static int scale(Effect effect, int requested, Priority priority) {
+        int remaining = remaining(effect);
+        int granted = claim(
+                requested,
+                priority,
+                remaining,
+                effect == Effect.PARTICLE ? PARTICLE_CRITICAL_RESERVE : SCREEN_CRITICAL_RESERVE,
+                effect == Effect.PARTICLE ? PARTICLE_NORMAL_RESERVE : SCREEN_NORMAL_RESERVE
+        );
+        consume(effect, granted);
+        return granted;
+    }
+
+    private static boolean tryEmitBatch(Effect effect, int requested, Priority priority) {
         if (requested <= 0) {
             return true;
         }
-        int granted = claim(requested, priority, screenPrimitivesRemaining, SCREEN_CRITICAL_RESERVE,
-                SCREEN_NORMAL_RESERVE);
+        int remaining = remaining(effect);
+        int granted = claim(
+                requested,
+                priority,
+                remaining,
+                effect == Effect.PARTICLE ? PARTICLE_CRITICAL_RESERVE : SCREEN_CRITICAL_RESERVE,
+                effect == Effect.PARTICLE ? PARTICLE_NORMAL_RESERVE : SCREEN_NORMAL_RESERVE
+        );
         if (granted != requested) {
             return false;
         }
-        screenPrimitivesRemaining -= granted;
+        consume(effect, granted);
         return true;
+    }
+
+    private static int remaining(Effect effect) {
+        return effect == Effect.PARTICLE ? particlesRemaining : screenPrimitivesRemaining;
+    }
+
+    private static void consume(Effect effect, int amount) {
+        if (effect == Effect.PARTICLE) {
+            particlesRemaining -= amount;
+        } else {
+            screenPrimitivesRemaining -= amount;
+        }
     }
 
     private static int claim(
@@ -112,5 +156,10 @@ public final class FxBudget {
         AMBIENT,
         NORMAL,
         CRITICAL
+    }
+
+    public enum Effect {
+        PARTICLE,
+        OVERLAY
     }
 }

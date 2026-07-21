@@ -679,6 +679,33 @@ integration contracts.
 - **Region anchors:** `-900/129/0`, `900/129/0`, `0/129/900`,
   `0/129/1600`
 
+## Current extensions
+
+- **Photo Mode and Resonance Lens:** **O** hides the normal HUD for
+  cinematic captures; **I** overlays the mood-reactive lens. Both are
+  client-only presentation features.
+- **Klangflora:** Sound Coral, Note Vine, and Sound Grass join four colors
+  of Resonance Glass plus raw, polished, and brick Star Quartz as a
+  craftable decorative palette.
+- **Conductor:** At Conductor grade, the baton calls an ensemble's next
+  chord. Resolving that chord within 30 seconds adds 25% strength per extra
+  voice, capped at double power.
+- **Echography:** The Echo Cylinder records eight beats of movement and
+  on-beat actions. Use it again to replay a visible echo; sneak-use replaces
+  the recording.
+- **Klangbahn:** A Rail Anchor links to an attuned Tuning Pillar within 64
+  blocks and creates a free, two-way beat-light ride.
+- **Sturmfront:** This moving Klangmeer dissonance front raises Dissonance
+  and slows players near its core. Chords—and especially the World
+  Chord—push it back; the HUD shows intensity, distance, and bearing.
+- **Canon:** A four-note call-and-response phrase combines mood and action.
+  Answer every two beats; `/aetherklang kanon start|status|stop` exercises
+  the development flow.
+- **Magic Score:** Compose three to five sound operations by sneak-using
+  the score or using a Score Stand. Perfect and good timing apply 150% and
+  125% power respectively; each operation contributes to the displayed RP
+  cost.
+
 ## Credits
 
 Aetherklang Team; built with Fabric Loader, Fabric API, and Yarn mappings for

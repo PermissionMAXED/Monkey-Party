@@ -66,7 +66,7 @@ public final class Resonanzlinse {
         float dissonanz = ClientResonanceCache.getDissonanz();
         float pulse = 0.5F + MathHelper.sin(client.world.getTime() * 0.11F) * 0.5F;
 
-        int vignetteBudget = FxBudget.claimScreen(37, FxBudget.Priority.CRITICAL);
+        int vignetteBudget = FxBudget.scale(FxBudget.Effect.OVERLAY, 37, FxBudget.Priority.CRITICAL);
         if (vignetteBudget > 0) {
             int washAlpha = MathHelper.clamp(Math.round(9.0F + pulse * 5.0F + dissonanz * 12.0F), 0, 28);
             context.fill(0, 0, width, height, FxPalette.withAlpha(primary, washAlpha));
@@ -103,7 +103,11 @@ public final class Resonanzlinse {
             int secondary,
             float pulse
     ) {
-        int budget = FxBudget.claimScreen(RING_SEGMENTS + 12, FxBudget.Priority.CRITICAL);
+        int budget = FxBudget.scale(
+                FxBudget.Effect.OVERLAY,
+                RING_SEGMENTS + 12,
+                FxBudget.Priority.CRITICAL
+        );
         if (budget < 12) {
             return;
         }

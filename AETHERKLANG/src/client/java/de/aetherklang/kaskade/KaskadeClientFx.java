@@ -1,6 +1,7 @@
 package de.aetherklang.kaskade;
 
 import de.aetherklang.Aetherklang;
+import de.aetherklang.client.fx.FxBudget;
 import de.aetherklang.client.fx.FxPalette;
 import de.aetherklang.registry.ModParticles;
 import de.aetherklang.registry.ModPayloads;
@@ -55,7 +56,11 @@ public final class KaskadeClientFx {
         }
         Vec3d center = new Vec3d(payload.x() + 0.5D, payload.y() + 0.65D, payload.z() + 0.5D);
         boolean complete = payload.stage() == KaskadeEventEngine.COMPLETE_FX;
-        int amount = complete ? 110 : 45 + payload.stage() * 18;
+        int amount = FxBudget.scale(
+                FxBudget.Effect.PARTICLE,
+                complete ? 110 : 45 + payload.stage() * 18,
+                complete ? FxBudget.Priority.CRITICAL : FxBudget.Priority.NORMAL
+        );
         Random random = client.world.getRandom();
         for (int index = 0; index < amount; index++) {
             double angle = random.nextDouble() * Math.PI * 2.0D;
@@ -110,10 +115,15 @@ public final class KaskadeClientFx {
         int rings = reduced ? 3 : 5;
         long tick = world.getTime();
         for (int ring = 0; ring < rings; ring++) {
-            int points = 28 + ring * 10;
+            int points = FxBudget.scale(
+                    FxBudget.Effect.PARTICLE,
+                    28 + ring * 10,
+                    FxBudget.Priority.CRITICAL
+            );
             double radius = 1.0D + ring * (reduced ? 0.85D : 1.35D);
             for (int point = 0; point < points; point++) {
-                double angle = point * Math.PI * 2.0D / points + ring * 0.41D + tick * 0.03D;
+                double angle = point * Math.PI * 2.0D / Math.max(1, points)
+                        + ring * 0.41D + tick * 0.03D;
                 double cos = Math.cos(angle);
                 double sin = Math.sin(angle);
                 world.addParticleClient(
@@ -129,7 +139,11 @@ public final class KaskadeClientFx {
         }
 
         Random random = world.getRandom();
-        int motes = reduced ? 35 : 75 + power * 12;
+        int motes = FxBudget.scale(
+                FxBudget.Effect.PARTICLE,
+                reduced ? 35 : 75 + power * 12,
+                FxBudget.Priority.CRITICAL
+        );
         for (int mote = 0; mote < motes; mote++) {
             double angle = random.nextDouble() * Math.PI * 2.0D;
             double radius = random.nextDouble() * (reduced ? 3.0D : 5.0D + power * 0.4D);
@@ -153,6 +167,9 @@ public final class KaskadeClientFx {
     private static void renderWeltakkordFlash(DrawContext context) {
         MinecraftClient client = MinecraftClient.getInstance();
         if (client.player == null || client.world == null || weltakkordPulse < 0.01F) {
+            return;
+        }
+        if (!FxBudget.tryEmit(FxBudget.Effect.OVERLAY, 4, FxBudget.Priority.CRITICAL)) {
             return;
         }
         int width = client.getWindow().getScaledWidth();

@@ -28,6 +28,13 @@ BLOCK_BASE = TEXTURES / "block/stimmaltar.png"
 CRYSTAL_BASE = TEXTURES / "block/resonanzkristall_cyan.png"
 
 
+def png_dimensions(path: Path) -> tuple[int, int]:
+    header = path.read_bytes()[:24]
+    if len(header) < 24 or header[:8] != b"\x89PNG\r\n\x1a\n" or header[12:16] != b"IHDR":
+        raise ValueError(f"Not a PNG: {path}")
+    return struct.unpack(">II", header[16:24])
+
+
 def read_png(path: Path) -> tuple[int, int, list[tuple[int, int, int, int]]]:
     data = path.read_bytes()
     if data[:8] != b"\x89PNG\r\n\x1a\n":
@@ -79,6 +86,8 @@ def read_png(path: Path) -> tuple[int, int, list[tuple[int, int, int, int]]]:
 
 
 def write_png(path: Path, width: int, height: int, pixels: Iterable[tuple[int, int, int, int]]) -> None:
+    if path.exists() and min(png_dimensions(path)) >= 64:
+        raise FileExistsError(f"Refusing to overwrite UHD 64px-or-larger texture: {path}")
     path.parent.mkdir(parents=True, exist_ok=True)
     raw = bytearray()
     pixel_list = list(pixels)

@@ -1725,6 +1725,34 @@ Die Reise endet nicht mit maximalem Schaden. Ein vollständiger Resonant kann
 eine Region lesen, einen Beat halten, in einem Ensemble Raum geben, eine
 Partitur erfüllen und aus Bossbeute eine eigene dauerhafte Stimme formen.
 
+## Aktuelle Erweiterungen
+
+- **Fotomodus und Resonanzlinse:** **O** blendet das normale HUD für
+  filmische Aufnahmen aus; **I** legt die stimmungsreaktive Resonanzlinse
+  darüber. Beide Effekte sind rein clientseitig.
+- **Klangflora:** Klangkoralle, Notenranke und Klanggras ergänzen
+  Resonanzglas in vier Farben sowie rohen, polierten und gemauerten
+  Sternenquarz als herstellbare Dekorationspalette.
+- **Dirigent:** Ab Rang Dirigent ruft der Taktstock für ein Ensemble den
+  nächsten Akkord aus. Eine passende Auflösung innerhalb von 30 Sekunden
+  verstärkt sich je zusätzlicher Stimme um 25 %, höchstens auf das Doppelte.
+- **Echographie:** Der Echozylinder zeichnet acht Takte Bewegung und
+  On-Beat-Aktionen auf. Erneutes Benutzen spielt die Phrase als sichtbares
+  Echo ab; Schleichen + Benutzen ersetzt die Aufnahme.
+- **Klangbahn:** Ein Bahnanker verbindet sich bis 64 Blöcke weit mit einem
+  eingestimmten Stimmpfeiler und bildet eine kostenlose, beidseitige
+  Taktlichtfahrt.
+- **Sturmfront:** Die wandernde Dissonanzfront im Klangmeer erhöht
+  Dissonanz und bremst im Kern. Akkorde und besonders der Weltakkord stoßen
+  sie zurück; die HUD-Anzeige zeigt Intensität, Entfernung und Richtung.
+- **Kanon:** Eine viertönige Ruf-und-Antwort-Phrase kombiniert Stimmung und
+  Aktion. Antworte alle zwei Beats; `/aetherklang kanon start|status|stop`
+  startet und prüft den Entwicklungsablauf.
+- **Zauberpartitur:** Drei bis fünf Klangoperationen werden per
+  Schleichen + Benutzen oder am Notenpult komponiert. Perfektes und gutes
+  Timing wirken mit 150 % beziehungsweise 125 % Stärke; jede Operation
+  trägt zu den angezeigten RP-Kosten bei.
+
 ---
 
 ## 38. Credits
@@ -1746,6 +1774,7 @@ Danke an alle, die den ersten Beat nicht nur treffen, sondern ihm zuhören.
 - **Resonanzschritt:** R (Echostiefel 8 RP · Klangweberstiefel 6 RP)
 - **Stimmungswechsel:** M (2 RP) oder Stimmaltar (kostenlos)
 - **Adaptive Musik:** N (nur lokaler Klang)
+- **Foto / Linse:** O / I (nur clientseitige Darstellung)
 - **Beat:** 120 BPM · **Perfekt:** ±40 ms (`+2 RP`) · **Gut:** ±100 ms
 - **RP:** 0–100, mit Klangweberharnisch 120 · Horn 10 · Fermate 16 ·
   Fächer/Riss 12 · Schritt 8/6 · Altar 6 · Portal 24

@@ -1,6 +1,7 @@
 package de.aetherklang.client;
 
 import de.aetherklang.Aetherklang;
+import de.aetherklang.client.fx.FxBudget;
 import de.aetherklang.registry.ModParticles;
 import de.aetherklang.registry.ModPayloads;
 import de.aetherklang.registry.ModSounds;
@@ -184,8 +185,9 @@ public final class AkkordHud {
         if (world == null) {
             return;
         }
-        for (int spark = 0; spark < 16; spark++) {
-            double angle = spark * Math.PI * 2.0D / 16.0D;
+        int budget = FxBudget.scale(FxBudget.Effect.PARTICLE, 16, FxBudget.Priority.NORMAL);
+        for (int spark = 0; spark < budget; spark++) {
+            double angle = spark * Math.PI * 2.0D / Math.max(1, budget);
             world.addParticleClient(
                     ModParticles.ENSEMBLE_FUNKE,
                     player.getX() + Math.cos(angle) * 0.8D,

@@ -2,6 +2,7 @@ package de.aetherklang.bosswerk.client;
 
 import de.aetherklang.bosswerk.BossOperation;
 import de.aetherklang.bosswerk.BosswerkBossEntity;
+import de.aetherklang.client.fx.FxBudget;
 import de.aetherklang.client.fx.FxPalette;
 import de.aetherklang.client.music.AdaptiveMusicSequencer;
 import de.aetherklang.entity.ChoralEntity;
@@ -183,10 +184,14 @@ public final class BossFxClient {
                 : boss.getEntityPos().add(0.0D, boss.getHeight() * 0.48D, 0.0D);
         int rings = intro ? 6 : phaseTransition ? 4 : 2;
         for (int ring = 0; ring < rings; ring++) {
-            int points = 32 + phase * 8 + (intro ? ring * 4 : 0);
+            int points = FxBudget.scale(
+                    FxBudget.Effect.PARTICLE,
+                    32 + phase * 8 + (intro ? ring * 4 : 0),
+                    FxBudget.Priority.CRITICAL
+            );
             double radius = (intro ? 1.4D : 0.75D) + ring * (intro ? 0.58D : 0.42D);
             for (int point = 0; point < points; point++) {
-                double angle = Math.PI * 2.0D * point / points + world.getTime() * 0.08D;
+                double angle = Math.PI * 2.0D * point / Math.max(1, points) + world.getTime() * 0.08D;
                 world.addParticleClient(
                         intro && (ring & 1) == 1 ? ModParticles.KLANGOPERATION_RING : particle,
                         center.x + Math.cos(angle) * radius,
@@ -274,7 +279,11 @@ public final class BossFxClient {
         Random random = world.getRandom();
         int rings = intro ? 6 : 4;
         for (int ring = 0; ring < rings; ring++) {
-            int points = 40 + ring * 8 + phase * 6;
+            int points = FxBudget.scale(
+                    FxBudget.Effect.PARTICLE,
+                    40 + ring * 8 + phase * 6,
+                    FxBudget.Priority.CRITICAL
+            );
             double radius = 0.8D + ring * (intro ? 0.78D : 0.58D);
             double rise = (ring - (rings - 1) * 0.5D) * 0.34D;
             for (int point = 0; point < points; point++) {
@@ -293,7 +302,11 @@ public final class BossFxClient {
             }
         }
 
-        int burst = intro ? 96 : 64;
+        int burst = FxBudget.scale(
+                FxBudget.Effect.PARTICLE,
+                intro ? 96 : 64,
+                FxBudget.Priority.CRITICAL
+        );
         for (int spark = 0; spark < burst; spark++) {
             double angle = random.nextDouble() * Math.PI * 2.0D;
             double elevation = random.nextDouble() * 2.0D - 1.0D;
@@ -348,15 +361,17 @@ public final class BossFxClient {
                     0.045D
             );
         }
-        world.addParticleClient(
-                new DustParticleEffect(cinematicPhase >= 2 ? FxPalette.MAGENTA : FxPalette.GOLD, 1.35F),
-                cinematicCenter.x,
-                cinematicCenter.y + 2.0D,
-                cinematicCenter.z,
-                0.0D,
-                0.08D,
-                0.0D
-        );
+        if (FxBudget.tryEmit(FxBudget.Effect.PARTICLE, FxBudget.Priority.NORMAL)) {
+            world.addParticleClient(
+                    new DustParticleEffect(cinematicPhase >= 2 ? FxPalette.MAGENTA : FxPalette.GOLD, 1.35F),
+                    cinematicCenter.x,
+                    cinematicCenter.y + 2.0D,
+                    cinematicCenter.z,
+                    0.0D,
+                    0.08D,
+                    0.0D
+            );
+        }
     }
 
     private static void spawnTremoloPulse(ClientWorld world, double rotation, double intensity) {
@@ -398,7 +413,11 @@ public final class BossFxClient {
 
     private static void spawnKakophonShards(ClientWorld world, double intensity) {
         Random random = world.getRandom();
-        int shards = 12 + cinematicPhase * 3;
+        int shards = FxBudget.scale(
+                FxBudget.Effect.PARTICLE,
+                12 + cinematicPhase * 3,
+                FxBudget.Priority.NORMAL
+        );
         for (int shard = 0; shard < shards; shard++) {
             double angle = random.nextDouble() * Math.PI * 2.0D;
             double radius = 0.8D + random.nextDouble() * 3.4D;
@@ -418,7 +437,11 @@ public final class BossFxClient {
     }
 
     private static void spawnGeneralpauseVoid(ClientWorld world, double rotation, double intensity) {
-        int motes = 14 + cinematicPhase * 3;
+        int motes = FxBudget.scale(
+                FxBudget.Effect.PARTICLE,
+                14 + cinematicPhase * 3,
+                FxBudget.Priority.NORMAL
+        );
         for (int mote = 0; mote < motes; mote++) {
             double angle = rotation * 0.28D + mote * Math.PI * 2.0D / motes;
             double radius = 4.6D - mote % 3 * 0.48D;
@@ -491,6 +514,9 @@ public final class BossFxClient {
             double radialSpeed,
             double lift
     ) {
+        if (!FxBudget.tryEmit(FxBudget.Effect.PARTICLE, FxBudget.Priority.NORMAL)) {
+            return;
+        }
         double cos = Math.cos(angle);
         double sin = Math.sin(angle);
         world.addParticleClient(
@@ -525,14 +551,54 @@ public final class BossFxClient {
         int primary = primaryColor(cinematicBossId);
         int secondary = secondaryColor(cinematicBossId);
         int washAlpha = Math.round(envelope * strength * 27.0F);
-        context.fill(0, 0, width, height, FxPalette.withAlpha(primary, washAlpha));
+        fillOverlay(
+                context,
+                0,
+                0,
+                width,
+                height,
+                FxPalette.withAlpha(primary, washAlpha),
+                FxBudget.Priority.CRITICAL
+        );
 
         int edgeAlpha = Math.round(envelope * strength * 110.0F);
         int edge = cinematicMode == CINEMATIC_INTRO ? 8 : 5;
-        context.fill(0, 0, width, edge, FxPalette.withAlpha(primary, edgeAlpha));
-        context.fill(0, height - edge, width, height, FxPalette.withAlpha(secondary, edgeAlpha));
-        context.fill(0, edge, edge, height - edge, FxPalette.withAlpha(secondary, edgeAlpha / 2));
-        context.fill(width - edge, edge, width, height - edge, FxPalette.withAlpha(primary, edgeAlpha / 2));
+        fillOverlay(
+                context,
+                0,
+                0,
+                width,
+                edge,
+                FxPalette.withAlpha(primary, edgeAlpha),
+                FxBudget.Priority.CRITICAL
+        );
+        fillOverlay(
+                context,
+                0,
+                height - edge,
+                width,
+                height,
+                FxPalette.withAlpha(secondary, edgeAlpha),
+                FxBudget.Priority.CRITICAL
+        );
+        fillOverlay(
+                context,
+                0,
+                edge,
+                edge,
+                height - edge,
+                FxPalette.withAlpha(secondary, edgeAlpha / 2),
+                FxBudget.Priority.CRITICAL
+        );
+        fillOverlay(
+                context,
+                width - edge,
+                edge,
+                width,
+                height - edge,
+                FxPalette.withAlpha(primary, edgeAlpha / 2),
+                FxBudget.Priority.CRITICAL
+        );
 
         float progress = MathHelper.clamp(elapsed / (float) Math.max(1, cinematicDuration), 0.0F, 1.0F);
         float maximum = MathHelper.sqrt(width * width + height * height) * 0.55F;
@@ -543,8 +609,16 @@ public final class BossFxClient {
         if (cinematicMode == CINEMATIC_INTRO) {
             int barHeight = Math.round(Math.min(height * 0.105F, elapsed * 2.2F) * envelope);
             int barColor = FxPalette.withAlpha(0x020208, Math.round(envelope * 220.0F));
-            context.fill(0, 0, width, barHeight, barColor);
-            context.fill(0, height - barHeight, width, height, barColor);
+            fillOverlay(context, 0, 0, width, barHeight, barColor, FxBudget.Priority.CRITICAL);
+            fillOverlay(
+                    context,
+                    0,
+                    height - barHeight,
+                    width,
+                    height,
+                    barColor,
+                    FxBudget.Priority.CRITICAL
+            );
         }
     }
 
@@ -564,7 +638,15 @@ public final class BossFxClient {
             int x = centerX + Math.round((float) Math.cos(angle) * radius);
             int y = centerY + Math.round((float) Math.sin(angle) * radius);
             int size = segment % 8 == 0 ? 3 : 2;
-            context.fill(x, y, x + size, y + size, FxPalette.withAlpha(color, alpha));
+            fillOverlay(
+                    context,
+                    x,
+                    y,
+                    x + size,
+                    y + size,
+                    FxPalette.withAlpha(color, alpha),
+                    FxBudget.Priority.CRITICAL
+            );
         }
     }
 
@@ -609,15 +691,52 @@ public final class BossFxClient {
             int thickness = 7;
             int alpha = baseAlpha * (8 - layer) / 8;
             int color = FxPalette.withAlpha(layer % 3 == 0 ? 0x05050A : FxPalette.INDIGO, alpha);
-            context.fill(inset, inset, width - inset, inset + thickness, color);
-            context.fill(inset, height - inset - thickness, width - inset, height - inset, color);
-            context.fill(inset, inset + thickness, inset + thickness, height - inset - thickness, color);
-            context.fill(width - inset - thickness, inset + thickness, width - inset, height - inset - thickness, color);
+            fillOverlay(
+                    context,
+                    inset,
+                    inset,
+                    width - inset,
+                    inset + thickness,
+                    color,
+                    FxBudget.Priority.CRITICAL
+            );
+            fillOverlay(
+                    context,
+                    inset,
+                    height - inset - thickness,
+                    width - inset,
+                    height - inset,
+                    color,
+                    FxBudget.Priority.CRITICAL
+            );
+            fillOverlay(
+                    context,
+                    inset,
+                    inset + thickness,
+                    inset + thickness,
+                    height - inset - thickness,
+                    color,
+                    FxBudget.Priority.CRITICAL
+            );
+            fillOverlay(
+                    context,
+                    width - inset - thickness,
+                    inset + thickness,
+                    width - inset,
+                    height - inset - thickness,
+                    color,
+                    FxBudget.Priority.CRITICAL
+            );
         }
 
         int scanAlpha = Math.max(1, Math.round(envelope * 16.0F));
         int offset = Math.floorMod(client.inGameHud.getTicks(), 6);
-        for (int y = offset; y < height; y += 6) {
+        int scanLines = FxBudget.scale(
+                FxBudget.Effect.OVERLAY,
+                Math.max(0, (height - offset + 5) / 6),
+                FxBudget.Priority.CRITICAL
+        );
+        for (int line = 0, y = offset; line < scanLines; line++, y += 6) {
             context.fill(0, y, width, y + 1, FxPalette.withAlpha(0xC8C7DA, scanAlpha));
         }
         context.drawCenteredTextWithShadow(
@@ -627,6 +746,22 @@ public final class BossFxClient {
                 height * 3 / 4,
                 FxPalette.withAlpha(0xE4E2EF, Math.round(envelope * 255.0F))
         );
+    }
+
+    private static boolean fillOverlay(
+            DrawContext context,
+            int x1,
+            int y1,
+            int x2,
+            int y2,
+            int color,
+            FxBudget.Priority priority
+    ) {
+        if (!FxBudget.tryEmit(FxBudget.Effect.OVERLAY, priority)) {
+            return false;
+        }
+        context.fill(x1, y1, x2, y2, color);
+        return true;
     }
 
     private static ParticleEffect particle(BossOperation operation) {
