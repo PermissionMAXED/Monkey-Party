@@ -1,6 +1,7 @@
 package de.aetherklang.block;
 
 import de.aetherklang.registry.ModBlockEntities;
+import de.aetherklang.resonanzfeld.ResonanzfeldEngine;
 import java.util.Locale;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
@@ -84,6 +85,7 @@ public final class KristallresonatorBlockEntity extends BlockEntity {
             return;
         }
         resonator.refreshCrystalCount(world);
+        ResonanzfeldEngine.observeResonator((ServerWorld) world, pos);
     }
 
     private void setNearbyCrystals(int crystals) {

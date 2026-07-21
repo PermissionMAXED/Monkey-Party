@@ -24,6 +24,7 @@ import de.aetherklang.registry.ModItems;
 import de.aetherklang.registry.ModParticles;
 import de.aetherklang.registry.ModPayloads;
 import de.aetherklang.registry.ModSounds;
+import de.aetherklang.resonanzfeld.Resonanzfeld;
 import de.aetherklang.resonance.BeatEngine;
 import de.aetherklang.sturmfront.SturmfrontEngine;
 import de.aetherklang.world.KammertonWorld;
@@ -71,6 +72,7 @@ public final class Aetherklang implements ModInitializer {
         KammertonWorld.register();
         CrescendoServerHooks.register();
         KaskadeHooks.register();
+        Resonanzfeld.register();
         SturmfrontEngine.register();
         PartiturService.register();
 
