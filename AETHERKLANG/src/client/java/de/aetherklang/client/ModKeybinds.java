@@ -1,6 +1,8 @@
 package de.aetherklang.client;
 
 import de.aetherklang.Aetherklang;
+import de.aetherklang.client.photo.PhotoModus;
+import de.aetherklang.client.photo.Resonanzlinse;
 import de.aetherklang.crescendo.ArmorHooks;
 import de.aetherklang.registry.ModPayloads;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
@@ -20,6 +22,8 @@ public final class ModKeybinds {
     public static final KeyBinding OPEN_LEITMOTIV = register("open_leitmotiv", GLFW.GLFW_KEY_L);
     public static final KeyBinding DASH = register("dash", GLFW.GLFW_KEY_R);
     public static final KeyBinding CYCLE_MOOD = register("cycle_mood", GLFW.GLFW_KEY_M);
+    public static final KeyBinding PHOTO_MODE = register("photo_mode", GLFW.GLFW_KEY_O);
+    public static final KeyBinding RESONANCE_LENS = register("resonance_lens", GLFW.GLFW_KEY_I);
     private static boolean handlersRegistered;
 
     private ModKeybinds() {
@@ -45,6 +49,12 @@ public final class ModKeybinds {
             }
             while (CYCLE_MOOD.wasPressed()) {
                 cycleMood(client);
+            }
+            while (PHOTO_MODE.wasPressed()) {
+                PhotoModus.toggle(client);
+            }
+            while (RESONANCE_LENS.wasPressed()) {
+                Resonanzlinse.toggle(client);
             }
         });
     }
