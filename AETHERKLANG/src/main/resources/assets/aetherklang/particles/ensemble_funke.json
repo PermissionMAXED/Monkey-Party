@@ -1,6 +1,8 @@
 {
   "textures": [
-    "minecraft:note",
-    "minecraft:glitter_0"
+    "aetherklang:ensemble_funke_0",
+    "aetherklang:ensemble_funke_1",
+    "aetherklang:ensemble_funke_2",
+    "aetherklang:ensemble_funke_3"
   ]
 }

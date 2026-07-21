@@ -1,5 +1,8 @@
 {
   "textures": [
-    "minecraft:note"
+    "aetherklang:akkord_glyph_0",
+    "aetherklang:akkord_glyph_1",
+    "aetherklang:akkord_glyph_2",
+    "aetherklang:akkord_glyph_3"
   ]
 }

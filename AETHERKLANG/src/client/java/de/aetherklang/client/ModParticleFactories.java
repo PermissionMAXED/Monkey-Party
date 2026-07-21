@@ -29,5 +29,11 @@ public final class ModParticleFactories {
         registry.register(ModParticles.INSEL_RESONANZ, AetherParticles.BeamMoteFactory::new);
         registry.register(ModParticles.LEITMOTIV_NOTE, AetherParticles.NoteSparkFactory::new);
         registry.register(ModParticles.KLANGOPERATION_RING, AetherParticles.BeatRingFactory::new);
+        registry.register(ModParticles.STERNENFUNKE, AetherParticles.NoteSparkFactory::new);
+        registry.register(ModParticles.NEBELSCHLEIER, AetherParticles.DissonanzSmokeFactory::new);
+        registry.register(ModParticles.RESONANZ_BLITZ, AetherParticles.BeamMoteFactory::new);
+        registry.register(ModParticles.HARMONIE_STAUB, AetherParticles.NoteSparkFactory::new);
+        registry.register(ModParticles.BASSWELLE, AetherParticles.BeatRingFactory::new);
+        registry.register(ModParticles.CHOR_GLYPHE, AetherParticles.NoteSparkFactory::new);
     }
 }

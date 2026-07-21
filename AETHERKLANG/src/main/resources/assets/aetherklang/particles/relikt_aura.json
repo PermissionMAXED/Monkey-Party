@@ -1,5 +1,8 @@
 {
   "textures": [
-    "minecraft:glow"
+    "aetherklang:relikt_aura_0",
+    "aetherklang:relikt_aura_1",
+    "aetherklang:relikt_aura_2",
+    "aetherklang:relikt_aura_3"
   ]
 }

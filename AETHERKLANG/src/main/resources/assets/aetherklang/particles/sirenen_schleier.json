@@ -1,6 +1,8 @@
 {
   "textures": [
-    "minecraft:glitter_4",
-    "minecraft:glitter_6"
+    "aetherklang:sirenen_schleier_0",
+    "aetherklang:sirenen_schleier_1",
+    "aetherklang:sirenen_schleier_2",
+    "aetherklang:sirenen_schleier_3"
   ]
 }
