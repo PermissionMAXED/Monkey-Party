@@ -272,8 +272,6 @@ public final class ModPayloads {
         }
     }
 
-    public record RangSyncPayload(int rang, long gesamtRp) implements CustomPayload {
-        public static final CustomPayload.Id<RangSyncPayload> ID = new CustomPayload.Id<>(RANG_SYNC_ID);
     public record DirigentSyncPayload(
             int akkord,
             int ensembleSize,
@@ -313,6 +311,8 @@ public final class ModPayloads {
         }
     }
 
+    public record RangSyncPayload(int rang, long gesamtRp) implements CustomPayload {
+        public static final CustomPayload.Id<RangSyncPayload> ID = new CustomPayload.Id<>(RANG_SYNC_ID);
         public static final PacketCodec<RegistryByteBuf, RangSyncPayload> CODEC = PacketCodec.of(
                 (payload, buffer) -> {
                     buffer.writeVarInt(payload.rang());
