@@ -2,6 +2,7 @@ package de.aetherklang.block;
 
 import com.mojang.serialization.MapCodec;
 import de.aetherklang.insel.StimmpfeilerNetwork;
+import de.aetherklang.klangbahn.KlangbahnService;
 import de.aetherklang.registry.ModBlocks;
 import de.aetherklang.registry.ModItems;
 import de.aetherklang.registry.ModParticles;
@@ -101,6 +102,9 @@ public final class StimmpfeilerBlock extends Block {
         }
         if (!(world instanceof ServerWorld serverWorld) || !(player instanceof ServerPlayerEntity serverPlayer)) {
             return ActionResult.SUCCESS;
+        }
+        if (!serverPlayer.isSneaking() && KlangbahnService.boardFromPillar(serverWorld, pos, serverPlayer)) {
+            return ActionResult.SUCCESS_SERVER;
         }
 
         StimmpfeilerNetwork.Route route = StimmpfeilerNetwork.route(serverWorld, pos, serverPlayer.isSneaking());

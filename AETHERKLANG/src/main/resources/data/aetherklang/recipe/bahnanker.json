@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "key": {
+    "A": "minecraft:amethyst_block",
+    "C": "aetherklang:resonanzkristall_cyan",
+    "G": "minecraft:gold_ingot",
+    "M": "aetherklang:metronomblock"
+  },
+  "pattern": [
+    " C ",
+    "AMA",
+    "GGG"
+  ],
+  "result": {
+    "count": 1,
+    "id": "aetherklang:bahnanker"
+  }
+}

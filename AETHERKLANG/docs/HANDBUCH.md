@@ -355,7 +355,7 @@ freigeschalteten Seiten aus deinen synchronisierten Resonanzdaten.
 
 ## 8. Blöcke und Resonanzorte
 
-Alle sieben Grundblöcke sind **spielbar**. Crescendo ergänzt vier weitere
+Alle acht Grundblöcke sind **spielbar**. Crescendo ergänzt vier weitere
 spielbare Tonarium-Blöcke; ihre Details stehen in Kapitel 25.
 
 ### Die vier Resonanzkristalle · Spielbar
@@ -407,6 +407,21 @@ Noten- und Beam-Partikel.
 - Rückreise: Das Portal auf der Ankunftsinsel des Kammertons bringt dich
   **kostenlos** zum Weltspawn der Oberwelt zurück.
 - Nach jeder Überfahrt gilt eine kurze Portal-Abklingzeit (5 s).
+
+### Klangbahn und Bahnanker — `aetherklang:bahnanker` · Spielbar
+
+Ein Bahnanker innerhalb von **64 Blöcken** eines eingestimmten Stimmpfeilers
+spannt eine beidseitig reitbare Lichtschiene auf. Rechtsklick auf den
+Bahnanker fährt zum Pfeiler; normaler Rechtsklick auf den Pfeiler fährt zum
+Bahnanker. Schleichen + Rechtsklick am Pfeiler behält die bisherige
+Rückwärtsreise im Stimmpfeiler-Netz.
+
+Die unsichtbare Kabine trägt genau einen Spieler auf einer sicheren,
+geschwungenen Bahn. Zwei Cyan-Lichtspuren zeichnen die Fahrt; auf jedem
+120-BPM-Weltschlag leuchtet die gesamte Route auf und die Kabine beschleunigt
+kurz. Abspringen bricht die Fahrt ab. Der Bahnanker pulst selbst im Takt und
+wird aus einem Metronomblock, Cyan-Resonanzkristall, Amethyst und Gold
+gefertigt.
 
 ---
 

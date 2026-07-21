@@ -109,6 +109,13 @@ Silence triples and perfect streaks double the decay.
 - **Glockenspiel Portal:** unbreakable two-way gate to the Kammerton. Enter
   with the Codex in either hand (free) or pay 24 RP; the return portal to
   the overworld spawn is free.
+- **Klangbahn Rail Anchor:** place `aetherklang:bahnanker` within 64 blocks
+  of an attuned Tuning Pillar to form a two-way, rideable light rail.
+  Use the anchor to ride to the pillar or normally use the pillar to ride
+  back; sneak-use still takes the established reverse pillar route.
+  Twin cyan trails paint the arcing ride, and every 120-BPM world beat
+  pulses the full route and briefly accelerates its invisible carriage.
+  Dismounting cancels the ride safely.
 
 ### Creatures (all playable: AI, loot, renderers, spawn eggs)
 

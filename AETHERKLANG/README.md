@@ -101,6 +101,11 @@ rückwärts; jede Reise kostet 12 RP. Nach Siegen über Choral und Generalpause
 wird Chorals Arena einmal für die affixverstärkte **Choral-Reprise** neu
 aktiviert.
 
+Ein platzierter `aetherklang:bahnanker` spannt innerhalb von 64 Blöcken zu
+einem eingestimmten Stimmpfeiler eine kostenlose, beidseitig reitbare
+Klangbahn. Bahnanker oder Pfeiler mit leerer Hand benutzen startet die Fahrt;
+Schleichen am Pfeiler behält die Rückwärtsroute des Fernreisenetzes.
+
 Die Klangschmiede wandelt Pauke, Sopranflöte, Kontrabass und Triangel in eigene
 Meister- und Virtuos-Gegenstände um. Diese besitzen höhere Haltbarkeit sowie
 die bereits stufenabhängig stärkeren Effekte. Die Lebenszeit-Ränge reichen nun

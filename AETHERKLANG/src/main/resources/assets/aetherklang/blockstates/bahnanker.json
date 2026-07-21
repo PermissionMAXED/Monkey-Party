@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "lit=false": {
+      "model": "aetherklang:block/bahnanker"
+    },
+    "lit=true": {
+      "model": "aetherklang:block/bahnanker_lit"
+    }
+  }
+}
