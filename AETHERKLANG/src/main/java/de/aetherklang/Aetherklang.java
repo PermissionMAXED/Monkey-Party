@@ -5,6 +5,7 @@ import de.aetherklang.bosswerk.ChoralRepriseService;
 import de.aetherklang.command.ModCommands;
 import de.aetherklang.crescendo.CrescendoServerHooks;
 import de.aetherklang.dirigent.DirigentService;
+import de.aetherklang.echographie.Echographie;
 import de.aetherklang.kaskade.KaskadeHooks;
 import de.aetherklang.klangbahn.Klangbahn;
 import de.aetherklang.klangwerk.KlangwerkLoader;
@@ -46,6 +47,7 @@ public final class Aetherklang implements ModInitializer {
         SchmiedeComponents.register();
         ModBlocks.register();
         ModItems.register();
+        Echographie.register();
         ModItemGroups.register();
         Klangbahn.register();
         ModBlockEntities.register();

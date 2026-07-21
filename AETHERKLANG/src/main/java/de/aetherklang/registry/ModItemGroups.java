@@ -1,6 +1,7 @@
 package de.aetherklang.registry;
 
 import de.aetherklang.Aetherklang;
+import de.aetherklang.echographie.Echographie;
 import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
@@ -22,6 +23,7 @@ public final class ModItemGroups {
                     .icon(() -> new ItemStack(ModItems.STIMMGABEL))
                     .entries((context, entries) -> {
                         ModItems.ALL_ITEMS.forEach(entries::add);
+                        entries.add(Echographie.ECHO_CYLINDER);
                         ContentRegistrar.dataItems().forEach(entries::add);
                     })
                     .build()

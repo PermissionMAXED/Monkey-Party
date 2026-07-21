@@ -1,6 +1,7 @@
 package de.aetherklang.crescendo;
 
 import de.aetherklang.Aetherklang;
+import de.aetherklang.echographie.EchoCylinderService;
 import de.aetherklang.kaskade.KaskadeHooks;
 import de.aetherklang.network.ModNetworking;
 import de.aetherklang.registry.ModItems;
@@ -64,6 +65,7 @@ public final class EnsembleAkkordHooks {
             return false;
         }
 
+        EchoCylinderService.recordOnBeatAction(player, mood);
         EnsembleEngine.onOnBeatAction(player);
         AkkordEngine.onOnBeatAction(player, mood);
         KaskadeHooks.onOnBeatAction(player, mood);

@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
+import net.minecraft.entity.Entity;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
@@ -28,6 +29,7 @@ public final class EnsembleEngine {
 
     private static final double LINK_RADIUS_SQUARED = LINK_RADIUS * LINK_RADIUS;
     private static final Map<UUID, RecentAction> RECENT_ACTIONS = new HashMap<>();
+    private static final Map<UUID, RecentEchoAction> RECENT_ECHO_ACTIONS = new HashMap<>();
     private static final Map<UUID, LinkState> LINKS = new HashMap<>();
     private static final Map<UUID, Integer> LAST_BONUS_BEATS = new HashMap<>();
     private static boolean registered;
@@ -61,6 +63,65 @@ public final class EnsembleEngine {
         } else if (currentLink != null) {
             awardBonus(player, beat);
         }
+        linkRecentEchoAction(player, beat, tick);
+    }
+
+    /**
+     * Pairs a replayed Echographie action with its owner's action on the same beat.
+     */
+    public static void onEchoAction(ServerPlayerEntity owner, Entity echo) {
+        int beat = currentBeat(owner);
+        int tick = owner.getEntityWorld().getServer().getTicks();
+        if (echo.getEntityWorld() != owner.getEntityWorld()
+                || echo.squaredDistanceTo(owner) > LINK_RADIUS_SQUARED) {
+            return;
+        }
+        RECENT_ECHO_ACTIONS.put(
+                echo.getUuid(),
+                new RecentEchoAction(owner.getUuid(), beat, tick, echo)
+        );
+        RecentAction ownerAction = RECENT_ACTIONS.get(owner.getUuid());
+        if (ownerAction == null || ownerAction.beat() != beat) {
+            return;
+        }
+        linkEcho(owner, echo, beat, tick);
+    }
+
+    private static void linkEcho(ServerPlayerEntity owner, Entity echo, int beat, int tick) {
+        LinkState existing = activeLink(owner.getUuid(), tick);
+        Set<UUID> members = new LinkedHashSet<>();
+        if (existing != null) {
+            members.addAll(existing.members());
+        }
+        boolean newlyLinked = !members.contains(echo.getUuid());
+        members.add(owner.getUuid());
+        members.add(echo.getUuid());
+
+        LinkState linked = new LinkState(Set.copyOf(members), tick + LINK_DURATION_TICKS);
+        MinecraftServer server = owner.getEntityWorld().getServer();
+        for (UUID memberId : members) {
+            LINKS.put(memberId, linked);
+            sync(server, memberId, linked.members());
+        }
+        awardBonus(owner, beat);
+        if (newlyLinked) {
+            playLinkFeedback(owner);
+            ModCriteria.FIRST_ENSEMBLE.trigger(owner);
+        }
+    }
+
+    private static void linkRecentEchoAction(ServerPlayerEntity owner, int beat, int tick) {
+        for (RecentEchoAction action : RECENT_ECHO_ACTIONS.values()) {
+            Entity echo = action.echo();
+            if (!action.ownerId().equals(owner.getUuid())
+                    || action.beat() != beat
+                    || !echo.isAlive()
+                    || echo.getEntityWorld() != owner.getEntityWorld()
+                    || echo.squaredDistanceTo(owner) > LINK_RADIUS_SQUARED) {
+                continue;
+            }
+            linkEcho(owner, echo, beat, tick);
+        }
     }
 
     public static int getEnsembleSize(ServerPlayerEntity player) {
@@ -82,30 +143,43 @@ public final class EnsembleEngine {
     public static void removePlayer(MinecraftServer server, UUID playerId) {
         RECENT_ACTIONS.remove(playerId);
         LAST_BONUS_BEATS.remove(playerId);
-        LinkState link = LINKS.remove(playerId);
+        removeMember(server, playerId);
+    }
+
+    /**
+     * Removes a synthetic Echographie voice as soon as its replay ends.
+     */
+    public static void removeEcho(MinecraftServer server, UUID echoId) {
+        RECENT_ECHO_ACTIONS.remove(echoId);
+        removeMember(server, echoId);
+    }
+
+    private static void removeMember(MinecraftServer server, UUID memberId) {
+        LinkState link = LINKS.remove(memberId);
         if (link == null) {
             return;
         }
 
         Set<UUID> remaining = new LinkedHashSet<>(link.members());
-        remaining.remove(playerId);
+        remaining.remove(memberId);
         if (remaining.size() < 2) {
-            for (UUID memberId : remaining) {
-                LINKS.remove(memberId);
-                sync(server, memberId, Set.of());
+            for (UUID remainingId : remaining) {
+                LINKS.remove(remainingId);
+                sync(server, remainingId, Set.of());
             }
             return;
         }
 
         LinkState reduced = new LinkState(Set.copyOf(remaining), link.expiresAtTick());
-        for (UUID memberId : remaining) {
-            LINKS.put(memberId, reduced);
-            sync(server, memberId, reduced.members());
+        for (UUID remainingId : remaining) {
+            LINKS.put(remainingId, reduced);
+            sync(server, remainingId, reduced.members());
         }
     }
 
     public static void clear() {
         RECENT_ACTIONS.clear();
+        RECENT_ECHO_ACTIONS.clear();
         LINKS.clear();
         LAST_BONUS_BEATS.clear();
     }
@@ -228,6 +302,9 @@ public final class EnsembleEngine {
         if (currentTick % 20 == 0) {
             int oldestRelevantTick = currentTick - 20;
             RECENT_ACTIONS.entrySet().removeIf(entry -> entry.getValue().tick() < oldestRelevantTick);
+            RECENT_ECHO_ACTIONS.entrySet().removeIf(entry ->
+                    entry.getValue().tick() < oldestRelevantTick || !entry.getValue().echo().isAlive()
+            );
             Set<UUID> trackedPlayers = new HashSet<>(server.getPlayerManager().getPlayerList()
                     .stream()
                     .map(ServerPlayerEntity::getUuid)
@@ -258,6 +335,9 @@ public final class EnsembleEngine {
     }
 
     private record RecentAction(int beat, int tick) {
+    }
+
+    private record RecentEchoAction(UUID ownerId, int beat, int tick, Entity echo) {
     }
 
     private record LinkState(Set<UUID> members, int expiresAtTick) {

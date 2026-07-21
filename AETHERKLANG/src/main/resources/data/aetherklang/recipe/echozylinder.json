@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "A": "minecraft:amethyst_shard",
+    "C": "minecraft:copper_ingot",
+    "E": "minecraft:echo_shard",
+    "R": "aetherklang:relikt_echo"
+  },
+  "pattern": [
+    "CRC",
+    "AEA",
+    " C "
+  ],
+  "result": {
+    "count": 1,
+    "id": "aetherklang:echozylinder"
+  }
+}
