@@ -21,6 +21,7 @@ public final class ModPayloads {
     public static final Identifier AKKORD_FX_ID = Aetherklang.id("akkord_fx");
     public static final Identifier ENSEMBLE_SYNC_ID = Aetherklang.id("ensemble_sync");
     public static final Identifier ENSEMBLE_MEMBERS_ID = Aetherklang.id("ensemble_members");
+    public static final Identifier DIRIGENT_SYNC_ID = Aetherklang.id("dirigent_sync");
     public static final Identifier RANG_SYNC_ID = Aetherklang.id("rang_sync");
     public static final Identifier BOSS_FX_ID = Aetherklang.id("boss_fx");
     public static final Identifier REGION_SYNC_ID = Aetherklang.id("region_sync");
@@ -44,12 +45,13 @@ public final class ModPayloads {
         PayloadTypeRegistry.playS2C().register(EnsembleSyncPayload.ID, EnsembleSyncPayload.CODEC);
         PayloadTypeRegistry.playS2C().register(EnsembleMembersPayload.ID, EnsembleMembersPayload.CODEC);
         PayloadTypeRegistry.playS2C().register(RangSyncPayload.ID, RangSyncPayload.CODEC);
+        PayloadTypeRegistry.playS2C().register(DirigentSyncPayload.ID, DirigentSyncPayload.CODEC);
         PayloadTypeRegistry.playS2C().register(BossFxPayload.ID, BossFxPayload.CODEC);
         PayloadTypeRegistry.playS2C().register(RegionSyncPayload.ID, RegionSyncPayload.CODEC);
         PayloadTypeRegistry.playS2C().register(LeitmotivSyncPayload.ID, LeitmotivSyncPayload.CODEC);
         PayloadTypeRegistry.playS2C().register(KaskadeFxPayload.ID, KaskadeFxPayload.CODEC);
         PayloadTypeRegistry.playS2C().register(WeltakkordFxPayload.ID, WeltakkordFxPayload.CODEC);
-        Aetherklang.LOGGER.debug("Registered {} Aetherklang play payloads", 16);
+        Aetherklang.LOGGER.debug("Registered {} Aetherklang play payloads", 17);
     }
 
     public record DashPayload(float strength) implements CustomPayload {
@@ -272,6 +274,45 @@ public final class ModPayloads {
 
     public record RangSyncPayload(int rang, long gesamtRp) implements CustomPayload {
         public static final CustomPayload.Id<RangSyncPayload> ID = new CustomPayload.Id<>(RANG_SYNC_ID);
+    public record DirigentSyncPayload(
+            int akkord,
+            int ensembleSize,
+            int amplificationPercent,
+            int remainingTicks,
+            boolean resolved
+    ) implements CustomPayload {
+        public static final CustomPayload.Id<DirigentSyncPayload> ID =
+                new CustomPayload.Id<>(DIRIGENT_SYNC_ID);
+        public static final PacketCodec<RegistryByteBuf, DirigentSyncPayload> CODEC = PacketCodec.of(
+                (payload, buffer) -> {
+                    buffer.writeVarInt(payload.akkord());
+                    buffer.writeVarInt(payload.ensembleSize());
+                    buffer.writeVarInt(payload.amplificationPercent());
+                    buffer.writeVarInt(payload.remainingTicks());
+                    buffer.writeBoolean(payload.resolved());
+                },
+                buffer -> new DirigentSyncPayload(
+                        buffer.readVarInt(),
+                        buffer.readVarInt(),
+                        buffer.readVarInt(),
+                        buffer.readVarInt(),
+                        buffer.readBoolean()
+                )
+        );
+
+        public DirigentSyncPayload {
+            akkord = Math.clamp(akkord, 0, 4);
+            ensembleSize = Math.clamp(ensembleSize, 0, 1024);
+            amplificationPercent = Math.clamp(amplificationPercent, 100, 200);
+            remainingTicks = Math.clamp(remainingTicks, 0, 20 * 60);
+        }
+
+        @Override
+        public Id<? extends CustomPayload> getId() {
+            return ID;
+        }
+    }
+
         public static final PacketCodec<RegistryByteBuf, RangSyncPayload> CODEC = PacketCodec.of(
                 (payload, buffer) -> {
                     buffer.writeVarInt(payload.rang());

@@ -1,5 +1,6 @@
 package de.aetherklang.resonance;
 
+import de.aetherklang.dirigent.DirigentService;
 import de.aetherklang.network.ModNetworking;
 import de.aetherklang.partitur.PartiturService;
 import de.aetherklang.registry.ModCriteria;
@@ -99,11 +100,13 @@ public final class AkkordEngine {
     }
 
     private static void fire(ServerPlayerEntity player, Akkord akkord) {
+        DirigentService.Resolution resolution = DirigentService.resolve(player, akkord);
+        float multiplier = resolution.multiplier();
         switch (akkord) {
-            case HEILENDER_DREIKLANG -> healGroup(player, 6.0F);
-            case STURZKADENZ -> damageAndSlow(player);
-            case SANFTE_AUFLOESUNG -> sootheGroup(player);
-            case STERNENFORTISSIMO -> launchEnemies(player);
+            case HEILENDER_DREIKLANG -> healGroup(player, 6.0F * multiplier);
+            case STURZKADENZ -> damageAndSlow(player, multiplier);
+            case SANFTE_AUFLOESUNG -> sootheGroup(player, multiplier);
+            case STERNENFORTISSIMO -> launchEnemies(player, multiplier);
         }
 
         ServerWorld world = player.getEntityWorld();
@@ -118,7 +121,9 @@ public final class AkkordEngine {
                 1.0F,
                 akkord.pitch()
         );
-        player.sendMessage(Text.literal(akkord.displayName()), true);
+        if (!resolution.amplified()) {
+            player.sendMessage(Text.literal(akkord.displayName()), true);
+        }
         ModCriteria.FIRST_AKKORD.trigger(player);
         ModNetworking.broadcastAkkordFx(player, akkord.networkId());
         PartiturService.onAkkord(player, akkord);
@@ -145,36 +150,44 @@ public final class AkkordEngine {
         }
     }
 
-    private static void damageAndSlow(ServerPlayerEntity source) {
+    private static void damageAndSlow(ServerPlayerEntity source, float multiplier) {
         ServerWorld world = source.getEntityWorld();
         for (LivingEntity target : hostileTargets(source)) {
-            target.damage(world, source.getDamageSources().magic(), 6.0F);
-            target.addStatusEffect(new StatusEffectInstance(StatusEffects.SLOWNESS, 120, 1));
+            target.damage(world, source.getDamageSources().magic(), 6.0F * multiplier);
+            int amplifier = multiplier >= 1.5F ? 2 : 1;
+            target.addStatusEffect(new StatusEffectInstance(StatusEffects.SLOWNESS, 120, amplifier));
         }
     }
 
-    private static void sootheGroup(ServerPlayerEntity source) {
+    private static void sootheGroup(ServerPlayerEntity source, float multiplier) {
         for (ServerPlayerEntity player : playersAround(source)) {
             if (!player.isAlive()) {
                 continue;
             }
-            player.heal(2.0F);
+            player.heal(2.0F * multiplier);
             player.removeStatusEffect(StatusEffects.SLOWNESS);
-            player.addStatusEffect(new StatusEffectInstance(StatusEffects.REGENERATION, 160, 0));
+            player.addStatusEffect(new StatusEffectInstance(
+                    StatusEffects.REGENERATION,
+                    Math.round(160 * multiplier),
+                    0
+            ));
         }
     }
 
-    private static void launchEnemies(ServerPlayerEntity source) {
+    private static void launchEnemies(ServerPlayerEntity source, float multiplier) {
         ServerWorld world = source.getEntityWorld();
         for (LivingEntity target : hostileTargets(source)) {
-            target.damage(world, source.getDamageSources().magic(), 4.0F);
+            target.damage(world, source.getDamageSources().magic(), 4.0F * multiplier);
             Vec3d force = target.getEntityPos()
                     .subtract(source.getEntityPos())
                     .multiply(1.0D, 0.0D, 1.0D);
             if (force.lengthSquared() < 0.01D) {
                 force = source.getRotationVector().multiply(1.0D, 0.0D, 1.0D);
             }
-            target.addVelocity(force.normalize().multiply(0.9D).add(0.0D, 0.65D, 0.0D));
+            target.addVelocity(
+                    force.normalize().multiply(0.9D * multiplier)
+                            .add(0.0D, 0.65D * multiplier, 0.0D)
+            );
             target.velocityModified = true;
             target.addStatusEffect(new StatusEffectInstance(StatusEffects.GLOWING, 160, 0));
         }

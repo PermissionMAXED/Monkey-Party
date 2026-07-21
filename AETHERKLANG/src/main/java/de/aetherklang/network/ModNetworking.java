@@ -254,6 +254,28 @@ public final class ModNetworking {
         }
     }
 
+    public static void sendDirigentSync(
+            ServerPlayerEntity player,
+            int akkord,
+            int ensembleSize,
+            int amplificationPercent,
+            int remainingTicks,
+            boolean resolved
+    ) {
+        if (ServerPlayNetworking.canSend(player, ModPayloads.DirigentSyncPayload.ID)) {
+            ServerPlayNetworking.send(
+                    player,
+                    new ModPayloads.DirigentSyncPayload(
+                            akkord,
+                            ensembleSize,
+                            amplificationPercent,
+                            remainingTicks,
+                            resolved
+                    )
+            );
+        }
+    }
+
     private static DustParticleEffect moodDust(Stimmung mood) {
         int color = switch (mood) {
             case FREUDE -> 0xF5C95F;

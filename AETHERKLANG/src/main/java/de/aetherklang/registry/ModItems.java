@@ -1,6 +1,7 @@
 package de.aetherklang.registry;
 
 import de.aetherklang.Aetherklang;
+import de.aetherklang.dirigent.TaktstockItem;
 import de.aetherklang.item.BasshammerItem;
 import de.aetherklang.item.ChorherzItem;
 import de.aetherklang.item.EchostiefelItem;
@@ -56,6 +57,7 @@ public final class ModItems {
     public static final String CHORAL_SPAWN_EGG_ID = "choral_spawn_egg";
     public static final String ORGELHORN_ID = "orgelhorn";
     public static final String FERMATENGLOCKE_ID = "fermatenglocke";
+    public static final String TAKTSTOCK_ID = "taktstock";
     public static final String CHORHERZ_ID = "chorherz";
     public static final String RESONANZELIXIER_ID = "resonanzelixier";
     public static final String KLANGWEBER_HELM_ID = "klangweber_helm";
@@ -153,6 +155,8 @@ public final class ModItems {
             register(ORGELHORN_ID, OrgelhornItem::new, new Item.Settings().maxCount(1).maxDamage(384));
     public static final Item FERMATENGLOCKE =
             register(FERMATENGLOCKE_ID, FermatenglockeItem::new, new Item.Settings().maxCount(1).maxDamage(256));
+    public static final Item TAKTSTOCK =
+            register(TAKTSTOCK_ID, TaktstockItem::new, new Item.Settings().maxCount(1));
     public static final Item CHORHERZ =
             register(CHORHERZ_ID, ChorherzItem::new, new Item.Settings().maxCount(16));
     public static final Item RESONANZELIXIER =
@@ -376,6 +380,7 @@ public final class ModItems {
             MOTIV_WEBER_SPAWN_EGG,
             MOTIV_SCHUETZE_SPAWN_EGG,
             PAUKE,
+            TAKTSTOCK,
             PAUKE_MEISTER,
             PAUKE_VIRTUOS,
             SOPRANFLOETE,

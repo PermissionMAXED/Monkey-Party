@@ -4,6 +4,7 @@ import de.aetherklang.bosswerk.Bosswerk;
 import de.aetherklang.bosswerk.ChoralRepriseService;
 import de.aetherklang.command.ModCommands;
 import de.aetherklang.crescendo.CrescendoServerHooks;
+import de.aetherklang.dirigent.DirigentService;
 import de.aetherklang.kaskade.KaskadeHooks;
 import de.aetherklang.klangbahn.Klangbahn;
 import de.aetherklang.klangwerk.KlangwerkLoader;
@@ -61,6 +62,7 @@ public final class Aetherklang implements ModInitializer {
         ModPayloads.register();
         PartiturNetworking.register();
         ModNetworking.register();
+        DirigentService.register();
         ModCommands.register();
         BeatEngine.register();
         KammertonWorld.register();
