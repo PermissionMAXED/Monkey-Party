@@ -13,9 +13,7 @@ import net.minecraft.text.Text;
  */
 public final class RangHud {
     private static final int WIDTH = 116;
-    private static final int HEIGHT = 24;
-    private static final int INDIGO = 0xE61A1033;
-    private static final int DEEP_INDIGO = 0xF20D071D;
+    private static final int HEIGHT = 26;
     private static final int GOLD = 0xFFF5C95F;
     private static final int MUTED = 0xFFB9A9D0;
 
@@ -36,16 +34,18 @@ public final class RangHud {
         }
 
         int x = 159;
-        int y = context.getScaledWindowHeight() - 108;
+        int y = context.getScaledWindowHeight()
+                - ResonanceHud.PANEL_HEIGHT
+                - 14
+                - 34
+                - 6;
         RangService.Rang rang = ClientResonanceCache.getRang();
         int accent = accent(rang);
 
-        cutCornerFill(context, x + 2, y + 2, WIDTH, HEIGHT, 0x60000000);
-        cutCornerFill(context, x, y, WIDTH, HEIGHT, GOLD);
-        cutCornerFill(context, x + 1, y + 1, WIDTH - 2, HEIGHT - 2, INDIGO);
-        context.fill(x + 4, y + 4, x + WIDTH - 4, y + HEIGHT - 4, DEEP_INDIGO);
+        GlassHud.drawPanel(context, x, y, WIDTH, HEIGHT, accent, 218);
+        GlassHud.drawInset(context, x + 6, y + 4, 21, 18, accent, true);
 
-        drawSigil(context, x + 14, y + 12, rang, accent);
+        drawSigil(context, x + 16, y + 13, rang, accent);
         context.drawTextWithShadow(
                 client.textRenderer,
                 Text.translatable(rang.getTranslationKey()),
@@ -57,7 +57,7 @@ public final class RangHud {
                 client.textRenderer,
                 Text.literal("ΣRP " + ClientResonanceCache.getGesamtRp()),
                 x + 29,
-                y + 13,
+                y + 14,
                 MUTED
         );
     }
@@ -69,18 +69,18 @@ public final class RangHud {
             RangService.Rang rang,
             int color
     ) {
-        drawDiamond(context, centerX, centerY, 8, 0xFF261745);
-        drawDiamondOutline(context, centerX, centerY, 7, color);
+        drawDiamond(context, centerX, centerY, 7, 0xA8261745);
+        drawDiamondOutline(context, centerX, centerY, 6, color);
         drawDiamond(context, centerX, centerY, 2, GOLD);
 
         int marks = rang.ordinal();
         if (marks >= 1) {
-            context.fill(centerX - 9, centerY, centerX - 7, centerY + 1, color);
-            context.fill(centerX + 8, centerY, centerX + 10, centerY + 1, color);
+            context.fill(centerX - 8, centerY, centerX - 6, centerY + 1, color);
+            context.fill(centerX + 7, centerY, centerX + 9, centerY + 1, color);
         }
         if (marks >= 2) {
-            context.fill(centerX, centerY - 9, centerX + 1, centerY - 7, color);
-            context.fill(centerX, centerY + 8, centerX + 1, centerY + 10, color);
+            context.fill(centerX, centerY - 8, centerX + 1, centerY - 6, color);
+            context.fill(centerX, centerY + 7, centerX + 1, centerY + 9, color);
         }
         if (marks >= 3) {
             context.fill(centerX - 6, centerY - 6, centerX - 4, centerY - 4, GOLD);
@@ -94,7 +94,7 @@ public final class RangHud {
             context.fill(centerX - 5, centerY - 1, centerX + 6, centerY + 2, color);
         }
         if (marks >= 6) {
-            drawDiamondOutline(context, centerX, centerY, 10, GOLD);
+            drawDiamondOutline(context, centerX, centerY, 9, GOLD);
         }
     }
 
@@ -131,8 +131,4 @@ public final class RangHud {
         };
     }
 
-    private static void cutCornerFill(DrawContext context, int x, int y, int width, int height, int color) {
-        context.fill(x + 2, y, x + width - 2, y + height, color);
-        context.fill(x, y + 2, x + width, y + height - 2, color);
-    }
 }
