@@ -47,7 +47,11 @@ public final class ScreenRippleFx {
         perfectStreak = streak;
         if (perfectStreak >= AuroraHooks.MIN_RIPPLE_STREAK) {
             rippleLife = 1.0F;
-            rippleStrength = MathHelper.clamp(0.72F + perfectStreak * 0.08F, 0.0F, 1.0F);
+            rippleStrength = MathHelper.clamp(
+                    Math.max(0.72F + perfectStreak * 0.08F, rippleStrength + 0.08F),
+                    0.0F,
+                    1.0F
+            );
         }
     }
 
@@ -55,6 +59,7 @@ public final class ScreenRippleFx {
         rippleLife *= 0.86F;
         if (rippleLife < 0.008F) {
             rippleLife = 0.0F;
+            rippleStrength = 0.0F;
         }
 
         float targetTint = findFermateTint(client);
@@ -62,6 +67,7 @@ public final class ScreenRippleFx {
         if (client.world == null) {
             lastPerfectBeat = Integer.MIN_VALUE;
             perfectStreak = 0;
+            rippleStrength = 0.0F;
         }
     }
 
@@ -104,12 +110,19 @@ public final class ScreenRippleFx {
     private static void drawFermateTint(DrawContext context, int width, int height, float tint, long time) {
         int washAlpha = MathHelper.clamp(Math.round(tint * 56.0F), 0, 56);
         int indigoAlpha = MathHelper.clamp(Math.round(tint * 31.0F), 0, 31);
-        context.fill(0, 0, width, height, FxPalette.withAlpha(0xB4B4C3, washAlpha));
-        context.fill(0, 0, width, height, FxPalette.withAlpha(FxPalette.INDIGO, indigoAlpha));
+        if (FxBudget.claimScreen(1, FxBudget.Priority.NORMAL) > 0) {
+            context.fill(0, 0, width, height, FxPalette.withAlpha(0xB4B4C3, washAlpha));
+        }
+        if (FxBudget.claimScreen(1, FxBudget.Priority.NORMAL) > 0) {
+            context.fill(0, 0, width, height, FxPalette.withAlpha(FxPalette.INDIGO, indigoAlpha));
+        }
 
         int scanAlpha = Math.max(1, washAlpha / 5);
         int offset = (int) (time & 3L);
-        for (int y = offset; y < height; y += 4) {
+        int requestedLines = Math.max(1, (height + 3) / 4);
+        int lines = FxBudget.claimScreen(requestedLines, FxBudget.Priority.NORMAL);
+        int spacing = lines == 0 ? height + 1 : Math.max(4, (height + lines - 1) / lines);
+        for (int y = offset, line = 0; y < height && line < lines; y += spacing, line++) {
             context.fill(0, y, width, y + 1, FxPalette.withAlpha(FxPalette.CYAN, scanAlpha));
         }
     }
@@ -122,10 +135,16 @@ public final class ScreenRippleFx {
         int alpha = MathHelper.clamp(Math.round(rippleLife * rippleStrength * 205.0F), 0, 205);
         int centerX = width / 2;
         int centerY = height / 2;
+        int flashAlpha = MathHelper.clamp(Math.round(rippleLife * rippleStrength * 18.0F), 0, 18);
+        if (FxBudget.claimScreen(1, FxBudget.Priority.CRITICAL) > 0) {
+            context.fill(0, 0, width, height, FxPalette.withAlpha(FxPalette.CYAN, flashAlpha));
+        }
 
-        drawRing(context, centerX - 2, centerY, radius + 4.0F, FxPalette.MAGENTA, alpha / 2);
-        drawRing(context, centerX + 2, centerY - 1, radius, FxPalette.CYAN, alpha);
-        drawRing(context, centerX, centerY + 2, radius - 4.0F, FxPalette.GOLD, alpha * 3 / 4);
+        drawRing(context, centerX - 2, centerY, radius + 4.0F, FxPalette.MAGENTA, alpha / 2,
+                RIPPLE_SEGMENTS);
+        drawRing(context, centerX + 2, centerY - 1, radius, FxPalette.CYAN, alpha, RIPPLE_SEGMENTS);
+        drawRing(context, centerX, centerY + 2, radius - 4.0F, FxPalette.GOLD, alpha * 3 / 4,
+                RIPPLE_SEGMENTS);
 
         if (perfectStreak >= 4) {
             drawRing(
@@ -134,7 +153,8 @@ public final class ScreenRippleFx {
                     centerY,
                     radius * 0.62F,
                     perfectStreak % 2 == 0 ? FxPalette.CYAN : FxPalette.GOLD,
-                    alpha / 2
+                    alpha / 2,
+                    RIPPLE_SEGMENTS * 2 / 3
             );
         }
     }
@@ -145,13 +165,15 @@ public final class ScreenRippleFx {
             int centerY,
             float radius,
             int color,
-            int alpha
+            int alpha,
+            int requestedSegments
     ) {
         if (radius <= 0.0F || alpha <= 0) {
             return;
         }
-        for (int segment = 0; segment < RIPPLE_SEGMENTS; segment++) {
-            double angle = segment * Math.PI * 2.0D / RIPPLE_SEGMENTS;
+        int segments = FxBudget.claimScreen(requestedSegments, FxBudget.Priority.CRITICAL);
+        for (int segment = 0; segment < segments; segment++) {
+            double angle = segment * Math.PI * 2.0D / segments;
             int x = centerX + Math.round((float) Math.cos(angle) * radius);
             int y = centerY + Math.round((float) Math.sin(angle) * radius);
             int size = segment % 6 == 0 ? 3 : 2;

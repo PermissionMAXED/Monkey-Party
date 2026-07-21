@@ -22,6 +22,8 @@ import net.minecraft.util.math.random.Random;
  * Coordinates payload bursts and lightweight client-tick effects.
  */
 public final class ClientFxController {
+    private static final int[] BEAT_RING_POINTS = {22, 28, 34};
+
     private static boolean registered;
     private static int clientTicks;
     private static float beatPulse;
@@ -93,29 +95,38 @@ public final class ClientFxController {
         Random random = world.getRandom();
         Vec3d center = player.getEntityPos().add(0.0D, 0.13D, 0.0D);
         double rotation = beat * 0.61803398875D;
+        int primary = FxPalette.primary(ClientResonanceCache.getMood());
+        int secondary = FxPalette.secondary(ClientResonanceCache.getMood());
+        int ringBudget = FxBudget.claimParticles(84, FxBudget.Priority.CRITICAL);
 
-        for (int ring = 0; ring < 2; ring++) {
-            int points = 20 + ring * 8;
-            double radius = 0.6D + ring * 0.42D;
-            double speed = 0.055D + ring * 0.018D;
-            for (int point = 0; point < points; point++) {
+        for (int ring = 0; ring < BEAT_RING_POINTS.length && ringBudget > 0; ring++) {
+            int points = BEAT_RING_POINTS[ring];
+            int emitted = Math.min(points, ringBudget);
+            ringBudget -= emitted;
+            double radius = 0.58D + ring * 0.39D;
+            double speed = 0.052D + ring * 0.017D;
+            for (int point = 0; point < emitted; point++) {
                 double angle = rotation + point * Math.PI * 2.0D / points + ring * 0.21D;
                 double cos = Math.cos(angle);
                 double sin = Math.sin(angle);
+                double rippleY = Math.sin(angle * 2.0D + rotation) * (0.025D + ring * 0.018D);
                 world.addParticleClient(
-                        ModParticles.BEAT_RING,
+                        ring == 2
+                                ? new DustParticleEffect((point & 1) == 0 ? primary : secondary, 0.82F)
+                                : ModParticles.BEAT_RING,
                         center.x + cos * radius,
-                        center.y + ring * 0.075D,
+                        center.y + ring * 0.07D + rippleY,
                         center.z + sin * radius,
                         cos * speed,
-                        0.012D + ring * 0.004D,
+                        0.012D + ring * 0.006D,
                         sin * speed
                 );
             }
         }
 
-        for (int spark = 0; spark < 14; spark++) {
-            double angle = rotation + spark * Math.PI * 2.0D / 14.0D;
+        int sparks = FxBudget.claimParticles(18, FxBudget.Priority.CRITICAL);
+        for (int spark = 0; spark < sparks; spark++) {
+            double angle = rotation + spark * Math.PI * 2.0D / 18.0D;
             double radius = 0.65D + random.nextDouble() * 0.85D;
             double lift = 0.035D + random.nextDouble() * 0.08D;
             world.addParticleClient(
@@ -160,6 +171,15 @@ public final class ClientFxController {
                 .add(look.multiply(0.32D))
                 .add(side.multiply(0.24D))
                 .add(0.0D, -0.18D, 0.0D);
+        double beamLength = Math.min(origin.distanceTo(target), 18.0D);
+        if (beamLength < 0.2D) {
+            return;
+        }
+        int steps = Math.max(2, (int) Math.ceil(beamLength / 0.27D));
+        int particleCost = (steps + 1) * 3 + steps / 2 + 1;
+        if (!FxBudget.tryClaimParticles(particleCost, FxBudget.Priority.NORMAL)) {
+            return;
+        }
         ResonanceBeamFx.draw(
                 world,
                 origin,
@@ -222,6 +242,7 @@ public final class ClientFxController {
         }
 
         if (player.handSwinging) {
+            int trailBudget = FxBudget.claimParticles(7, FxBudget.Priority.NORMAL);
             float swing = player.getHandSwingProgress(0.0F);
             Vec3d look = player.getRotationVector().normalize();
             Vec3d side = new Vec3d(-look.z, 0.0D, look.x).normalize();
@@ -230,7 +251,7 @@ public final class ClientFxController {
             int primary = blade ? FxPalette.CYAN : hammer ? FxPalette.GOLD : FxPalette.MAGENTA;
             int secondary = blade ? FxPalette.MAGENTA : FxPalette.CYAN;
 
-            for (int sample = -2; sample <= 2; sample++) {
+            for (int sample = -2; sample <= 2 && trailBudget > 0; sample++) {
                 double angle = sweep + sample * 0.13D;
                 Vec3d point = center
                         .add(side.multiply(Math.cos(angle) * (hammer ? 1.0D : 0.72D)))
@@ -244,7 +265,8 @@ public final class ClientFxController {
                         0.01D,
                         0.0D
                 );
-                if (sample == 0 || sample == 2) {
+                trailBudget--;
+                if ((sample == 0 || sample == 2) && trailBudget > 0) {
                     world.addParticleClient(
                             ModParticles.NOTE_SPARK,
                             point.x,
@@ -254,6 +276,7 @@ public final class ClientFxController {
                             0.025D,
                             side.z * 0.018D
                     );
+                    trailBudget--;
                 }
             }
         }
@@ -261,7 +284,8 @@ public final class ClientFxController {
         if (harp && player.isUsingItem()) {
             double phase = clientTicks * 0.28D;
             Vec3d center = player.getEntityPos().add(0.0D, 1.0D, 0.0D);
-            for (int note = 0; note < 3; note++) {
+            int notes = FxBudget.claimParticles(3, FxBudget.Priority.NORMAL);
+            for (int note = 0; note < notes; note++) {
                 double angle = phase + note * Math.PI * 2.0D / 3.0D;
                 world.addParticleClient(
                         ModParticles.NOTE_SPARK,
@@ -291,8 +315,12 @@ public final class ClientFxController {
     }
 
     private static void spawnPortalAura(ClientWorld world, BlockPos pos, long tick) {
+        int budget = FxBudget.claimParticles(8, FxBudget.Priority.AMBIENT);
+        if (budget <= 0) {
+            return;
+        }
         double phase = tick * 0.16D;
-        for (int strand = 0; strand < 4; strand++) {
+        for (int strand = 0; strand < 4 && budget > 0; strand++) {
             double angle = phase + strand * Math.PI * 0.5D;
             double radius = 0.52D + Math.sin(phase * 0.7D + strand) * 0.11D;
             double y = pos.getY() + 0.12D + (tick + strand * 7L) % 24L / 24.0D * 0.95D;
@@ -310,21 +338,26 @@ public final class ClientFxController {
                     0.018D,
                     Math.cos(angle) * 0.018D
             );
-            world.addParticleClient(
-                    strand == 3 ? ModParticles.NOTE_SPARK : ModParticles.BEAM_MOTE,
-                    x,
-                    y,
-                    z,
-                    -Math.sin(angle) * 0.025D,
-                    0.022D,
-                    Math.cos(angle) * 0.025D
-            );
+            budget--;
+            if (budget > 0) {
+                world.addParticleClient(
+                        strand == 3 ? ModParticles.NOTE_SPARK : ModParticles.BEAM_MOTE,
+                        x,
+                        y,
+                        z,
+                        -Math.sin(angle) * 0.025D,
+                        0.022D,
+                        Math.cos(angle) * 0.025D
+                );
+                budget--;
+            }
         }
     }
 
     private static void spawnDissonanzSpike(ClientWorld world, ClientPlayerEntity player, float spike) {
         Random random = world.getRandom();
-        int amount = 9 + Math.min(22, (int) (spike * 70.0F));
+        int requested = 9 + Math.min(22, (int) (spike * 70.0F));
+        int amount = FxBudget.claimParticles(requested, FxBudget.Priority.NORMAL);
         for (int particle = 0; particle < amount; particle++) {
             double angle = random.nextDouble() * Math.PI * 2.0D;
             double radius = 0.35D + random.nextDouble() * 1.35D;
@@ -341,6 +374,9 @@ public final class ClientFxController {
     }
 
     private static void spawnAmbientDissonanz(ClientWorld world, ClientPlayerEntity player, float dissonanz) {
+        if (FxBudget.claimParticles(1, FxBudget.Priority.AMBIENT) == 0) {
+            return;
+        }
         Random random = world.getRandom();
         double angle = random.nextDouble() * Math.PI * 2.0D;
         double radius = 0.7D + random.nextDouble() * (0.8D + dissonanz);
