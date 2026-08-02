@@ -74,6 +74,20 @@ static func normalize_slice(raw: Variant) -> Dictionary:
 	return ranch
 
 
+## Slice IM update-Block holen und notfalls heilen (H-Ranch-Travel Befund
+## 6): fehlt der Slice (Alt-Zustand vor der Boot-Registrierung) gibt es
+## volle Defaults, ist er nur ein Fremd-Heal-Torso ({} + quests) repariert
+## normalize die Typen. Schreib-Lambdas (Kauf/Angebot) dürfen NIE mitten
+## im update an `state["ranch"]` sterben — beim Kauf wäre sonst das Geld
+## weg und die Ranch trotzdem nicht da.
+static func heile_slice(state: Dictionary) -> Dictionary:
+	if not (state.get(SLICE_ID) is Dictionary):
+		state[SLICE_ID] = default_slice()
+	else:
+		state[SLICE_ID] = normalize_slice(state[SLICE_ID])
+	return state[SLICE_ID]
+
+
 ## Ranch gekauft?
 static func ist_gekauft(gs: Object) -> bool:
 	return gs != null and bool(gs.get_value("ranch.gekauft", false))
@@ -95,7 +109,7 @@ static func angebot_verschieben(gs: Object) -> void:
 		return
 	gs.update(
 		func(state: Dictionary) -> void:
-			var ranch: Dictionary = state[SLICE_ID]
+			var ranch := heile_slice(state)
 			ranch["angebotGesehen"] = true
 			ranch["angebotVerschoben"] = true
 	)
@@ -108,7 +122,7 @@ static func angebot_gesehen(gs: Object) -> void:
 		return
 	gs.update(
 		func(state: Dictionary) -> void:
-			var ranch: Dictionary = state[SLICE_ID]
+			var ranch := heile_slice(state)
 			ranch["angebotGesehen"] = true
 	)
 	gs.notify_slice_changed(SLICE_ID)

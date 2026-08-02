@@ -58,7 +58,11 @@ static func kaufe(gs: Object) -> String:
 			if not Economy.spend(state["economy"], preis, REASON):
 				return
 			bezahlt[0] = true
-			var ranch: Dictionary = state[RanchState.SLICE_ID]
+			# heile_slice statt Direktzugriff (H-Ranch-Travel Befund 6):
+			# `state["ranch"]` warf auf frischen Saves (Slice nie im Boot
+			# registriert) — die Lambda starb NACH dem spend, Münzen weg,
+			# Ranch nicht gekauft. Atomar heißt: das darf nie passieren.
+			var ranch := RanchState.heile_slice(state)
 			ranch["gekauft"] = true
 			ranch["gekauftAm"] = jetzt_ms
 			ranch["angebotGesehen"] = true

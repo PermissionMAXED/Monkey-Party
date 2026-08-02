@@ -51,6 +51,13 @@ const DEFAULT_SLICE_SCRIPTS := {
 	"gvz": "res://scripts/minigames/games/gvz/gvz_progress.gd",
 	# FERTIG-1 (EVAL Rang 12): Arcade-Modifier-Events — additiver Slice.
 	"modifiers": "res://scripts/minigames/modifier_engine.gd",
+	# H-Ranch-Travel Befund 6: `ranch` fehlte hier — im Produktions-Boot
+	# registrierte NIEMAND den Slice (nur Tests riefen register_slice()).
+	# Folgen auf frischen Saves: angebot_gesehen/verschieben starben mit
+	# Key-Fehler, RanchKauf.kaufe brach MITTEN im update ab (Münzen weg,
+	# keine Ranch) und der Hof startete ohne Heu/Äpfel (Lager 0 statt 4/2),
+	# weil Fremdcode den Slice nur als {} heilte.
+	"ranch": "res://scripts/ranch/ranch_state.gd",
 }
 
 ## Pinnbare Uhr — EINZIGE Zeitquelle fuer State-Code (Tests pinnen sie).

@@ -119,6 +119,24 @@ static func live_tick(state: Dictionary, now_ms: int) -> Array:
 	return events
 
 
+## Urlaubs-Maschine im Live-Takt (gleiche Event-Strings wie offline.gd,
+## damit HUD/Toasts beide Quellen identisch behandeln).
+static func _vacation_live_tick(state: Dictionary, now_ms: int) -> Array:
+	var res := Vacation.tick(state, now_ms)
+	if res["changes"] != null:
+		state["vacation"] = res["changes"]
+	var events: Array = []
+	for ev: Dictionary in res["events"]:
+		match ev.get("type"):
+			"postcard":
+				events.append("vacationPostcard")
+			"returnReady":
+				events.append("vacationReturnReady")
+			"overdue":
+				events.append("vacationOverdue")
+	return events
+
+
 ## H-HOME-Playtest-Fix (Doc F §3.2): nach JEDEM zu Ende geschlafenen Schlaf
 ## wird Zähneputzen Pflicht. VORHER wurde BadState.mark_woke_up nirgends in
 ## Produktion gerufen — needsBrushing blieb ewig false, die Warte-Pose am
@@ -134,9 +152,14 @@ static func _mark_brushing_due(state: Dictionary, events: Array) -> void:
 static func _live_tick_core(state: Dictionary, now_ms: int) -> Array:
 	var flat := flat_view(state)
 	if Vacation.is_away(flat):
+		# Werte bleiben eingefroren (das Resort kümmert sich) — aber die
+		# Urlaubs-Maschine tickt LIVE weiter (Web core/timeEngine.js tickt
+		# vacation im 1-s-Takt): Postkarten und returnReady/overdue kamen
+		# vorher erst nach App-Neustart an (nur der Offline-Catch-up rief
+		# Vacation.tick — H-Ranch-Travel-Playtest, Befund 5).
 		flat["lastTickAt"] = now_ms
 		write_back(state, flat)
-		return []
+		return _vacation_live_tick(state, now_ms)
 	var last := _num(flat.get("lastTickAt"))
 	var dt_min := maxf(0.0, (float(now_ms) - last) / 60000.0) if last > 0.0 else 0.0
 	if Sleep.is_sleeping(flat):

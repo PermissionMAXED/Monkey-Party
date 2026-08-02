@@ -416,7 +416,14 @@ func _on_einsteigen() -> void:
 
 
 func _on_gute_reise(ziel_id: String) -> void:
-	sheet.close()
+	# Sheet nur VERSTECKEN, noch nicht schließen: close() ließe den Öffner-
+	# Layer (oeffne(): closed → layer.queue_free) samt DIESER App noch im
+	# selben Frame sterben — mit der App stürbe auch die fertig-Verbindung
+	# der Cutscene, _on_cutscene_fertig (Buchung + Heimweg) liefe NIE und
+	# der Spieler strandete bezahlt am Flughafen. Erst NACH der Cutscene
+	# schließt das Sheet wirklich (s. _on_cutscene_fertig).
+	if sheet != null and is_instance_valid(sheet):
+		sheet.visible = false
 	_spiele_cutscene(ziel_id)
 
 
@@ -434,6 +441,10 @@ func _on_cutscene_fertig(cutscene: Node, ziel_id: String) -> void:
 	if bool(res["ok"]):
 		gs.set_value("vacation", res["vacation"])
 	CityState.save_taxi_slice(gs, TaxiLogic.abgeschlossen(CityState.taxi_slice(gs)))
+	# Jetzt erst das Sheet schließen (räumt den Öffner-Layer samt App ab —
+	# die Buchung oben ist durch, die App wird nicht mehr gebraucht).
+	if sheet != null and is_instance_valid(sheet):
+		sheet.close()
 	var router := get_node_or_null("/root/SceneRouter")
 	if router != null and not router.is_busy():
 		router.goto(&"home/living", {})
@@ -460,10 +471,17 @@ func _on_abholen(overdue: bool) -> void:
 	gs.update(
 		func(state: Dictionary) -> void:
 			if overdue:
-				Economy.spend(state["economy"], Vacation.TAXI_FEE, "taxiAbholung")
+				# Gebühr an der Kasse gedeckelt (Web payTaxiReturn) — sonst
+				# bucht das atomare spend() bei < 60 ᴳ nichts ab (Freifahrt).
+				var gebuehr := ReiseLogic.taxi_gebuehr(int(state["economy"].get("coins", 0)))
+				Economy.spend(state["economy"], gebuehr, "taxiAbholung")
 			Economy.award(state["economy"], int(res["souvenir_coins"]), "souvenir")
 			state["vacation"] = res["vacation"]
-			state["gooby"]["stats"]["energy"] = Vacation.PICKUP_STAT_FILL
+			# Reunion-Kontrakt (Vacation.PICKUP_STAT_FILL, Web complete-
+			# VacationPickup): ALLE vier Werte auf 100 — nicht nur Energie.
+			var stats: Dictionary = state["gooby"]["stats"]
+			for stat: Variant in stats.keys():
+				stats[stat] = Vacation.PICKUP_STAT_FILL
 	)
 	if int(res["postkarten"]) > 0:
 		CityState.set_flag(gs, "postkarten_neu", true)

@@ -283,8 +283,25 @@ func _aktion_tipp_control(schritt: Dictionary, aktion: String) -> Dictionary:
 			"erwartung": "sichtbares Bedienelement mit %s" % beschreibung,
 			"beobachtung": "nicht gefunden — %s" % _zustand_text(),
 		}
+	await _scrolle_ins_bild(ziel)
 	await _tippe_canvas(ziel.get_global_rect().get_center())
 	return {"ok": true}
+
+
+## Ziel in Scroll-Vorfahren einrollen (Sheets/Screens clippen Inhalt per
+## ScrollContainer): der Rect-Mittelpunkt eines Knopfs „unter der Falz“
+## läge sonst AUSSERHALB des Clip-Bereichs — der Tap träfe z. B. den Scrim
+## NEBEN einem PanelSheet und schlösse es, statt den Knopf zu drücken.
+func _scrolle_ins_bild(ziel: Control) -> void:
+	var gescrollt := false
+	var vorfahr: Node = ziel.get_parent()
+	while vorfahr != null:
+		if vorfahr is ScrollContainer:
+			(vorfahr as ScrollContainer).ensure_control_visible(ziel)
+			gescrollt = true
+		vorfahr = vorfahr.get_parent()
+	if gescrollt:
+		await _warte_frames(2)
 
 
 func _aktion_tipp_pos(schritt: Dictionary) -> Dictionary:

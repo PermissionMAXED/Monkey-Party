@@ -119,17 +119,23 @@ static func _baue_wegweiser(gruppe: Node3D, plan: Dictionary) -> void:
 		arm_wurzel.rotation.y = winkel
 		pfahl.add_child(arm_wurzel)
 		_quader(arm_wurzel, Vector3(0.0, 0.0, 0.85), Vector3(0.14, 0.34, 1.7), SCHILD_CREME)
-		var text := Label3D.new()
-		text.text = (
-			"%s  %d m" % [I18nService.t(str(arm["name_key"])), int(float(arm["distanz_m"]))]
-		)
-		text.font_size = 52
-		text.pixel_size = 0.006
-		text.modulate = INK
-		text.position = Vector3(0.09, 0.0, 0.85)
-		text.rotation.y = -PI / 2.0
-		text.visibility_range_end = SICHT_M
-		arm_wurzel.add_child(text)
+		# Beschriftung auf BEIDEN Brettseiten, Front jeweils nach AUSSEN
+		# (H-Ranch-Travel Befund 7): vorher saß EIN Label auf +X, dessen
+		# Front aber ins Brett zeigte (rotation -PI/2) — Spieler sahen nur
+		# die double-sided-Rückseite und lasen alles SPIEGELVERKEHRT.
+		for seite: float in [1.0, -1.0]:
+			var text := Label3D.new()
+			text.text = (
+				"%s  %d m" % [I18nService.t(str(arm["name_key"])), int(float(arm["distanz_m"]))]
+			)
+			text.font_size = 52
+			text.pixel_size = 0.006
+			text.modulate = INK
+			text.double_sided = false
+			text.position = Vector3(seite * 0.09, 0.0, 0.85)
+			text.rotation.y = seite * PI / 2.0
+			text.visibility_range_end = SICHT_M
+			arm_wurzel.add_child(text)
 
 
 ## Rastplatz: Bank, Steinring-Feuerstelle mit Flammen-Quad, Sitzstamm.

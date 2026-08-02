@@ -31,12 +31,15 @@ var _galopp_an := false
 var _trab_winkel := 0.0
 var _cam_zeit := 0.0
 
+var _hud_layer: CanvasLayer
 var _hud: Control
 var _kopf_box: VBoxContainer
 var _fuss_box: HBoxContainer
 var _stadt_knopf: Button
 var _ausritt_knopf: Button
 var _galopp_knopf: Button
+var _pflege_knopf: Button
+var _laden_knopf: Button
 var _mp_knopf: Button
 
 
@@ -345,6 +348,7 @@ func _baue_hud() -> void:
 	var layer := CanvasLayer.new()
 	layer.name = "HudLayer"
 	add_child(layer)
+	_hud_layer = layer
 	_hud = Control.new()
 	_hud.name = "HofHud"
 	_hud.theme = ThemeService.theme()
@@ -383,6 +387,20 @@ func _baue_hud() -> void:
 	_galopp_knopf.text = I18nService.t("ranch.hof.pferde_galopp")
 	_galopp_knopf.toggled.connect(_on_galopp_toggled)
 	_fuss_box.add_child(_galopp_knopf)
+	# RANCH-2-Einbau (Kopf-Doku pflege_screen/ausbau_panel: „mounten +
+	# back_pressed verdrahten“) — Pferdepflege + Hofladen gehören ERST nach
+	# dem Kauf ins HUD (vorher zeigt der Hof nur die Katalog-Vorschau).
+	if RanchState.ist_gekauft(game_state()):
+		_pflege_knopf = SquishButton.new()
+		_pflege_knopf.theme_type_variation = "PrimaryButton"
+		_pflege_knopf.text = I18nService.t("ranchplay.hud.pflege")
+		_pflege_knopf.pressed.connect(_on_pflege)
+		_fuss_box.add_child(_pflege_knopf)
+		_laden_knopf = SquishButton.new()
+		_laden_knopf.theme_type_variation = "GhostButton"
+		_laden_knopf.text = I18nService.t("ranchplay.hud.hofladen")
+		_laden_knopf.pressed.connect(_on_hofladen)
+		_fuss_box.add_child(_laden_knopf)
 	# RW-6/G4: DER Spiel-Einstieg in den Ranch-Mehrspieler (G1-Hauptbefund
 	# „UI existiert, aber kein Einstieg“) — öffnet den Hub als PanelSheet.
 	_mp_knopf = SquishButton.new()
@@ -427,7 +445,10 @@ func _wende_hud_metriken_an() -> void:
 	_fuss_box.offset_top = unten
 	_fuss_box.offset_bottom = unten
 	_fuss_box.add_theme_constant_override("separation", int(12.0 * f))
-	for knopf: Control in [_stadt_knopf, _ausritt_knopf, _galopp_knopf, _mp_knopf]:
+	var knoepfe: Array = [_stadt_knopf, _ausritt_knopf, _galopp_knopf, _mp_knopf]
+	if _pflege_knopf != null:
+		knoepfe.append_array([_pflege_knopf, _laden_knopf])
+	for knopf: Control in knoepfe:
 		knopf.custom_minimum_size = Vector2.ZERO
 		ScreenShell.touch_target(knopf, m)
 	ScreenShell.scale_fonts(_hud, f)
@@ -491,6 +512,32 @@ func _on_ausreiten() -> void:
 ## (PanelSheet.open → ui_open), der Knopf bleibt darum stumm.
 func _on_mehrspieler() -> void:
 	RmpHub.attach_to(self).oeffne()
+
+
+## Pferdepflege-Screen (RANCH-2) als Vollbild-Overlay über dem HUD —
+## Einbau-Vertrag: setup() VOR add_child, back_pressed baut wieder ab.
+## Ohne pferd_id wählt der Screen selbst das erste Pferd im Bestand.
+func _on_pflege() -> void:
+	var screen := RanchPflegeScreen.new()
+	screen.game_state_override = game_state_override
+	screen.setup("")
+	_oeffne_vollbild(screen)
+
+
+## Hofladen/Ranch-Ausbau (RANCH-2) — gleicher Overlay-Vertrag.
+func _on_hofladen() -> void:
+	var panel := RanchAusbauPanel.new()
+	panel.game_state_override = game_state_override
+	_oeffne_vollbild(panel)
+
+
+## Overlay in den HudLayer hängen (CanvasLayer propagiert KEIN Window-
+## Theme — darum explizit setzen, Muster ReiseApp.oeffne).
+func _oeffne_vollbild(screen: Control) -> void:
+	AudioDirector.try_play(self, "ui_open")
+	screen.theme = ThemeService.theme()
+	screen.connect(&"back_pressed", screen.queue_free)
+	_hud_layer.add_child(screen)
 
 
 func _zeige_toast(text: String) -> void:

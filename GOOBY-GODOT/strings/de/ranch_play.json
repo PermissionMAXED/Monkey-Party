@@ -22,6 +22,10 @@
 		}
 	},
 	"ranchplay": {
+		"hud": {
+			"pflege": "Pflege",
+			"hofladen": "Hofladen"
+		},
 		"select": {
 			"done": "Fertig",
 			"stars": "Sterne: {n}/{max}",

@@ -47,6 +47,10 @@ func _teardown(gs: Node) -> void:
 func test_haupt_01_annehmen_bis_abgeben_mit_belohnung() -> void:
 	var gs := _fresh_gs()
 	var start_muenzen := int(gs.get_value("economy.coins", 0))
+	# Delta statt Absolutwert: seit `ranch` im Produktions-Boot registriert
+	# ist (H-Ranch-Travel Befund 6), startet ein frischer Save mit dem
+	# Standard-Lager (2 Äpfel) — die Belohnung kommt OBENDRAUF.
+	var start_apfel := int(gs.get_value("ranch.wirtschaft.lager.apfel", 0))
 	assert_eq(RQuestState.status(gs, "haupt_01"), RQuestEngine.STATUS_VERFUEGBAR)
 	assert_eq(RQuestState.kapitel(gs), 1)
 	assert_true(RQuestState.annehmen(gs, "haupt_01"))
@@ -72,7 +76,7 @@ func test_haupt_01_annehmen_bis_abgeben_mit_belohnung() -> void:
 	)
 	assert_eq(
 		int(gs.get_value("ranch.wirtschaft.lager.apfel", 0)),
-		2,
+		start_apfel + 2,
 		"Item-Belohnung landet im Ranch-Lager"
 	)
 	var rosi_punkte := float(RNpcState.freund(gs, "rosi", NOW_MS)["punkte"])

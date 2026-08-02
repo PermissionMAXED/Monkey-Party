@@ -57,6 +57,14 @@ static func buchen(vacation_slice: Dictionary, ziel_id: String, now_ms: int) -> 
 	return {"ok": true, "vacation": v, "kosten": int(eintrag["price"])}
 
 
+## Overdue-Abholung (Web economy.js payTaxiReturn): die Taxi-Gebühr ist an
+## der Kasse GEDECKELT — „der Fahrer nimmt, was da ist“. Ohne den Deckel
+## würde Economy.spend (atomar: alles oder nichts) bei < 60 ᴳ GAR NICHTS
+## abbuchen — Freifahrt für arme, voller Preis für reiche Spieler.
+static func taxi_gebuehr(coins: int) -> int:
+	return mini(Vacation.TAXI_FEE, maxi(0, coins))
+
+
 ## Abholung/Rückkehr: souvenirCoins gutschreiben (Aufrufer), Postkarten als
 ## Flag/Archiv-Zähler, Ziel im Sammelpass, trips+1 → phase none.
 ## W13B (Doc E §3.3): dazu stempelt JEDE Abholung den Erholungs-Boost
