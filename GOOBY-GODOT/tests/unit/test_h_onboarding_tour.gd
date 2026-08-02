@@ -46,6 +46,21 @@ func _teardown(host: Node, gs: Node) -> void:
 	gs.free()
 
 
+## Den Coachmark gibt es nur im Querformat — das GETEILTE Fenster pinnen
+## (Vorgänger im sortierten Vollauf, z. B. test_g5_ghost, lassen es im
+## Hochformat zurück; Muster test_g3_wardrobe: sichern + zurückstellen).
+func _pin_querformat() -> Vector2i:
+	var vorher: Vector2i = tree.root.size
+	tree.root.size = Vector2i(1280, 720)
+	tree.root.size_changed.emit()
+	return vorher
+
+
+func _fenster_zurueck(vorher: Vector2i) -> void:
+	tree.root.size = vorher
+	tree.root.size_changed.emit()
+
+
 ## ------------------------------------------------ Karte: Größe settlet
 
 
@@ -140,6 +155,7 @@ func test_karte_ist_in_der_toast_ausweich_gruppe() -> void:
 
 
 func test_coachmark_wartet_bis_die_tour_vorbei_ist() -> void:
+	var fenster_vorher := _pin_querformat()
 	# Der Test-Runner (SceneTree-Skript) lädt die ECHTEN Autoloads —
 	# hints.hud_actions_seen im echten AppSettings sichern und zurücksetzen.
 	var settings := tree.root.get_node("/root/AppSettings")
@@ -173,9 +189,11 @@ func test_coachmark_wartet_bis_die_tour_vorbei_ist() -> void:
 	tree.root.remove_child(hud)
 	hud.free()
 	settings.set_setting(Hud.COACHMARK_SEEN_KEY, vorher)
+	_fenster_zurueck(fenster_vorher)
 
 
 func test_coachmark_zieht_sich_zurueck_wenn_die_tour_spaeter_aufwacht() -> void:
+	var fenster_vorher := _pin_querformat()
 	# Echte Boot-Reihenfolge (home_entry._start_home): HUD wird sichtbar →
 	# Coachmark steht → DANN attach_to der Tour. Der Coachmark muss sich
 	# zurückziehen (ohne gesehen-Flag) und nach der Tour wiederkommen.
@@ -212,9 +230,13 @@ func test_coachmark_zieht_sich_zurueck_wenn_die_tour_spaeter_aufwacht() -> void:
 	tree.root.remove_child(hud)
 	hud.free()
 	settings.set_setting(Hud.COACHMARK_SEEN_KEY, vorher)
+	_fenster_zurueck(fenster_vorher)
 
 
 func test_coachmark_respektiert_gesehen_flag() -> void:
+	# Auch hier Querformat pinnen: im Hochformat gäbe es NIE einen Coachmark
+	# und der Test wäre aus dem falschen Grund grün.
+	var fenster_vorher := _pin_querformat()
 	var settings := tree.root.get_node("/root/AppSettings")
 	var vorher: Variant = settings.get_setting(Hud.COACHMARK_SEEN_KEY, false)
 	settings.set_setting(Hud.COACHMARK_SEEN_KEY, true)
@@ -227,3 +249,4 @@ func test_coachmark_respektiert_gesehen_flag() -> void:
 	tree.root.remove_child(hud)
 	hud.free()
 	settings.set_setting(Hud.COACHMARK_SEEN_KEY, vorher)
+	_fenster_zurueck(fenster_vorher)
