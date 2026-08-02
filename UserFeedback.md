@@ -447,10 +447,19 @@ iPhone 17 Pro Max quer = **0 Befunde**):
       nutzt es als Nächstes (Welle H unten)
 
 **Danach sofort (Warteschlange):**
-- [ ] **Welle H: PLAYTEST ×10** — 10 Spieler-Agents, jeder spielt seinen
-      Bereich mit eigener Instanz (Home/Bau, Stadt/Läden, Minispiele ×3,
-      DLCs, Telefon/Radio, Garderobe/Gestalten, Quests/Progression,
-      Onboarding) → gesammelte Bug-Liste
+- [~] **Welle H: PLAYTEST ×10** — LÄUFT: 4 Bereichs-Läufe sind gespielt,
+      berichtet und GEFIXT (Reports in `docs/godot-rewrite/playtest/`):
+      **H-home** (Zuhause & Pflege — u. a. tote Zähneputz-Pflicht,
+      Schlaf-Gate der Pflege-Taps), **H-city** (Stadt & Läden — u. a.
+      GOOBERANDO-Gratis-Buff-Exploit, 8 Wächter-Tests), **H-minigames**
+      (Minispiel-Batch 1: teaParty/veggieChop/gardenRush/basketBounce/
+      ranchHerde — 6 Funde), **H-ranch-travel** (Ranch-Kauf + Reise/Urlaub
+      über 2 neue Headless-Flows im Playtest-Harness — 7 Funde); dazu
+      zahlt „Playtest-Bugfixes, Batch 1" (s. oben) auf Quests/Erfolge/
+      Awards ein. **Noch offen:** Baumodus, Minispiele-Batch 2+3, DLCs
+      (Goo und Bye/McGooby), Telefon/Radio, Garderobe/Gestalten,
+      Quests/Progression-Rest, Onboarding → die Restläufe bleiben die
+      nächste Playtest-Tranche.
 - [x] **Welle I: 30+ Ideen-Planner** — **FERTIG (2. August):** konsolidierte
       Ideen-Roadmap mit **50 konkreten Ideen** über alle 10 Planner-Bereiche
       (Seele, Haus/Bau, Stadt, Minispiele, Ranch, DLCs, Multiplayer,
