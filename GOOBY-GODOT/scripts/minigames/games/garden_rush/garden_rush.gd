@@ -19,6 +19,9 @@ const Kit := preload("res://scripts/minigames/games/carrot_catch/mpb_garden_kit.
 const POT_FILL := 0.74
 ## Nachlauf nach dem Gießen, bevor der Topf wieder frei wird (Web: 0,55 s).
 const WATERED_COOLDOWN := 0.55
+## M9 (H-Playtest): Entwurfs-Kurzkante — HUD-Pixelmaße skalieren mit
+## Kurzkante/390, sonst Krümelschrift auf grossen Landscape-Viewports.
+const DESIGN_SHORT := 390.0
 
 var tune: Dictionary = {}
 var rng: GoobyRng
@@ -34,6 +37,7 @@ var sprinkler_used := false
 var finished := false
 var view_size := Vector2(390.0, 844.0)
 var landscape := false
+var _ui := 1.0
 
 var _time_label: Label
 var _withered_label: Label
@@ -95,17 +99,28 @@ func apply_view(size: Vector2) -> void:
 
 ## HUD IMMER aus dem Viewport-Rect stellen: unter canvas_items-Stretch sind
 ## Canvas-Einheiten ≠ Fensterpixel, apply_view-Größen können abweichen.
+## M9 (H-Playtest): der _ui-Faktor (Kurzkante/390, 0,75–3,0) skaliert alle
+## HUD-Pixelmaße — vorher standen die Labels auf festen 16/10/48-px-Offsets.
 func _layout_hud() -> void:
 	if _time_label == null:
 		return
 	var vp := get_viewport_rect().size
-	_time_label.position = Vector2(16.0, 10.0)
-	_withered_label.position = Vector2(16.0, 48.0)
-	var banner_w := minf(vp.x - 32.0, 420.0)
-	_banner_label.position = Vector2((vp.x - banner_w) * 0.5, 84.0 if not landscape else 8.0)
-	_banner_label.size = Vector2(banner_w, 44.0)
-	_hint_label.position = Vector2(vp.x * 0.5 - 190.0, vp.y - 38.0)
-	_hint_label.size = Vector2(380.0, 34.0)
+	_ui = clampf(minf(vp.x, vp.y) / DESIGN_SHORT, 0.75, 3.0)
+	var pad := 16.0 * _ui
+	_time_label.position = Vector2(pad, 10.0 * _ui)
+	_time_label.add_theme_font_size_override("font_size", int(34.0 * _ui))
+	_withered_label.position = Vector2(pad, 48.0 * _ui)
+	_withered_label.add_theme_font_size_override("font_size", int(15.0 * _ui))
+	var banner_w := minf(vp.x - pad * 2.0, 420.0 * _ui)
+	_banner_label.position = Vector2(
+		(vp.x - banner_w) * 0.5, (84.0 if not landscape else 8.0) * _ui
+	)
+	_banner_label.size = Vector2(banner_w, 44.0 * _ui)
+	_banner_label.add_theme_font_size_override("font_size", int(28.0 * _ui))
+	var hint_w := minf(vp.x - pad * 2.0, 380.0 * _ui)
+	_hint_label.position = Vector2((vp.x - hint_w) * 0.5, vp.y - 38.0 * _ui)
+	_hint_label.size = Vector2(hint_w, 34.0 * _ui)
+	_hint_label.add_theme_font_size_override("font_size", int(20.0 * _ui))
 
 
 func _build_hud() -> void:
@@ -450,11 +465,12 @@ func _sprinkler_rect() -> Rect2:
 ## Dazu Milchglas hinter Zeit/Welk-Zähler, Banner und Hinweis (Lesbarkeit).
 func _draw() -> void:
 	if _time_label != null:
-		var top_left := _time_label.position - Vector2(12.0, 6.0)
+		var plate_pad := Vector2(12.0, 6.0) * _ui
+		var top_left := _time_label.position - plate_pad
 		var bottom_right := (
 			_withered_label.position
 			+ Vector2(maxf(_time_label.size.x, _withered_label.size.x), _withered_label.size.y)
-			+ Vector2(12.0, 6.0)
+			+ plate_pad
 		)
 		draw_style_box(_hud_plate, Rect2(top_left, bottom_right - top_left))
 		if not _banner_label.text.is_empty():

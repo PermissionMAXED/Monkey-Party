@@ -273,7 +273,10 @@ func _release() -> void:
 		_finish()
 		return
 	# Servierte Tasse rutscht SICHTBAR nach links raus (nur Optik).
-	if res["result"] != "spill":
+	# H-Playtest: pour_result liefert "perfect"/"good"/"miss" — der alte
+	# Vergleich mit "spill" war IMMER wahr, dadurch rutschte auch die
+	# verschüttete Tasse als "serviert" raus.
+	if res["result"] != "miss":
 		_stage.serve_ghost(level)
 	# Nächste Tasse: Band neu würfeln, Kadenz aus der Logik.
 	level = 0.0

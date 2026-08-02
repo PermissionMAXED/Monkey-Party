@@ -38,6 +38,9 @@ const FAHNEN: Array[Color] = [
 const TREIB_RADIUS := 1.7
 ## Treibpunkt-Abstand hinter dem Schaf (wie die Bot-Politik ±).
 const TREIB_ABSTAND := 2.4
+## M9 (H-Playtest): Entwurfs-Kurzkante — HUD-Pixelmaße skalieren mit
+## Kurzkante/390, sonst Krümelschrift auf grossen Landscape-Viewports.
+const DESIGN_SHORT := 390.0
 
 var tune: Dictionary = {}
 var level_liste: Array = []
@@ -56,6 +59,7 @@ var limit := 60.0
 var drin_vorher := 0
 
 var view_size := Vector2(390.0, 844.0)
+var _ui := 1.0
 
 var _stage: Node3D
 var _welt: Node3D
@@ -844,6 +848,9 @@ func _step_optik(delta: float) -> void:
 		var puls := 1.0 + 0.025 * sin(t_abs * 2.4)
 		_einfluss_ring.scale = Vector3(puls, 0.03, puls)
 	_tick_ziel_fahne(delta)
+	# H-Playtest: Schaf-Optik JEDEN Frame — sass vorher hinter dem
+	# visible-Gate der Zielfahne (Schafe froren ohne Fahne ein).
+	RanchHerdeSchafOptik.tick(schafe, _schaf_nodes, t_abs)
 	if _gooby != null:
 		_gooby.call("tick", delta)
 
@@ -869,38 +876,6 @@ func _tick_ziel_fahne(delta: float) -> void:
 		ring.visible = _ziel_puls > 0.0
 	if reiter.distance_to(ziel) < 0.6:
 		_ziel_fahne.visible = false
-	for i in mini(schafe.size(), _schaf_nodes.size()):
-		var s: Dictionary = schafe[i]
-		var node := _schaf_nodes[i]
-		node.position = Vector3(float(s["x"]), 0.0, float(s["z"]))
-		var vel := Vector2(float(s["vx"]), float(s["vz"]))
-		var speed := vel.length()
-		if speed > 0.2:
-			node.rotation.y = atan2(vel.x, vel.y)
-		# Puschel-Hoppeln: kleine Hüpfer nach Schaf-Phase + Tempo.
-		node.position.y = absf(sin(t_abs * 6.0 + float(s["phase"]))) * 0.06 * minf(1.0, speed)
-		_schaf_kopf(node, s, speed)
-
-
-## Kopf-Animation = Persönlichkeit: gemütliche Schafe grasen (Kopf unten),
-## schreckhafte reißen den Kopf hoch und zittern beim Flüchten, drin-Schafe
-## nicken zufrieden im Takt.
-func _schaf_kopf(node: Node3D, s: Dictionary, speed: float) -> void:
-	var kopf := node.get_node_or_null("Kopf") as Node3D
-	if kopf == null:
-		return
-	var phase := float(s["phase"])
-	if bool(s["drin"]):
-		kopf.rotation.x = 0.1 + 0.08 * sin(t_abs * 3.0 + phase)
-		kopf.rotation.z = 0.0
-		return
-	var flucht := clampf(speed / 3.0, 0.0, 1.0)
-	# Grasen: langsame Schafe senken den Kopf (je nach Phase verschieden
-	# tief — die störrischen fressen einfach weiter).
-	var grasen := (0.5 + 0.4 * sin(t_abs * 0.9 + phase * 2.0)) * (1.0 - flucht)
-	kopf.rotation.x = lerpf(grasen * 0.7, -0.35, flucht)
-	# Schreckhaft: beim Flüchten zittert der Kopf seitlich.
-	kopf.rotation.z = sin(t_abs * 14.0 + phase) * 0.12 * flucht
 
 
 func _screen_pos(world: Vector3) -> Vector2:
@@ -932,13 +907,20 @@ func _build_hud() -> void:
 	_update_labels()
 
 
+## M9 (H-Playtest): _ui-Faktor (Kurzkante/390, 0,75–3,0) statt fester Offsets.
 func _layout_hud() -> void:
 	if _zeit_label == null:
 		return
-	_zeit_label.position = Vector2(16.0, 10.0)
-	_drin_label.position = Vector2(16.0, 48.0)
-	_hint_label.position = Vector2(view_size.x * 0.5 - 180.0, view_size.y - 44.0)
-	_hint_label.size = Vector2(360.0, 34.0)
+	_ui = clampf(minf(view_size.x, view_size.y) / DESIGN_SHORT, 0.75, 3.0)
+	var pad := 16.0 * _ui
+	_zeit_label.position = Vector2(pad, 10.0 * _ui)
+	_zeit_label.add_theme_font_size_override("font_size", int(34.0 * _ui))
+	_drin_label.position = Vector2(pad, 48.0 * _ui)
+	_drin_label.add_theme_font_size_override("font_size", int(15.0 * _ui))
+	var hint_w := minf(view_size.x - pad * 2.0, 360.0 * _ui)
+	_hint_label.position = Vector2((view_size.x - hint_w) * 0.5, view_size.y - 44.0 * _ui)
+	_hint_label.size = Vector2(hint_w, 34.0 * _ui)
+	_hint_label.add_theme_font_size_override("font_size", int(20.0 * _ui))
 
 
 func _update_labels() -> void:

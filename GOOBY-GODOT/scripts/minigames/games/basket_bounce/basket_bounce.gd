@@ -47,6 +47,9 @@ const POLE := Color(0.58, 0.6, 0.64)
 const COURT_HALF_X := 4.2
 const COURT_FAR_Z := -6.4
 const COURT_NEAR_Z := 10.5
+## M9 (H-Playtest): Entwurfs-Kurzkante — HUD-Pixelmaße skalieren mit
+## Kurzkante/390, sonst Krümelschrift auf grossen Landscape-Viewports.
+const DESIGN_SHORT := 390.0
 
 var tune: Dictionary = {}
 var rng: GoobyRng
@@ -63,6 +66,7 @@ var ball: Dictionary = {}
 var finished := false
 var view_size := Vector2(390.0, 844.0)
 var landscape := false
+var _ui := 1.0
 
 var _trail: Array[Vector3] = []
 var _samples: Array = []
@@ -108,10 +112,13 @@ func end() -> void:
 
 
 ## Pflicht-Layouthook: beide Orientierungen laufen über DIESE Funktion.
+## M9 (H-Playtest): der _ui-Faktor (Kurzkante/390, 0,75–3,0) skaliert alle
+## HUD-Pixelmaße — vorher standen die Labels auf festen 16/10/48-px-Offsets.
 func apply_view(size: Vector2) -> void:
 	if size.x > 1.0 and size.y > 1.0:
 		view_size = size
 	landscape = view_size.x > view_size.y
+	_ui = clampf(minf(view_size.x, view_size.y) / DESIGN_SHORT, 0.75, 3.0)
 	position = Vector2.ZERO
 	if _stage != null:
 		_stage.apply_size(view_size)
@@ -119,10 +126,18 @@ func apply_view(size: Vector2) -> void:
 		_framed_dist = -1.0
 		_frame_court()
 	if _time_label != null:
-		_time_label.position = Vector2(16.0, 10.0)
-		_streak_label.position = Vector2(16.0, 48.0)
-		_hint_label.position = Vector2(view_size.x * 0.5 - 150.0, view_size.y - 56.0)
-		_hint_label.size = Vector2(300.0, 40.0)
+		var pad := 16.0 * _ui
+		_time_label.position = Vector2(pad, 10.0 * _ui)
+		_time_label.add_theme_font_size_override("font_size", int(34.0 * _ui))
+		_time_label.add_theme_constant_override("outline_size", int(6.0 * _ui))
+		_streak_label.position = Vector2(pad, 48.0 * _ui)
+		_streak_label.add_theme_font_size_override("font_size", int(15.0 * _ui))
+		_streak_label.add_theme_constant_override("outline_size", int(5.0 * _ui))
+		var hint_w := minf(view_size.x - pad * 2.0, 300.0 * _ui)
+		_hint_label.position = Vector2((view_size.x - hint_w) * 0.5, view_size.y - 56.0 * _ui)
+		_hint_label.size = Vector2(hint_w, 40.0 * _ui)
+		_hint_label.add_theme_font_size_override("font_size", int(20.0 * _ui))
+		_hint_label.add_theme_constant_override("outline_size", int(5.0 * _ui))
 	queue_redraw()
 
 
@@ -800,6 +815,6 @@ func _draw_flash() -> void:
 		_flash_text,
 		HORIZONTAL_ALIGNMENT_CENTER,
 		view_size.x,
-		34,
+		int(34.0 * _ui),
 		Color(0.95, 0.45, 0.66, alpha)
 	)

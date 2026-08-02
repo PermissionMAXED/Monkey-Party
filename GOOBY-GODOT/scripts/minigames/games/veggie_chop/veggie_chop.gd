@@ -24,6 +24,9 @@ const GROUND_Y := -HALF_H
 const SPAWN_Y := -HALF_H - 0.6
 ## Lebensdauer eines Wischspur-Punktes in Sekunden.
 const TRAIL_LIFE := 0.24
+## M9 (H-Playtest): Entwurfs-Kurzkante — HUD-Pixelmaße skalieren mit
+## Kurzkante/390, sonst Krümelschrift auf dem Leitformat (Landscape 2868 px).
+const DESIGN_SHORT := 390.0
 const Kitchen := preload("res://scripts/minigames/games/veggie_chop/veggie_chop_kitchen3d.gd")
 
 var tune: Dictionary = {}
@@ -42,6 +45,7 @@ var items: Array[Dictionary] = []
 var finished := false
 var view_size := Vector2(390.0, 844.0)
 var landscape := false
+var _ui := 1.0
 
 var _time_label: Label
 var _miss_label: Label
@@ -82,10 +86,14 @@ func _build_stage() -> void:
 
 
 ## Pflicht-Layouthook: beide Orientierungen laufen über DIESE Funktion.
+## M9 (H-Playtest): der _ui-Faktor (Kurzkante/390, 0,75–3,0) skaliert alle
+## HUD-Pixelmaße — vorher standen die Labels auf festen 16/10/48-px-Offsets
+## und wurden auf grossen Landscape-Viewports zur Krümelschrift.
 func apply_view(size: Vector2) -> void:
 	if size.x > 1.0 and size.y > 1.0:
 		view_size = size
 	landscape = view_size.x > view_size.y
+	_ui = clampf(minf(view_size.x, view_size.y) / DESIGN_SHORT, 0.75, 3.0)
 	position = Vector2.ZERO
 	if _stage != null:
 		var half_h := view_size.y * 0.5 / _ppu()
@@ -93,13 +101,21 @@ func apply_view(size: Vector2) -> void:
 		_stage.frame(half_h, GROUND_Y + half_h)
 	if _time_label == null:
 		return
-	_time_label.position = Vector2(16.0, 10.0)
-	_miss_label.position = Vector2(16.0, 48.0)
-	var banner_w := minf(view_size.x - 32.0, 420.0)
-	_banner_label.position = Vector2((view_size.x - banner_w) * 0.5, 84.0 if not landscape else 8.0)
-	_banner_label.size = Vector2(banner_w, 44.0)
-	_hint_label.position = Vector2(view_size.x * 0.5 - 180.0, view_size.y - 40.0)
-	_hint_label.size = Vector2(360.0, 34.0)
+	var pad := 16.0 * _ui
+	_time_label.position = Vector2(pad, 10.0 * _ui)
+	_time_label.add_theme_font_size_override("font_size", int(34.0 * _ui))
+	_miss_label.position = Vector2(pad, 48.0 * _ui)
+	_miss_label.add_theme_font_size_override("font_size", int(15.0 * _ui))
+	var banner_w := minf(view_size.x - pad * 2.0, 420.0 * _ui)
+	_banner_label.position = Vector2(
+		(view_size.x - banner_w) * 0.5, (84.0 if not landscape else 8.0) * _ui
+	)
+	_banner_label.size = Vector2(banner_w, 44.0 * _ui)
+	_banner_label.add_theme_font_size_override("font_size", int(28.0 * _ui))
+	var hint_w := minf(view_size.x - pad * 2.0, 360.0 * _ui)
+	_hint_label.position = Vector2((view_size.x - hint_w) * 0.5, view_size.y - 40.0 * _ui)
+	_hint_label.size = Vector2(hint_w, 34.0 * _ui)
+	_hint_label.add_theme_font_size_override("font_size", int(20.0 * _ui))
 	queue_redraw()
 
 
