@@ -110,6 +110,7 @@ func apply_view(size: Vector2) -> void:
 	_stage.frame(size)
 	if not state.is_empty():
 		_stage.layout_level(state, balance)
+	_layout_end_overlay()
 
 
 func start() -> void:
@@ -913,9 +914,27 @@ func _build_end_overlay(won: bool, stars: int, total: int, first_clear: bool) ->
 			)
 		)
 	row.add_child(_overlay_button("gobnom.end.select", back_to_select))
+	_layout_end_overlay()
+
+
+## ui-arcade §6 (H-Playtest Batch 2): das End-Panel skaliert wie das
+## Level-Select über ScreenShell.metrics — vorher fixe 340×170 px samt
+## 104×48-Knöpfen (Krümel-Plate unterm Touch-Floor auf dem Leitformat).
+func _layout_end_overlay() -> void:
+	if _overlay == null or not is_instance_valid(_overlay):
+		return
+	var m := ScreenShell.metrics(get_viewport())
+	var f: float = m["f"]
+	for row: Node in _overlay.get_children():
+		for child: Node in row.get_children():
+			var button := child as Button
+			if button != null:
+				button.custom_minimum_size = Vector2(104.0, 48.0) * f
+				ScreenShell.touch_target(button, m)
+	ScreenShell.scale_fonts(_overlay, f)
 	var vp := get_viewport_rect().size
-	_overlay.position = Vector2(vp.x * 0.5 - 170.0, vp.y * 0.3)
-	_overlay.size = Vector2(340.0, 170.0)
+	_overlay.size = (Vector2(340.0, 170.0) * f).max(_overlay.get_combined_minimum_size())
+	_overlay.position = Vector2((vp.x - _overlay.size.x) * 0.5, vp.y * 0.3)
 
 
 func _overlay_button(key: String, action: Callable) -> Button:

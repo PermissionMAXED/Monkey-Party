@@ -20,6 +20,8 @@ const KAMERA_HINTEN := 7.2
 const KAMERA_SEITE := -3.4
 const KAMERA_HOEHE := 3.4
 const HUF_SOUND_MAX_HZ := 4.0
+## Entwurfs-Kurzkante — HUD-Pixelmaße skalieren damit (M9-Muster).
+const DESIGN_SHORT := 390.0
 
 var tune: Dictionary = {}
 var kurse: Array = []
@@ -44,6 +46,7 @@ var hindernisse: Array = []
 var huf_phase := 0.0
 
 var view_size := Vector2(390.0, 844.0)
+var _ui := 1.0
 
 var _stage: Node3D
 var _welt: Node3D
@@ -566,7 +569,7 @@ func _lauf_geschafft() -> void:
 		ctx.juice.confetti(70)
 		ctx.juice.bloom_pulse(0.6)
 		ctx.juice.float_text(
-			Vector2(view_size.x * 0.5 - 130.0, view_size.y * 0.32),
+			Vector2(view_size.x * 0.5 - 130.0 * _ui, view_size.y * 0.32),
 			I18nService.t("mg.ranchParcours.geschafft", {"stars": stars, "score": score}),
 			AcTokens.GOLD
 		)
@@ -739,15 +742,29 @@ func _build_hud() -> void:
 	_update_labels()
 
 
+## M9 (H-Playtest Batch 2): _ui-Faktor (Kurzkante/390, 0,75–3,0) statt fester
+## Offsets — vorher Krümelschrift + Mini-Knöpfe auf dem Landscape-Leitformat
+## (Design-Werte bei Faktor 1 unverändert: Headline 34, Caption 15, Soft 20,
+## Button 22 — die Theme-Größen).
 func _layout_hud() -> void:
 	if _zeit_label == null:
 		return
-	_zeit_label.position = Vector2(16.0, 10.0)
-	_punkte_label.position = Vector2(16.0, 48.0)
-	_hint_label.position = Vector2(view_size.x * 0.5 - 170.0, 12.0)
-	_hint_label.size = Vector2(340.0, 34.0)
-	_galopp_btn.position = Vector2(18.0, view_size.y - 82.0)
-	_sprung_btn.position = Vector2(view_size.x - 168.0, view_size.y - 82.0)
+	_ui = clampf(minf(view_size.x, view_size.y) / DESIGN_SHORT, 0.75, 3.0)
+	var pad := 16.0 * _ui
+	_zeit_label.position = Vector2(pad, 10.0 * _ui)
+	_zeit_label.add_theme_font_size_override("font_size", int(34.0 * _ui))
+	_punkte_label.position = Vector2(pad, 48.0 * _ui)
+	_punkte_label.add_theme_font_size_override("font_size", int(15.0 * _ui))
+	var hint_w := minf(view_size.x - pad * 2.0, 340.0 * _ui)
+	_hint_label.position = Vector2((view_size.x - hint_w) * 0.5, 12.0 * _ui)
+	_hint_label.size = Vector2(hint_w, 34.0 * _ui)
+	_hint_label.add_theme_font_size_override("font_size", int(20.0 * _ui))
+	for btn: Button in [_galopp_btn, _sprung_btn]:
+		btn.custom_minimum_size = Vector2(150.0, 64.0) * _ui
+		btn.size = btn.custom_minimum_size
+		btn.add_theme_font_size_override("font_size", int(22.0 * _ui))
+	_galopp_btn.position = Vector2(18.0 * _ui, view_size.y - 82.0 * _ui)
+	_sprung_btn.position = Vector2(view_size.x - 168.0 * _ui, view_size.y - 82.0 * _ui)
 
 
 func _update_labels() -> void:
