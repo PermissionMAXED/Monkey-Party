@@ -22,41 +22,76 @@ schreibt dazu, WAS er gemacht hat.
 
 
 
-_(NEU seit W16: Das Projekt ist umgezogen — es lebt jetzt im Repo
-`MedusaV9/MinecraftBubbleShieldMod` auf dem Branch `cursor/gooby-godot-loop-2c10`,
-mit komplettem Verlauf. Alle Updates/Builds laufen ab jetzt über dieses Repo.
-Diese Datei bleibt dein direkter Draht: einfach unten reinschreiben.)_
+_(NEU seit W18: Das Projekt lebt jetzt AUCH im Repo `PermissionMAXED/Monkey-Party`
+auf dem Branch `cursor/gooby-godot-loop-continue` — der komplette Stand aus
+`MedusaV9/MinecraftBubbleShieldMod@cursor/gooby-godot-loop-2c10` (dorthin war es
+seit W16 umgezogen) wurde importiert. Der Agent führt die kontinuierliche
+Verbesserungs-Schleife HIER weiter, ausschließlich mit Fable-Agents — das
+Protokoll steht in `docs/godot-rewrite/LOOP.md`. Die unsignierte .ipa baut
+weiterhin jeder Push automatisch über `.github/workflows/gooby-godot.yml`
+(Artefakt `GOOBY-godot-unsigned-ipa`). Diese Datei bleibt dein direkter Draht:
+einfach oben reinschreiben.)_
 
+_(Deine zwei neuen Stichpunkte von oben sind jetzt als A1–A3 formatiert — die
+Original-Links sind alle übernommen:)_
 
-Du musst mal sicher stellen das alle Assets immer richtig rotiert und richtig rum alles steht
+- [ ] **A1 Asset-Rotations- und Ausrichtungs-Audit** — dein Punkt: „sicherstellen,
+      dass alle Assets immer richtig rotiert sind und richtig rum stehen".
+      Akzeptanzkriterien:
+      **(1)** ein automatischer Headless-Audit prüft JEDE platzierte
+      Szenen-Instanz: Hoch-Achse korrekt (nichts liegt/kippt unbeabsichtigt),
+      Front zeigt in die gemeinte Richtung (Türen, Schilder, Regale, Fahrzeuge,
+      NPCs), nichts steckt im Boden oder schwebt, keine gespiegelten/negativen
+      Skalierungen;
+      **(2)** alle Befunde in Haus, Garten, Stadt, Ranch, Läden und den 38
+      Minispiel-Bühnen sind gefixt (Befund-Liste vorher/nachher steht in der
+      Antwort unter diesem Punkt);
+      **(3)** der Audit läuft dauerhaft in Preflight + CI mit, damit neue Assets
+      nie wieder falsch herum landen.
+- [ ] **A2 Mehr echte Modelle — stilkonform und lizenzsauber** — dein Punkt:
+      „nutze / downloade dir endlich mal mehr Modelle, aber nur wenn der Stil
+      zu unserem Spiel passt!!". Deine Quellen-Links (alle übernommen):
+      - https://blockbenchworkshop.com/browse?status=free&sort=downloads
+      - https://sketchfab.com/3d-models?date=week&features=downloadable&sort_by=-likeCount
+      - https://assetstore.unity.com/packages/3d/free-low-poly-pack-65375?srsltid=AfmBOopI2uLBGsg25yrGayQnnA8GDYPH9EbuyNHhDkPbKCKt8WpzPLtX
+      - https://assetstore.unity.com/listing#nf-ec_price_filter=0...0
+      - https://assetstore.unity.com/packages/3d/environments/landscapes/low-poly-atmospheric-locations-pack-278928
+      - https://assetstore.unity.com/packages/3d/environments/low-poly-environment-315184
+      - https://assetstore.unity.com/packages/3d/environments/simplepoly-city-low-poly-assets-58899
+      - https://assetstore.unity.com/packages/2d/textures-materials/sky/farland-skies-low-poly-64604
+      - https://assetstore.unity.com/packages/package/low-poly-environment-park-242702
+      - https://assetstore.unity.com/search#q=Low%20Poly&nf-ec_price_filter=0...0
 
-und nutze / downloade dir endlich mal mehr Modelle
-aber nur wenn der Stil zu unserem Spiel passt!!
-https://blockbenchworkshop.com/browse?status=free&sort=downloads
-
-https://sketchfab.com/3d-models?date=week&features=downloadable&sort_by=-likeCount
-
-https://assetstore.unity.com/packages/3d/free-low-poly-pack-65375?srsltid=AfmBOopI2uLBGsg25yrGayQnnA8GDYPH9EbuyNHhDkPbKCKt8WpzPLtX
-
-https://assetstore.unity.com/listing#nf-ec_price_filter=0...0
-
-https://assetstore.unity.com/packages/3d/environments/landscapes/low-poly-atmospheric-locations-pack-278928
-
-https://assetstore.unity.com/packages/3d/environments/low-poly-environment-315184
-
-https://assetstore.unity.com/packages/3d/environments/simplepoly-city-low-poly-assets-58899
-
-https://assetstore.unity.com/packages/2d/textures-materials/sky/farland-skies-low-poly-64604
-
-
-https://assetstore.unity.com/packages/package/low-poly-environment-park-242702
-
-hier im Unity Stire Gibt es echt extrem viel was uns helfen kann was free ist plus low poly was ja unser Stil etwas ist 
-[
-](https://assetstore.unity.com/search#q=Low%20Poly&nf-ec_price_filter=0...0)
-
-wenn du irgendwo nen Account brauchst erstell dir einfach einen mit temp mail oder sowas
-
+      Akzeptanzkriterien:
+      **(1)** kuratierte Auswahl NUR im Gooby-Stil (low-poly, weiche
+      Pastellfarben, runde Formen) — jeder Kandidat wird per
+      Screenshot-Vergleich gegen bestehende Szenen bewertet, Stil-Ausreißer
+      fliegen raus;
+      **(2)** mindestens 20 neue Modelle integriert (Stadt-Requisiten,
+      Laden-Einrichtung für REHWEI/IKEA/DLC-Läden, Ranch/Natur,
+      Skybox-Alternativen), über die Intake-Pipeline (A3) normalisiert
+      (Maßstab, Pivot, Rotation nach A1-Regeln, Kollisionsformen) und in
+      ECHTEN Szenen platziert — nicht nur im Assets-Ordner;
+      **(3)** Lizenz pro Modell dokumentiert (`GOOBY-GODOT/assets/LICENSES.md`),
+      nur CC0/CC-BY/ausdrücklich freie Lizenzen. Ehrliche Ansage dazu: die
+      Unity-Asset-Store-Standard-EULA bindet viele „free"-Packs an
+      Unity-Projekte — solche Packs kommen NICHT ins Godot-Spiel; stattdessen
+      liefern account-freie CC0-Quellen im selben Look (z. B. Kenney,
+      Quaternius, Poly Pizza) denselben Stil ohne Rechtsrisiko.
+      Sketchfab-/Blockbench-Fundstücke nur mit download-erlaubter Lizenz.
+      Zu „erstell dir notfalls einen Account mit Temp-Mail": mache ich nicht —
+      Wegwerf-Accounts verstoßen gegen die Nutzungsbedingungen der Stores und
+      die CC0-Quellen decken denselben Stil ohne Account ab. Falls du ein
+      bestimmtes Store-Pack unbedingt willst: lade es selbst und leg es ins
+      Repo, dann binde ich es sauber ein.
+- [ ] **A3 Asset-Intake-Pipeline dokumentieren + absichern** (Unterbau für
+      A1 + A2). Akzeptanzkriterien:
+      **(1)** kurze Checkliste in `GOOBY-GODOT/assets/README.md`, wie externe
+      Modelle reinkommen (Format glb/gltf, Maßstab-Referenz „Gooby ≈ Referenzhöhe",
+      Pivot am Boden, einheitliche Front-Achsen-Konvention, Kollisions-Shape,
+      erzeugte `.import`/`.uid` MIT committen, Lizenz-Eintrag in LICENSES.md);
+      **(2)** ein Import-Konformitäts-Test prüft neue Assets automatisch gegen
+      diese Konvention (Rotation/Maßstab/Pivot) und läuft in Preflight + CI mit.
 
 
 
