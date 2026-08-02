@@ -975,6 +975,66 @@
    "seam_loop_db": 16.5,
    "sha256": "f995147c5410fdcf917197075e14939fb4b6e43b3637dd980cca08660fed0f52"
   },
+  "park_coaster_loop": {
+   "centroid_hz": 101,
+   "dur_s": 2.4,
+   "end_db": -15.3,
+   "file": "assets/audio/sfx/foley/park_coaster_loop.ogg",
+   "hi4k_pct": 0.0,
+   "loop_offset_s": 0.0,
+   "loud_db": -18.2,
+   "peak_db": -6.1,
+   "seam_loop_db": 0.6,
+   "sha256": "8b64ddd465e89c6cd3c04e0e73ae9e80fb2432a74f87541debdf5af5eebe569b"
+  },
+  "park_coaster_whoosh": {
+   "centroid_hz": 675,
+   "dur_s": 0.697,
+   "end_db": -54.1,
+   "file": "assets/audio/sfx/foley/park_coaster_whoosh.ogg",
+   "hi4k_pct": 0.0,
+   "loop_offset_s": 0.0,
+   "loud_db": -18.8,
+   "peak_db": -6.0,
+   "seam_loop_db": 0.9,
+   "sha256": "33f7955e38732315ac7321f1b3b43656e0362b237369c34db96b5d4c532f9278"
+  },
+  "park_karussell_loop": {
+   "centroid_hz": 618,
+   "dur_s": 4.8,
+   "end_db": -70.8,
+   "file": "assets/audio/sfx/foley/park_karussell_loop.ogg",
+   "hi4k_pct": 0.0,
+   "loop_offset_s": 0.0,
+   "loud_db": -19.0,
+   "peak_db": -6.0,
+   "seam_loop_db": 17.5,
+   "sha256": "0265978d6d632d27986317075f342fbb9824d27da1f89fe6e7ec647600d7dcc5"
+  },
+  "park_scooter_bump": {
+   "centroid_hz": 201,
+   "dur_s": 0.217,
+   "end_db": -69.2,
+   "file": "assets/audio/sfx/foley/park_scooter_bump.ogg",
+   "hi4k_pct": 0.0,
+   "loop_offset_s": 0.0,
+   "loud_db": -18.5,
+   "peak_db": -5.9,
+   "seam_loop_db": 26.0,
+   "sha256": "1bf095764254d22ab6b1ce9c63e828d7100b92aabca9d496012ec6b918a58e1a"
+  },
+  "park_wheel_loop": {
+   "centroid_hz": 83,
+   "dur_s": 3.2,
+   "end_db": -11.1,
+   "file": "assets/audio/sfx/foley/park_wheel_loop.ogg",
+   "hi4k_pct": 0.0,
+   "loop_offset_s": 0.0,
+   "loud_db": -14.8,
+   "peak_db": -6.2,
+   "seam_loop_db": 0.0,
+   "sha256": "816c11c997f00bd6cca4c04e69cfa5cab40eac62f6a02be4002ddd539bc776e6"
+  },
   "pet_squish": {
    "centroid_hz": 256,
    "dur_s": 0.147,

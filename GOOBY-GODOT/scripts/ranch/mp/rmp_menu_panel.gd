@@ -57,7 +57,9 @@ func _ready() -> void:
 	_einladung_box = VBoxContainer.new()
 	_einladung_box.add_theme_constant_override("separation", 4)
 	box.add_child(_einladung_box)
-	var besten := Button.new()
+	# G6 (W16-Grammatik): öffnet das Bestenlisten-PanelSheet — der Druck
+	# bleibt stumm (ui_open klingt zentral in PanelSheet.open()).
+	var besten := SquishButton.new()
 	besten.theme_type_variation = &"GhostButton"
 	besten.text = I18nService.t("ranch_mp.menu.bestenlisten")
 	besten.pressed.connect(func() -> void: leaderboard_pressed.emit())
@@ -115,7 +117,8 @@ func _refresh() -> void:
 		label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		label.text = str(freund.get("name", freund.get("friendCode", "?")))
 		zeile.add_child(label)
-		var btn := Button.new()
+		# G6: Einladen ist ein Netz-Call — der AUSGANG klingt (_einladen).
+		var btn := SquishButton.new()
 		btn.theme_type_variation = &"PrimaryButton"
 		btn.text = I18nService.t("ranch_mp.menu.einladen")
 		var code := str(freund.get("friendCode", ""))
@@ -145,6 +148,8 @@ func _einladen(code: String, wer: String) -> void:
 	if service == null:
 		return
 	var res: Dictionary = await service.invite(code, gewaehlter_modus())
+	# G6 (Grammatik „Outcome schlägt Press“): Sende-Erfolg/Fehler klingt.
+	AudioDirector.try_play(self, "ui_confirm" if bool(res["ok"]) else "ui_error")
 	_hinweis.visible = true
 	if res["ok"]:
 		_hinweis.text = I18nService.t("ranch_mp.menu.invite_gesendet", {"name": wer})
@@ -173,16 +178,22 @@ func _on_invited(data: Dictionary) -> void:
 	zeile.add_child(label)
 	var von := str(data.get("from", ""))
 	var m := ScreenShell.metrics(get_viewport())
-	var ja := Button.new()
+	# G6: Annehmen ist ein Netz-Call (Ausgang klingt in _annehmen);
+	# Ablehnen klingt sofort als ui_back (Muster gobnom_netz_panel).
+	var ja := SquishButton.new()
 	ja.theme_type_variation = &"PrimaryButton"
 	ja.text = I18nService.t("ranch_mp.menu.annehmen")
 	ja.pressed.connect(func() -> void: _annehmen(von))
 	ScreenShell.touch_target(ja, m)
 	zeile.add_child(ja)
-	var nein := Button.new()
+	var nein := SquishButton.new()
 	nein.theme_type_variation = &"GhostButton"
 	nein.text = I18nService.t("ranch_mp.menu.ablehnen")
-	nein.pressed.connect(func() -> void: _ablehnen(von))
+	nein.pressed.connect(
+		func() -> void:
+			AudioDirector.try_play(self, "ui_back")
+			_ablehnen(von)
+	)
 	ScreenShell.touch_target(nein, m)
 	zeile.add_child(nein)
 	_einladung_box.add_child(zeile)
@@ -193,6 +204,7 @@ func _annehmen(von: String) -> void:
 	if service == null:
 		return
 	var res: Dictionary = await service.accept(von)
+	AudioDirector.try_play(self, "ui_confirm" if bool(res["ok"]) else "ui_error")
 	if not res["ok"]:
 		_hinweis.text = RanchMultiplayerService.fehler_text(str(res["code"]))
 		_hinweis.visible = true

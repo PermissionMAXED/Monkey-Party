@@ -315,6 +315,8 @@ func _feiere(code: Dictionary) -> void:
 	Haptics.success(self)
 	_konfetti()
 	if is_inside_tree():
+		# G6 (S8): Belohnungs-Stinger atmet über geducktem Musikbett.
+		MusicDirector.try_duck(self)
 		MusicDirector.get_or_create(self).play_stinger("stinger-levelup")
 	RewardHub.note_action(_gs)
 

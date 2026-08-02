@@ -30,6 +30,13 @@ const RIDE_ENERGIE := 2.0
 ## … und schenken Spaß (Belohnungs-Teil, Web: Tagesausflug-Stimmung).
 const RIDE_SPASS := 12.0
 const CAPTION_SEC := 3.2
+## G6 Audio-Feel: Fahrt-Foley-Loops (SfxMap park_*) — Start in fahre(),
+## Stopp in _on_ride_finished (Loops laufen über Audio.try_start/stop_loop).
+const RIDE_LOOPS := {
+	"coaster": "park_coaster_loop",
+	"wheel": "park_wheel_loop",
+	"karussell": "park_karussell_loop",
+}
 
 const FARBE_WEG := Color("#D9C6A5")
 const FARBE_WIESE := Color("#8FBF6C")
@@ -126,12 +133,14 @@ func fahre(ride_id: String) -> bool:
 	if gs == null:
 		return false
 	if float(gs.get_value("gooby.stats.energy", 100.0)) < RIDE_ENERGIE + 1.0:
+		AudioDirector.try_play(self, "ui_error")
 		_zeige_toast(I18nService.t("park.ride.zu_muede"))
 		return false
 	var preis := int(ParkState.PREIS.get(ride_id, 0))
 	# Vorab prüfen (Lambda-Captures sind by-value — kein Out-Flag möglich);
 	# der eigentliche Abzug läuft trotzdem atomar in EINEM gs.update.
 	if preis > 0 and int(gs.get_value("economy.coins", 0)) < preis:
+		AudioDirector.try_play(self, "ui_error")
 		_zeige_toast(I18nService.t("park.ride.zu_teuer"))
 		return false
 	gs.update(
@@ -142,6 +151,11 @@ func fahre(ride_id: String) -> bool:
 			stats["energy"] = maxf(0.0, float(stats["energy"]) - RIDE_ENERGIE)
 			stats["fun"] = minf(100.0, float(stats["fun"]) + RIDE_SPASS)
 	)
+	# G6: Ticket = abgeschlossene Münz-AUSGABE (AUDIO-GRAMMATIK ui_buy);
+	# danach übernimmt der Fahrt-Foley-Loop den Klangteppich.
+	AudioDirector.try_play(self, "ui_buy")
+	if RIDE_LOOPS.has(ride_id):
+		AudioDirector.try_start_loop(self, str(RIDE_LOOPS[ride_id]))
 	aktive_fahrt = ride_id
 	if rig != null:
 		rig.visible = false
@@ -168,24 +182,42 @@ func _on_ride_event(id: String) -> void:
 				func(slice: Variant) -> Dictionary: return ParkState.record_hands_up(slice)
 			)
 		"photo":
+			# G6: der Blitz-Moment klingt (mg_perfect = Glas-Ping).
+			AudioDirector.try_play(self, "mg_perfect")
 			_zeige_caption(I18nService.t("park.coaster.photo"))
 			_knipse_fahrtfoto("park.coaster.photo_saved")
 		"apex":
 			_zeige_caption(I18nService.t("park.wheel.apex"))
 			_knipse_fahrtfoto("park.wheel.photo_saved")
+		"drop", "loop":
+			# G6: Fahrtwind für Sturzflug/Looping (Looping etwas heller —
+			# semantische Steigerung, Grammatik-Pitchbereich 0.9–1.6).
+			AudioDirector.try_play(self, "park_coaster_whoosh", 1.0 if id == "drop" else 1.15)
+			_zeige_zonen_caption(id)
 		"board", "depart":
 			pass
 		_:
-			var key := "park.coaster.%s" % id
-			if I18nService.has_key(key):
-				_zeige_caption(I18nService.t(key))
+			_zeige_zonen_caption(id)
+
+
+func _zeige_zonen_caption(id: String) -> void:
+	var key := "park.coaster.%s" % id
+	if I18nService.has_key(key):
+		_zeige_caption(I18nService.t(key))
 
 
 func _on_ride_finished(ride_id: String) -> void:
 	aktive_fahrt = ""
+	# G6: Foley-Loop weich aus + kleiner Dur-Abschluss (Fahrt geschafft).
+	if RIDE_LOOPS.has(ride_id):
+		AudioDirector.try_stop_loop(self, str(RIDE_LOOPS[ride_id]))
+	AudioDirector.try_play(self, "mg_win")
 	if _hands_btn != null:
 		_hands_btn.visible = false
-		_hands_btn.button_pressed = false
+		# no_signal: der programmatische Reset soll KEIN ui_toggle spielen —
+		# den Hände-runter-Teil übernimmt der explizite Aufruf darunter.
+		_hands_btn.set_pressed_no_signal(false)
+		coaster.set_hands_up(false)
 	if rig != null:
 		rig.visible = true
 		rig.play_clip("celebrate")
@@ -599,7 +631,9 @@ func _baue_ui() -> void:
 	# Theme explizit: Window-Theme propagiert NICHT durch CanvasLayer.
 	_ui.theme = ThemeService.theme()
 	layer.add_child(_ui)
-	var zurueck := Button.new()
+	# G6: alle Park-Knöpfe sind SquishButtons (W16-Grammatik — Haptik +
+	# Squish zentral, jeder pressed-Handler klingt semantisch).
+	var zurueck := SquishButton.new()
 	zurueck.name = "Verlassen"
 	zurueck.text = I18nService.t("city.ort.verlassen")
 	zurueck.theme_type_variation = "GhostButton"
@@ -622,7 +656,7 @@ func _baue_ui() -> void:
 	_caption_timer.timeout.connect(func() -> void: _caption.visible = false)
 	add_child(_caption_timer)
 	_baue_ride_bar()
-	_hands_btn = Button.new()
+	_hands_btn = SquishButton.new()
 	_hands_btn.name = "HandsUp"
 	_hands_btn.text = I18nService.t("park.coaster.hands_up")
 	_hands_btn.theme_type_variation = "AccentButton"
@@ -632,7 +666,11 @@ func _baue_ui() -> void:
 		Control.PRESET_BOTTOM_RIGHT, Control.PRESET_MODE_MINSIZE, 24
 	)
 	_hands_btn.visible = false
-	_hands_btn.toggled.connect(func(an: bool) -> void: coaster.set_hands_up(an))
+	_hands_btn.toggled.connect(
+		func(an: bool) -> void:
+			AudioDirector.try_play(self, "ui_toggle")
+			coaster.set_hands_up(an)
+	)
 	_ui.add_child(_hands_btn)
 	_sheet = PanelSheetScene.instantiate()
 	_sheet.theme = ThemeService.theme()
@@ -654,24 +692,32 @@ func _baue_ride_bar() -> void:
 	_ride_knopf("coaster", "park.coaster.name")
 	_ride_knopf("wheel", "park.wheel.name")
 	_ride_knopf("karussell", "park.karussell.name")
-	var gasse := Button.new()
+	# Öffnet ein PanelSheet — der Druck bleibt stumm (ui_open klingt
+	# zentral in PanelSheet.open(), W16-Grammatik: kein Doppel-Klang).
+	var gasse := SquishButton.new()
 	gasse.name = "Naschgasse"
 	gasse.text = I18nService.t("park.alley.title")
 	gasse.theme_type_variation = "AccentButton"
 	gasse.custom_minimum_size = Vector2(0.0, 56.0)
 	gasse.pressed.connect(_oeffne_naschgasse)
 	_ride_bar.add_child(gasse)
-	var scooter_btn := Button.new()
+	var scooter_btn := SquishButton.new()
 	scooter_btn.name = "Scooter"
 	scooter_btn.text = I18nService.t("park.scooter.name")
 	scooter_btn.theme_type_variation = "GhostButton"
 	scooter_btn.custom_minimum_size = Vector2(0.0, 56.0)
-	scooter_btn.pressed.connect(func() -> void: _zeige_caption(I18nService.t("park.scooter.hint")))
+	scooter_btn.pressed.connect(
+		func() -> void:
+			AudioDirector.try_play(self, "ui_click")
+			_zeige_caption(I18nService.t("park.scooter.hint"))
+	)
 	_ride_bar.add_child(scooter_btn)
 
 
+## Fahrt-Knopf: der Druck bleibt stumm — der AUSGANG klingt in fahre()
+## (ui_buy bzw. ui_error; W16-Grammatik „Outcome schlägt Press“).
 func _ride_knopf(ride_id: String, name_key: String) -> void:
-	var btn := Button.new()
+	var btn := SquishButton.new()
 	btn.name = ride_id.capitalize()
 	var preis := int(ParkState.PREIS.get(ride_id, 0))
 	btn.text = (
@@ -709,6 +755,9 @@ func _zeige_toast(text: String) -> void:
 
 
 func _on_verlassen() -> void:
+	# W16-Grammatik: Verlassen klingt als ui_back (Reise-Whoosh übernimmt
+	# der LoadingVeil selbst).
+	AudioDirector.try_play(self, "ui_back")
 	var router := get_node_or_null("/root/SceneRouter")
 	if router != null:
 		router.goto(CityScene.ROUTE_CITY, {"spawn": ort_id})

@@ -49,10 +49,15 @@ func _ready() -> void:
 	_baue_knopf(aktionen, "ranch_mp.besuch.herz", func() -> void: _sende_herz())
 	_baue_knopf(aktionen, "ranch_mp.besuch.streicheln", func() -> void: _sende_geste("streicheln"))
 	_baue_knopf(aktionen, "ranch_mp.besuch.fuettern", func() -> void: _sende_geste("fuettern"))
-	var ende := Button.new()
+	# G6 (W16-Grammatik): SquishButton + ui_back fürs Beenden.
+	var ende := SquishButton.new()
 	ende.theme_type_variation = &"GhostButton"
 	ende.text = I18nService.t("ranch_mp.besuch.beenden")
-	ende.pressed.connect(func() -> void: ende_pressed.emit())
+	ende.pressed.connect(
+		func() -> void:
+			AudioDirector.try_play(self, "ui_back")
+			ende_pressed.emit()
+	)
 	# G7/P57: physischer Touch-Floor (gleiche Befund-Klasse wie Menü/Lobby).
 	ScreenShell.touch_target(ende, m)
 	aktionen.add_child(ende)
@@ -130,8 +135,12 @@ func zeige_gast(gast_name: String) -> void:
 ## ---------------------------------------------------------------- intern
 
 
+## G6: Gesten klingen als Foley statt generischem Klick (SfxMap-Ids:
+## Streicheln = pet_squish, Füttern = nom_nom, Herz = ui_click) — der
+## AUSGANG klingt (send_reaction liefert sofort ok/nicht ok).
 func _sende_herz() -> void:
 	if service != null and service.send_reaction("HERZ"):
+		AudioDirector.try_play(self, "ui_click")
 		_zeige_toast("♥")
 
 
@@ -140,6 +149,7 @@ func _sende_geste(geste: String) -> void:
 		return
 	var pferd := _pferde_namen[0] if not _pferde_namen.is_empty() else ""
 	if service.send_reaction("GESTE", {"id": geste, "pferd": pferd}):
+		AudioDirector.try_play(self, "pet_squish" if geste == "streicheln" else "nom_nom")
 		_zeige_toast(
 			I18nService.t(
 				"ranch_mp.besuch.geste_%s" % geste,
@@ -186,7 +196,9 @@ func _name_fuer(code: String) -> String:
 
 
 func _baue_knopf(parent: Node, key: String, handler: Callable) -> void:
-	var btn := Button.new()
+	# G6 (W16-Grammatik): SquishButton — Haptik/Squish zentral; der Sound
+	# kommt aus dem jeweiligen Handler (Outcome, s. _sende_*).
+	var btn := SquishButton.new()
 	btn.theme_type_variation = &"PrimaryButton"
 	btn.text = I18nService.t(key)
 	btn.pressed.connect(handler)

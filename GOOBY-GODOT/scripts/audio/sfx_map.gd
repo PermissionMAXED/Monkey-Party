@@ -108,6 +108,15 @@ const SOUNDS := {
 	# ── Reise-Whoosh (F9 — Veil-Reisen statt ui_open/ui_close) ──
 	"travel_whoosh_auf": {"file": "foley/travel_whoosh_auf.ogg", "volume_db": -3.0},
 	"travel_whoosh_zu": {"file": "foley/travel_whoosh_zu.ogg", "volume_db": -4.0},
+	# ── Funkelpark-Foley (G6 Audio-Feel: Fahrgeschäfte waren stumm) ──
+	# Loops laufen über Audio.try_start_loop/try_stop_loop (Besitzer:
+	# funkelpark.gd Fahrt-Flow); Quellen: tools/audio/park_gen_sfx.py.
+	"park_coaster_loop": {"file": "foley/park_coaster_loop.ogg", "volume_db": -9.0},
+	"park_coaster_whoosh": {"file": "foley/park_coaster_whoosh.ogg", "volume_db": -4.0},
+	"park_wheel_loop": {"file": "foley/park_wheel_loop.ogg", "volume_db": -12.0},
+	"park_karussell_loop": {"file": "foley/park_karussell_loop.ogg", "volume_db": -8.0},
+	"park_scooter_bump":
+	{"file": "foley/park_scooter_bump.ogg", "volume_db": -7.0, "pitch_jitter": 0.08},
 	# ── Ranch-DLC (RW-8): Hufschlag je Untergrund (Einzelschritt + Loops) ──
 	"ranch_huf_gras":
 	{"file": RANCH_DIR + "/huf_gras.ogg", "volume_db": -6.0, "pitch_jitter": 0.06},
@@ -146,6 +155,16 @@ const SOUNDS := {
 	"ranch_menge_jubel": {"file": RANCH_DIR + "/menge_jubel.ogg", "volume_db": -6.0},
 	"ranch_menge_gemurmel": {"file": RANCH_DIR + "/menge_gemurmel.ogg", "volume_db": -10.0},
 }
+
+## Pflicht-Ids des Funkelpark-Foleys (G6-Kontrakt — Tests prüfen Existenz
+## + Dateien; Verdrahtung: funkelpark.gd/autoscooter.gd).
+const PARK_REQUIRED_IDS: Array[String] = [
+	"park_coaster_loop",
+	"park_coaster_whoosh",
+	"park_wheel_loop",
+	"park_karussell_loop",
+	"park_scooter_bump",
+]
 
 ## Pflicht-Ids des Ranch-DLC (RW-8-Kontrakt — Tests prüfen Existenz +
 ## Dateien; deckt ALLE 23 Dateien unter assets/ranch/audio/sfx ab).

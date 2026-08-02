@@ -114,6 +114,10 @@ func test_musik_liegt_6_bis_10_db_unter_den_effekten() -> void:
 	for sfx_id: String in SfxMap.ids():
 		if sfx_id.begins_with("ranch_ambience") or sfx_id.begins_with("ranch_menge"):
 			continue
+		# G6: Foley-Betten (park_*_loop) sind bewusst leiser als die
+		# Interaktions-Sounds und zählen wie Ambience nicht zum Median.
+		if sfx_id.ends_with("_loop"):
+			continue
 		if not sfx.has(sfx_id):
 			continue
 		var row: Dictionary = sfx[sfx_id]

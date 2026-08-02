@@ -101,6 +101,8 @@ func willkommen() -> void:
 func zone_entdeckt(zone_id: String) -> void:
 	var name_key := "rwelt.zone.%s" % zone_id
 	var zonen_name := I18nService.t(name_key) if I18nService.has_key(name_key) else zone_id
+	# G6 (S8): Entdeckungs-Moment = Belohnungs-Jingle über geducktem Bett.
+	MusicDirector.try_duck(self)
 	AudioDirector.try_play(self, "ui_levelup")
 	zeige_moment(zonen_name, I18nService.t("loading.moment.entdeckt"), {"sub_oben": true})
 

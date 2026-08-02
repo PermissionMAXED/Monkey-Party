@@ -213,7 +213,10 @@ func pflege(aktion: String) -> void:
 
 
 ## Turnier-Fanfare; sieg=true nimmt die große Sieg-Fanfare + Jubel.
+## G6 (AUDIO-GRAMMATIK S8): Fanfaren ducken das Musikbett — die Sieg-
+## Fanfare + Jubel hält länger, darum längeres Halten.
 func fanfare(sieg := false) -> void:
+	MusicDirector.try_duck(self, MusicDirector.DUCK_DB, 2.4 if sieg else MusicDirector.DUCK_HOLD_S)
 	AudioDirector.try_play(self, "ranch_fanfare_sieg" if sieg else "ranch_fanfare")
 	if sieg:
 		AudioDirector.try_play(self, "ranch_menge_jubel")

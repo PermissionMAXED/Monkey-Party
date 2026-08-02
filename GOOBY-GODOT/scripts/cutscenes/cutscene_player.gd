@@ -332,6 +332,8 @@ func _op_music(step: Dictionary) -> void:
 
 func _op_stinger(track: String) -> void:
 	if is_inside_tree():
+		# G6 (S8): Stinger atmen ÜBER dem Bett — Cutscene-Musik duckt mit.
+		MusicDirector.try_duck(self)
 		MusicDirector.get_or_create(self).play_stinger(track)
 
 

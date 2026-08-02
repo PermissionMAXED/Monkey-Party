@@ -40,6 +40,9 @@ func _ready() -> void:
 	_baue_texte()
 	if not _reduced_motion():
 		_baue_konfetti()
+	# G6 (S8): auch der Ranch-Level-Up duckt das Musikbett — wie die
+	# Hauptspiel-Feier (level_up_feier.gd), 2 s für die ganze Karte.
+	MusicDirector.try_duck(self, MusicDirector.DUCK_DB, 2.0)
 	AudioDirector.try_play(self, "ui_levelup")
 	if not meilensteine.is_empty():
 		AudioDirector.try_play(self, "mg_golden", 1.05)

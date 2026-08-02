@@ -6,6 +6,7 @@ extends TestCase
 
 const GameStateScript := preload("res://scripts/state/game_state.gd")
 const SaveSchema := preload("res://scripts/state/save_schema.gd")
+const ParkTests := preload("res://tests/unit/test_rest4_park.gd")
 
 const NOW_MS := 1768478400000
 const TAG := "2026-07-25"
@@ -97,6 +98,50 @@ func test_goobay_panel_baut_nur_squish_buttons() -> void:
 	layer.queue_free()
 	await wait_frames(2)
 	_teardown(gs)
+
+
+func test_rmp_panels_bauen_nur_squish_buttons() -> void:
+	# G6 Audio-Feel: die Ranch-MP-Panels (Lobby/Menü/Besuch) waren die
+	# letzten stummen Button.new()-Bauten — jetzt SquishButtons + Sounds.
+	var panels := {
+		"RmpLobbyPanel": RmpLobbyPanel.new(),
+		"RmpMenuPanel": RmpMenuPanel.new(),
+		"RmpBesuchPanel": RmpBesuchPanel.new(),
+	}
+	for kontext: String in panels:
+		var panel: Control = panels[kontext]
+		tree.root.add_child(panel)
+		await wait_frames(2)
+		_assert_alle_buttons_squish(panel, kontext)
+		panel.queue_free()
+	await wait_frames(2)
+
+
+func test_rmp_leaderboard_geist_knopf_squish() -> void:
+	# G6: der dynamische „Geist laden“-Zeilenknopf der Bestenliste.
+	var panel := RmpLeaderboardPanel.new()
+	tree.root.add_child(panel)
+	await wait_frames(2)
+	panel.zeige_eintraege(
+		[{"friendCode": "gooby-1", "name": "Trixi", "wert": 61200, "hatGhost": true}], "ich"
+	)
+	await wait_frames(1)
+	_assert_alle_buttons_squish(panel, "RmpLeaderboardPanel")
+	panel.queue_free()
+	await wait_frames(2)
+
+
+func test_funkelpark_ui_baut_nur_squish_buttons() -> void:
+	# G6: Ride-Bar, Verlassen, Hände-hoch, Naschgasse, Scooter-Hinweis.
+	var gs := ParkTests.FakeGameState.new()
+	var park := Funkelpark.new()
+	park.game_state_override = gs
+	park.stunde_override = 12.0
+	tree.root.add_child(park)
+	await wait_frames(2)
+	_assert_alle_buttons_squish(park, "Funkelpark")
+	park.queue_free()
+	await wait_frames(2)
 
 
 func _fresh_gs() -> Node:

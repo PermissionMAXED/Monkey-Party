@@ -228,6 +228,8 @@ func _show_end_card() -> void:
 	if _confetti != null:
 		_confetti.emitting = true
 	if is_inside_tree():
+		# G6 (S8): End-Karten-Stinger atmet über geducktem Musikbett.
+		MusicDirector.try_duck(self)
 		MusicDirector.get_or_create(self).play_stinger("stinger-levelup")
 
 

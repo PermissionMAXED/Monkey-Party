@@ -9,9 +9,15 @@ const AUTOS := "res://assets/city/autos"
 const MODELLE: Array[String] = ["hatchback-sports", "sedan", "taxi"]
 const TINTS: Array[Color] = [Color("#E8524A"), Color("#4E79D6"), Color("#8FD06C")]
 const ARENA := Vector2(7.0, 5.0)
+## G6 Audio-Feel: unter dieser Distanz gilt ein Paar als „Stups“ …
+const BUMP_ABSTAND := 1.7
+## … mit Flanken-Trigger je Paar + globalem Cooldown gegen Dauerklackern.
+const BUMP_COOLDOWN_S := 1.4
 
 var _wagen: Array[Dictionary] = []
 var _zeit := 0.0
+var _bump_nah: Dictionary = {}
+var _bump_cooldown := 0.0
 
 
 func _ready() -> void:
@@ -33,6 +39,30 @@ func _physics_process(delta: float) -> void:
 		node.position = pos
 		if tangente.length_squared() > 0.001:
 			node.rotation.y = atan2(tangente.x, tangente.z)
+	_pruefe_stupser(delta)
+
+
+## PURE (Runner-testbar): Stups-Flanke — feuert genau beim EINTRITT unter
+## die Schwelle (vorher nicht nah) und nur ohne laufenden Cooldown.
+static func stups_jetzt(abstand: float, war_nah: bool, cooldown_s: float) -> bool:
+	return abstand < BUMP_ABSTAND and not war_nah and cooldown_s <= 0.0
+
+
+## G6: die Flitzer stupsen hörbar (park_scooter_bump, Pitch-Jitter macht
+## aus einer Datei viele Rempler) — Park-Leben statt Stummfilm.
+func _pruefe_stupser(delta: float) -> void:
+	_bump_cooldown = maxf(0.0, _bump_cooldown - delta)
+	for i in _wagen.size():
+		for j in range(i + 1, _wagen.size()):
+			var key := i * 8 + j
+			var a: Node3D = _wagen[i]["node"]
+			var b: Node3D = _wagen[j]["node"]
+			var abstand := a.position.distance_to(b.position)
+			var war_nah := bool(_bump_nah.get(key, false))
+			if stups_jetzt(abstand, war_nah, _bump_cooldown):
+				_bump_cooldown = BUMP_COOLDOWN_S
+				AudioDirector.try_play(self, "park_scooter_bump")
+			_bump_nah[key] = abstand < BUMP_ABSTAND
 
 
 func _baue_arena() -> void:

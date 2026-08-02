@@ -54,21 +54,28 @@ func _ready() -> void:
 	var knoepfe := HBoxContainer.new()
 	knoepfe.add_theme_constant_override("separation", 10)
 	box.add_child(knoepfe)
-	_bereit_btn = Button.new()
+	# G6 (W16-Grammatik): SquishButtons statt Button.new(); Bereit/Revanche
+	# sind Netz-Calls — der AUSGANG klingt (ui_confirm/ui_error), nicht der
+	# Druck. Verlassen klingt sofort als ui_back.
+	_bereit_btn = SquishButton.new()
 	_bereit_btn.theme_type_variation = &"PrimaryButton"
 	_bereit_btn.text = I18nService.t("ranch_mp.lobby.bereit_knopf")
 	_bereit_btn.pressed.connect(_on_bereit)
 	knoepfe.add_child(_bereit_btn)
-	_revanche_btn = Button.new()
+	_revanche_btn = SquishButton.new()
 	_revanche_btn.theme_type_variation = &"PrimaryButton"
 	_revanche_btn.text = I18nService.t("ranch_mp.ergebnis.revanche")
 	_revanche_btn.visible = false
 	_revanche_btn.pressed.connect(_on_revanche)
 	knoepfe.add_child(_revanche_btn)
-	_verlassen_btn = Button.new()
+	_verlassen_btn = SquishButton.new()
 	_verlassen_btn.theme_type_variation = &"GhostButton"
 	_verlassen_btn.text = I18nService.t("ranch_mp.lobby.verlassen")
-	_verlassen_btn.pressed.connect(func() -> void: leave_pressed.emit())
+	_verlassen_btn.pressed.connect(
+		func() -> void:
+			AudioDirector.try_play(self, "ui_back")
+			leave_pressed.emit()
+	)
 	knoepfe.add_child(_verlassen_btn)
 	# G7/P57 (FB3-Altbefund „Verlassen/Bereit! 18,7–36,7 pt"): physischer
 	# Touch-Floor — Theme-Höhen sind Design-px und auf Retina zu klein.
@@ -163,6 +170,7 @@ func _on_bereit() -> void:
 		return
 	_bereit_btn.disabled = true
 	var res: Dictionary = await service.set_ready()
+	AudioDirector.try_play(self, "ui_confirm" if bool(res["ok"]) else "ui_error")
 	if not res["ok"]:
 		_bereit_btn.disabled = false
 		_hinweis.text = RanchMultiplayerService.fehler_text(str(res["code"]))
@@ -173,6 +181,7 @@ func _on_revanche() -> void:
 	if service == null:
 		return
 	var res: Dictionary = await service.rematch()
+	AudioDirector.try_play(self, "ui_confirm" if bool(res["ok"]) else "ui_error")
 	if not res["ok"]:
 		_hinweis.text = RanchMultiplayerService.fehler_text(str(res["code"]))
 		_hinweis.visible = true
