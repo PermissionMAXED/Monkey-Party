@@ -22,6 +22,11 @@ const PANEL_BASE_WIDTH := 420.0
 const GOOBY_MOTIV_PFAD := "res://assets/acui/gooby_loading_motif.png"
 ## Sticker-Durchmesser in Design-px (Web-Motiv-Maß, skaliert mit UiScale).
 const GOOBY_STICKER_PX := 72.0
+## Zeilenabstand der Karte in Design-px (schrumpft im Fit-Pass mit).
+const ROWS_LUFT := 10.0
+## G7/P57: unterste Fit-Stufe — Safe-Area schlägt Design-Basis (letzter
+## Ausweg; praktisch reicht das proportionale Schrumpfen weit darüber).
+const FIT_MIN := 0.7
 
 var _panel: PanelContainer
 var _center: CenterContainer
@@ -31,6 +36,7 @@ var _again: Button
 var _back: Button
 var _home: Button
 var _gooby: LoadingVeilSticker
+var _stars: FeelStarRow
 
 
 func _ready() -> void:
@@ -71,22 +77,34 @@ func _apply_metrics() -> void:
 	for btn in [_again, _back, _home]:
 		if btn != null:
 			ScreenShell.touch_target(btn, m)
-	if _gooby != null and is_instance_valid(_gooby):
-		var d := GOOBY_STICKER_PX * float(m["f"])
-		_gooby.custom_minimum_size = Vector2(d, d)
-	ScreenShell.scale_fonts(_panel, m["f"])
+	_apply_fit(float(m["f"]), float(m["f"]))
 	# Fit-Pass: die Karte darf NIE höher werden als die Safe-Area (Quer-
-	# Formate) — Schriften schrumpfen proportional zurück (nie unter die
-	# Design-Basis), die Knöpfe behalten ihren Touch-Floor.
+	# Formate). G7/P57-Restbefund (FB3-Audit 09_mg_results im Leitformat):
+	# vorher schrumpften NUR die Schriften (Deckel Design-Basis) — mit
+	# Tagesbonus-/Modifier-Zeilen liefen die Knöpfe unten aus dem sicheren
+	# Bereich. Jetzt schrumpfen Schriften, Gooby-Sticker, Sterne und
+	# Zeilenabstand proportional mit; die Knöpfe behalten ihren Touch-Floor.
 	var canvas: Vector2 = m["canvas"]
 	var safe_h := (canvas.y - float(insets["top"]) - float(insets["bottom"])) * 0.96
 	var f_fit: float = m["f"]
-	for _pass in 4:
+	for _pass in 6:
 		var need := _panel.get_combined_minimum_size().y
-		if f_fit <= 1.0 or need <= safe_h:
+		if f_fit <= FIT_MIN or need <= safe_h:
 			break
-		f_fit = maxf(f_fit * safe_h / need, 1.0)
-		ScreenShell.scale_fonts(_panel, f_fit)
+		f_fit = maxf(f_fit * safe_h / need, FIT_MIN)
+		_apply_fit(f_fit, float(m["f"]))
+
+
+## Eine Fit-Stufe anwenden: Schriften, Sticker, Sterne und Zeilenabstand
+## folgen f_fit (f_basis = ungebremster UiScale-Faktor dieses Passes —
+## der Aufruf mit f_fit == f_basis stellt die Vollgröße wieder her).
+func _apply_fit(f_fit: float, f_basis: float) -> void:
+	ScreenShell.scale_fonts(_panel, f_fit)
+	_rows.add_theme_constant_override("separation", int(maxf(ROWS_LUFT * f_fit / f_basis, 4.0)))
+	if _gooby != null and is_instance_valid(_gooby):
+		_gooby.custom_minimum_size = Vector2.ONE * roundf(GOOBY_STICKER_PX * f_fit)
+	if _stars != null and is_instance_valid(_stars):
+		_stars.fit = f_fit / f_basis
 
 
 ## breakdown = MinigameAward.award()-Ergebnis; meta = Registry-Zeile.
@@ -254,10 +272,10 @@ func _add_stars(breakdown: Dictionary, final_score: int) -> void:
 		earned += 1
 	if breakdown.get("newBest", false):
 		earned += 1
-	var stars := FeelStarRow.new()
-	stars.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
-	_rows.add_child(stars)
-	stars.reveal(earned, _reduced_motion())
+	_stars = FeelStarRow.new()
+	_stars.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	_rows.add_child(_stars)
+	_stars.reveal(earned, _reduced_motion())
 
 
 ## Level-Up-Feier (EF-1, EVAL-1 D8): der Vollbild-Moment kommt nach dem

@@ -154,6 +154,79 @@ func test_ebenen_wechsel_aktualisiert_chips_und_status() -> void:
 	await _cleanup(room, gs)
 
 
+# ── G7/P57: Kamera-Chips weichen dem Dock aus (Leitformat-Restbefund) ────────
+
+
+## FB3-Audit-Restbefund im Leitformat (iPhone 17 Pro Max quer, 2868×1320
+## @3x): die Kamera-Leiste zentrierte sich auf die VOLLE Canvas-Höhe und
+## schob die unteren Dreh-Chips (⟲/⟳) hinter die Lager-Karte — Overlap mit
+## „Fertig" und den Möbel-Chips. Wache: kein Kamera-Chip schneidet das
+## Dock (> 4×4-px-Toleranz wie im FB3-Audit), auch nicht mit sichtbarer
+## Action-Bar (Ghost aktiv = größtes Dock), und alle bleiben im Canvas.
+func test_kamera_chips_weichen_dem_dock_aus_im_leitformat() -> void:
+	UiScale.screen_scale_override = 3.0
+	var vorher := await _pin_fenster(Vector2i(2868, 1320))
+	# Notch/Home-Indicator wie im FB3-Audit simulieren (59 pt seitlich,
+	# 21 pt Home-Indicator — Rechnung wie test_g7_hud_dynamik).
+	var canvas := Vector2(tree.root.get_visible_rect().size)
+	var px_per_pt := minf(canvas.x, canvas.y) / (1320.0 / 3.0)
+	var seite := 59.0 * px_per_pt
+	var unten := 21.0 * px_per_pt
+	UiScale.insets_override = Rect2(seite, 0.0, canvas.x - 2.0 * seite, canvas.y - unten)
+	tree.root.size_changed.emit()
+	await wait_frames(2)
+	var gs := _fresh_gs()
+	var room := await _open_room(gs, "res://scenes/home/wohnzimmer.tscn")
+	var build: BuildMode = room.get_node("BuildMode")
+	build.open()
+	await wait_frames(6)
+	var dock_ui: BuildUiDock = build._dock_ui
+	_assert_kamera_frei(dock_ui, "ohne Ghost")
+	# Ghost über den ersten Lager-Chip starten → Action-Bar sichtbar.
+	var chip: Button = null
+	for child in build._drawer_items.get_children():
+		if child is Button:
+			chip = child
+			break
+	assert_true(chip != null, "Lager liefert mindestens einen Möbel-Chip")
+	if chip != null:
+		chip.pressed.emit()
+		await wait_frames(6)
+		assert_true(build._action_bar.visible, "Ghost aktiv → Action-Bar sichtbar")
+		_assert_kamera_frei(dock_ui, "mit Action-Bar")
+	build.close()
+	await _cleanup(room, gs)
+	UiScale.screen_scale_override = 0.0
+	UiScale.insets_override = Rect2()
+	await _unpin_fenster(vorher)
+
+
+## Schnitt-Wache für die Kamera-Chips gegen das Bau-Dock (FB3-Rechnung).
+func _assert_kamera_frei(dock_ui: BuildUiDock, kontext: String) -> void:
+	var m := ScreenShell.metrics(dock_ui.ui.get_viewport())
+	var canvas: Vector2 = m["canvas"]
+	var insets: Dictionary = m["insets"]
+	var dock_rect := dock_ui.dock.get_global_rect()
+	for btn in dock_ui.kamera_buttons:
+		var rect := (btn as Control).get_global_rect()
+		var schnitt := rect.intersection(dock_rect)
+		assert_false(
+			schnitt.size.x > 4.0 and schnitt.size.y > 4.0,
+			"Kamera-Chip „%s“ schneidet das Dock %s: %s" % [btn.text, kontext, schnitt]
+		)
+		assert_true(
+			rect.position.y >= float(insets["top"]) - 0.5,
+			(
+				"Kamera-Chip „%s“ bleibt unter dem Safe-Top %s (y=%.1f)"
+				% [btn.text, kontext, rect.position.y]
+			)
+		)
+		assert_true(
+			rect.end.y <= canvas.y + 0.5,
+			"Kamera-Chip „%s“ bleibt im Canvas %s" % [btn.text, kontext]
+		)
+
+
 # ── GardenUi: unten-mittige Karte statt TOP_WIDE (G1 ui-bau §4) ──────────────
 
 

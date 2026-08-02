@@ -108,14 +108,17 @@ Original-Links sind alle übernommen:)_
       (10 parallel, jeder eigene Instanz), iPhone 17 Pro Max + Querformat als
       Leitformat, Modal-Menüs + Swipen/Wischen fixen, Läden sind zu leer (echte
       Orte mit animierten Chars!), alles fühlt sich wie eine Dev-Demo bzw. wie
-      einzelne Spiele statt EIN Gooby-Spiel an. → **Welle G7 „SPIELGEFÜHL" läuft**
-      (Zuschnitt unten in „In Arbeit"); danach Playtest-Welle (10 Spieler-Agents)
-      und die 30-Ideen-Planner-Welle. Deine Screenshots sind als Befunde erfasst:
-      HUD-Kacheln schneiden Wörter ab („IGohbi/Garder/Gestalt"), Sprechblasen
-      brechen mitten im Wort („Ohh, wird das sch"), Tagesquests-Blatt liegt ÜBER
-      den Status-Leisten, IGohbie-Telefon hat ein kaputtes Dunkel-Icon, Gestalten-
-      Liste schneidet „Briefkasten" ab, Baumodus = Knopf-Salat (der bekannte
-      97-Befunde-Wurzelfix, jetzt MIT Weggleit-Animation).
+      einzelne Spiele statt EIN Gooby-Spiel an. → **Welle G7 „SPIELGEFÜHL" ist
+      FERTIG** (alle 10 Pakete gelandet — Details unten in „In Arbeit"; das
+      Leitformat-Audit meldet jetzt **34 Screens × iPhone 17 Pro Max quer =
+      0 Befunde**); es bleiben die Playtest-Welle (10 Spieler-Agents) und die
+      30-Ideen-Planner-Welle, deshalb bleibt dieser Punkt offen. Deine
+      Screenshot-Befunde sind alle gefixt: HUD-Kacheln schneiden keine Wörter
+      mehr ab („IGohbi/Garder/Gestalt" → Font-Autoshrink), Sprechblasen brechen
+      nie mehr mitten im Wort, Tagesquests-Blatt dimmt das HUD weg statt es zu
+      überlagern, IGohbie-Telefon-Icons repariert, Gestalten-Liste schneidet
+      „Briefkasten" nicht mehr ab, Baumodus-Knopf-Salat aufgeräumt (HUD gleitet
+      animiert weg, Kamera-Chips weichen dem Dock aus).
 
 - [x] **Playtest-Bugfixes, Batch 1 (2. August):** Als Spieler durch Ranch-
       Wettbewerbe, Quest-Log, Erfolge und Minispiel-Awards gespielt (headless
@@ -290,43 +293,61 @@ _(gerade nichts offen — alle bisherigen Punkte stehen unten unter „Erledigt"
 
 ## 2. In Arbeit
 
-Runde W17 — Wellen G1–G5 sind FERTIG (Details oben + unten in „Erledigt").
+Runde W17 — Wellen G1–G5 und G7 sind FERTIG (Details oben + unten in „Erledigt").
 _Hinweis zur Transparenz: die am 31.7. gestartete Welle G6 ist einem VM-Neustart
 zum Opfer gefallen, bevor sie integriert/committet war — kein Stand verloren
 gegangen außer der unfertigen Subagent-Arbeit; die G6-Pakete sind neu einsortiert._
 
-**Welle G7 „SPIELGEFÜHL" LÄUFT** (dein Feedback vom 1.8. hat Vorrang; 10
-Subagents parallel — das ist das harte Plattform-Limit, die Pipeline bleibt voll):
+**Welle G7 „SPIELGEFÜHL" ist FERTIG** (dein Feedback vom 1.8.; Abschluss-
+Politur am 2.8.: die letzten Leitformat-Audit-Befunde gefixt → 34 Screens ×
+iPhone 17 Pro Max quer = **0 Befunde**):
 
-- [~] **P50 HUD-Dynamik** — dein Wunsch wörtlich: beim Baumenü GLEITEN die
-      HUD-Knöpfe animiert weg (und kommen animiert zurück); bei offenen
-      Blättern/Modals (z. B. Tagesquests) weicht/dimmt das HUD statt
-      durchzuscheinen; HUD-Kachel-Labels werden nie mehr abgeschnitten
-      („IGohbi/Garder/Gestalt" → passende Beschriftung), „Wo ist mein
-      Gooby?"-Chip inklusive
-- [~] **P51 Sprechblasen + Text-Fit** — „Ohh, wird das sch" ade: Blasen
-      wachsen/wickeln sauber, nie mehr mitten im Wort enden; Text-Fit-Sweep
-- [~] **P52 IGohbie-Telefon-Rework** — kaputtes Dunkel-Icon, unklare Symbole,
-      App-Labels, Öffnen-Animation, Wisch-zum-Schließen
-- [~] **P53 Modal/Sheet-System + Swipe** — EIN einheitliches Blatt-Verhalten
-      überall: Slide-in/out, Hintergrund-Dim, runterwischen = schließen
-      (inkl. Radio-Like-Offscreen-Fix)
-- [~] **P54 Garderobe + Gestalten poliert** — abgeschnittene Kategorien
-      („Briefkasten"), Scroll-Hinweise, Karten-Layout, Kauf-Feedback
-- [~] **P55 Läden lebendig, Teil 1** — REHWEI + IKEA werden ECHTE Orte:
+- [x] **P50 HUD-Dynamik** — beim Baumenü GLEITEN die HUD-Knöpfe animiert weg
+      (und federn zurück), bei offenen Blättern/Modals weicht das HUD
+      (Zustandsmaschine `hud_sichtbarkeit.gd`, Zähler-robust); Kachel-Labels
+      werden nie mehr abgeschnitten (Font-Autoshrink `hud_label_fit.gd`,
+      Ellipsis nur als bewusster letzter Ausweg), „Wo ist mein Gooby?"-Chip
+      hält seine Textbreite. Wachen: `test_g7_hud_dynamik.gd`
+- [x] **P51 Sprechblasen + Text-Fit** — „Ohh, wird das sch" ade: Höhen-Messung
+      auf dem VOLLEN Text (der Typewriter shapte vorher nur die getippten
+      Zeichen — Zeilen verschwanden), Blasen wachsen/wickeln sauber.
+      Wachen: `test_g7_sprechblasen.gd`
+- [x] **P52 IGohbie-Telefon-Rework** — Dunkel-Icon repariert, klare App-Icons
+      + Labels, Öffnen-Animation, Wisch-zum-Schließen; quer nutzt das Telefon
+      die breite Geräte-Basis. Wachen: `test_g7_phone.gd`
+- [x] **P53 Modal/Sheet-System + Swipe** — EIN Blatt-Verhalten überall:
+      Slide-in/out, Hintergrund-Dim, Runterwischen schließt (inkl. Radio-
+      Like-Offscreen-Fix). Wachen: `test_g7_sheets.gd`
+- [x] **P54 Garderobe + Gestalten poliert** — „Briefkasten" u. a. Kategorien
+      nie mehr abgeschnitten, Scroll-Hinweise, Karten-Layout, Kauf-Feedback.
+      Wachen: `test_g7_garderobe_gestalten.gd`
+- [x] **P55 Läden lebendig, Teil 1** — REHWEI + IKEA sind ECHTE Orte:
       animierte Kunden-Goobys, Kassen-NPC, Ambiente-Sound, Deko
-- [~] **P56 Ein-Spiel-Gefühl** — einheitlicher Minispiel-Rahmen (Intro/
-      Outro/Pause im Gooby-Look überall) + einheitliche Szenen-Übergänge,
-      damit sich nichts mehr wie ein Fremd-Spiel anfühlt
-- [~] **P57 iPhone-17-Pro-Max-Leitformat (2868×1320 quer)** — UI-Wache +
-      Konformitätstests aufs neue Leitformat, plus die 17 bekannten
-      Audit-Restbefunde (RMP-Tippflächen, Onboarding-Knöpfe offscreen)
-- [~] **P38R GvZ-PvP-Server** — Relaunch des verlorenen Pakets (gvzmp.js
-      nach gobnom-Muster inkl. Node-Tests)
-- [~] **P58 Playtest-Harness + Pionier-Spieler** — baut das „Subagent
-      spielt das Spiel"-Werkzeug (eigene Instanz, echte Eingaben,
-      Screenshot-Serie, Hänger-/Fehler-Detektor) und spielt den ersten
-      kompletten Durchlauf im Leitformat → Bug-Report Nr. 1
+      (`ort_leben.gd`, `kassen_npc.gd`). Wachen: `test_g7_ort_leben.gd`
+- [x] **P56 Ein-Spiel-Gefühl** — einheitlicher Minispiel-Rahmen (Pregame/
+      Pause/Results im Gooby-Look, derselbe Mini-Gooby begleitet Wipe →
+      Pregame → Results, EINE Knopf-Reihenfolge in allen 38 Spielen).
+      Wachen: `test_g7_rahmen.gd`
+- [x] **P57 iPhone-17-Pro-Max-Leitformat (2868×1320 quer)** — UI-Wache +
+      Konformitätstests aufs Leitformat; die 17 bekannten Restbefunde gefixt.
+      **Abschluss 2.8.:** die letzten 4 Audit-Befunde beseitigt — (a) die
+      Baumodus-Kamera-Chips (⟲/⟳) tauchten hinter der Lager-Karte ab → die
+      Leiste zentriert sich jetzt im freien Streifen ÜBER dem Dock (bricht
+      notfalls auf 2 Spalten/1 Zeile um) und der „Was nun?"-Hinweis duckt
+      sich im Baumodus mit dem HUD; (b) der Minispiel-Results-Screen lief
+      mit Tagesbonus-Zeilen unten aus dem sicheren Bereich → der Fit-Pass
+      schrumpft jetzt auch Sticker/Sterne/Abstände proportional mit
+      (Knöpfe behalten den 44-pt-Touch-Floor). Audit: 34 Screens × Leitformat
+      = 0 Befunde; neue Wachen in `test_g4_build.gd` +
+      `test_fb3_screen_metrics.gd`
+- [x] **P38R GvZ-PvP-Server** — `gvzmp.js` nach gobnom-Muster ist da, 11
+      Node-Tests grün; das GvZ-Panel spielt jetzt echtes PvP übers Netz
+- [x] **P58 Playtest-Harness + Pionier-Spieler** — das „Subagent spielt das
+      Spiel"-Werkzeug steht komplett (`tests/tools/playtest_harness.gd` +
+      Flows, eigene Instanz, echte Taps/Wische, Screenshot pro Schritt,
+      Hänger-Watchdog, Markdown-Bug-Report; Aufruf:
+      `tools/ci/run_playtest.sh <flow> 2868x1320`) — die 10-Spieler-Welle
+      nutzt es als Nächstes (Welle H unten)
 
 **Danach sofort (Warteschlange):**
 - [ ] **Welle H: PLAYTEST ×10** — 10 Spieler-Agents, jeder spielt seinen

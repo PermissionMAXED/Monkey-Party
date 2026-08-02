@@ -18,10 +18,18 @@ const FILL := Color(1.0, 0.8, 0.2)
 const RIM := Color(0.85, 0.55, 0.1)
 const EMPTY := Color(0.55, 0.48, 0.42, 0.35)
 
+## G7/P57: Fit-Faktor des Results-Screens — ist die Karte höher als die
+## Safe-Area, schrumpfen die Sterne mit, statt die Knöpfe aus dem
+## sicheren Bereich zu schieben.
+var fit := 1.0:
+	set(value):
+		fit = value
+		_apply_metrics()
+
 var _earned := 0
 var _pop: Array[float] = []
 var _animating := false
-## UiScale-Faktor (bei Resize/Rotation neu gelesen).
+## UiScale-Faktor × fit (bei Resize/Rotation neu gelesen).
 var _f := 1.0
 
 
@@ -54,7 +62,7 @@ func reveal(earned: int, reduced_motion: bool) -> void:
 func _apply_metrics() -> void:
 	if not is_inside_tree():
 		return
-	_f = UiScale.for_viewport(get_viewport())
+	_f = UiScale.for_viewport(get_viewport()) * fit
 	custom_minimum_size = Vector2(SLOTS * (STAR_RADIUS * 2.0 + GAP), STAR_RADIUS * 2.4) * _f
 	queue_redraw()
 

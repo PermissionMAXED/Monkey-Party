@@ -113,11 +113,20 @@ func _resolve_text(suggestion: Dictionary) -> String:
 ## Der Hinweis gehört zum Home-HUD: sobald ein Panel/Sheet offen ist oder
 ## das HUD ausgeblendet wurde (Einstellungen liegen als Overlay darüber),
 ## hat er im Bild nichts verloren.
+## G7/P57 (Audit-Restbefund 10_bau_dock im Leitformat): WEICHT das HUD über
+## seine G7-P50-Zustandsmaschine (Baumodus/Blatt), duckt sich der Hinweis
+## mit — er gehört zur HUD-Familie und schwebte sonst über dem Bau-UI und
+## kollidierte mit den Kamera-Chips.
 func _should_suppress() -> bool:
 	if PanelStack.count() > 0:
 		return true
 	var hud := _find_hud()
-	return hud != null and not hud.is_visible_in_tree()
+	if hud == null:
+		return false
+	if not hud.is_visible_in_tree():
+		return true
+	var sicht: HudSichtbarkeit = (hud as Hud).sichtbarkeit()
+	return sicht != null and sicht.verdeckt()
 
 
 func _find_hud() -> Control:

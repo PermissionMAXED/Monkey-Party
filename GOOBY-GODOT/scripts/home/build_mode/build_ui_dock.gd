@@ -20,6 +20,10 @@ const DRAWER_RAND_Y := 10.0
 const DOCK_BASIS := 920.0
 ## Abstand zwischen Dock-Zeilen (Action-Bar / Ebenen / Lager), Design-px.
 const DOCK_LUFT := 10.0
+## G7/P57: Luft der Kamera-Leiste zu Safe-Top und Dock-Oberkante (Design-px).
+const KAMERA_LUFT := 12.0
+## Abstand zwischen den Kamera-Chips (Design-px, skaliert mit f).
+const KAMERA_GAP := 8.0
 
 var ui: Control
 var dock: VBoxContainer
@@ -29,7 +33,7 @@ var drawer_items: HBoxContainer
 var capacity_label: Label
 var action_bar: HFlowContainer
 var action_buttons: Array[Button] = []
-var kamera_leiste: VBoxContainer
+var kamera_leiste: GridContainer
 var kamera_buttons: Array[Button] = []
 var ebenen_leiste: HFlowContainer
 var ebenen_chips: Array[Button] = []
@@ -61,6 +65,9 @@ func build(ui_layer: Node, ebenen_keys: Array[String]) -> void:
 
 func _im_baum() -> void:
 	ui.get_viewport().size_changed.connect(apply_metrics)
+	# G7/P57: das Dock wächst nach OBEN (Action-Bar an/aus, Drawer-Umbau) —
+	# die Kamera-Leiste passt sich danach neu in den freien Streifen ein.
+	dock.item_rect_changed.connect(_kamera_einpassen, CONNECT_DEFERRED)
 	apply_metrics()
 
 
@@ -103,8 +110,53 @@ func apply_metrics() -> void:
 	kamera_leiste.offset_right = -rand_rechts
 	kamera_leiste.offset_top = 0.0
 	kamera_leiste.offset_bottom = 0.0
-	kamera_leiste.add_theme_constant_override("separation", int(8.0 * f))
+	kamera_leiste.add_theme_constant_override("h_separation", int(KAMERA_GAP * f))
+	kamera_leiste.add_theme_constant_override("v_separation", int(KAMERA_GAP * f))
 	floors_und_schrift()
+	# Erst NACH dem Layout-Pass kennt das Dock seine echte Oberkante.
+	_kamera_einpassen.call_deferred()
+
+
+## G7/P57-Restbefund (FB3-Audit im Leitformat iPhone 17 Pro Max quer): die
+## Kamera-Leiste zentrierte sich auf die VOLLE Canvas-Höhe — auf kurzen
+## Quer-Canvases tauchten die unteren Dreh-Chips (⟲/⟳) damit HINTER der
+## Lager-Karte ab (Overlap mit „Fertig" + Möbel-Chips). Jetzt zentriert
+## sich die Leiste im FREIEN Streifen zwischen Safe-Top und Dock-Oberkante
+## und bricht auf 2 Spalten um, wenn selbst das nicht reicht (deshalb Grid
+## statt VBox). Läuft deferred, weil die Dock-Oberkante erst nach dem
+## Layout-Pass stimmt; dock.item_rect_changed zieht sie bei jedem
+## Dock-Wachstum (Action-Bar/Ghost, Drawer-Umbau) nach.
+func _kamera_einpassen() -> void:
+	if ui == null or not ui.is_inside_tree() or m.is_empty() or kamera_buttons.is_empty():
+		return
+	var f: float = m["f"]
+	var insets: Dictionary = m["insets"]
+	var canvas := Vector2(ui.get_viewport().get_visible_rect().size)
+	var frei_oben := float(insets["top"]) + KAMERA_LUFT * f
+	var frei_unten := dock.get_global_rect().position.y - KAMERA_LUFT * f
+	# Zeilenhöhe = höchstes Chip-Minimum (Touch-Floor via floors_und_schrift).
+	var zeile := 0.0
+	for btn in kamera_buttons:
+		zeile = maxf(zeile, btn.get_combined_minimum_size().y)
+	var luecke := KAMERA_GAP * f
+	var spalten := 1
+	var zeilen := kamera_buttons.size()
+	while (
+		spalten < kamera_buttons.size()
+		and float(zeilen) * zeile + luecke * float(zeilen - 1) > frei_unten - frei_oben
+	):
+		spalten += 1
+		zeilen = int(ceilf(float(kamera_buttons.size()) / float(spalten)))
+	kamera_leiste.columns = spalten
+	var hoehe := float(zeilen) * zeile + luecke * float(zeilen - 1)
+	# Mittig im freien Streifen; reicht der Platz nicht, gewinnt die
+	# Dock-Kante (clampf mit min > max liefert max — bewusst so).
+	var mitte := clampf(
+		(frei_oben + frei_unten) * 0.5, frei_oben + hoehe * 0.5, frei_unten - hoehe * 0.5
+	)
+	var versatz := mitte - canvas.y * 0.5
+	kamera_leiste.offset_top = versatz
+	kamera_leiste.offset_bottom = versatz
 
 
 ## Touch-Floor (44 pt physisch) auf ALLE Bau-Knöpfe + Theme-Schriften ×f.
@@ -196,15 +248,19 @@ func _build_ebenen_leiste(ebenen_keys: Array[String]) -> void:
 
 
 ## Kamera-Knöpfe (FIX-3): Draufsicht/Schrägsicht + 2×90°-Drehung, rechts am
-## Rand — weit weg von Dock und Action-Bar. Offsets setzt der Metrik-Pass.
+## Rand — weit weg von Dock und Action-Bar. Offsets setzt der Metrik-Pass;
+## G7/P57: Grid statt VBox, damit die Leiste auf kurzen Quer-Canvases auf
+## 2 Spalten umbrechen kann statt hinter der Lager-Karte abzutauchen.
 func _build_kamera_leiste() -> void:
-	kamera_leiste = VBoxContainer.new()
+	kamera_leiste = GridContainer.new()
 	kamera_leiste.name = "KameraLeiste"
+	kamera_leiste.columns = 1
 	kamera_leiste.set_anchors_preset(Control.PRESET_CENTER_RIGHT)
 	kamera_leiste.grow_vertical = Control.GROW_DIRECTION_BOTH
 	kamera_leiste.grow_horizontal = Control.GROW_DIRECTION_BEGIN
 	kamera_leiste.position.x -= DRAWER_RAND_X
-	kamera_leiste.add_theme_constant_override("separation", 8)
+	kamera_leiste.add_theme_constant_override("h_separation", int(KAMERA_GAP))
+	kamera_leiste.add_theme_constant_override("v_separation", int(KAMERA_GAP))
 	ui.add_child(kamera_leiste)
 	kamera_buttons = []
 	for key: String in [

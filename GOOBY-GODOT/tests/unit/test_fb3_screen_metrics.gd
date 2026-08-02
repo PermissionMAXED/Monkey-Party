@@ -16,6 +16,7 @@ const FORMATS: Array = [
 ]
 const MIN_TAP_PT := 44.0
 const TAP_TOLERANCE_PT := 0.5
+const RESULTS_SCENE := "res://scripts/minigames/results.tscn"
 
 var _saved_root_size := Vector2i.ZERO
 ## Kontext des aktuellen Formats (setzt _enter_format).
@@ -164,9 +165,7 @@ func test_pregame_in_vier_formaten() -> void:
 func test_results_in_vier_formaten() -> void:
 	for format: Array in FORMATS:
 		await _enter_format(format)
-		var screen: MinigameResults = (
-			(load("res://scripts/minigames/results.tscn") as PackedScene).instantiate()
-		)
+		var screen: MinigameResults = (load(RESULTS_SCENE) as PackedScene).instantiate()
 		tree.root.add_child(screen)
 		await wait_frames(1)
 		screen.show_results(
@@ -174,6 +173,42 @@ func test_results_in_vier_formaten() -> void:
 		)
 		await wait_frames(3)
 		_check_screen(screen, "results/%s" % format[0])
+		screen.free()
+	await _leave_formats()
+
+
+## G7/P57-Restbefund (FB3-Audit 09_mg_results im Leitformat): mit
+## Tagesbonus-/Ziel-Zeilen wurde die Karte höher als die Safe-Area — nur
+## die Schriften schrumpften (Deckel Design-Basis) und die Knopf-Zeile
+## lief unten aus dem sicheren Bereich. Der erweiterte Fit-Pass (Sticker/
+## Sterne/Zeilenabstand schrumpfen mit) muss die VOLLE Karte im Leitformat
+## iPhone 17 Pro Max quer UND im kürzesten Quer-Format halten.
+func test_results_mit_langem_inhalt_bleibt_in_der_safe_area() -> void:
+	var formate: Array = [
+		["quer_2868x1320", Vector2i(2868, 1320), 3.0, [59.0, 0.0, 59.0, 21.0]],
+		FORMATS[1],
+	]
+	for format: Array in formate:
+		await _enter_format(format)
+		var screen: MinigameResults = (load(RESULTS_SCENE) as PackedScene).instantiate()
+		tree.root.add_child(screen)
+		await wait_frames(1)
+		(
+			screen
+			. show_results(
+				{
+					"score": 123,
+					"coins": 0,
+					"best": 123,
+					"xp": 10,
+					"dayCapReached": true,
+					"beatTarget": true,
+				},
+				{"title_key": "mg.teaParty.title"}
+			)
+		)
+		await wait_frames(3)
+		_check_screen(screen, "results_lang/%s" % format[0])
 		screen.free()
 	await _leave_formats()
 
