@@ -369,6 +369,22 @@ func _baue_hufingen(wurzel: Node3D) -> Node3D:
 		""
 	)
 	schild.position.y = RanchGelaende.hoehe(schild.position.x, schild.position.z)
+	# PROPS-2026-08 (A2 Welle 2, Kenney Fantasy Town Kit CC0): Marktstand
+	# und Erntekarren an der Dorfstraße, damit die Fern-Zone schon beim
+	# Vorbeireiten nach Markt-Dorf aussieht (Positionen relativ zur Straße).
+	var strassen_deko: Array = [
+		["stall-green.glb", 0.45, 8.0, 90.0, 2.6],
+		["cart.glb", 0.62, -6.8, 100.0, 2.8],
+	]
+	for eintrag: Array in strassen_deko:
+		var fuss := Vector2(von.x, von.z).lerp(Vector2(bis.x, bis.z), float(eintrag[1]))
+		var punkt := fuss + quer * float(eintrag[2])
+		var node := _bau.lade_glb("res://assets/ranch/dorf/%s" % str(eintrag[0]), float(eintrag[4]))
+		if node == null:
+			continue
+		node.position = Vector3(punkt.x, RanchGelaende.hoehe(punkt.x, punkt.y), punkt.y)
+		node.rotation_degrees.y = float(eintrag[3])
+		gruppe.add_child(node)
 	return gruppe
 
 

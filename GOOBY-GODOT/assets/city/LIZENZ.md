@@ -18,12 +18,18 @@ Kuratierte Kopien aus der Web-Referenz `/workspace/GOOBY/public/assets`
 | `camping/*.glb` | Kenney **Survival Kit** (kenney.nl/assets/survival-kit, 2026-08 direkt geladen) | CC0 1.0 — `camping/License-kenney-survival-kit.txt` |
 | `strand/*.glb` | Kenney **Pirate Kit** (kenney.nl/assets/pirate-kit, 2026-08 direkt geladen) | CC0 1.0 — `strand/License-kenney-pirate-kit.txt` |
 | `verkehr/*.glb` | Kenney **Racing Kit** (kenney.nl/assets/racing-kit, 2026-08 direkt geladen) | CC0 1.0 — `verkehr/License-kenney-racing-kit.txt` |
+| `raumstation/*.glb` | Kenney **Space Kit** (kenney.nl/assets/space-kit, 2026-08 direkt geladen, A2 Welle 2) | CC0 1.0 — `raumstation/License-kenney-space-kit.txt` |
 
-Hinweis `verkehr/`: Die Racing-Kit-GLBs kommen ab Werk mit Raster-Pivots
-(Versatz ≈ −0,35/−0,65 m fürs Strecken-Snapping). Beim Import wurden die
-Wurzel-Translations auf **Bodenmitte** zentriert (Skript-Korrektur der
-glTF-Node-Translations, Geometrie unverändert), damit `_prop(pos, rot)`
-wie bei allen anderen Kits funktioniert.
+Hinweis `verkehr/` + `raumstation/`: Diese Kenney-GLBs kommen ab Werk mit
+Raster-Pivots (Versatz ≈ −0,35/−0,65 m bzw. [2, 0, 1.5] fürs Kit-Snapping).
+Beim Import wurden die Wurzel-Translations auf **Bodenmitte** zentriert
+(Skript-Korrektur der glTF-Node-Translations, Geometrie unverändert), damit
+`_prop(pos, rot)` wie bei allen anderen Kits funktioniert.
+
+Hinweis `essen/`: A2 Welle 2 (2026-08) ergänzt 14 weitere Food-Kit-GLBs
+(Gemüse, Brote, Flaschen, Dosen, Kartons, Honig & Co. für den
+Goo-und-Bye-Laden) — gleiche Quelle/Lizenz wie oben, Colormap identisch
+mit der bereits vorhandenen `essen/colormap.png`.
 
 Hinweis: Das GOOBERANDO-Logo liegt separat unter `assets/brand/gooberando.png`
 (vom Orchestrator generiert, projektinternes Artwork).

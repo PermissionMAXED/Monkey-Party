@@ -74,6 +74,8 @@ const AUSNAHMEN_PIVOT := {
 	"props/fenster_rahmen_2.glb": "Fensterrahmen (Eigenbau): Pivot in der Wandöffnung",
 	"props/fenster_rahmen_3.glb": "Fensterrahmen (Eigenbau): Pivot in der Wandöffnung",
 	"props/wurfball.glb": "Ball: Kugel-Pivot im Zentrum (rollt/fliegt um den Mittelpunkt)",
+	"ranch/dorf/banner-green.glb": "Banner: Wand-Hänge-Pivot (Raster-Anker, Tuch hängt daneben)",
+	"ranch/dorf/banner-red.glb": "Banner: Wand-Hänge-Pivot (Raster-Anker, Tuch hängt daneben)",
 	"ranch/props/sattel.glb": "Sattel: Pivot an der Auflage-Kurve (sitzt auf dem Pferderücken)",
 	"furniture/tt-bakery/dough_roller.gltf": "Nudelholz: Griff-Achs-Pivot",
 }

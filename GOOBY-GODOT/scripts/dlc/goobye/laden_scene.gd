@@ -21,6 +21,11 @@ signal ready_for_reveal
 const Economy := preload("res://scripts/logic/economy.gd")
 const PanelSheetScene := preload("res://scripts/ui/panel_sheet.tscn")
 const INNEN := "res://assets/city/innen"
+## PROPS-2026-08 (A2 Welle 2): Laden-Warenwelt aus dem Kenney Food Kit
+## (CC0, assets/city/essen/) + Eröffnungs-Banner aus dem Kenney Fantasy
+## Town Kit (CC0, assets/ranch/dorf/) — Lizenzen in den Bereichs-LIZENZ.md.
+const ESSEN := "res://assets/city/essen"
+const DORF := "res://assets/ranch/dorf"
 
 ## Tages-Phasen: einräumen → offen (Kundenstrom) → abschluss (Kassensturz).
 const PHASE_EINRAEUMEN := "einraeumen"
@@ -432,6 +437,30 @@ func _baue_requisiten() -> void:
 	_prop("%s/crate_cheese.gltf" % INNEN, Vector3(3.6, 0.0, 0.6), -14.0, 0.65)
 	_prop("%s/menu.gltf" % INNEN, Vector3(3.0, 0.0, -3.4), 0.0, 1.6)
 	_prop("%s/fridge_A.gltf" % INNEN, Vector3(-5.4, 0.0, -3.2), 0.0, 0.9)
+	# PROPS-2026-08 (A2 Welle 2, Kenney Food Kit CC0): der Laden wird ein
+	# GESCHÄFT — Frische-Ecke bei den Kisten, Lieferstapel an der Tür,
+	# Vorrat unterm Regal und Feinkost auf der Kassentheke.
+	_prop("%s/cabbage.glb" % ESSEN, Vector3(-3.2, 0.0, 0.55), 40.0, 0.8)
+	_prop("%s/pineapple.glb" % ESSEN, Vector3(-4.6, 0.0, 0.9), 30.0, 0.8)
+	_prop("%s/paprika.glb" % ESSEN, Vector3(-2.85, 0.0, 0.9), -15.0, 0.8)
+	_prop("%s/loaf-round.glb" % ESSEN, Vector3(-3.1, 0.0, -0.7), 65.0, 0.8)
+	_prop("%s/loaf-baguette.glb" % ESSEN, Vector3(-2.45, 0.0, -0.05), -35.0, 0.8)
+	_prop("%s/carton.glb" % ESSEN, Vector3(4.7, 0.0, -0.4), 12.0, 0.85)
+	_prop("%s/carton.glb" % ESSEN, Vector3(5.1, 0.0, -0.1), -25.0, 0.85)
+	_prop("%s/can.glb" % ESSEN, Vector3(4.5, 0.0, 0.25), 0.0, 0.8)
+	_prop("%s/soda-bottle.glb" % ESSEN, Vector3(4.95, 0.0, 0.55), 55.0, 0.8)
+	_prop("%s/soda-can.glb" % ESSEN, Vector3(4.55, 0.0, 0.7), -80.0, 0.8)
+	_prop("%s/bag.glb" % ESSEN, Vector3(5.45, 0.0, 0.35), -40.0, 0.85)
+	_prop("%s/honey.glb" % ESSEN, Vector3(1.35, 0.86, -1.0), 20.0, 0.75)
+	_prop("%s/peanut-butter.glb" % ESSEN, Vector3(1.62, 0.86, -0.9), -30.0, 0.75)
+	_prop("%s/bottle-ketchup.glb" % ESSEN, Vector3(1.35, 0.86, -1.4), 15.0, 0.7)
+	_prop("%s/bottle-oil.glb" % ESSEN, Vector3(1.6, 0.86, -1.45), -10.0, 0.7)
+	# Eröffnungs-Banner an der Rückwand (Fantasy Town Kit). Achtung Pivot:
+	# das Tuch hängt +0,4 m in +X neben dem Anker (Wand-Raster-Pivot) —
+	# -90° dreht dieses Offset in +Z, das Tuch schwebt also VOR der Wand
+	# (Anker liegt unsichtbar in der Wand bei z=-4,35).
+	_prop("%s/banner-red.glb" % DORF, Vector3(-0.8, 1.25, -4.35), -90.0, 1.6)
+	_prop("%s/banner-green.glb" % DORF, Vector3(0.8, 1.25, -4.35), -90.0, 1.6)
 
 
 ## Regal-Reihe aus Grund-Meshes: Brett + Füße + je Slot ein Anker mit

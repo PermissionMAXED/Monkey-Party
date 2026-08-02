@@ -34,6 +34,9 @@ const SPIEL_STAR := "starHopper"
 ## Deko-Kits der beiden Weltraum-Spiele (Assets liegen schon im Repo).
 const KIT_ROCKET := "res://assets/minigames/rocket_rescue"
 const KIT_STAR := "res://assets/minigames/star_hopper"
+## PROPS-2026-08 (A2 Welle 2): eigene Stations-Requisiten (Kenney Space
+## Kit, CC0 — assets/city/raumstation/, Lizenz + LIZENZ.md-Eintrag dort).
+const KIT_STATION := "res://assets/city/raumstation"
 
 ## Astro-Snack-Automat: Weltraum-Möhre (Food-API; Preis = Automaten-Aufschlag).
 const MOEHRE_ID := "weltraumMoehre"
@@ -141,6 +144,23 @@ func _baue_innenraum() -> void:
 	_prop("%s/rock_largeA.glb" % KIT_ROCKET, Vector3(-2.2, 0.0, -3.5), 15.0, 0.8)
 	_prop("%s/rock_smallA.glb" % KIT_ROCKET, Vector3(2.4, 0.0, -2.9), 60.0, 0.9)
 	_prop("%s/carrot.glb" % KIT_STAR, Vector3(5.1, 1.15, -1.55), -35.0, 0.35)
+	# PROPS-2026-08 (A2 Welle 2, Kenney Space Kit CC0): die Station wird
+	# ein ARBEITSORT — Konsolen-Ecke links, Maschinenraum in den Ecken,
+	# Astronauten-Crew, Rover-Stellplatz und Kristall-Vitrine am Fenster.
+	# Blickrichtungs-Vertrag (ASSET-ORIENTATION.md): GLB-Front ist -Z —
+	# 180° dreht Monitore/Astronauten in den Raum, 0° zur Rückwand.
+	_prop("%s/machine_generatorLarge.glb" % KIT_STATION, Vector3(-6.3, 0.0, -3.3), 20.0, 2.0)
+	_prop("%s/machine_generator.glb" % KIT_STATION, Vector3(-6.5, 0.0, -1.1), 90.0, 2.0)
+	_prop("%s/desk_computerScreen.glb" % KIT_STATION, Vector3(-5.0, 0.0, -3.6), 188.0, 2.2)
+	_prop("%s/desk_computer.glb" % KIT_STATION, Vector3(-4.1, 0.0, -3.65), 176.0, 2.2)
+	_prop("%s/desk_chair.glb" % KIT_STATION, Vector3(-4.55, 0.0, -2.9), 0.0, 2.4)
+	_prop("%s/astronautA.glb" % KIT_STATION, Vector3(-0.6, 0.0, -3.35), 155.0, 1.7)
+	_prop("%s/astronautB.glb" % KIT_STATION, Vector3(4.6, 0.0, -3.4), 210.0, 1.7)
+	_prop("%s/rover.glb" % KIT_STATION, Vector3(2.3, 0.0, -3.7), 145.0, 1.6)
+	_prop("%s/rock_crystals.glb" % KIT_STATION, Vector3(-1.55, 0.0, -3.75), 75.0, 1.3)
+	_prop("%s/barrels.glb" % KIT_STATION, Vector3(5.9, 0.0, -2.7), 30.0, 1.8)
+	_prop("%s/satelliteDish.glb" % KIT_STATION, Vector3(6.15, 0.0, -1.15), -40.0, 1.6)
+	_prop("%s/machine_wireless.glb" % KIT_STATION, Vector3(6.05, 0.0, -3.35), -15.0, 2.0)
 
 
 func _dialog_pfad() -> String:

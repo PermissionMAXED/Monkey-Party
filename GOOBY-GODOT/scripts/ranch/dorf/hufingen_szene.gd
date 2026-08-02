@@ -16,6 +16,9 @@ extends Node3D
 
 const INK := Color("#3B3630")
 const GEBAEUDE := "res://assets/ranch/gebaeude"
+## PROPS-2026-08 (A2 Welle 2): Marktplatz-Requisiten (Kenney Fantasy Town
+## Kit, CC0 — assets/ranch/dorf/, Lizenz + RANCH-ASSETS.md-Eintrag dort).
+const DORF_KIT := "res://assets/ranch/dorf"
 
 ## RW-3s NPC-Stack wird DYNAMISCH geladen (kein Klassen-Verweis): parst
 ## eine seiner Dateien gerade nicht oder fehlen die Dorf-NPCs, baut die
@@ -238,6 +241,40 @@ func _baue_dorf() -> void:
 		var winkel := TAU * float(i) / 6.0
 		laterne.position = _punkt(PLAZA + Vector3(cos(winkel), 0.0, sin(winkel)) * 14.0)
 		add_child(laterne)
+	_baue_marktecke()
+
+
+## PROPS-2026-08 (A2 Welle 2, Kenney Fantasy Town Kit CC0): Markt-Ecke am
+## Nordrand der Plaza (freier Bogen zwischen Reitladen- und Futterhof-Weg),
+## Erntekarren an den freien Südwest-/Nordost-Bögen und Laternen entlang
+## des Anreisewegs. Positionen als Weltkoordinaten, Höhe via _punkt().
+func _baue_marktecke() -> void:
+	var deko: Array = [
+		["stall-green.glb", Vector3(594.0, 0.0, 525.5), 180.0, 2.6],
+		["stall-red.glb", Vector3(606.0, 0.0, 525.5), 180.0, 2.6],
+		["stall.glb", Vector3(600.0, 0.0, 527.5), 90.0, 2.6],
+		["stall-bench.glb", Vector3(597.4, 0.0, 529.6), 90.0, 2.6],
+		["stall-stool.glb", Vector3(603.2, 0.0, 529.4), 25.0, 2.6],
+		["cart.glb", Vector3(578.0, 0.0, 553.0), 65.0, 2.8],
+		["cart-high.glb", Vector3(627.0, 0.0, 516.0), 150.0, 2.8],
+		["lantern.glb", Vector3(475.8, 0.0, 510.0), 0.0, 2.2],
+		["lantern.glb", Vector3(509.7, 0.0, 512.2), 0.0, 2.2],
+		["lantern.glb", Vector3(539.8, 0.0, 528.0), 0.0, 2.2],
+	]
+	for eintrag: Array in deko:
+		var node := _bau.lade_glb("%s/%s" % [DORF_KIT, str(eintrag[0])], float(eintrag[3]))
+		if node == null:
+			continue
+		node.position = _punkt(eintrag[1])
+		node.rotation_degrees.y = float(eintrag[2])
+		add_child(node)
+	# Ersatzrad liegt FLACH neben dem Karren (90° um X kippt die stehende
+	# Scheibe; +0,45 m hebt die halbe Radbreite über den Boden).
+	var rad := _bau.lade_glb("%s/wheel.glb" % DORF_KIT, 1.9)
+	if rad != null:
+		rad.position = _punkt(Vector3(576.4, 0.0, 555.4)) + Vector3(0.0, 0.45, 0.0)
+		rad.rotation_degrees = Vector3(90.0, -30.0, 0.0)
+		add_child(rad)
 
 
 func _baue_laden(laden: Dictionary) -> void:

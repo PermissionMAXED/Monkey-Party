@@ -55,7 +55,7 @@ Original-Links sind alle übernommen:)_
       `tests/tools/asset_orientation_probe.gd` abrufbar. Boden-Kontakt
       wachen weiterhin die Bestands-Tests (Fahrzeug-Bodenkontakt,
       Pferde-Huf-Wache).
-- [ ] **A2 Mehr echte Modelle — stilkonform und lizenzsauber** — dein Punkt:
+- [x] **A2 Mehr echte Modelle — stilkonform und lizenzsauber** — dein Punkt:
       „nutze / downloade dir endlich mal mehr Modelle, aber nur wenn der Stil
       zu unserem Spiel passt!!". Deine Quellen-Links (alle übernommen):
       - https://blockbenchworkshop.com/browse?status=free&sort=downloads
@@ -91,6 +91,24 @@ Original-Links sind alle übernommen:)_
       die CC0-Quellen decken denselben Stil ohne Account ab. Falls du ein
       bestimmtes Store-Pack unbedingt willst: lade es selbst und leg es ins
       Repo, dann binde ich es sauber ein.
+      **Gemacht (2. August, 70 neue Modelle in zwei Wellen):**
+      Welle 1 (33 Modelle, alle sichtbar platziert): Kenney Survival Kit →
+      Urlaubs-Zeltplatz in den Bergen, Kenney Pirate Kit → Strand (Palmen,
+      Ruderboot, Sandburg-Deko), Kenney Racing Kit → Autohaus-Probefahrbahn
+      (Pylonen, Banden), Kenney Farm-Requisiten → Ranch-Hof (Tröge, Fässer,
+      Werkbank). Welle 2 (37 Modelle, drei bisher kahle Bereiche): Kenney
+      **Space Kit** (12) → Raumstation endlich eingerichtet (Astronauten,
+      Generatoren, Konsolen-Arbeitsplatz, Rover, Satellitenschüssel,
+      Mond-Kristalle); Kenney **Fantasy Town Kit** (11) → Hufingen-Marktecke
+      (Stände mit Planen, Warentisch, Bank/Hocker, Erntekarren, flach
+      liegendes Ersatzrad, Laternen am Anreiseweg) + Fern-Dorfstraße + zwei
+      Eröffnungs-Banner im Goo-und-Bye; Kenney **Food Kit** (14) →
+      Goo-und-Bye-Warenwelt (Gemüse, Brote, Kartons, Dosen, Flaschen, Honig).
+      Alles CC0, über die A3-Pipeline normalisiert (Space-Kit-Raster-Pivots
+      beim Import auf Bodenmitte zentriert, Banner als begründete
+      Hänge-Pivot-Ausnahmen in `test_asset_intake.gd`), Lizenzen in
+      `assets/city/LIZENZ.md` + `docs/godot-rewrite/RANCH-ASSETS.md`,
+      Index `assets/LICENSES.md`. Screenshot-Review aller Ecken ist gelaufen.
 - [x] **A3 Asset-Intake-Pipeline dokumentieren + absichern** (Unterbau für
       A1 + A2). Akzeptanzkriterien:
       **(1)** kurze Checkliste in `GOOBY-GODOT/assets/README.md`, wie externe
@@ -160,6 +178,20 @@ Original-Links sind alle übernommen:)_
       SquishButton-Wache meldete durch GDScript-Cache-Identitäts-Drift
       falsche FAILs in langen Suite-Läufen → Skript-Pfad-Fallback, echte
       `Button.new()` fallen weiterhin durch. Preflight grün.
+- [x] **Playtest H — Minigames (2. August):** Minigame-Audit (Win/Lose, SFX,
+      Kamera, UI) über teaParty, veggieChop, gardenRush, basketBounce,
+      ranchHerde, ranchTonnen/ranchZeit — 6 echte Befunde gefixt:
+      **(a)** teaParty inszenierte auch VERSCHÜTTETE Tassen als „serviert"
+      (der `!= "spill"`-Vergleich war immer wahr — pour_result kennt nur
+      perfect/good/miss); **(b–d)** veggieChop, gardenRush und basketBounce
+      hatten HUDs auf festen Pixel-Nägeln (16/10/48 px, feste Fonts) —
+      Krümelschrift auf dem Landscape-Leitformat → M9-`_ui`-Skalierung
+      nachgerüstet (inkl. basketBounce-Flash-Text); **(e)** ranchHerde:
+      ALLE Schafe froren ein, solange keine Zielfahne stand (Optik-Schleife
+      sass hinter dem visible-Gate) → nach `herde_schaf_optik.gd` extrahiert
+      und jeden Frame getickt; **(f)** ranchHerde-HUD ebenfalls auf M9
+      umgestellt. SFX-/i18n-Sweeps ohne Befund. 5 Wächter-Tests
+      (`test_h_minigames.gd`), Report `docs/godot-rewrite/playtest/H-minigames.md`.
 - [x] **Läden lebendig, Teil 2 (2. August):** Nach REHWEI + Baumarkt (P55) sind
       jetzt ALLE Stadt-Läden echte Orte: GOOBYMAN, GOOBYTHEKE, POW!, Post und
       Autohaus haben schlendernde Kunden-Goobys (mit Hüten, Regal-Griffen und

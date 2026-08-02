@@ -95,6 +95,25 @@ Die GLBs referenzieren `hofdeko/Textures/colormap.png` (liegt daneben).
 
 Format: GLB, statisch, ~0.4-1.6 m.
 
+### Kenney — Fantasy Town Kit 2.0 (CC0)
+
+Quelle: https://kenney.nl/assets/fantasy-town-kit (2026-08 direkt geladen,
+A2 Welle 2). Lizenznote: `dorf/License-kenney-fantasy-town-kit.txt`.
+Die GLBs referenzieren `dorf/Textures/colormap.png` (liegt daneben).
+Platziert in der Hufingen-Plaza (`hufingen_szene.gd` `_baue_marktecke`),
+an der Fern-Dorfstrasse (`ranch_zonen_deko.gd` `_baue_hufingen`) und als
+Eroeffnungs-Banner im Goo-und-Bye-Laden (`laden_scene.gd`).
+
+| Datei | Zweck |
+|---|---|
+| `dorf/stall.glb`, `stall-green.glb`, `stall-red.glb` | Marktstaende + Warentisch (Plaza-Nordbogen) |
+| `dorf/stall-bench.glb`, `stall-stool.glb` | Marktbank + Hocker |
+| `dorf/cart.glb`, `cart-high.glb`, `wheel.glb` | Erntekarren + Ersatzrad (Plaza-SW, Futterhof, Fernstrasse) |
+| `dorf/lantern.glb` | Laternen am Anreiseweg |
+| `dorf/banner-green.glb`, `banner-red.glb` | Banner (Goo-und-Bye-Rueckwand). Achtung: Tuch haengt +0,4 m in +X neben dem Raster-Pivot |
+
+Format: GLB, statisch, ~0.5-3.5 m (skaliert 1.9-2.8 in den Szenen).
+
 ### Kenney — Nature Kit (CC0)
 
 Quelle: https://kenney.nl/assets/nature-kit (bereits im Repo unter
