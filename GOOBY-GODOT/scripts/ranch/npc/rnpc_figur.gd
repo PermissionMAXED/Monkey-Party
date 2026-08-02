@@ -88,6 +88,11 @@ func _baue_glb(modell: Dictionary) -> void:
 	var szene: PackedScene = load(pfad)
 	var glb: Node3D = szene.instantiate()
 	glb.scale = Vector3.ONE * _groesse()
+	# Orientierungs-Vertrag (ASSET-ORIENTATION.md): die Tier-GLBs schauen
+	# nach -Z (Godot-Vorwärts), die RNpc-Konvention ist +Z (so baut
+	# _baue_gooby seine Augen, so rechnet RNpcManager._stellen den Blick).
+	# Ohne die 180°-Drehung laufen Zebra/Reh/Ente/Fuchs/Katze RÜCKWÄRTS.
+	glb.rotation.y = PI
 	add_child(glb)
 	_glb_player = glb.find_child("AnimationPlayer", true, false)
 	if _glb_player != null and _glb_player.has_animation("idle"):

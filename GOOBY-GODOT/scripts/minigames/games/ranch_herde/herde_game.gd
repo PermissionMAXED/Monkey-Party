@@ -546,9 +546,12 @@ func _build_reiter() -> void:
 	_pferd.position = Vector3(reiter.x, 0.0, reiter.y)
 	_welt.add_child(_pferd)
 	_gooby = GoobyActorScript.new()
-	_gooby.position = Vector3(0.0, 1.32, -0.1)
+	_gooby.position = Vector3(0.0, 1.32, 0.1)
 	_pferd.add_child(_gooby)
-	_gooby.call("mount", 0.62, 0.0, "idle")
+	# Orientierungs-Vertrag (ASSET-ORIENTATION.md): RanchPferd blickt -Z,
+	# der Gooby nativ +Z — yaw PI dreht den Reiter in Blickrichtung des
+	# Pferds (gleiche Sitzhaltung wie comp_lauf._baue_reiter).
+	_gooby.call("mount", 0.62, PI, "idle")
 	_build_einfluss_ring()
 	_build_staub()
 	_build_ziel_fahne()
@@ -823,7 +826,10 @@ func _step_optik(delta: float) -> void:
 	var bewegung := (reiter - davor).length() / maxf(delta, 0.0001)
 	if bewegung > 0.3:
 		var richtung := reiter - davor
-		_pferd.rotation.y = atan2(richtung.x, richtung.y)
+		# Orientierungs-Vertrag (ASSET-ORIENTATION.md): RanchPferd blickt
+		# nach -Z, also atan2(-x, -z) wie in ranch_tiere/comp_lauf. Mit
+		# atan2(+x, +z) galoppierte das Pferd RÜCKWÄRTS durchs Feld.
+		_pferd.rotation.y = atan2(-richtung.x, -richtung.y)
 	_pferd.set_gangart(
 		(
 			RanchPferd.GANG_GALOPP

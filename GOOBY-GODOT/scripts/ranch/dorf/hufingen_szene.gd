@@ -292,7 +292,11 @@ func _baue_theke(id: String, welt: Vector3, laden: Dictionary) -> void:
 	wurzel.add_child(name_schild)
 	var npc := _npc_fuer(id)
 	npc.position = Vector3(0.0, 0.0, -1.4)
-	npc.rotation.y = PI
+	# Orientierungs-Vertrag (ASSET-ORIENTATION.md): RNpcFigur blickt nativ
+	# nach +Z — die Theken-Wurzel zeigt mit +Z zur Plaza, yaw 0 lässt den
+	# Verkäufer also über die Theke zur Kundschaft schauen. Das alte
+	# `rotation.y = PI` drehte ihm den Rücken zur Plaza.
+	npc.rotation.y = 0.0
 	wurzel.add_child(npc)
 	_theken.append({"id": id, "pos": pos, "rot": float(laden["rot"])})
 

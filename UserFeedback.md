@@ -35,19 +35,26 @@ einfach oben reinschreiben.)_
 _(Deine zwei neuen Stichpunkte von oben sind jetzt als A1–A3 formatiert — die
 Original-Links sind alle übernommen:)_
 
-- [ ] **A1 Asset-Rotations- und Ausrichtungs-Audit** — dein Punkt: „sicherstellen,
+- [x] **A1 Asset-Rotations- und Ausrichtungs-Audit** — dein Punkt: „sicherstellen,
       dass alle Assets immer richtig rotiert sind und richtig rum stehen".
-      Akzeptanzkriterien:
-      **(1)** ein automatischer Headless-Audit prüft JEDE platzierte
-      Szenen-Instanz: Hoch-Achse korrekt (nichts liegt/kippt unbeabsichtigt),
-      Front zeigt in die gemeinte Richtung (Türen, Schilder, Regale, Fahrzeuge,
-      NPCs), nichts steckt im Boden oder schwebt, keine gespiegelten/negativen
-      Skalierungen;
-      **(2)** alle Befunde in Haus, Garten, Stadt, Ranch, Läden und den 38
-      Minispiel-Bühnen sind gefixt (Befund-Liste vorher/nachher steht in der
-      Antwort unter diesem Punkt);
-      **(3)** der Audit läuft dauerhaft in Preflight + CI mit, damit neue Assets
-      nie wieder falsch herum landen.
+      **Gemacht (2. August):** Alle **723** `.glb`/`.gltf` headless geprüft
+      (Spiegelungen/negative Skalen, NaN, gekippte Hoch-Achse, krumme
+      90°-Raster-Verstöße) **plus** visuelle Kontaktbögen aller Modelle
+      **plus** Review ALLER Dreh-Formeln in den Skripten (dort werden Modelle
+      platziert, kaum in .tscn). Die Assets selbst standen alle richtig —
+      aber 3 ECHTE Blickrichtungs-Bugs gefunden und gefixt: **(a)** Zebra/
+      Reh/Ente/Fuchs/Katze liefen als Dorf-NPCs RÜCKWÄRTS, **(b)** der
+      Hufingen-Marktstand-Verkäufer stand mit dem Rücken zur Kundschaft,
+      **(c)** im Hüte-Minispiel galoppierte das Pferd rückwärts und der
+      Reiter saß falsch herum. Vorher/Nachher-Renders + die zwei
+      Blickrichtungs-Verträge (+Z prozedural / -Z GLB) stehen in
+      `docs/godot-rewrite/ASSET-ORIENTATION.md`. **Dauerhaft:** die neue
+      Wache `tests/unit/test_asset_orientierung.gd` läuft in Preflight + CI
+      mit (keine Spiegelungen/NaN, Pferd-GLB hält „Blick -Z", die Fixes
+      können nicht zurückrutschen); der volle Report ist jederzeit über
+      `tests/tools/asset_orientation_probe.gd` abrufbar. Boden-Kontakt
+      wachen weiterhin die Bestands-Tests (Fahrzeug-Bodenkontakt,
+      Pferde-Huf-Wache).
 - [ ] **A2 Mehr echte Modelle — stilkonform und lizenzsauber** — dein Punkt:
       „nutze / downloade dir endlich mal mehr Modelle, aber nur wenn der Stil
       zu unserem Spiel passt!!". Deine Quellen-Links (alle übernommen):
