@@ -58,6 +58,9 @@ func _ready() -> void:
 	_baue_hud()
 	# W13/RANCH: Ranch-Random-Events (Muster home_entry → EventRunner).
 	RanchEventHost.attach_to(self)
+	# I-21 Fohlen-Momente: Herz-Moment/Warte-Hinweis/inszenierte Geburt
+	# (gleicher Duck-Typing-Einbau wie der Event-Host).
+	RanchFohlenMomente.attach_to(self)
 	ready_for_reveal.emit()
 	_zeige_toast.call_deferred(
 		I18nService.t("ranch.tor.gekauft" if _frisch_gekauft else "ranch.hof.willkommen")

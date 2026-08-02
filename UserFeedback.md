@@ -181,6 +181,26 @@ Original-Links sind alle übernommen:)_
       State, DE/EN-String-Parität, Karte baut headless). Volle Suite
       grün (3520 PASS; die einzigen FAILs stammen aus der parallel
       laufenden Audio-/RMP-Baustelle, nicht aus diesem Schnitt).
+- [x] **Fohlen-Momente, erster Schnitt (2. August, I-21 aus Welle K —
+      Platz 1 der Ideen-Rangliste):** Die Ranch bekommt ihre Seelen-Momente:
+      Stehen zwei erwachsene, gesunde Pferde auf dem Hof, taucht zwischen
+      ihnen ein pulsierendes **Herz** auf — antippen startet die
+      Fohlen-Überraschung (nutzt die bislang UI-lose Zucht-Logik aus
+      `horse_breeding.gd`). Danach läuft eine echte **Warte-Quest** im
+      Star-Stable-Stil: Sprechblase mit Restzeit („das Fohlen kommt in
+      etwa …"), lokale Benachrichtigung („Fohlen-Zeit auf der Ranch!")
+      über die bestehende `fohlen_`-Notify-Kategorie. Ist es so weit,
+      wird die **Geburt inszeniert**: Mama trabt zur Stallwiese, Funkel-
+      Puffs + Pferdelaute, das Fohlen erscheint klein im Stroh, wackelt
+      sich hoch („Wackel … wackel … HOPP!"), macht die ersten Schritte
+      hinter der Mama her und bekommt seinen (deterministisch gewürfelten)
+      Namen getauft — alle Beats mit Reduced-Motion-Fassung. Das Fohlen
+      steht VOR der Inszenierung sicher im Spielstand (crash-sicher) und
+      wohnt danach ganz normal im Stall (Pflege, Stammbaum). DE+EN.
+      Wache: `test_fohlen_momente.gd` (Paar-Findung inkl. Gate-Regeln,
+      Herz→Trächtigkeit+Notification, Warte-Hinweis + Neu-Planung,
+      Geburt-Commit + Beat-Folge, deterministische kollisionsfreie Namen,
+      stumm ohne Ranch-Kauf). Preflight grün.
 - [x] **DLC-Ladebildschirme (2. August, I-29 aus Welle J):** Reisen zu den
       beiden neuen DLCs tragen jetzt eigene Lade-Karten statt der
       „Trautes Heim“-Karte: der Weg in den Goo-und-Bye-Laden zeigt das

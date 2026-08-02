@@ -114,6 +114,18 @@
 			"kopf_dreht": "Es schaut nach dir",
 			"emotes": "Besondere Emotes",
 			"seelenpferd_aura": "Seelenpferd-Aura"
+		},
+		"fohlen": {
+			"herz_bubble": "{a} und {b} stupsen sich verliebt an … Tipp aufs Herz für eine Fohlen-Überraschung!",
+			"herz_gestartet": "Große Neuigkeiten: {stute} erwartet ein Fohlen! In etwa {rest} ist es so weit — wir sagen Bescheid.",
+			"warte_bubble": "{stute} ruht sich aus — das Fohlen kommt in etwa {rest}. Schau solange gern beim Striegeln vorbei!",
+			"notify_titel": "Fohlen-Zeit auf der Ranch!",
+			"notify_text": "{stute} hat ein Fohlen bekommen — komm vorbei und sag Hallo!",
+			"geburt": "Psst, ganz leise … {stute} hat es geschafft: Ein Fohlen ist da!",
+			"aufstehen": "Wackel … wackel … HOPP! Es steht! Also — so ungefähr.",
+			"schritte": "Die allerersten Schritte! Immer der Mama hinterher.",
+			"getauft": "Es hört ab jetzt auf den Namen {name}!",
+			"fertig": "{name} wohnt jetzt mit im Stall — schau bei der Pflege vorbei!"
 		}
 	}
 }

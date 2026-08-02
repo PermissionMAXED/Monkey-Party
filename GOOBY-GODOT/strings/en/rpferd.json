@@ -114,6 +114,18 @@
 			"kopf_dreht": "It watches you",
 			"emotes": "Special emotes",
 			"seelenpferd_aura": "Soul-horse aura"
+		},
+		"fohlen": {
+			"herz_bubble": "{a} and {b} keep nuzzling each other … Tap the heart for a foal surprise!",
+			"herz_gestartet": "Big news: {stute} is expecting a foal! It arrives in about {rest} — we'll let you know.",
+			"warte_bubble": "{stute} is resting — the foal arrives in about {rest}. Why not do some grooming meanwhile?",
+			"notify_titel": "Foal time at the ranch!",
+			"notify_text": "{stute} has a brand-new foal — come by and say hello!",
+			"geburt": "Psst, nice and quiet … {stute} did it: a foal is here!",
+			"aufstehen": "Wobble … wobble … UP! It's standing! Well — sort of.",
+			"schritte": "The very first steps! Following mom all the way.",
+			"getauft": "From now on it answers to the name {name}!",
+			"fertig": "{name} now lives in the stable — drop by the care screen!"
 		}
 	}
 }
