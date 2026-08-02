@@ -632,6 +632,15 @@ func _on_loeschen_bestaetigt() -> void:
 	_gs.notify_slice_changed("city")
 	if bool(box["entfernt"]):
 		_thumb_cache.erase(pfad)
+		# H-Playtest (Passfoto-Wächter): hing der Reisepass an genau dieser
+		# Aufnahme, wird profile.passPhoto MIT geleert — sonst behielte der
+		# Save einen toten Pfad und der Pass fiele erst beim Fehl-Load
+		# kommentarlos aufs 3D-Porträt zurück.
+		if (
+			_gs.has_method("get_value")
+			and str(_gs.get_value(PassportCard.PASSFOTO_PFAD, "")) == pfad
+		):
+			PassportCard.setze_passfoto(_gs, "")
 		var absolut := ProjectSettings.globalize_path(pfad)
 		if FileAccess.file_exists(absolut):
 			DirAccess.remove_absolute(absolut)

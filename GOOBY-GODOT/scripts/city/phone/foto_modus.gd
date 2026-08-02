@@ -24,7 +24,9 @@ signal geknipst(pfad: String)
 signal geschlossen
 
 const FOTO_DIR := "user://fotos"
-## Ältere Aufnahmen fliegen aus dem Save-Index (die Dateien bleiben liegen).
+## Ältere Aufnahmen fliegen aus dem Save-Index; ihre PNGs werden MIT-gelöscht
+## (H-Playtest Kamera/Galerie: vorher blieben sie für immer liegen — stiller
+## Speicherfresser). Wächter siehe _raeume_verdraengte().
 const MAX_FOTOS := 40
 ## Selfie-Kamera: Armlänge vor dem Gooby, Kopfhöhe, weiter FOV.
 const SELFIE_ABSTAND_M := 1.15
@@ -90,6 +92,7 @@ static func merke_foto(
 	# Lambda-Captures sind by-value: das Ergebnis wird ins geteilte Array
 	# MUTIERT (append_array), ein `neu = liste`-Rebind käme nie außen an.
 	var neu: Array = []
+	var verdraengt: Array = []
 	game_state.update(
 		func(state: Dictionary) -> void:
 			var city: Dictionary = state.get(CityState.SLICE_ID, {})
@@ -101,13 +104,47 @@ static func merke_foto(
 				eintrag[key] = extra[key]
 			liste.push_front(eintrag)
 			while liste.size() > MAX_FOTOS:
-				liste.pop_back()
+				verdraengt.append(liste.pop_back())
 			city["fotos"] = liste
 			state[CityState.SLICE_ID] = city
 			neu.append_array(liste)
 	)
 	game_state.notify_slice_changed(CityState.SLICE_ID)
+	_raeume_verdraengte(verdraengt, neu, game_state)
 	return neu
+
+
+## H-Playtest (Kamera/Galerie): die PNG einer über den MAX_FOTOS-Deckel
+## verdrängten Aufnahme wird MIT-gelöscht — vorher lag sie für immer unter
+## user://fotos/ (Galerie-Löschen räumt die Datei, die Kappung räumte nie).
+## Zwei Wächter: foto_pfad() ist sekundengenau (zwei Schnappschüsse in
+## derselben Sekunde teilen sich EINE Datei — nur löschen, wenn KEIN
+## verbliebener Index-Eintrag den Pfad mehr trägt) und das Passfoto
+## (profile.passPhoto, PassportCard) behält seine Datei, auch wenn der
+## Album-Eintrag rausfällt.
+static func _raeume_verdraengte(verdraengt: Array, behalten: Array, game_state: Object) -> void:
+	if verdraengt.is_empty():
+		return
+	var passfoto := ""
+	if game_state.has_method("get_value"):
+		passfoto = str(game_state.get_value(PassportCard.PASSFOTO_PFAD, ""))
+	for opfer: Variant in verdraengt:
+		if not (opfer is Dictionary):
+			continue
+		var pfad := str((opfer as Dictionary).get("pfad", ""))
+		if pfad.is_empty() or pfad == passfoto:
+			continue
+		var noch_da := behalten.any(
+			func(eintrag: Variant) -> bool:
+				return (
+					eintrag is Dictionary and str((eintrag as Dictionary).get("pfad", "")) == pfad
+				)
+		)
+		if noch_da:
+			continue
+		var absolut := ProjectSettings.globalize_path(pfad)
+		if FileAccess.file_exists(absolut):
+			DirAccess.remove_absolute(absolut)
 
 
 static func fotos(game_state: Object) -> Array:
