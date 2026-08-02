@@ -111,8 +111,9 @@ Original-Links sind alle übernommen:)_
       einzelne Spiele statt EIN Gooby-Spiel an. → **Welle G7 „SPIELGEFÜHL" ist
       FERTIG** (alle 10 Pakete gelandet — Details unten in „In Arbeit"; das
       Leitformat-Audit meldet jetzt **34 Screens × iPhone 17 Pro Max quer =
-      0 Befunde**); es bleiben die Playtest-Welle (10 Spieler-Agents) und die
-      30-Ideen-Planner-Welle, deshalb bleibt dieser Punkt offen. Deine
+      0 Befunde**); die 30-Ideen-Planner-Welle ist fertig
+      (`docs/godot-rewrite/IDEAS-WELLE-I.md`), es bleibt die Playtest-Welle
+      (10 Spieler-Agents), deshalb bleibt dieser Punkt offen. Deine
       Screenshot-Befunde sind alle gefixt: HUD-Kacheln schneiden keine Wörter
       mehr ab („IGohbi/Garder/Gestalt" → Font-Autoshrink), Sprechblasen brechen
       nie mehr mitten im Wort, Tagesquests-Blatt dimmt das HUD weg statt es zu
@@ -354,13 +355,21 @@ iPhone 17 Pro Max quer = **0 Befunde**):
       Bereich mit eigener Instanz (Home/Bau, Stadt/Läden, Minispiele ×3,
       DLCs, Telefon/Radio, Garderobe/Gestalten, Quests/Progression,
       Onboarding) → gesammelte Bug-Liste
-- [ ] **Welle I: 30+ Ideen-Planner** — 10 Planner parallel, jeder liefert
-      10+ priorisierte Ideen für seinen Bereich (≈100+ Ideen), konsolidiert
-      zur Roadmap
-- [ ] **Wellen J+: Umsetzung** — Playtest-Bugs + beste Planner-Ideen +
-      die neu einsortierten G6-Pakete (DLC Welle B beider Läden, Ball-Wurf,
-      DLC-Ladebildschirme, Audio-Feel, B11/Warn-Sweep, Doku-Refresh,
-      McGooby-Bühne, Alwin-NPC)
+- [x] **Welle I: 30+ Ideen-Planner** — **FERTIG (2. August):** konsolidierte
+      Ideen-Roadmap mit **50 konkreten Ideen** über alle 10 Planner-Bereiche
+      (Seele, Haus/Bau, Stadt, Minispiele, Ranch, DLCs, Multiplayer,
+      Progression, UI/UX, Audio/Technik), jede mit Wow-Wert (1–5) + Aufwand
+      (S/M/L) bewertet, Top-12-Rangliste und Gruppierung in die
+      Umsetzungs-Wellen J–M (inkl. Einordnung der neu einsortierten
+      G6-Pakete): **`docs/godot-rewrite/IDEAS-WELLE-I.md`**. Transparenz:
+      diese Runde lief als EIN Konsolidierungs-Planner über alle 10 Bereiche
+      statt 10 parallel — Ergebnisformat identisch (10 Bereichs-Kapitel,
+      priorisierte Gesamt-Roadmap).
+- [ ] **Wellen J+: Umsetzung** — Playtest-Bugs + beste Planner-Ideen
+      (jetzt konkret geschnitten in `docs/godot-rewrite/IDEAS-WELLE-I.md`
+      §4: Wellen J–M) + die neu einsortierten G6-Pakete (DLC Welle B beider
+      Läden, Ball-Wurf, DLC-Ladebildschirme, Audio-Feel, B11/Warn-Sweep,
+      Doku-Refresh, McGooby-Bühne, Alwin-NPC — alle in J/K eingeordnet)
 
 ---
 
