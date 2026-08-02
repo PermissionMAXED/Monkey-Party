@@ -32,6 +32,7 @@ Ordner enthält die Original-`License.txt` (+ `LICENSE-NOTE.md`) des Packs.
 | `tt-park/` | **Tiny Treats Pretty Park** (`itch/pretty-park`) | CC0 1.0 (Isa Lousberg) |
 | `tt-picnic/` | **Tiny Treats Pleasant Picnic** (`itch/pleasant-picnic`) | CC0 1.0 (Isa Lousberg) |
 | `tt-baked/` | **Tiny Treats Baked Goods** (`itch/baked-goods`) | CC0 1.0 (Isa Lousberg) |
+| `tt-playground/` | **Tiny Treats Fun Playground** (`itch/fun-playground`) | CC0 1.0 (Isa Lousberg) — Spielplatz-Props (Funkelpark/Garten), s. `tt-playground/LICENSE-NOTE.md` |
 | `aline/` | **Aline Furniture Asset Pack** (`itch/aline-furniture`, Adelina Georgieva) | CC0 1.0 |
 
 Regel (Plan §3.1 sinngemäß): spätere Wellen ergänzen NUR eigene Unterordner

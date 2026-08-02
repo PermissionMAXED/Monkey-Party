@@ -15,6 +15,7 @@ extends OrtScene
 const INNEN := "res://assets/city/innen"
 const ESSEN := "res://assets/city/essen"
 const MOEBEL := "res://assets/furniture"
+const VERKEHR := "res://assets/city/verkehr"
 
 ## Marktmusik-Anbindung (W15/MARKT-Atmo): gespielt wird NUR, wenn die
 ## Registry wirklich einen Track mit diesem Kontext kennt — heute keiner,
@@ -75,6 +76,10 @@ func _baue_innenraum() -> void:
 	_prop("%s/menu.gltf" % INNEN, Vector3(0.0, 0.0, -3.6), 0.0, 1.8)
 	_prop("%s/garten/bench.glb" % MOEBEL, Vector3(5.6, 0.0, 1.2), -100.0, 1.1)
 	_prop("%s/garten/tree_fat.glb" % MOEBEL, Vector3(-6.4, 0.0, -3.4), 0.0, 2.4)
+	# PROPS-2026-08: echte Marktstand-Pavillons über den beiden Ständen
+	# (Kenney Racing Kit „tent“, CC0) — vorher standen die Tische nackt da.
+	_prop("%s/tent.glb" % VERKEHR, Vector3(-3.4, 0.0, -1.8), 0.0, 3.2)
+	_prop("%s/tent.glb" % VERKEHR, Vector3(3.4, 0.0, -1.8), 0.0, 3.2)
 	_baue_auslage()
 	_baue_eigenstand()
 	_aktualisiere_stand_deko()

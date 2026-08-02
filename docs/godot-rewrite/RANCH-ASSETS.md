@@ -80,6 +80,21 @@ Quelle: https://quaternius.com (Farm Buildings). Lizenznote:
 
 Format: GLB, Massstab 1 Unit = 1 m (Scheune ~6 m hoch), statisch.
 
+### Kenney — Survival Kit (CC0)
+
+Quelle: https://kenney.nl/assets/survival-kit (2026-08 direkt geladen, GLB-Format
+unveraendert uebernommen). Lizenznote: `hofdeko/License-kenney-survival-kit.txt`.
+Die GLBs referenzieren `hofdeko/Textures/colormap.png` (liegt daneben).
+
+| Datei | Zweck |
+|---|---|
+| `hofdeko/bucket.glb`, `barrel.glb`, `barrel-open.glb` | Eimer + Faesser (Hof-Arbeitsdeko am Trog/Stall) |
+| `hofdeko/box-large.glb`, `box-open.glb` | Futterkisten |
+| `hofdeko/tool-shovel.glb`, `tool-hoe.glb` | Schaufel + Hacke (lehnen an der Scheune) |
+| `hofdeko/workbench.glb` | Werkbank (Hof-Ecke) |
+
+Format: GLB, statisch, ~0.4-1.6 m.
+
 ### Kenney — Nature Kit (CC0)
 
 Quelle: https://kenney.nl/assets/nature-kit (bereits im Repo unter

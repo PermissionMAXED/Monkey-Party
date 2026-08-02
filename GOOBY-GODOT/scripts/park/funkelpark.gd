@@ -19,6 +19,9 @@ signal ready_for_reveal
 const PanelSheetScene := preload("res://scripts/ui/panel_sheet.tscn")
 const Economy := preload("res://scripts/logic/economy.gd")
 
+## Spielplatz-Props (Tiny Treats Fun Playground, CC0).
+const SPIELPLATZ := "res://assets/furniture/tt-playground"
+
 ## Park-Hintergrundmusik (MusicRegistry-Track, Kontext-Modus bleibt intakt:
 ## beim Verlassen setzt der MusicDirector über travel_finished wieder city).
 const PARK_TRACK := "bordmusik-candy"
@@ -69,6 +72,7 @@ func _ready() -> void:
 	_baue_eingang()
 	_baue_fahrgeschaefte()
 	_baue_naschgasse()
+	_baue_spielplatz()
 	_baue_gooby()
 	_baue_besucher()
 	_baue_lichter()
@@ -361,6 +365,38 @@ func _baue_fahrgeschaefte() -> void:
 	scooter.name = "Autoscooter"
 	scooter.position = Vector3(16.5, 0.0, 9.0)
 	add_child(scooter)
+
+
+## PROPS-2026-08: Spielplatz-Ecke zwischen Riesenrad und Naschgasse
+## (Tiny Treats Fun Playground, CC0 — assets/furniture/tt-playground):
+## Rutsche, zwei Feder-Wipppferdchen, Sandkasten und bunte Reifen. Rein
+## dekorativ (kein Ride), macht die Plaza-Westseite sichtbar lebendig.
+func _baue_spielplatz() -> void:
+	var ecke := Node3D.new()
+	ecke.name = "Spielplatz"
+	ecke.position = Vector3(-10.6, 0.0, 5.0)
+	add_child(ecke)
+	var teile: Array = [
+		["slide_A.gltf", Vector3(-1.2, 0.0, -1.6), 115.0, 0.75],
+		["spring_horse_A.gltf", Vector3(1.4, 0.0, 1.4), 140.0, 0.55],
+		["spring_horse_B.gltf", Vector3(2.4, 0.0, 0.2), -160.0, 0.55],
+		["sandbox_round_decorated.gltf", Vector3(-2.0, 0.0, 2.4), 0.0, 0.7],
+		["tire_blue.gltf", Vector3(1.0, 0.0, 3.2), 25.0, 1.0],
+		["tire_pink.gltf", Vector3(1.6, 0.0, 3.6), -40.0, 1.0],
+		["tire_yellow.gltf", Vector3(2.2, 0.0, 3.1), 70.0, 1.0],
+	]
+	for teil: Array in teile:
+		var pfad := "%s/%s" % [SPIELPLATZ, teil[0]]
+		if not ResourceLoader.exists(pfad):
+			continue
+		var szene: PackedScene = load(pfad)
+		if szene == null:
+			continue
+		var node: Node3D = szene.instantiate()
+		node.position = teil[1]
+		node.rotation_degrees.y = float(teil[2])
+		node.scale = Vector3.ONE * float(teil[3])
+		ecke.add_child(node)
 
 
 ## Naschgasse: drei Jahrmarkt-Stände (Theke + Markise + Schild) westlich.

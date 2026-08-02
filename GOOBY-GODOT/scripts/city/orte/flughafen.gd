@@ -22,6 +22,9 @@ const Vacation := preload("res://scripts/logic/vacation.gd")
 const Economy := preload("res://scripts/logic/economy.gd")
 
 const INNEN := "res://assets/city/innen"
+const MOEBEL := "res://assets/furniture"
+const VERKEHR := "res://assets/city/verkehr"
+const SPIELPLATZ := "res://assets/furniture/tt-playground"
 
 ## GOOBY-FREE-Sortiment: typ "moebel" → home.storage (StorageLogic),
 ## typ "snack" → inventory.food. Preise BEWUSST über Normalniveau
@@ -130,6 +133,15 @@ func _baue_innenraum() -> void:
 	_prop("%s/menu.gltf" % INNEN, Vector3(-2.6, 0.0, -3.4), 0.0, 2.0)
 	_prop("%s/menu.gltf" % INNEN, Vector3(2.6, 0.0, -3.4), 0.0, 2.0)
 	_baue_gfree_stand(Vector3(3.4, 0.0, -1.6), -30.0)
+	# PROPS-2026-08: Terminal statt leerer Halle — Gate-Pavillon (Kenney
+	# Racing Kit), Absperr-Schlange zum Schalter, Wartebank und ein
+	# Gepäckwagen (Tiny-Treats-Karren als Kofferkuli). Alles CC0.
+	_prop("%s/tent.glb" % VERKEHR, Vector3(-5.0, 0.0, -2.3), 15.0, 2.6)
+	_prop("%s/barrierWhite.glb" % VERKEHR, Vector3(-1.5, 0.0, 0.1), 90.0, 3.0)
+	_prop("%s/barrierRed.glb" % VERKEHR, Vector3(-1.5, 0.0, 1.0), 90.0, 3.0)
+	_prop("%s/garten/bench.glb" % MOEBEL, Vector3(4.6, 0.0, 0.5), -90.0, 1.2)
+	_prop("%s/cart.gltf" % SPIELPLATZ, Vector3(2.1, 0.0, 1.0), 40.0, 0.5)
+	_prop("%s/deko/box_A.gltf" % MOEBEL, Vector3(2.25, 0.2, 1.15), 65.0, 0.55)
 
 
 func _npc_konfig() -> Dictionary:

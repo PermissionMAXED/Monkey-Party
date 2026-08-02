@@ -46,6 +46,7 @@ func _ready() -> void:
 	_bau.baue_licht(_stunde())
 	_baue_gelaende()
 	_baue_gebaeude()
+	_baue_hofdeko()
 	_baue_koppeln()
 	_baue_gruen()
 	_baue_tiere()
@@ -132,6 +133,39 @@ func _baue_gebaeude() -> void:
 				_bau.baue_haus(pos, rot)
 			"heulager":
 				_bau.baue_heulager(pos, rot)
+
+
+## PROPS-2026-08: Arbeits-Deko am Hof (Kenney Survival Kit, CC0 —
+## assets/ranch/hofdeko/): Eimer am Trog, Fässer + Futterkisten am Stall,
+## Werkbank mit Werkzeug an der Scheune. Positionen relativ zum hof_plan,
+## damit die Deko bei Plan-Anpassungen mitfährt.
+func _baue_hofdeko() -> void:
+	var trog: Vector3 = plan["trog_pos"]
+	var deko: Array = [
+		["bucket.glb", trog + Vector3(1.7, 0.0, 0.9), 20.0, 2.2],
+		["bucket.glb", trog + Vector3(-1.9, 0.0, 1.2), -35.0, 2.2],
+		["box-open.glb", trog + Vector3(2.6, 0.0, -1.4), 55.0, 3.0],
+	]
+	for geb: Dictionary in plan["gebaeude"]:
+		var pos: Vector3 = geb["pos"]
+		match str(geb["id"]):
+			# Gebäude sind auf pos ZENTRIERTE Quader (gebaeude_groesse) —
+			# die Deko muss also VOR die Südwand (z > Tiefe/2 + Collider).
+			"stall":
+				deko.append(["barrel.glb", pos + Vector3(-4.6, 0.0, 7.2), 10.0, 2.6])
+				deko.append(["barrel-open.glb", pos + Vector3(-3.6, 0.0, 8.2), -25.0, 2.6])
+				deko.append(["box-large.glb", pos + Vector3(3.2, 0.0, 7.6), 75.0, 3.0])
+			"scheune":
+				deko.append(["workbench.glb", pos + Vector3(-4.4, 0.0, 15.4), 165.0, 5.0])
+				deko.append(["tool-shovel.glb", pos + Vector3(-6.2, 0.0, 15.8), 40.0, 4.0])
+				deko.append(["tool-hoe.glb", pos + Vector3(-5.6, 0.0, 16.2), -30.0, 4.0])
+	for eintrag: Array in deko:
+		var node := _bau.lade_glb("res://assets/ranch/hofdeko/%s" % eintrag[0], float(eintrag[3]))
+		if node == null:
+			continue
+		node.position = eintrag[1]
+		node.rotation_degrees.y = float(eintrag[2])
+		add_child(node)
 
 
 ## Koppel-Zäune als MultiMesh (ein Draw-Call je Mesh-Sorte) + Torpfosten.

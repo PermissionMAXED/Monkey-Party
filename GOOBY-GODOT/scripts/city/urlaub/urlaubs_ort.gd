@@ -32,6 +32,10 @@ const WASSER_SHADER := "res://scripts/ranch/welt/wasser.gdshader"
 const NATUR := "res://assets/ranch/natur"
 const INNEN := "res://assets/city/innen"
 const ESSEN := "res://assets/city/essen"
+const STRAND := "res://assets/city/strand"
+const CAMPING := "res://assets/city/camping"
+const VERKEHR := "res://assets/city/verkehr"
+const SPIELPLATZ := "res://assets/furniture/tt-playground"
 
 ## Archetyp-Daten (Keys → strings/de+en/urlaub.json).
 const ARCHETYP_DATEN := {
@@ -488,6 +492,14 @@ func _baue_strand_props() -> void:
 	_prop("%s/log.glb" % NATUR, Vector3(-4.6, 0.0, 0.8), 35.0, 2.2)
 	_handtuch("Handtuch0", Vector3(2.9, 0.0, 0.4), Color(0.95, 0.75, 0.4))
 	_handtuch("Handtuch1", Vector3(-1.0, 0.0, 0.9), Color(0.55, 0.75, 0.95))
+	# PROPS-2026-08: echte Strand-Kulisse — Palmen, Sandfleck, Ruderboot
+	# (Kenney Pirate Kit) + Deko-Sandburg (Tiny Treats), alles CC0.
+	_prop("%s/palm-detailed-bend.glb" % STRAND, Vector3(-5.4, 0.0, -3.6), 25.0, 1.1)
+	_prop("%s/palm-straight.glb" % STRAND, Vector3(5.3, 0.0, -4.2), -40.0, 1.2)
+	_prop("%s/palm-bend.glb" % STRAND, Vector3(4.5, 0.0, -2.4), 130.0, 0.85)
+	_prop("%s/patch-sand.glb" % STRAND, Vector3(0.4, 0.0, -2.4), 10.0, 0.7)
+	_prop("%s/boat-row-small.glb" % STRAND, Vector3(-5.0, 0.0, -2.2), -70.0, 0.85)
+	_prop("%s/sandcastle_A.gltf" % SPIELPLATZ, Vector3(2.7, 0.0, 0.3), -15.0, 1.5)
 	for i in _tap_positionen().size():
 		_muschel_marker(_tap_positionen()[i], i)
 
@@ -502,6 +514,12 @@ func _baue_berge_props() -> void:
 	_prop("%s/plant_bush.glb" % NATUR, Vector3(2.2, 0.0, -3.6), 0.0, 1.4)
 	# Die Bergblume, die Gooby gerade bestaunt (Erlebnis-Anker).
 	_prop("%s/flower_purpleA.glb" % NATUR, Vector3(1.3, 0.0, -1.6), 0.0, 2.4)
+	# PROPS-2026-08: richtiger Zeltplatz — Kenney-Survival-Zelt (Variante
+	# MIT Plane), Kochstelle und Schlafrolle am Lagerfeuer (alles CC0).
+	_prop("%s/tent-canvas.glb" % CAMPING, Vector3(3.1, 0.0, -2.4), -155.0, 3.6)
+	_prop("%s/campfire-stand.glb" % CAMPING, Vector3(1.9, 0.0, 0.1), 15.0, 3.0)
+	_prop("%s/bedroll.glb" % CAMPING, Vector3(4.0, 0.0, -0.8), 60.0, 2.4)
+	_prop("%s/bottle-large.glb" % CAMPING, Vector3(2.5, 0.0, -0.6), 0.0, 2.0)
 	var blumen := ["flower_redA", "flower_yellowA", "flower_purpleA"]
 	var positionen := _tap_positionen()
 	for i in positionen.size():
@@ -515,6 +533,10 @@ func _baue_stadt_props() -> void:
 	_prop("%s/menu.gltf" % INNEN, Vector3(-4.2, 0.0, -2.8), 15.0, 1.8)
 	# Gooby schleckt ein RIESEN-Eis (bestehendes Food-Kit als Prop).
 	_prop("%s/ice-cream.glb" % ESSEN, Vector3(1.4, 0.0, -1.3), 0.0, 3.0)
+	# PROPS-2026-08: Boulevard-Deko — moderne Straßenlaterne (Kenney Racing
+	# Kit) und eine Getränkekiste an der Café-Terrasse (Kenney Pirate Kit).
+	_prop("%s/lightPostModern.glb" % VERKEHR, Vector3(4.6, 0.0, -2.8), -90.0, 4.0)
+	_prop("%s/crate-bottles.glb" % STRAND, Vector3(-4.8, 0.0, -1.4), 20.0, 0.6)
 
 
 ## --------------------------------------------------------- Prop-Bauteile

@@ -9,6 +9,7 @@ extends OrtScene
 
 const INNEN := "res://assets/city/innen"
 const MOEBEL := "res://assets/furniture"
+const VERKEHR := "res://assets/city/verkehr"
 ## Stellplätze im Raum (Reihenfolge = Katalog-Reihenfolge ab dem 2. Wagen).
 const PLAETZE: Array[Vector3] = [
 	Vector3(-4.0, 0.0, -1.4), Vector3(0.2, 0.0, -2.4), Vector3(4.4, 0.0, -1.4)
@@ -30,6 +31,13 @@ func _baue_innenraum() -> void:
 	_prop("%s/menu.gltf" % INNEN, Vector3(6.0, 0.0, -0.9), -30.0, 1.6)
 	# Pothos an die Rückwand (im Vordergrund verdeckte sie den roten Wagen).
 	_prop("%s/pothos_plant_large_potted.gltf" % _pflanzen(), Vector3(-2.0, 0.0, -3.5), 0.0, 1.1)
+	# PROPS-2026-08: Probefahrt-Ecke (Kenney Racing Kit, CC0) — Pylonen-
+	# Mini-Slalom, Absperrbake und Zielflagge machen den Showroom lebendig.
+	_prop("%s/pylon.glb" % VERKEHR, Vector3(1.6, 0.0, 1.2), 0.0, 4.0)
+	_prop("%s/pylon.glb" % VERKEHR, Vector3(2.5, 0.0, 1.8), 0.0, 4.0)
+	_prop("%s/pylon.glb" % VERKEHR, Vector3(3.4, 0.0, 1.2), 0.0, 4.0)
+	_prop("%s/barrierRed.glb" % VERKEHR, Vector3(4.9, 0.0, 1.7), 25.0, 3.5)
+	_prop("%s/flagCheckers.glb" % VERKEHR, Vector3(5.9, 0.0, 0.7), -35.0, 1.8)
 	_stelle_wagen_aus()
 
 

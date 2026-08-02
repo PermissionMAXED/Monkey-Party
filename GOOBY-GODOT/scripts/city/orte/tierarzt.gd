@@ -22,6 +22,8 @@ const Health := preload("res://scripts/logic/health.gd")
 const Weight := preload("res://scripts/logic/weight.gd")
 
 const INNEN := "res://assets/city/innen"
+const MOEBEL := "res://assets/furniture"
+const SPIELPLATZ := "res://assets/furniture/tt-playground"
 const UNTERSUCHUNG_SCHRITT_S := 1.4
 
 var _patient: GoobyRig
@@ -37,6 +39,14 @@ func _baue_innenraum() -> void:
 	_prop("%s/kitchencounter_straight.gltf" % INNEN, Vector3(3.4, 0.0, -3.2), 0.0, 0.9)
 	_prop("%s/jar_A_large.gltf" % INNEN, Vector3(3.2, 0.9, -3.0), 0.0, 1.2)
 	_prop("%s/crate_carrots.gltf" % INNEN, Vector3(4.6, 0.0, -2.2), 30.0, 1.6)
+	# PROPS-2026-08: Haustier-Ecke im Wartezimmer — Kuscheldecke mit
+	# Teddy fürs Körbchen-Gefühl und ein Feder-Wipppferdchen als
+	# Wartezimmer-Spielzeug (Tiny Treats Fun Playground, CC0).
+	# (Kenney-Möbel haben Ecken-Pivots: Teppich wächst nach +X/-Z, der Bär
+	# bei 195° nach -X/+Z — Position so gewählt, dass der Bär MITTIG liegt.)
+	_prop("%s/rugRound.glb" % MOEBEL, Vector3(-1.9, 0.01, 0.6), 0.0, 1.4)
+	_prop("%s/bear.glb" % MOEBEL, Vector3(-1.05, 0.03, -0.2), 195.0, 1.2)
+	_prop("%s/spring_horse_A.gltf" % SPIELPLATZ, Vector3(-5.0, 0.0, -0.2), 40.0, 0.6)
 	_baue_patient()
 
 
