@@ -2,6 +2,8 @@
 	"galerie": {
 		"titel": "Photo Gallery",
 		"leer": "No photos yet. Start snapping — the camera is waiting!",
+		"leer_favoriten": "No favorites yet. Tap \u201cFavorite\u201d in the full view.",
+		"position": "Photo {i} of {n}",
 		"speicher": "{n} of {max} slots used",
 		"oeffnen": "Open gallery",
 		"nur_favoriten": "Favorites only",

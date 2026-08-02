@@ -33,6 +33,10 @@ var _f := 1.0
 ## W16/G3: nutzbare Panelbreite + physischer Touch-Floor (vom Album).
 var _avail_w := 0.0
 var _floor_px := 0.0
+## POLISH/SAMMLUNG (Web-Parität albumScreen.js flavorKey): zuletzt
+## angetippter Eintrag je Set — refresh() baut die Karten neu und stellt
+## die Flavor-Zeile daraus wieder her (Web: flavorKey überlebt re-render).
+var _flavor_entry: Dictionary = {}
 
 
 ## Web tintOf-Port: deterministische Pastellfarbe je Eintrag (hsl → hsv;
@@ -121,8 +125,40 @@ func _build_set_card(set_id: String, c: Dictionary) -> Control:
 	box.add_child(_build_card_header(set_id, progress))
 	box.add_child(_build_hint(set_id))
 	box.add_child(_build_entry_grid(set_id, c))
+	box.add_child(_build_flavor_line(set_id, c))
 	box.add_child(_build_claim_row(set_id, c, progress))
 	return card
+
+
+## Flavor-Zeile unterm Eintrags-Raster (Web .g23-al-flavor): leer, bis ein
+## gesammelter Eintrag angetippt wird; der Merker übersteht refresh().
+func _build_flavor_line(set_id: String, c: Dictionary) -> Control:
+	var flavor := Label.new()
+	flavor.name = "FlavorLine"
+	flavor.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	flavor.add_theme_color_override("font_color", AcTokens.INK_SOFT)
+	_scale_font(flavor, 14)
+	var entry_id := str(_flavor_entry.get(set_id, ""))
+	flavor.visible = not entry_id.is_empty() and CollectionsLogic.count_of(c, set_id, entry_id) >= 1
+	if flavor.visible:
+		flavor.text = I18nService.t("collections.flavor.%s.%s" % [set_id, entry_id])
+	return flavor
+
+
+## Slot-Tap eines GESAMMELTEN Eintrags (Web slot-click → flavorKey): die
+## Flavor-Zeile der Set-Karte zeigt den Spruch; fehlende Einträge bleiben
+## stumm (Mystery-Regel — nichts leaken).
+func _on_entry_tapped(set_id: String, entry_id: String) -> void:
+	AudioDirector.try_play(self, "ui_chip")
+	_flavor_entry[set_id] = entry_id
+	var card := _cards_box.get_node_or_null("SetCard_%s" % set_id)
+	if card == null:
+		return
+	var flavor := card.find_child("FlavorLine", true, false) as Label
+	if flavor == null:
+		return
+	flavor.text = I18nService.t("collections.flavor.%s.%s" % [set_id, entry_id])
+	flavor.visible = true
 
 
 func _build_card_header(set_id: String, progress: Dictionary) -> Control:
@@ -179,6 +215,8 @@ func _build_entry_grid(set_id: String, c: Dictionary) -> Control:
 
 ## Ein Icon-Slot: gesammelt = Pastell-Kachel + Set-Icon + Name (+ ×n-Badge),
 ## fehlend = graue Kachel + „?"-Silhouette + „???" (Web-Mystery-Regel).
+## POLISH/SAMMLUNG: gesammelte Kacheln sind TAPPBAR (SquishButton, Web
+## slot-click) und zeigen den Flavor-Spruch; fehlende bleiben stumm.
 func _build_entry_slot(set_id: String, entry_id: String, c: Dictionary) -> Control:
 	var count := CollectionsLogic.count_of(c, set_id, entry_id)
 	var owned := count >= 1
@@ -186,16 +224,19 @@ func _build_entry_slot(set_id: String, entry_id: String, c: Dictionary) -> Contr
 	slot.name = "Slot_%s" % entry_id
 	slot.add_theme_constant_override("separation", 4)
 	slot.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	var tile := PanelContainer.new()
-	var style := StyleBoxFlat.new()
-	style.bg_color = tint_of(set_id, entry_id) if owned else AcTokens.TRACK_SOFT
-	style.set_corner_radius_all(AcTokens.RADIUS_ROW)
-	style.set_content_margin_all(8.0)
-	tile.add_theme_stylebox_override("panel", style)
+	var tile := _build_entry_tile(set_id, entry_id, owned)
 	var frame := Control.new()
 	frame.custom_minimum_size = Vector2(52.0, 52.0) * maxf(_f, 1.0)
 	frame.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	tile.add_child(frame)
+	if tile is Button:
+		# Buttons layouten Kinder NICHT (kein Container) — der Frame hängt
+		# per Voll-Anker + 8-px-Randversatz drin (Muster galerie._thumb).
+		frame.set_anchors_preset(Control.PRESET_FULL_RECT)
+		frame.offset_left = 8.0
+		frame.offset_top = 8.0
+		frame.offset_right = -8.0
+		frame.offset_bottom = -8.0
 	if owned:
 		var icon := _icon_rect(set_id, 0.0)
 		if icon != null:
@@ -235,6 +276,30 @@ func _build_entry_slot(set_id: String, entry_id: String, c: Dictionary) -> Contr
 	return slot
 
 
+## Die Kachel selbst: gesammelt = tappbarer SquishButton (Squish + Haptik
+## zentral, W16-Grammatik „interaktive Karte = SquishButton"), fehlend =
+## stiller PanelContainer. Beide tragen dieselbe Pastell-/Grau-StyleBox,
+## damit sich NUR die Interaktivität unterscheidet (Mystery-Regel).
+func _build_entry_tile(set_id: String, entry_id: String, owned: bool) -> Control:
+	var style := StyleBoxFlat.new()
+	style.bg_color = tint_of(set_id, entry_id) if owned else AcTokens.TRACK_SOFT
+	style.set_corner_radius_all(AcTokens.RADIUS_ROW)
+	style.set_content_margin_all(8.0)
+	if not owned:
+		var tile := PanelContainer.new()
+		tile.add_theme_stylebox_override("panel", style)
+		return tile
+	var knopf := SquishButton.new()
+	knopf.name = "EntryButton"
+	knopf.focus_mode = Control.FOCUS_NONE
+	for state: String in ["normal", "hover", "pressed", "disabled", "focus"]:
+		knopf.add_theme_stylebox_override(state, style)
+	# Panel-Pendant: 52·f Frame + 2×8 Content-Margins der StyleBox.
+	knopf.custom_minimum_size = Vector2.ONE * (52.0 * maxf(_f, 1.0) + 16.0)
+	knopf.pressed.connect(_on_entry_tapped.bind(set_id, entry_id))
+	return knopf
+
+
 ## Wiederholungs-Badge „×n" (Web .g23-al-n) oben rechts auf der Kachel.
 func _build_count_badge(count: int) -> Control:
 	var badge := PanelContainer.new()
@@ -260,6 +325,7 @@ func _build_count_badge(count: int) -> Control:
 func _build_claim_row(set_id: String, c: Dictionary, progress: Dictionary) -> Control:
 	var row := HBoxContainer.new()
 	row.add_theme_constant_override("separation", 10)
+	row.add_child(_build_set_bar(progress))
 	var status := Label.new()
 	status.theme_type_variation = &"SoftLabel"
 	status.text = I18nService.t(
@@ -298,6 +364,29 @@ func _build_claim_row(set_id: String, c: Dictionary, progress: Dictionary) -> Co
 	_scale_font(button, 16)
 	row.add_child(button)
 	return row
+
+
+## Kompakter Set-Fortschrittsbalken (Web .g23-al-bar/.g23-al-fill: Teal-
+## Pille auf weicher Spur) — feste Breite statt EXPAND, damit die Zeile
+## nicht in die Min-Breiten-Falle (G2 §4.4) läuft.
+func _build_set_bar(progress: Dictionary) -> Control:
+	var bar := ProgressBar.new()
+	bar.name = "SetBar"
+	bar.show_percentage = false
+	bar.min_value = 0.0
+	bar.max_value = maxf(1.0, float(int(progress["total"])))
+	bar.value = float(int(progress["have"]))
+	var track := StyleBoxFlat.new()
+	track.bg_color = AcTokens.TRACK_SOFT
+	track.set_corner_radius_all(AcTokens.RADIUS_PILL)
+	bar.add_theme_stylebox_override("background", track)
+	var fill := StyleBoxFlat.new()
+	fill.bg_color = AcTokens.TEAL
+	fill.set_corner_radius_all(AcTokens.RADIUS_PILL)
+	bar.add_theme_stylebox_override("fill", fill)
+	bar.custom_minimum_size = Vector2(90.0, 10.0) * maxf(_f, 1.0)
+	bar.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	return bar
 
 
 func _on_claim_pressed(set_id: String) -> void:

@@ -42,6 +42,10 @@ var _voll_zoom := 0
 var _voll_rect: TextureRect
 var _voll_scroll: ScrollContainer
 var _voll_fav_btn: Button
+## POLISH/GALERIE: Blättern in der Vollansicht (‹/›) ohne Schließen —
+## Knöpfe deaktivieren sich an den Listen-Enden (aktuelle Filter-Sicht).
+var _voll_prev_btn: Button
+var _voll_next_btn: Button
 ## G3: Vollansichts-Spalte + Knopfleiste — für die Safe-Area-Rahmung und
 ## die Touch-Floors auch nach Rotation/Resize (Metrics-Hook).
 var _voll_spalte: VBoxContainer
@@ -244,10 +248,15 @@ func _refresh() -> void:
 	for kind in _grid.get_children():
 		_grid.remove_child(kind)
 		kind.queue_free()
-	var fotos := GalerieLogic.fotos_von(state)
-	if nur_favoriten:
-		fotos = GalerieLogic.favoriten(fotos)
+	var alle := GalerieLogic.fotos_von(state)
+	var fotos := GalerieLogic.favoriten(alle) if nur_favoriten else alle
 	_leer_label.visible = fotos.is_empty()
+	# POLISH/GALERIE: Der Favoriten-Filter bekommt einen EIGENEN Leer-
+	# Hinweis — „Knips los!" wäre gelogen, wenn Fotos da sind, aber keine
+	# Favoriten markiert wurden.
+	_leer_label.text = I18nService.t(
+		"galerie.leer_favoriten" if nur_favoriten and not alle.is_empty() else "galerie.leer"
+	)
 	for foto: Dictionary in fotos:
 		_grid.add_child(_thumb(foto))
 	# G4-Nachfix: der Kopf-Umbruch rechnet mit der ECHTEN Chip-Breite des
@@ -304,10 +313,14 @@ func _thumb(foto: Dictionary) -> Control:
 ## ---------------------------------------------------------------- Vollansicht
 
 
-func _zeige_vollansicht(pfad: String) -> void:
-	_schliesse_vollansicht()
-	# Eigenbau-Overlay klingt wie ein PanelSheet (AUDIO-GRAMMATIK).
-	AudioDirector.try_play(self, "ui_open")
+## leise=true beim Blättern (POLISH/GALERIE): der Umbau ist dann KEIN
+## Öffnen/Schließen — statt open/close klingt nur der Blätter-Tick des
+## Aufrufers (AUDIO-GRAMMATIK: Outcome schlägt Mechanik).
+func _zeige_vollansicht(pfad: String, leise := false) -> void:
+	_schliesse_vollansicht(not leise)
+	if not leise:
+		# Eigenbau-Overlay klingt wie ein PanelSheet (AUDIO-GRAMMATIK).
+		AudioDirector.try_play(self, "ui_open")
 	_voll_pfad = pfad
 	_voll_zoom = 0
 	_voll = Control.new()
@@ -345,18 +358,24 @@ func _zeige_vollansicht(pfad: String) -> void:
 	_voll_scroll.gui_input.connect(_on_voll_input)
 
 	var foto := _foto_von(pfad)
+	var fotos := _sichtbare_fotos()
+	var idx := _foto_index(fotos, pfad)
 	var info := Label.new()
 	info.name = "FotoInfo"
 	info.theme_type_variation = &"CaptionLabel"
 	info.add_theme_color_override("font_color", Color(1.0, 1.0, 1.0, 0.9))
-	info.text = (
-		"%s   %s   %s"
-		% [
-			I18nService.t("galerie.datum", {"datum": GalerieLogic.datum(int(foto.get("at", 0)))}),
-			I18nService.t("galerie.ort", {"ort": GalerieLogic.ort_name(str(foto.get("ort", "")))}),
-			I18nService.t("galerie.zoom_hinweis"),
-		]
+	var teile: Array[String] = []
+	# POLISH/GALERIE: Blätter-Position „Foto i von n" (aktuelle Filter-Sicht).
+	if idx >= 0:
+		teile.append(I18nService.t("galerie.position", {"i": idx + 1, "n": fotos.size()}))
+	teile.append(
+		I18nService.t("galerie.datum", {"datum": GalerieLogic.datum(int(foto.get("at", 0)))})
 	)
+	teile.append(
+		I18nService.t("galerie.ort", {"ort": GalerieLogic.ort_name(str(foto.get("ort", "")))})
+	)
+	teile.append(I18nService.t("galerie.zoom_hinweis"))
+	info.text = "   ".join(teile)
 	info.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	spalte.add_child(info)
 
@@ -364,6 +383,13 @@ func _zeige_vollansicht(pfad: String) -> void:
 	leiste.add_theme_constant_override("h_separation", 10)
 	spalte.add_child(leiste)
 	_voll_leiste = leiste
+	# POLISH/GALERIE: ‹/›-Blättern ohne Schließen — vorher musste man für
+	# jedes Foto zurück ins Raster (Web-Galerien blättern durch).
+	_voll_prev_btn = _voll_knopf(leiste, "VorherigesFoto", "", _voll_navigiere.bind(-1))
+	_voll_next_btn = _voll_knopf(leiste, "NaechstesFoto", "", _voll_navigiere.bind(1))
+	_pfeil_knopf(_voll_prev_btn, "res://assets/ui/icons/arrow_left.svg")
+	_pfeil_knopf(_voll_next_btn, "res://assets/ui/icons/arrow_right.svg")
+	_refresh_nav_knoepfe()
 	_voll_fav_btn = _voll_knopf(leiste, "FavBtn", "", _on_voll_favorit)
 	_refresh_fav_knopf()
 	_voll_knopf(leiste, "ZoomRein", I18nService.t("galerie.zoom_rein"), _zoom_rein)
@@ -406,14 +432,66 @@ func _voll_knopf(parent: Control, node_name: String, text: String, aktion: Calla
 	return btn
 
 
-func _schliesse_vollansicht() -> void:
+func _schliesse_vollansicht(mit_sound := true) -> void:
 	if _voll != null and is_instance_valid(_voll):
-		AudioDirector.try_play(self, "ui_close")
+		if mit_sound:
+			AudioDirector.try_play(self, "ui_close")
 		_voll.queue_free()
 	_voll = null
 	_voll_spalte = null
 	_voll_leiste = null
+	_voll_prev_btn = null
+	_voll_next_btn = null
 	_voll_pfad = ""
+
+
+## ------------------------------------------------------------- Blättern
+
+
+## Ikon-Knopf der Blätter-Leiste (Pfeil statt Text; Deckel wie der
+## Claim-Knopf der Sammlungen, sonst füllt das SVG die ganze Knopfhöhe).
+func _pfeil_knopf(btn: Button, icon_path: String) -> void:
+	if ResourceLoader.exists(icon_path):
+		btn.icon = load(icon_path)
+		btn.expand_icon = false
+		btn.add_theme_constant_override("icon_max_width", int(22.0 * float(_m.get("f", 1.0))))
+
+
+## Die Fotos der AKTUELLEN Sicht (Filter „nur Favoriten" respektiert) —
+## dieselbe Liste, die auch das Raster zeigt.
+func _sichtbare_fotos() -> Array:
+	var fotos := GalerieLogic.fotos_von(_state())
+	return GalerieLogic.favoriten(fotos) if nur_favoriten else fotos
+
+
+func _foto_index(fotos: Array, pfad: String) -> int:
+	for i in fotos.size():
+		if str((fotos[i] as Dictionary).get("pfad", "")) == pfad:
+			return i
+	return -1
+
+
+func _voll_navigiere(richtung: int) -> void:
+	var fotos := _sichtbare_fotos()
+	var idx := _foto_index(fotos, _voll_pfad)
+	if idx < 0:
+		return
+	var ziel := idx + richtung
+	if ziel < 0 or ziel >= fotos.size():
+		return
+	AudioDirector.try_play(self, "ui_tick")
+	_zeige_vollansicht(str((fotos[ziel] as Dictionary)["pfad"]), true)
+
+
+## ‹/› deaktivieren, wenn die Sicht am Anfang/Ende steht (oder das Foto —
+## z. B. nach Favorit-Abwahl im Filter — nicht mehr in der Liste ist).
+func _refresh_nav_knoepfe() -> void:
+	if _voll_prev_btn == null or not is_instance_valid(_voll_prev_btn):
+		return
+	var fotos := _sichtbare_fotos()
+	var idx := _foto_index(fotos, _voll_pfad)
+	_voll_prev_btn.disabled = idx <= 0
+	_voll_next_btn.disabled = idx < 0 or idx >= fotos.size() - 1
 
 
 func _on_voll_input(event: InputEvent) -> void:
@@ -461,6 +539,9 @@ func _on_voll_favorit() -> void:
 		I18nService.t("galerie.favorit_gesetzt" if bool(box["neu"]) else "galerie.favorit_entfernt")
 	)
 	_refresh_fav_knopf()
+	# POLISH/GALERIE: unter dem Favoriten-Filter ändert der Toggle die
+	# Blätter-Liste — ‹/› sofort nachziehen.
+	_refresh_nav_knoepfe()
 	_refresh()
 
 

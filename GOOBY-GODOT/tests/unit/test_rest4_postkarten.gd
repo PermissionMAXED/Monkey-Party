@@ -207,10 +207,21 @@ func test_postkarten_screen_archiv_souvenirs_claim() -> void:
 		I18nService.t("postkarten.text.space.4"),
 		"handgeschriebene Zeile aus dem Varianten-Pool"
 	)
+	# POLISH/POSTKARTEN: Karten tragen das Ziel-Akzentband (Postkarten-Look).
+	assert_true(karte.find_child("Band", true, false) != null, "Karte trägt das Akzentband")
 	var chips := screen.souvenir_chips()
 	assert_true(chips.has("Souvenir_beach"), "besuchtes Ziel steht im Regal")
 	assert_true(chips.has("Offen_toyRoom"), "unbesuchtes Ziel bleibt offen")
 	assert_eq(chips.size(), PostkartenLogic.DEST_IDS.size(), "alle 9 Slots sichtbar")
+	# POLISH/POSTKARTEN: offene Slots NENNEN ihr Ziel (Reise-App ist offen,
+	# keine Mystery-Regel) — der Spieler sieht, wohin sich Reisen lohnt.
+	var offen := screen.find_child("Offen_toyRoom", true, false)
+	var offen_label := offen.get_child(0) as Label
+	assert_eq(
+		offen_label.text,
+		I18nService.t("postkarten.souvenir.offen", {"ort": I18nService.t("travel.ziel.toyRoom")}),
+		"offener Slot nennt sein Reiseziel"
+	)
 	assert_true(screen.find_child("Claim_3", true, false) != null, "Stufe 3 bietet den Claim an")
 	assert_eq(screen.claim_jetzt(3), 150, "Claim zahlt 150 Münzen")
 	assert_eq(int(gs.get_value("economy.coins", 0)), 160, "Münzen landen im Konto")

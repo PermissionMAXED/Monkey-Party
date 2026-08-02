@@ -26,6 +26,48 @@
 			"landmarks": "Spielzeugstadt",
 			"treats": "Bonbonglas"
 		},
+		"flavor": {
+			"fish": {
+				"sunnyCarp": "Liebt warme Nachmittage und lange Nickerchen.",
+				"blueDace": "Schnell wie eine Welle, weg im Nu.",
+				"pinkKoi": "Vornehm — und er weiß es.",
+				"stripeBass": "Trägt seine Streifen mit Stolz.",
+				"tinyMinnow": "Kleiner Fisch, große Träume.",
+				"bigWhopper": "Der, der NICHT entkommen ist.",
+				"nightEel": "Schlängelt sich nur im Dunkeln heraus.",
+				"goldenFish": "Einer von fünfzig. Glänzt für immer."
+			},
+			"veggies": {
+				"radish": "Schnell, knackig, ein bisschen scharf.",
+				"carrot": "Goobys einzig wahre Liebe.",
+				"salad": "Knackige Blätter, reines Gewissen.",
+				"tomato": "Eigentlich Obst. Psst.",
+				"corn": "Wächst hoch, poppt stolz.",
+				"eggplant": "Lila, glänzend, geheimnisvoll.",
+				"pumpkin": "Geduld, rund und orange geworden.",
+				"watermelon": "Der langsamste, saftigste Preis des Gartens."
+			},
+			"landmarks": {
+				"shop": "Wo jede Spritztour mit Snacks endet.",
+				"vetClinic": "Hier repariert Dr. Dr. Möhrchen Bäuche.",
+				"fountain": "Wirf eine Münze, wünsch dir Karotten.",
+				"skyTower": "Das Höchste, was ein Hase je sah.",
+				"parkGazebo": "Beste Picknick-Lage der Stadt.",
+				"windmillCafe": "Die Flügel drehen sich, der Kakao dampft."
+			},
+			"treats": {
+				"donut-sprinkles": "Jeden Streusel wert. Vielleicht.",
+				"cupcake": "Kleiner Kuchen, große Folgen.",
+				"ice-cream": "Hirnfrost, Bauchwarnung.",
+				"cake": "Sammlerstolz, Bauchgefahr.",
+				"cookie": "Nur noch einen. Berühmte letzte Worte.",
+				"candy-bar": "Knisternde Folie, schuldbewusstes Knuspern.",
+				"lollypop": "Ein Zuckerplanet am Stiel.",
+				"sundae": "Das große Finale der schlechten Ideen.",
+				"chocolate": "Lässt Herzen schmelzen. Und Junk-Werte steigen.",
+				"muffin": "Ein Cupcake im Frühstückskostüm."
+			}
+		},
 		"eintrag": {
 			"fish": {
 				"sunnyCarp": "Sonnenkarpfen",

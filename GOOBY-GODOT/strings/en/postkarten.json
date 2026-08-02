@@ -11,7 +11,7 @@
 			"titel": "Souvenir Shelf",
 			"leer": "The shelf is still empty — every trip brings a souvenir.",
 			"fortschritt": "{n} of {gesamt} destinations visited",
-			"offen": "Still open"
+			"offen": "Still open: {ort}"
 		},
 		"set": {
 			"titel": "Set Bonus",

@@ -26,6 +26,48 @@
 			"landmarks": "Toy City",
 			"treats": "Candy Jar"
 		},
+		"flavor": {
+			"fish": {
+				"sunnyCarp": "Loves warm afternoons and long naps.",
+				"blueDace": "Quick as a ripple, gone in a blink.",
+				"pinkKoi": "Fancy — and it knows it.",
+				"stripeBass": "Wears its stripes with pride.",
+				"tinyMinnow": "Small fish, big dreams.",
+				"bigWhopper": "The one that did NOT get away.",
+				"nightEel": "Only wriggles out after dark.",
+				"goldenFish": "One in fifty. Shiny forever."
+			},
+			"veggies": {
+				"radish": "Fast, crunchy, a little spicy.",
+				"carrot": "Gooby's one true love.",
+				"salad": "Crisp leaves, clean conscience.",
+				"tomato": "Technically a fruit. Shhh.",
+				"corn": "Grows tall, pops proud.",
+				"eggplant": "Purple, glossy, mysterious.",
+				"pumpkin": "Patience made round and orange.",
+				"watermelon": "The garden's slowest, juiciest prize."
+			},
+			"landmarks": {
+				"shop": "Where every road trip ends in snacks.",
+				"vetClinic": "Dr. Dr. Möhrchen fixes tummies here.",
+				"fountain": "Toss a coin, wish for carrots.",
+				"skyTower": "The tallest thing a bunny ever saw.",
+				"parkGazebo": "Prime picnic real estate.",
+				"windmillCafe": "The sails spin, the cocoa steams."
+			},
+			"treats": {
+				"donut-sprinkles": "Worth every sprinkle. Maybe.",
+				"cupcake": "A tiny cake with big consequences.",
+				"ice-cream": "Brain freeze, belly warning.",
+				"cake": "Collector's pride, tummy's peril.",
+				"cookie": "Just one more. Famous last words.",
+				"candy-bar": "Crinkly wrapper, guilty crunch.",
+				"lollypop": "A sugar planet on a stick.",
+				"sundae": "The grand finale of bad ideas.",
+				"chocolate": "Melts hearts. And junk scores.",
+				"muffin": "Breakfast cupcake in disguise."
+			}
+		},
 		"eintrag": {
 			"fish": {
 				"sunnyCarp": "Sunny Carp",

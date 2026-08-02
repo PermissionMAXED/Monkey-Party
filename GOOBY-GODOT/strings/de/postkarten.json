@@ -11,7 +11,7 @@
 			"titel": "Souvenirregal",
 			"leer": "Das Regal ist noch leer — jede Reise bringt ein Souvenir.",
 			"fortschritt": "{n} von {gesamt} Reisezielen besucht",
-			"offen": "Noch frei"
+			"offen": "Noch frei: {ort}"
 		},
 		"set": {
 			"titel": "Set-Bonus",

@@ -293,14 +293,20 @@ func _postkarte(entry: Dictionary) -> Control:
 	var box := VBoxContainer.new()
 	box.add_theme_constant_override("separation", 6)
 	panel.add_child(box)
+	# POLISH/POSTKARTEN: Ziel-Akzent als POSTKARTEN-Band über die volle
+	# Kartenbreite (statt des 18-px-Farbquadrats) — die Karte liest sich
+	# wie eine echte Postkartenfront, die Ziel-Farbe bleibt der Code.
+	var band := PanelContainer.new()
+	band.name = "Band"
+	var band_style := StyleBoxFlat.new()
+	band_style.bg_color = PostkartenProps.DEST_AKZENT.get(dest_id, AcTokens.PAPER_SHADE)
+	band_style.set_corner_radius_all(AcTokens.RADIUS_ROW)
+	band.add_theme_stylebox_override("panel", band_style)
+	band.custom_minimum_size = Vector2(0.0, 10.0 * float(_m.get("f", 1.0)))
+	box.add_child(band)
 	var kopf := HBoxContainer.new()
 	kopf.add_theme_constant_override("separation", 8)
 	box.add_child(kopf)
-	var farbe := ColorRect.new()
-	farbe.color = PostkartenProps.DEST_AKZENT.get(dest_id, AcTokens.PAPER_SHADE)
-	farbe.custom_minimum_size = Vector2(18.0, 18.0)
-	farbe.size_flags_vertical = Control.SIZE_SHRINK_CENTER
-	kopf.add_child(farbe)
 	var titel := Label.new()
 	titel.theme_type_variation = &"HeadlineLabel"
 	titel.text = I18nService.t("postkarten.von", {"ort": I18nService.t("travel.ziel.%s" % dest_id)})
@@ -359,7 +365,12 @@ func _refresh_souvenirs(state: Dictionary) -> void:
 			label.text = I18nService.t("travel.ziel.%s" % dest_id)
 		else:
 			chip.name = "Offen_%s" % dest_id
-			label.text = I18nService.t("postkarten.souvenir.offen")
+			# POLISH/POSTKARTEN: offener Slot NENNT sein Ziel — die Reise-App
+			# listet alle 9 Ziele offen (keine Mystery-Regel), aber „Noch
+			# frei" ×n verriet nicht, WOHIN sich die nächste Reise lohnt.
+			label.text = I18nService.t(
+				"postkarten.souvenir.offen", {"ort": I18nService.t("travel.ziel.%s" % dest_id)}
+			)
 			chip.modulate = Color(1.0, 1.0, 1.0, 0.45)
 		chip.add_child(label)
 		_souvenir_flow.add_child(chip)

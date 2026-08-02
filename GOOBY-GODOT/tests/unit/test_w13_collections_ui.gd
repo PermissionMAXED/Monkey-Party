@@ -292,6 +292,53 @@ func test_claim_knopf_im_album() -> void:
 	await _close_album(ctx)
 
 
+func test_flavor_zeile_und_fortschrittsbalken() -> void:
+	var ctx := await _open_album()
+	var album: AlbumScreen = ctx["album"]
+	var gs: Node = ctx["gs"]
+	gs.update(func(state: Dictionary) -> void: state["collections"]["entries"]["fish.pinkKoi"] = 1)
+	gs.notify_slice_changed("collections")
+	album.show_page(AlbumScreen.COLLECTIONS_PAGE)
+	await wait_frames(2)
+	var view: CollectionsView = album._collections_view
+	var card := view.find_child("SetCard_fish", true, false)
+	# Web .g23-al-bar-Parität: kompakter Fortschrittsbalken in der Claim-Zeile.
+	var bar := card.find_child("SetBar", true, false) as ProgressBar
+	assert_true(bar != null, "Set-Karte trägt den Fortschrittsbalken")
+	assert_eq(int(bar.value), 1, "Balken zeigt 1 gesammelten Eintrag")
+	assert_eq(int(bar.max_value), 8, "Balken-Deckel = Setgröße")
+	# Web slot-click-Parität: gesammelte Kachel ist tappbar → Flavor-Zeile.
+	var flavor := card.find_child("FlavorLine", true, false) as Label
+	assert_false(flavor.visible, "Flavor-Zeile startet unsichtbar")
+	var slot := card.find_child("Slot_pinkKoi", true, false)
+	var knopf := slot.find_child("EntryButton", true, false) as Button
+	assert_true(knopf != null, "gesammelter Eintrag ist ein Knopf")
+	knopf.pressed.emit()
+	await wait_frames(1)
+	assert_true(flavor.visible, "Tap → Flavor-Zeile sichtbar")
+	assert_eq(flavor.text, I18nService.t("collections.flavor.fish.pinkKoi"), "Flavor-Spruch")
+	# Mystery-Regel: fehlende Einträge bleiben stumm (kein Knopf, kein Leak).
+	var missing := card.find_child("Slot_sunnyCarp", true, false)
+	assert_true(missing.find_child("EntryButton", true, false) == null, "fehlend = kein Knopf")
+	# refresh() (z. B. Resize) baut neu — der Flavor-Merker überlebt.
+	view.refresh()
+	await wait_frames(1)
+	card = view.find_child("SetCard_fish", true, false)
+	flavor = card.find_child("FlavorLine", true, false) as Label
+	assert_true(flavor.visible, "Flavor-Zeile übersteht refresh()")
+	assert_eq(flavor.text, I18nService.t("collections.flavor.fish.pinkKoi"))
+	await _close_album(ctx)
+
+
+func test_flavor_strings_fuer_alle_32_eintraege() -> void:
+	# Wache: jeder Set-Eintrag hat seinen Flavor-Spruch (de-Katalog; die
+	# en-Parität sichert test_ui_strings über die ganze Domain).
+	for def: Dictionary in CollectionsLogic.sets():
+		for entry_id: String in def.get("entries", []):
+			var key := "collections.flavor.%s.%s" % [str(def["id"]), entry_id]
+			assert_true(I18nService.has_key(key), "Flavor-Key fehlt: %s" % key)
+
+
 # ── Aufbau/Helfer ─────────────────────────────────────────────────────────────
 
 

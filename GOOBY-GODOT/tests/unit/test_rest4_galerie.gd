@@ -129,6 +129,68 @@ func test_galerie_screen_raster_vollansicht_loeschen() -> void:
 	_raeume_testfotos_auf()
 
 
+func test_vollansicht_blaettern_und_favoriten_leerhinweis() -> void:
+	var pfade := _lege_testfotos_an(3)
+	var gs := FakeGameState.new()
+	gs.s["city"]["fotos"] = [
+		{"pfad": pfade[0], "at": 1700000000000, "ort": "city"},
+		{"pfad": pfade[1], "at": 1700000100000, "ort": "city"},
+		{"pfad": pfade[2], "at": 1700000200000, "ort": "funkelpark"},
+	]
+	var screen := GalerieScreen.new()
+	screen.gs_override = gs
+	screen.auto_navigate = false
+	tree.root.add_child(screen)
+	await wait_frames(2)
+	# POLISH/GALERIE: ‹/›-Blättern in der Vollansicht ohne Schließen.
+	screen.oeffne_vollansicht(pfade[0])
+	await wait_frames(1)
+	var zurueck := screen.find_child("VorherigesFoto", true, false) as Button
+	var weiter := screen.find_child("NaechstesFoto", true, false) as Button
+	assert_true(zurueck != null and weiter != null, "Blätter-Knöpfe existieren")
+	assert_true(zurueck.disabled, "am Anfang: ‹ gesperrt")
+	assert_false(weiter.disabled, "am Anfang: › frei")
+	screen._voll_navigiere(1)
+	await wait_frames(1)
+	assert_eq(screen._voll_pfad, pfade[1], "› blättert zum zweiten Foto")
+	assert_true(screen.vollansicht_offen(), "Vollansicht bleibt offen")
+	var info := screen.find_child("FotoInfo", true, false) as Label
+	assert_true(
+		info.text.contains(I18nService.t("galerie.position", {"i": 2, "n": 3})),
+		"Info zeigt die Blätter-Position: " + info.text
+	)
+	screen._voll_navigiere(1)
+	await wait_frames(1)
+	assert_eq(screen._voll_pfad, pfade[2], "› blättert zum dritten Foto")
+	weiter = screen.find_child("NaechstesFoto", true, false) as Button
+	assert_true(weiter.disabled, "am Ende: › gesperrt")
+	screen._voll_navigiere(1)
+	assert_eq(screen._voll_pfad, pfade[2], "über das Ende hinaus: No-Op")
+	screen._voll_navigiere(-1)
+	await wait_frames(1)
+	assert_eq(screen._voll_pfad, pfade[1], "‹ blättert zurück")
+	screen._schliesse_vollansicht()
+	# POLISH/GALERIE: eigener Leer-Hinweis für den Favoriten-Filter —
+	# „Knips los!" wäre bei 3 vorhandenen Fotos gelogen.
+	screen.nur_favoriten = true
+	screen._refresh()
+	assert_eq(screen.fotos_im_raster(), 0, "keine Favoriten markiert")
+	assert_true(screen._leer_label.visible, "Leer-Hinweis sichtbar")
+	assert_eq(
+		screen._leer_label.text,
+		I18nService.t("galerie.leer_favoriten"),
+		"Favoriten-Filter erklärt sich selbst"
+	)
+	screen.nur_favoriten = false
+	screen._refresh()
+	assert_eq(
+		screen._leer_label.text, I18nService.t("galerie.leer"), "ohne Filter: Standard-Hinweis"
+	)
+	screen.queue_free()
+	await wait_frames(1)
+	_raeume_testfotos_auf()
+
+
 ## Winzige echte PNGs anlegen (die Galerie lädt sie als Texturen).
 func _lege_testfotos_an(anzahl: int) -> Array[String]:
 	DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path(TEST_DIR))

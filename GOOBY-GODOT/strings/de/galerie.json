@@ -2,6 +2,8 @@
 	"galerie": {
 		"titel": "Fotogalerie",
 		"leer": "Noch keine Fotos. Knips los — die Kamera wartet!",
+		"leer_favoriten": "Noch keine Favoriten. Tipp in der Vollansicht auf „Favorit“.",
+		"position": "Foto {i} von {n}",
 		"speicher": "{n} von {max} Plätzen belegt",
 		"oeffnen": "Galerie öffnen",
 		"nur_favoriten": "Nur Favoriten",
