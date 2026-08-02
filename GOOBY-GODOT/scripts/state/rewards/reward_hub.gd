@@ -203,7 +203,7 @@ func _celebrate(def: Dictionary) -> void:
 ## Konfetti auf derselben obersten Layer wie die Sticker.
 func _celebrate_achievement(def: Dictionary) -> void:
 	var id := str(def.get("id", ""))
-	var ach_name := I18nService.t("achievements.defs.%s.name" % id)
+	var ach_name := AchievementsCatalog.display_name(id)
 	_toasts.show_toast(
 		I18nService.t(
 			"achievements.unlock_toast", {"name": ach_name, "coins": int(def.get("coins", 0))}

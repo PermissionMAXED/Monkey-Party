@@ -8,7 +8,8 @@
 			"hint": "Round all 3 barrels and dash back — bumping one costs 5 s!",
 			"intro": "Run {n}: Round all 3 barrels — get ready!",
 			"level": "Run {n}",
-			"geschafft": "Finish! {s} s · {stars} stars"
+			"geschafft": "Finish! {s} s · {stars} stars",
+			"zu_langsam": "Too slow for stars — hug the barrels tighter!"
 		},
 		"ranchZeit": {
 			"title": "Time Trial",
@@ -16,6 +17,7 @@
 			"intro": "Course {n}: Through every flag gate — get ready!",
 			"level": "Route {n}",
 			"geschafft": "Finish! {s} s · {stars} stars",
+			"zu_langsam": "Too slow for stars — take every gate at a gallop!",
 			"geist_zeit": "Ghost: {s} s",
 			"neuer_geist": "New best run!"
 		}

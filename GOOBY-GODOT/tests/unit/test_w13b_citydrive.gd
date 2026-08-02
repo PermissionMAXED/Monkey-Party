@@ -336,6 +336,10 @@ func _wait_active(host: MinigameHost) -> bool:
 	)
 
 
+## Energie auffüllen UND das 150-c-Timed-Tagesledger leeren: die Host-Tests
+## laufen gegen den echten GameState-Autoload (persistenter user://-Save +
+## echter Lokaltag). Ohne Reset zahlt MinigameAward nach genug Runden am
+## selben Kalendertag 0 Münzen und der Award-Test kippt historieabhängig.
 func _refill_energy() -> void:
 	var gs := tree.root.get_node_or_null("/root/GameState")
 	if gs == null or not gs.has_method("update"):
@@ -345,6 +349,9 @@ func _refill_energy() -> void:
 			var gooby: Variant = state.get("gooby")
 			if gooby is Dictionary and (gooby as Dictionary).get("stats") is Dictionary:
 				((gooby as Dictionary)["stats"] as Dictionary)["energy"] = 100.0
+			var mg: Variant = state.get("minigames")
+			if mg is Dictionary:
+				(mg as Dictionary)["dayCoins"] = 0
 	)
 
 

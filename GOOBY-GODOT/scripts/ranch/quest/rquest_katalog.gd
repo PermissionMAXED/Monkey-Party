@@ -97,6 +97,25 @@ static func tagesaufgaben(datum: String) -> Array:
 	return out
 
 
+## Lokalisierter Quest-Titel. Fehlt der String-Key (Pack-Quest ohne
+## Strings, Test-Fixtures), wird die Quest-Id lesbar aufbereitet statt
+## push_error + rohem Key im UI/in Notifications.
+static func quest_titel(quest_id: String) -> String:
+	var key := "rquest.q.%s.titel" % quest_id
+	if I18nService.has_key(key):
+		return I18nService.t(key)
+	return quest_id.capitalize()
+
+
+## Lokalisierter Quest-Beschreibungstext — "" wenn kein String existiert
+## (Aufrufer lassen das Label dann weg).
+static func quest_text(quest_id: String) -> String:
+	var key := "rquest.q.%s.text" % quest_id
+	if I18nService.has_key(key):
+		return I18nService.t(key)
+	return ""
+
+
 ## Konsistenzprobleme eines Quest-Eintrags (leer = gültig) — für Tests
 ## und den Pack-Merge-Check.
 static func quest_probleme(eintrag: Dictionary) -> Array[String]:

@@ -177,7 +177,7 @@ func _quest_karte(gs: Object, def: Dictionary) -> Control:
 	box.add_child(kopf)
 	var titel := Label.new()
 	titel.theme_type_variation = "HeadlineLabel"
-	titel.text = I18nService.t("rquest.q.%s.titel" % quest_id)
+	titel.text = RQuestKatalog.quest_titel(quest_id)
 	titel.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	kopf.add_child(titel)
 	var chip := Label.new()
@@ -195,11 +195,13 @@ func _quest_karte(gs: Object, def: Dictionary) -> Control:
 	if status == RQuestEngine.STATUS_GESPERRT or status == RQuestEngine.STATUS_ERLEDIGT:
 		return karte
 
-	var text := Label.new()
-	text.theme_type_variation = "SoftLabel"
-	text.text = I18nService.t("rquest.q.%s.text" % quest_id)
-	text.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	box.add_child(text)
+	var beschreibung := RQuestKatalog.quest_text(quest_id)
+	if not beschreibung.is_empty():
+		var text := Label.new()
+		text.theme_type_variation = "SoftLabel"
+		text.text = beschreibung
+		text.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		box.add_child(text)
 
 	var lauf: Variant = (RQuestState.quests(gs).get("aktiv", {}) as Dictionary).get(quest_id)
 	if lauf is Dictionary:

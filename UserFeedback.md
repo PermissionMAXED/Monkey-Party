@@ -117,6 +117,26 @@ Original-Links sind alle übernommen:)_
       Liste schneidet „Briefkasten" ab, Baumodus = Knopf-Salat (der bekannte
       97-Befunde-Wurzelfix, jetzt MIT Weggleit-Animation).
 
+- [x] **Playtest-Bugfixes, Batch 1 (2. August):** Als Spieler durch Ranch-
+      Wettbewerbe, Quest-Log, Erfolge und Minispiel-Awards gespielt (headless
+      Tests + Fehlerlog-Jagd) — 7 echte Bugs gefunden und gefixt:
+      **(a)** Tonnen-Slalom/Zeitrennen zeigten bei „zu langsam" den ROHEN
+      String-Key statt Text (fehlende Keys `mg.ranchTonnen.zu_langsam` +
+      `mg.ranchZeit.zu_langsam`, DE+EN nachgetragen); **(b)** Quest-Karten/
+      Warte-Notifications kippten bei Quests ohne String-Eintrag (z. B. aus
+      Nachschub-Packs) in rohe Keys + Fehler-Spam → lesbarer Fallback über
+      `RQuestKatalog.quest_titel/quest_text`; **(c)** dasselbe für Erfolgs-
+      Toast + Erfolge-Screen → `AchievementsCatalog.display_name/display_desc`;
+      **(d)** Minispiel-Award-Test war TAGES-HISTORIEN-abhängig: das
+      150-Münzen-Tagesledger aus echten Spielrunden am selben Kalendertag
+      ließ den Award 0 Münzen zahlen (Ledger-Reset im Test-Helfer);
+      **(e)** `callv` mit read-only Const-Array ließ den gobnom-Gefecht-
+      Einstieg im Stage-Test scheitern (Godot kann Argumente dann nicht
+      konvertieren); **(f)** Prozent-Zeichen in Taming-Test-Meldungen war
+      nicht escaped (String-Format-Fehler in jedem Lauf); **(g)** die
+      SquishButton-Wache meldete durch GDScript-Cache-Identitäts-Drift
+      falsche FAILs in langen Suite-Läufen → Skript-Pfad-Fallback, echte
+      `Button.new()` fallen weiterhin durch. Preflight grün.
 - [x] **Läden lebendig, Teil 2 (2. August):** Nach REHWEI + Baumarkt (P55) sind
       jetzt ALLE Stadt-Läden echte Orte: GOOBYMAN, GOOBYTHEKE, POW!, Post und
       Autohaus haben schlendernde Kunden-Goobys (mit Hüten, Regal-Griffen und

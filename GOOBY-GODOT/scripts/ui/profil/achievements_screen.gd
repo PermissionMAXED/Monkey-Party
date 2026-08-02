@@ -185,9 +185,7 @@ func _build_row(def: Dictionary) -> Control:
 	# Angedeutet, nicht verraten: gesperrte Erfolge zeigen „???“ als Namen,
 	# die Bedingung darunter bleibt der Sammel-Hinweis (Album-Mystery-Regel).
 	name_label.text = (
-		I18nService.t("achievements.defs.%s.name" % id)
-		if unlocked
-		else I18nService.t("achievements.geheim")
+		AchievementsCatalog.display_name(id) if unlocked else I18nService.t("achievements.geheim")
 	)
 	if not unlocked:
 		name_label.add_theme_color_override("font_color", AcTokens.INK_FAINT)
@@ -195,7 +193,7 @@ func _build_row(def: Dictionary) -> Control:
 	var desc := Label.new()
 	desc.name = "Desc"
 	desc.theme_type_variation = &"SoftLabel"
-	desc.text = I18nService.t("achievements.defs.%s.desc" % id)
+	desc.text = AchievementsCatalog.display_desc(id)
 	desc.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	body.add_child(desc)
 	body.add_child(_build_progress(def, unlocked))

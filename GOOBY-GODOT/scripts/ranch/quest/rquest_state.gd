@@ -145,7 +145,7 @@ static func _warte_verdrahten(def: Dictionary, stand: Dictionary, _jetzt: int) -
 	if str((lauf as Dictionary).get("status")) != RQuestSlices.STATUS_WARTEND:
 		return
 	var ziel := RQuestEngine.aktuelles_ziel(def, lauf)
-	RQuestWarte.warte_gestartet(quest_id, ziel, lauf, I18nService.t("rquest.q.%s.titel" % quest_id))
+	RQuestWarte.warte_gestartet(quest_id, ziel, lauf, RQuestKatalog.quest_titel(quest_id))
 
 
 static func _belohnung_anwenden(gs: Object, def: Dictionary, belohnung: Dictionary) -> void:

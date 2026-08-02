@@ -22,8 +22,23 @@ func _assert_alle_buttons_squish(root: Node, kontext: String) -> void:
 		if btn is OptionButton or (btn as Control).mouse_filter == Control.MOUSE_FILTER_IGNORE:
 			continue
 		gefunden += 1
-		assert_true(btn is SquishButton, "%s: '%s' ist kein SquishButton" % [kontext, btn.name])
+		assert_true(_ist_squish(btn), "%s: '%s' ist kein SquishButton" % [kontext, btn.name])
 	assert_true(gefunden > 0, "%s: Scan fand keinen einzigen Button" % kontext)
+
+
+## `is SquishButton` PLUS Skript-Pfad-Fallback: in langen Suite-Läufen kann
+## der GDScript-Cache squish_button.gd neu laden (Identitäts-Drift) — dann
+## zeigt die Instanz auf eine andere Kopie derselben Klasse und `is` allein
+## meldet fälschlich FAIL. Ein echter Button.new() fällt weiterhin durch.
+func _ist_squish(btn: Node) -> bool:
+	if btn is SquishButton:
+		return true
+	var script: Script = btn.get_script()
+	while script != null:
+		if script.resource_path == "res://scripts/ui/squish_button.gd":
+			return true
+		script = script.get_base_script()
+	return false
 
 
 func test_city_bausteine_bauen_squish() -> void:

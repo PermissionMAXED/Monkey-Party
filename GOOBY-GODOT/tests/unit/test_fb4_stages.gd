@@ -84,7 +84,9 @@ func _mount(game_id: String) -> Node:
 	game.call("start")
 	if LEVEL_ENTRY.has(game_id):
 		var entry: Array = LEVEL_ENTRY[game_id]
-		game.callv(str(entry[0]), entry[1] as Array)
+		# duplicate(): const-Arrays sind read-only, callv kann Argumente
+		# sonst nicht typkonvertieren (Cannot convert argument 1 ...).
+		game.callv(str(entry[0]), (entry[1] as Array).duplicate())
 	await wait_frames(2)
 	return game
 

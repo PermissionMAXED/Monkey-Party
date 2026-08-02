@@ -46,6 +46,24 @@ static func by_category(items: Array, cat: String) -> Array:
 	return result
 
 
+## Lokalisierter Erfolgs-Name. Fehlt der String-Key (Pack-Erfolg ohne
+## Strings, Test-Fixtures), wird die Id lesbar aufbereitet statt
+## push_error + rohem Key im Toast/Screen.
+static func display_name(id: String) -> String:
+	var key := "achievements.defs.%s.name" % id
+	if I18nService.has_key(key):
+		return I18nService.t(key)
+	return id.capitalize()
+
+
+## Lokalisierte Erfolgs-Beschreibung — "" wenn kein String existiert.
+static func display_desc(id: String) -> String:
+	var key := "achievements.defs.%s.desc" % id
+	if I18nService.has_key(key):
+		return I18nService.t(key)
+	return ""
+
+
 ## Summe aller Münz-Belohnungen (Web: exakt 3410).
 static func total_coins(items: Array) -> int:
 	var sum := 0
