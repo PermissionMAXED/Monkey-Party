@@ -75,6 +75,12 @@ static func attach_to(parent: Node, gs: Object) -> OnboardingGuide:
 
 func _ready() -> void:
 	add_to_group(GROUP)
+	# H-Playtest (Onboarding): der Erststart-Coachmark („Deine Knöpfe“) kann
+	# schon stehen, wenn die Tour NACH dem HUD aufwacht (home_entry zeigt das
+	# HUD zuerst) — dann zieht er sich zurück und kommt nach der Tour dran.
+	var tree := get_tree()
+	if tree != null:
+		tree.call_group(&"hud", &"retract_coachmark")
 	_layer = CanvasLayer.new()
 	_layer.name = "GuideLayer"
 	_layer.layer = 70
@@ -287,7 +293,20 @@ func _build_card() -> void:
 	_card = PanelContainer.new()
 	_card.name = "GuideKarte"
 	_card.theme_type_variation = "AcCard"
+	# H-Playtest (Onboarding): Toasts (z. B. „Neuer Sticker“) weichen der
+	# Karte aus wie der „Was nun?“-Karte (toast.gd/_dodge_hint_card) — vorher
+	# lag die Paper-Bubble mitten auf Titel und ×-Knopf.
+	_card.add_to_group(WhatsNextHint.CARD_GROUP)
 	_layer.add_child(_card)
+	# H-Playtest (Onboarding): Autowrap-Minima settlen, WANN sie wollen —
+	# beim allerersten Einblenden (Raum lädt noch, Karte zeitweise versteckt)
+	# kam der Zwei-Frame-Settle von _relayout_settled() zu früh und die
+	# Riesen-Karte (Label-Minimum bei Breite 0 gemessen) blieb bis zum
+	# nächsten Schritt stehen. Deshalb zieht die Karte ihre Größe bei JEDER
+	# Minimum-Änderung nach (Muster hud.gd-Coachmark) und relayoutet beim
+	# Wiederauftauchen (_on_card_visibility_changed).
+	_card.minimum_size_changed.connect(_relayout, CONNECT_DEFERRED)
+	_card.visibility_changed.connect(_on_card_visibility_changed)
 	var margin := MarginContainer.new()
 	for side in ["margin_left", "margin_top", "margin_right", "margin_bottom"]:
 		margin.add_theme_constant_override(side, 12)
@@ -416,6 +435,17 @@ func _sync_card_visible() -> void:
 		_card.visible = true
 		return
 	_card.visible = router.get_current_scene() is RoomBase
+
+
+## H-Playtest (Onboarding): während die Karte versteckt war (Travel/Overlay/
+## HUD weg), können sich die Autowrap-Minima geändert haben, ohne dass der
+## Container sortiert hat — beim Wiederauftauchen die Größe nachziehen,
+## sonst bleibt eine eingefrorene (Riesen-)Höhe stehen.
+func _on_card_visibility_changed() -> void:
+	if _card == null or not is_instance_valid(_card) or not _card.visible:
+		return
+	_relayout()
+	_relayout_settled()
 
 
 ## Über Vollbild-Screens (Arcade/Album/...) hält die Karte den Mund; die

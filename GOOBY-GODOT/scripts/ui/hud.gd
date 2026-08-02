@@ -782,6 +782,15 @@ func _maybe_show_coachmark() -> void:
 		return
 	if bool(settings.get_setting(COACHMARK_SEEN_KEY, false)):
 		return
+	# H-Playtest (Onboarding): solange die Erste-Viertelstunde-Tour läuft,
+	# hält der Coachmark den Mund (Regel wie WhatsNextHint in quest_service)
+	# — zwei konkurrierende Erklär-Karten nebeneinander erschlagen den
+	# Erststart. Sobald die Tour den Baum verlässt, kommt er einmalig dran.
+	var guide := get_tree().get_first_node_in_group(OnboardingGuide.GROUP)
+	if guide != null:
+		if not guide.tree_exited.is_connected(_maybe_show_coachmark):
+			guide.tree_exited.connect(_maybe_show_coachmark, CONNECT_DEFERRED)
+		return
 	_coachmark = _build_coachmark()
 	add_child(_coachmark)
 	_position_coachmark()
@@ -869,6 +878,18 @@ func _on_coachmark_dismissed() -> void:
 	if _coachmark != null:
 		_coachmark.queue_free()
 		_coachmark = null
+
+
+## H-Playtest (Onboarding): wacht die Erste-Viertelstunde-Tour NACH dem HUD
+## auf (home_entry zeigt das HUD, DANN attach_to), steht der Coachmark schon
+## — er zieht sich zurück, OHNE hints.hud_actions_seen zu setzen, und
+## _maybe_show_coachmark hängt sich ans Tour-Ende (tree_exited). Aufrufer:
+## OnboardingGuide._ready via call_group(&"hud", ...).
+func retract_coachmark() -> void:
+	if _coachmark != null:
+		_coachmark.queue_free()
+		_coachmark = null
+	_maybe_show_coachmark()
 
 
 ## Insets in Canvas-Koordinaten: Override (Tests/Notch-Simulation) >
