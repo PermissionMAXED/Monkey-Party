@@ -23,6 +23,10 @@ extends CanvasLayer
 ##   kleinen Ausflug…“ + Trip-Tipps.
 ## - home: alles andere (Rückkehr/Default) — „Trautes Heim“ /
 ##   „Auf dem Heimweg…“ + Home-Tipps.
+## Plus die DLC-Karten (Welle J/I-29): goobye + mcgooby — Reisen in den
+## „Goo und Bye“-Laden bzw. zur McGooby-Schicht tragen das eigene
+## Hub-Coverart des DLCs als Cover-Bild und eigene Titel/Ready/Tipps
+## (DE+EN, strings/*/veil.json) statt der „Trautes Heim“-Karte.
 ## Ein/Aus ist seit W16/G2b der Signature-Übergang der Web-Version
 ## (loadingVeil.js V6/F2, Spez §2.2): der PETAL-SWEEP-WIPE. Backdrop +
 ## Karte wischen GEMEINSAM links→rechts herein (ease-out) und hinaus
@@ -87,6 +91,17 @@ const TRIP_PRAEFIXE: Array[String] = ["city"]
 ## G7-P56R2: Reisen ZUR Arcade tragen die Arcade-Karte — der Aus-Weg jedes
 ## Minispiels endet damit sichtbar in der Spielhalle statt „zu Hause“.
 const ARCADE_ZIELE: Array[String] = ["arcade"]
+## Welle J/I-29: DLC-Reisen tragen eigene Karten. Ziel-Präfix → Karten-
+## Modus; Präfixe statt exakter Ziele, damit künftige Unterziele
+## (dlc/goobye_*, mcgooby_*) automatisch dieselbe Karte bekommen.
+const DLC_MODUS_PRAEFIXE := {"dlc/goobye": "goobye", "mcgooby": "mcgooby"}
+## Cover der DLC-Karten = die Hub-Coverarts (DIESELBEN Bilder wie die
+## DLC-Hub-Kacheln, content/dlc) — die Reise sieht aus wie das, was man
+## im Hub angetippt hat. Fehlt ein Bild, trägt der warme Verlauf.
+const DLC_COVER_PFADE := {
+	"goobye": "res://assets/dlc/goo_und_bye.png",
+	"mcgooby": "res://assets/dlc/mcgooby.png",
+}
 
 static var _travel_hint: Dictionary = {}
 static var _tip_cursor := 0
@@ -99,7 +114,8 @@ var stunde_override := -1.0
 
 var _progress := 0.0
 var _active_hint: Dictionary = {}
-## Karten-Modus wie im Web: "home" | "trip" | "game".
+## Karten-Modus: Web-Trio "home" | "trip" | "game" plus "arcade"
+## (G7-P56R2) und die DLC-Karten "goobye" | "mcgooby" (I-29).
 var _modus := "home"
 var _laedt_basis := ""
 var _ranch_aktiv := false
@@ -165,13 +181,17 @@ static func clear_travel_hint() -> void:
 	_travel_hint = {}
 
 
-## Karten-Modus fürs Ziel (Web-Regel §2.4 + G7-P56R2): Arcade-Reisen sind
-## „arcade“, Shop-/Stadt-/Klinik-Ausflüge „trip“, alles andere (Rückkehr/
-## Default) „home“; „game“ setzt der Minigame-Hint in _apply_variant.
+## Karten-Modus fürs Ziel (Web-Regel §2.4 + G7-P56R2 + I-29): Arcade-Reisen
+## sind „arcade“, DLC-Reisen „goobye“/„mcgooby“, Shop-/Stadt-/Klinik-
+## Ausflüge „trip“, alles andere (Rückkehr/Default) „home“; „game“ setzt
+## der Minigame-Hint in _apply_variant.
 static func modus_fuer_ziel(target: StringName) -> String:
 	var ziel := String(target)
 	if ARCADE_ZIELE.has(ziel):
 		return "arcade"
+	for dlc_praefix: String in DLC_MODUS_PRAEFIXE:
+		if ziel.begins_with(dlc_praefix):
+			return str(DLC_MODUS_PRAEFIXE[dlc_praefix])
 	if TRIP_ZIELE.has(ziel):
 		return "trip"
 	for praefix in TRIP_PRAEFIXE:
@@ -400,8 +420,9 @@ void fragment() {
 ## Karte auf den aktiven Modus stellen (Web buildCard): home/trip nutzen
 ## das Heim-Cover + Winke-Gooby-Sticker, game das Spiel-Cover aus dem
 ## Travel-Hint + das Game-Motiv, arcade (G7-P56R2) den warmen Verlauf +
-## das Game-Motiv. Der Vorhang bleibt in ALLEN Modi das statische
-## Blätter-Pattern auf Papier (Web .acui-veil).
+## das Game-Motiv, goobye/mcgooby (I-29) das Hub-Coverart des DLCs.
+## Der Vorhang bleibt in ALLEN Modi das statische Blätter-Pattern auf
+## Papier (Web .acui-veil).
 func _apply_variant() -> void:
 	if _root == null:
 		return
@@ -411,6 +432,10 @@ func _apply_variant() -> void:
 	var cover_tex: Texture2D = null
 	if minigame:
 		cover_tex = _active_hint.get("cover")
+	elif DLC_COVER_PFADE.has(_modus):
+		# I-29: die DLC-Karte trägt das eigene Coverart des DLCs — der
+		# Ladenschlüssel-/Schicht-Ausflug sieht aus wie seine Hub-Kachel.
+		cover_tex = _lade_textur(str(DLC_COVER_PFADE[_modus]))
 	elif _modus != "arcade":
 		# Arcade bleibt bewusst ohne Cover-Bild: der warme Fallback-
 		# Verlauf der Karte trägt (Web-onerror-Look) — kein Heim-Motiv

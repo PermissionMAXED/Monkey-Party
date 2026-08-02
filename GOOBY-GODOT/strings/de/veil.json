@@ -28,6 +28,26 @@
 				"Irgendwo klimpert schon ein Jackpot…"
 			]
 		},
+		"goobye": {
+			"titel": "Ab in den Laden!",
+			"bereit": "Der Riesenschlüssel dreht sich schon…",
+			"tips": [
+				"Die Tür übt schon ihr „Goo!“…",
+				"Die Regale werden eingeräumt…",
+				"Onkel Alwin wartet schon auf seine Möhre…",
+				"Die Kasse wird gegossen — zweimal die Woche!"
+			]
+		},
+		"mcgooby": {
+			"titel": "Ab zur Schicht!",
+			"bereit": "Der Grill brutzelt schon…",
+			"tips": [
+				"Die Schürze wird umgebunden…",
+				"Die Bestellglocke wird blank poliert…",
+				"Tipp: Wende das Patty, sobald es goldbraun leuchtet!",
+				"Die Löffel-Bögen leuchten schon…"
+			]
+		},
 		"game": {
 			"bereit": "Mach dich bereit!",
 			"tips": [

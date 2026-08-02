@@ -2,13 +2,15 @@ extends W1cTestCase
 ## W16/VEIL: LoadingVeil-Karte im Look der alten Web-Version. Der
 ## W1a-Contract (cover/reveal awaitbar, Signale, set_progress, Node-Pfade
 ## Root/Backdrop/Spinner) wird weiter von tests/unit/test_loading_veil.gd
-## gehalten — hier kommen die Optik-Varianten dazu: die vier Karten-Modi
+## gehalten — hier kommen die Optik-Varianten dazu: die Karten-Modi
 ## home/trip/game/arcade (Titel, Ready-Zeile, Cover, Motiv-Sticker), das
 ## statische Blätter-Pattern, Tipp-Rotation je Modus, Indeterminate-Sweep
 ## vs. echter Balken und die geteilten Arcade-Cover-Texturen. Der
 ## „arcade“-Modus ist G7-P56R2: Reisen ZUR Arcade (rein wie raus aus
 ## jedem Minispiel) tragen eine eigene Spielhallen-Karte statt der
-## Home-Karte.
+## Home-Karte. Welle J/I-29 ergänzt die DLC-Karten „goobye“/„mcgooby“:
+## Reisen in den Goo-und-Bye-Laden bzw. zur McGooby-Schicht tragen das
+## Hub-Coverart des DLCs + eigene Titel/Ready/Tipps.
 ##
 ## Bewusste W16-Anpassung (Spez ladebild-alt.md §2.4): statt EINEM
 ## `veil.tips`-Pool (5–8) gibt es je Modus einen eigenen Pool mit den
@@ -16,7 +18,7 @@ extends W1cTestCase
 ## Modus plus DE/EN-Parität.
 
 const VEIL_SCENE := preload("res://scripts/core/loading_veil.tscn")
-const MODI: Array[String] = ["home", "trip", "game", "arcade"]
+const MODI: Array[String] = ["home", "trip", "game", "arcade", "goobye", "mcgooby"]
 ## W16/G2b: Petal-Sweep-Wipe (Maske+Stempel auf/über dem FROZEN Root).
 const VeilWipe := preload("res://scripts/core/loading_veil_wipe.gd")
 
@@ -109,6 +111,68 @@ func test_arcade_variante_eigene_karte() -> void:
 	check((veil.get_node("%Tip") as Control).visible, "Arcade-Tipp sichtbar")
 	check((veil.get_node("%Tip") as Label).text != "", "Tipp nicht leer")
 	_cleanup(veil)
+
+
+## Welle J/I-29: DLC-Reisen tragen eigene Karten — Modus-Weiche über die
+## ECHTEN Routen-Konstanten (kein String-Duplikat), Präfix-Regel für
+## künftige Unterziele, Hub-Coverart als Cover-Bild, eigene Titel/Ready/
+## Tipps und der echte Balken (Progress-Gefühl) auch im DLC-Modus.
+func test_dlc_varianten_eigene_karten() -> void:
+	check_eq(
+		LoadingVeil.modus_fuer_ziel(GoobyeRouten.ROUTE_LADEN),
+		"goobye",
+		"Goo-und-Bye-Laden = goobye-Karte"
+	)
+	check_eq(
+		LoadingVeil.modus_fuer_ziel(McGoobySchichtScene.ROUTE),
+		"mcgooby",
+		"McGooby-Schicht = mcgooby-Karte"
+	)
+	check_eq(
+		LoadingVeil.modus_fuer_ziel(&"dlc/goobye_grossmarkt"),
+		"goobye",
+		"künftige Goo-und-Bye-Unterziele erben die Karte (Präfix-Regel)"
+	)
+	check_eq(
+		LoadingVeil.modus_fuer_ziel(&"mcgooby_management"),
+		"mcgooby",
+		"künftige McGooby-Unterziele erben die Karte (Präfix-Regel)"
+	)
+	var faelle := {
+		"goobye": GoobyeRouten.ROUTE_LADEN,
+		"mcgooby": McGoobySchichtScene.ROUTE,
+	}
+	for modus: String in faelle:
+		var veil := _fresh_veil()
+		veil.prepare_for_travel(faelle[modus])
+		check((veil.get_node("%Cover") as Control).visible, "%s: Cover sichtbar" % modus)
+		check_eq(
+			(veil.get_node("%Cover") as TextureRect).texture,
+			load(str(LoadingVeil.DLC_COVER_PFADE[modus])),
+			"%s: Cover ist das Hub-Coverart des DLCs" % modus
+		)
+		check_eq(
+			(veil.get_node("%Title") as Label).text,
+			I18nService.t("veil.%s.titel" % modus),
+			"%s: eigener Titel" % modus
+		)
+		check_eq(
+			(veil.get_node("%Ready") as Label).text,
+			I18nService.t("veil.%s.bereit" % modus),
+			"%s: eigene Ready-Zeile" % modus
+		)
+		check((veil.get_node("%Tip") as Control).visible, "%s: Tipp sichtbar" % modus)
+		var tipp := (veil.get_node("%Tip") as Label).text
+		check(
+			I18nService.items(LoadingVeil.tips_key(modus)).has(tipp),
+			"%s: Tipp kommt aus dem eigenen DLC-Pool" % modus
+		)
+		veil.set_progress(0.5)
+		check(
+			(veil.get_node("%Progress") as Control).visible,
+			"%s: echter Balken trägt auch auf der DLC-Karte" % modus
+		)
+		_cleanup(veil)
 
 
 func test_minigame_variante_cover_titel_tipp() -> void:

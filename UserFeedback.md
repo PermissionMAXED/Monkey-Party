@@ -158,6 +158,19 @@ Original-Links sind alle übernommen:)_
       „Briefkasten" nicht mehr ab, Baumodus-Knopf-Salat aufgeräumt (HUD gleitet
       animiert weg, Kamera-Chips weichen dem Dock aus).
 
+- [x] **DLC-Ladebildschirme (2. August, I-29 aus Welle J):** Reisen zu den
+      beiden neuen DLCs tragen jetzt eigene Lade-Karten statt der
+      „Trautes Heim“-Karte: der Weg in den Goo-und-Bye-Laden zeigt das
+      Laden-Coverart aus dem DLC-Hub mit „Ab in den Laden!“ + eigenen
+      Tipps (die Tür übt ihr „Goo!“, Onkel Alwin wartet schon auf seine
+      Möhre …), der Weg zur McGooby-Schicht das Küchen-Coverart mit
+      „Ab zur Schicht!“ + Grill-Tipps (inkl. echtem Gameplay-Tipp zum
+      goldbraunen Wende-Fenster) — DE+EN. Der echte Teal-Ladebalken
+      („Lädt… NN%“) läuft wie gehabt auch auf den neuen Karten. Die
+      Modus-Weiche hängt an den echten Routen-Konstanten und greift per
+      Präfix auch für künftige DLC-Unterziele (Großmarkt, Management …).
+      Wache: `test_ui_veil.gd` (neuer DLC-Karten-Test, DE/EN-Tipp-Parität
+      jetzt über 6 Karten-Modi). Preflight grün.
 - [x] **Playtest-Bugfixes, Batch 1 (2. August):** Als Spieler durch Ranch-
       Wettbewerbe, Quest-Log, Erfolge und Minispiel-Awards gespielt (headless
       Tests + Fehlerlog-Jagd) — 7 echte Bugs gefunden und gefixt:
@@ -473,7 +486,8 @@ iPhone 17 Pro Max quer = **0 Befunde**):
 - [ ] **Wellen J+: Umsetzung** — Playtest-Bugs + beste Planner-Ideen
       (jetzt konkret geschnitten in `docs/godot-rewrite/IDEAS-WELLE-I.md`
       §4: Wellen J–M) + die neu einsortierten G6-Pakete (DLC Welle B beider
-      Läden, Ball-Wurf, DLC-Ladebildschirme, Audio-Feel, ~~B11/Warn-Sweep~~
+      Läden, Ball-Wurf, ~~DLC-Ladebildschirme~~ *(erledigt 2.8., s. oben in
+      „Neu von dir")*, Audio-Feel, ~~B11/Warn-Sweep~~
       *(erledigt 2.8., s. oben in „Neu von dir")*, Doku-Refresh,
       McGooby-Bühne, Alwin-NPC — alle in J/K eingeordnet)
 

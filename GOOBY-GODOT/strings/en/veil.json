@@ -28,6 +28,26 @@
 				"Somewhere a jackpot is already jingling…"
 			]
 		},
+		"goobye": {
+			"titel": "Off to the shop!",
+			"bereit": "The giant key is already turning…",
+			"tips": [
+				"The door is practicing its “Goo!”…",
+				"Stocking the shelves…",
+				"Uncle Alwin is already waiting for his carrot…",
+				"Watering the till — twice a week!"
+			]
+		},
+		"mcgooby": {
+			"titel": "Off to your shift!",
+			"bereit": "The grill is already sizzling…",
+			"tips": [
+				"Tying the apron…",
+				"Polishing the order bell…",
+				"Tip: Flip the patty the moment it glows golden!",
+				"The spoon arches are already glowing…"
+			]
+		},
 		"game": {
 			"bereit": "Get ready!",
 			"tips": [
