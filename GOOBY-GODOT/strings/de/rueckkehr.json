@@ -1,0 +1,29 @@
+{
+	"rueckkehr": {
+		"titel": "Willkommen zurück!",
+		"untertitel": "Du warst {tage} Tage weg — Gooby ist völlig aus dem Häuschen, dass du wieder da bist!",
+		"geschichten_titel": "Was bisher geschah",
+		"story": {
+			"fenster": "Gooby hat jeden Tag am Fenster gesessen und nach dir Ausschau gehalten.",
+			"kissen": "Gooby hat alle Kissen aufgeschüttelt — mehrmals. Man will ja vorbereitet sein.",
+			"staub": "Gooby hat einen Staubfussel gejagt. Der Fussel hat gewonnen.",
+			"garten": "Gooby hat nach den Beeten geschaut und dabei sehr wichtig genickt.",
+			"ranch": "Gooby war auf der Ranch und hat den Pferden von dir erzählt.",
+			"ball": "Gooby hat den Ball geworfen und ihn dann selbst zurückgebracht. Beides.",
+			"kuehlschrank": "Gooby hat SEHR oft in den Kühlschrank geschaut. Nur zum Gucken, ehrlich.",
+			"radio": "Gooby hat Radio gehört und euer Lieblingslied mitgesummt.",
+			"fotos": "Gooby hat eure Fotos angeschaut und dabei ein bisschen geschnieft.",
+			"arcade": "Gooby hat heimlich für die Arcade trainiert. Sein Rekord? Geheimsache."
+		},
+		"quest_titel": "Sanft wieder ankommen",
+		"quest_hinweis": "Ganz ohne Eile — Gooby freut sich über jeden kleinen Moment:",
+		"aufgabe": {
+			"rk_streicheln": "Streichle Gooby {ziel}×",
+			"rk_fuettern": "Gib Gooby etwas Leckeres zu essen",
+			"rk_spielen": "Spielt zusammen eine Runde in der Arcade"
+		},
+		"belohnung": "Danach wartet ein Wiedersehens-Geschenk: +{muenzen} Münzen und +{xp} XP.",
+		"fertig_toast": "Wieder richtig angekommen! +{muenzen} Münzen, +{xp} XP 💛",
+		"button": "Bin wieder da!"
+	}
+}

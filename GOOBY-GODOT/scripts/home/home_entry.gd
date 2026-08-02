@@ -54,6 +54,10 @@ func _ready() -> void:
 		RewardHub.attach_to(self, _gs)
 		# REST-2: Tagesquests (Roll/Claim/Bonus + „Was nun?“-Hinweis).
 		DailyQuestService.attach_to(self, _gs)
+		# Welle J / I-44: Rückkehrer-Karte nach ≥ 7 Tagen Pause (Geschichten
+		# + sanfte Wieder-Einstiegs-Quest) — MUSS vor dem ersten Raum-
+		# Betreten hängen, sonst stempelt touch_visit die Lücke weg.
+		RueckkehrService.attach_to(self, _gs)
 	if _router != null and _router.has_signal("travel_finished"):
 		_router.travel_finished.connect(_on_travel_finished)
 	if _router != null and _router.has_signal("travel_started"):

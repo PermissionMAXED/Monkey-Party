@@ -221,6 +221,14 @@ func _celebrate_achievement(def: Dictionary) -> void:
 	achievement_celebrated.emit(def)
 
 
+## Welle J / I-44: die Rückkehrer-Karte verdrängt ein offenes Tagesbonus-
+## Popup (PanelStack-„Später“-Semantik). Nach dem Schließen der Karte darf
+## der Bonus noch einmal anklopfen — abholbar bleibt er ohnehin bis
+## Mitternacht (idempotent über _maybe_offer_daily_bonus).
+func reoffer_daily_bonus() -> void:
+	_maybe_offer_daily_bonus()
+
+
 ## REST-1: Tagesbonus-Popup anbieten, wenn heute noch nichts abgeholt wurde
 ## (should_offer prüft Onboarding + lastClaimDay). Idempotent — nie zwei
 ## Popups; „Später“ lässt den Bonus bis Mitternacht abholbar.

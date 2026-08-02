@@ -1,0 +1,29 @@
+{
+	"rueckkehr": {
+		"titel": "Welcome back!",
+		"untertitel": "You were away for {tage} days — Gooby is over the moon that you're here again!",
+		"geschichten_titel": "What you missed",
+		"story": {
+			"fenster": "Gooby sat by the window every day, watching out for you.",
+			"kissen": "Gooby fluffed every pillow — several times. Best to be prepared.",
+			"staub": "Gooby chased a dust bunny. The dust bunny won.",
+			"garten": "Gooby checked on the garden beds, nodding very importantly.",
+			"ranch": "Gooby visited the ranch and told the horses all about you.",
+			"ball": "Gooby threw the ball and then fetched it himself. Both jobs.",
+			"kuehlschrank": "Gooby looked inside the fridge VERY often. Just looking, honest.",
+			"radio": "Gooby listened to the radio and hummed along to your favorite song.",
+			"fotos": "Gooby looked through your photos together and sniffled a little.",
+			"arcade": "Gooby secretly practiced for the arcade. His record? Classified."
+		},
+		"quest_titel": "Settle back in gently",
+		"quest_hinweis": "No rush at all — Gooby loves every little moment:",
+		"aufgabe": {
+			"rk_streicheln": "Pet Gooby {ziel} times",
+			"rk_fuettern": "Give Gooby something tasty to eat",
+			"rk_spielen": "Play one round together in the arcade"
+		},
+		"belohnung": "A reunion gift waits at the end: +{muenzen} coins and +{xp} XP.",
+		"fertig_toast": "All settled back in! +{muenzen} coins, +{xp} XP 💛",
+		"button": "I'm home!"
+	}
+}
