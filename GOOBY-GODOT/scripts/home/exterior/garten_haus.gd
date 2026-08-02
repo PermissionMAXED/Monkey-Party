@@ -27,10 +27,12 @@ const SCHORNSTEIN_GROESSE := Vector3(0.5, 1.0, 0.5)
 var _haus: Node3D
 
 
-## Haus an den Garten-Raum hängen (nur Outdoor-Räume; idempotent).
+## Haus an den Garten-Raum hängen (NUR der Garten ist das Grundstück —
+## der Balkon (I-07) ist zwar outdoor, hängt aber AM Haus; das Außenmodell
+## stünde dort doppelt in der Szene). Idempotent.
 static func attach_to(room: Node) -> GartenHaus:
 	var room_def: Dictionary = room.room_def()
-	if not bool(room_def.get("outdoor", false)):
+	if str(room_def.get("id", "")) != "garden":
 		return null
 	var vorhanden := room.get_node_or_null("GartenHaus")
 	if vorhanden is GartenHaus:

@@ -16,17 +16,23 @@ const WAND_DICKE := 0.09
 const SCHATTEN := 0.16
 
 
-## Nischen für ALLE Türen eines Innenraums bauen (RoomBase ruft das).
+## Nischen für alle FREIEN Türen in HAUS-Wänden bauen (RoomBase ruft das).
+## Zaun-Türen (Gartentor) führen ins Freie — keine Nische. Gesperrte
+## Ausbau-Türen (I-07) sind zugemauert — dort hängt das Bauplan-Portal,
+## eine Nische dahinter würde durch die Wand blitzen. Die Balkon-Glastür
+## dagegen bekommt ihre Nische: durchs Glas schaut man „zurück ins Haus".
 static func attach_to(room: Node) -> FlurBlick:
 	var room_def: Dictionary = room.room_def()
-	if bool(room_def.get("outdoor", false)):
-		return null
 	var vorhanden := room.get_node_or_null("FlurBlick")
 	if vorhanden is FlurBlick:
 		return vorhanden
 	var blick := FlurBlick.new()
 	blick.name = "FlurBlick"
 	for door_def: Dictionary in room_def.get("doors", []):
+		if HouseLayout.zaun_wand(room_def, str(door_def.get("wall", "N"))):
+			continue
+		if not HausAusbau.tuer_frei(room.game_state(), door_def):
+			continue
 		blick.add_child(blick.nische(room_def, door_def))
 	room.add_child(blick)
 	return blick
@@ -44,9 +50,16 @@ func nische(room_def: Dictionary, door_def: Dictionary) -> Node3D:
 	var boden_farbe: Color = ziel.get("floor_color", Color("#C9A36B"))
 	var wand_farbe: Color = ziel.get("wall_color", Color("#FFF6EC"))
 	var breite := RoomDefs.DOOR_WIDTH * GridData.CELL_SIZE + 0.7
+	var kind := str(door_def.get("kind", ""))
+	var runter := kind == "treppe_runter"
 	var boden := _box(Vector3(breite, 0.08, TIEFE), boden_farbe.darkened(SCHATTEN * 0.6), "Boden")
-	boden.position = Vector3(0.0, -0.04, -RoomBase.WALL_THICKNESS - TIEFE * 0.5)
+	# Beim Abgang liegt der „Boden" als Podest unten im Treppenloch.
+	boden.position = Vector3(
+		0.0, -0.94 if runter else -0.04, -RoomBase.WALL_THICKNESS - TIEFE * 0.5
+	)
 	wurzel.add_child(boden)
+	if kind == "treppe_rauf" or runter:
+		_treppe(wurzel, boden_farbe, not runter)
 	var rueck := _box(
 		Vector3(breite, HOEHE, WAND_DICKE), wand_farbe.darkened(SCHATTEN), "Rueckwand"
 	)
@@ -62,6 +75,22 @@ func nische(room_def: Dictionary, door_def: Dictionary) -> Node3D:
 	bild.position = Vector3(0.0, 1.45, -RoomBase.WALL_THICKNESS - TIEFE + WAND_DICKE + 0.02)
 	wurzel.add_child(bild)
 	return wurzel
+
+
+## Treppen-Silhouette in der Nische (I-07): rauf = Stufen steigen zur
+## Rückwand an, runter = sie fallen ins Kellerdunkel ab. Bewusst nur
+## Andeutung — die echte Reise bleibt die Tür-Fahrt.
+func _treppe(wurzel: Node3D, farbe: Color, rauf: bool) -> void:
+	var breite := RoomDefs.DOOR_WIDTH * GridData.CELL_SIZE * 0.94
+	var stufen := 4
+	var schritt := (TIEFE - 0.4) / stufen
+	for i in stufen:
+		var y := (i + 0.5) * 0.17 if rauf else -(i + 0.5) * 0.22
+		var stufe := _box(
+			Vector3(breite, 0.16, 0.34), farbe.darkened(0.12 + i * 0.07), "Stufe%d" % i
+		)
+		stufe.position = Vector3(0.0, y, -RoomBase.WALL_THICKNESS - 0.24 - i * schritt)
+		wurzel.add_child(stufe)
 
 
 func _box(size: Vector3, farbe: Color, box_name: String) -> MeshInstance3D:

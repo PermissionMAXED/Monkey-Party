@@ -50,6 +50,32 @@ const RAUM_PROFILE := {
 		"hintergrund": Color(0.75, 0.89, 0.95),
 		"waerme": 0.5,
 	},
+	# I-07 Haus-Ausbau: Keller = gemütliches Halbdunkel mit warmer Funzel,
+	# Etage = luftig-hell unterm Dach, Balkon = Draußen-Licht wie im Garten.
+	"basement":
+	{
+		"ambient_farbe": Color(0.78, 0.74, 0.68),
+		"sonnen_farbe": Color(0.85, 0.78, 0.64),
+		"fuell_farbe": Color(1.0, 0.76, 0.48),
+		"hintergrund": Color(0.55, 0.52, 0.47),
+		"waerme": 1.2,
+	},
+	"floor2":
+	{
+		"ambient_farbe": Color(1.0, 0.96, 0.89),
+		"sonnen_farbe": Color(1.0, 0.95, 0.82),
+		"fuell_farbe": Color(1.0, 0.9, 0.7),
+		"hintergrund": Color(0.99, 0.95, 0.87),
+		"waerme": 0.9,
+	},
+	"balcony":
+	{
+		"ambient_farbe": Color(0.94, 0.97, 1.0),
+		"sonnen_farbe": Color(1.0, 0.97, 0.88),
+		"fuell_farbe": Color(0.95, 1.0, 0.92),
+		"hintergrund": Color(0.78, 0.9, 0.96),
+		"waerme": 0.5,
+	},
 }
 
 ## W13/WETTER-FX: Blitz-Flash durchs Fenster (Dioramen) — Dauer und

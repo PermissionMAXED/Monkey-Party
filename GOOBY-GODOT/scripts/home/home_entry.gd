@@ -118,6 +118,8 @@ func _on_travel_finished(target: Variant = null) -> void:
 	PflegeRunner.attach_to(room)
 	# W13B: Schüttel-Secret (Accelerometer, Doc F §5) lauscht pro Raum.
 	ShakeSecret.attach_to(room)
+	# I-07: Bauplan-Portale an gesperrten Ausbau-Türen + Kauf-/Feier-Flow.
+	HausAusbauFlow.attach_to(room)
 
 
 ## HUD nur im Raum (RoomBase) zeigen — Album/Arcade/Social/Stadt sind

@@ -5,7 +5,28 @@
 			"kitchen": "Kitchen",
 			"bathroom": "Bathroom",
 			"bedroom": "Bedroom",
-			"garden": "Garden"
+			"garden": "Garden",
+			"basement": "Basement",
+			"floor2": "Second Floor",
+			"balcony": "Balcony"
+		},
+		"ausbau": {
+			"titel": "Build {raum}?",
+			"preis": "{preis} coins",
+			"bauen": "Build it!",
+			"spaeter": "Later",
+			"zu_teuer": "We're {fehlt} coins short… let's keep saving!",
+			"brauch_erst": "First we need: {raum}!",
+			"pitch": {
+				"basement": "A basement! For supplies, secret stuff and hide-and-seek world records!",
+				"floor2": "A whole floor just for us! EVERYTHING fits up there!",
+				"balcony": "A balcony! Practice waving! Count clouds! Be outside!"
+			},
+			"feier": {
+				"basement": "Our basement! It echoes down here — HELLO! Hello! hello…",
+				"floor2": "A whole new floor! I'll do a lap!",
+				"balcony": "Balcony air! I'm just going to wave at everyone!"
+			}
 		},
 		"tuer": {
 			"stuck": "Gooby got stuck!",

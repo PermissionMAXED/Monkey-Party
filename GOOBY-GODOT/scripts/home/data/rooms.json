@@ -13,7 +13,9 @@
 			"doors": [
 				{ "id": "living_kueche", "to": "kitchen", "to_door": "kueche_living", "wall": "N", "offset": 2 },
 				{ "id": "living_schlafzimmer", "to": "bedroom", "to_door": "schlafzimmer_living", "wall": "W", "offset": 4 },
-				{ "id": "living_garten", "to": "garden", "to_door": "garten_living", "wall": "E", "offset": 5 }
+				{ "id": "living_garten", "to": "garden", "to_door": "garten_living", "wall": "E", "offset": 5 },
+				{ "id": "living_etage", "to": "floor2", "to_door": "etage_living", "wall": "W", "offset": 0, "kind": "treppe_rauf" },
+				{ "id": "living_keller", "to": "basement", "to_door": "keller_living", "wall": "E", "offset": 8, "kind": "treppe_runter" }
 			]
 		},
 		{
@@ -54,6 +56,54 @@
 			"doors": [
 				{ "id": "schlafzimmer_living", "to": "living", "to_door": "living_schlafzimmer", "wall": "E", "offset": 3 },
 				{ "id": "schlafzimmer_bad", "to": "bathroom", "to_door": "bad_schlafzimmer", "wall": "N", "offset": 6 }
+			]
+		},
+		{
+			"id": "basement",
+			"walls": {},
+			"name_key": "home.raum.basement",
+			"scene": "res://scenes/home/keller.tscn",
+			"grid": [12, 10],
+			"floor_color": "#8F7F6B",
+			"wall_color": "#E3D6BE",
+			"price": 8000,
+			"windows": [],
+			"doors": [
+				{ "id": "keller_living", "to": "living", "to_door": "living_keller", "wall": "N", "offset": 5, "kind": "treppe_rauf" }
+			]
+		},
+		{
+			"id": "floor2",
+			"walls": { "N": "strasse" },
+			"name_key": "home.raum.floor2",
+			"scene": "res://scenes/home/etage.tscn",
+			"grid": [12, 10],
+			"floor_color": "#C9A36B",
+			"wall_color": "#FFF9F0",
+			"price": 15000,
+			"windows": [
+				{ "wall": "N", "offset": 4, "size": 2 },
+				{ "wall": "N", "offset": 8, "size": 2 }
+			],
+			"doors": [
+				{ "id": "etage_living", "to": "living", "to_door": "living_etage", "wall": "W", "offset": 4, "kind": "treppe_runter" },
+				{ "id": "etage_balkon", "to": "balcony", "to_door": "balkon_etage", "wall": "E", "offset": 5, "kind": "glastuer" }
+			]
+		},
+		{
+			"id": "balcony",
+			"name_key": "home.raum.balcony",
+			"scene": "res://scenes/home/balkon.tscn",
+			"grid": [8, 4],
+			"floor_color": "#B98D62",
+			"wall_color": "#D9B88F",
+			"outdoor": true,
+			"haus_waende": ["N"],
+			"price": 5000,
+			"requires": ["floor2"],
+			"windows": [],
+			"doors": [
+				{ "id": "balkon_etage", "to": "floor2", "to_door": "etage_balkon", "wall": "N", "offset": 3, "kind": "glastuer" }
 			]
 		},
 		{

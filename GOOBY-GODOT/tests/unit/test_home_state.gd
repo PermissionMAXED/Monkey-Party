@@ -73,7 +73,7 @@ func test_erstbezug_fuellt_default_layout() -> void:
 	var gs := _fresh_gs()
 	HomeState.ensure_initialized(gs)
 	var rooms: Dictionary = gs.get_value("home.rooms")
-	assert_eq(rooms.keys().size(), 5, "alle 5 Räume bestückt")
+	assert_eq(rooms.keys().size(), RoomDefs.ids().size(), "alle Räume bestückt (I-07: 8)")
 	assert_eq(
 		rooms["living"]["items"].size(), RoomDefs.default_layout("living").size(), "Wohnzimmer"
 	)
@@ -95,10 +95,11 @@ func test_grid_laden_speichern_roundtrip() -> void:
 	assert_eq(grid.to_items_array().size(), items_vorher.size(), "alles rekonstruiert")
 	var def := FurnitureCatalog.def("chair")
 	var uid := HomeState.next_uid(gs)
-	assert_true(grid.place(def, Vector2i(0, 0), 0, uid)["ok"])
+	# (2,2) statt (0,0): die Ecke ist seit I-07 Türzone der Etagen-Treppe.
+	assert_true(grid.place(def, Vector2i(2, 2), 0, uid)["ok"])
 	HomeState.save_room_grid(gs, "living", grid)
 	var reloaded := HomeState.load_room_grid(gs, "living")
-	assert_eq(reloaded.get_item(uid)["at"], Vector2i(0, 0), "Save→Load erhält Platzierung")
+	assert_eq(reloaded.get_item(uid)["at"], Vector2i(2, 2), "Save→Load erhält Platzierung")
 	_teardown(gs)
 
 

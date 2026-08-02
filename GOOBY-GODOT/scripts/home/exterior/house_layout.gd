@@ -17,15 +17,20 @@ extends RefCounted
 const FASSADE_STRASSE := "nord"
 const FASSADE_GARTEN := "sued"
 
-## Raum → Platz im Haus: fassade (nord = Straßenseite, sued = Gartenseite),
-## etage (0 = Erdgeschoss, 1 = Dachgeschoss ⇒ Dachschräge) und spalte
-## (Position auf der Fassade, 0 = West). MUSS zu rooms.json `walls` passen
+## Raum → Platz im Haus: fassade (nord = Straßenseite, sued = Gartenseite,
+## keller = unter der Erde ohne Fassade), etage (-1 = Keller, 0 =
+## Erdgeschoss, 1 = Dachgeschoss ⇒ Dachschräge) und spalte (Position auf
+## der Fassade, 0 = West). MUSS zu rooms.json `walls` passen
 ## (CatalogSync-Gedanke — test_haussicht_layout.gd wacht darüber).
+## I-07: floor2 liegt DIREKT über dem Wohnzimmer (die Treppe verbindet
+## beide), der Keller darunter; der Balkon ist outdoor und hängt außen an.
 const RAUM_PLAN := {
 	"living": {"fassade": "nord", "etage": 0, "spalte": 0},
 	"kitchen": {"fassade": "sued", "etage": 0, "spalte": 0},
 	"bedroom": {"fassade": "nord", "etage": 1, "spalte": 1},
 	"bathroom": {"fassade": "sued", "etage": 1, "spalte": 1},
+	"floor2": {"fassade": "nord", "etage": 1, "spalte": 0},
+	"basement": {"fassade": "keller", "etage": -1, "spalte": 0},
 }
 
 ## Südfassaden-Fenster von HouseExterior (Plot-X), von West nach Ost —
@@ -37,6 +42,27 @@ const SUED_FENSTER_X: Array[float] = [4.2, 8.6]
 ## begehbare RoomBase-Tür (steht bei z = 0) IN der Fassadenebene sitzt und
 ## als Haustür liest.
 const HAUS_SCHWELLE := 0.18
+
+## Lattenzaun-Braun der Outdoor-Brüstungen (Garten-Zaun, Balkon-Geländer).
+const ZAUN_FARBE := Color(0.55, 0.4, 0.28)
+
+
+## Zaun oder Hauswand? Outdoor-Räume bekommen Lattenzaun-Brüstungen —
+## außer auf Wänden, die laut rooms.json `haus_waende` an der Hausfassade
+## lehnen (I-07: die N-Wand des Balkons IST das Haus — dort sitzt die
+## Glastür in voller Wandhöhe, statt übers Geländer zu ragen).
+static func zaun_wand(room_def: Dictionary, wall: String) -> bool:
+	if not bool(room_def.get("outdoor", false)):
+		return false
+	var haus_waende: Array = room_def.get("haus_waende", [])
+	return not haus_waende.has(wall)
+
+
+## Farbe eines Wandsegments: Zaun-Braun für Zäune, sonst Raum-Wandfarbe.
+static func wand_farbe(room_def: Dictionary, wall: String) -> Color:
+	if zaun_wand(room_def, wall):
+		return ZAUN_FARBE
+	return room_def.get("wall_color", Color("#FFF6EC"))
 
 
 static func plan(room_id: String) -> Dictionary:

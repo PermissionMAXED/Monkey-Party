@@ -21,7 +21,12 @@ func test_fassade_passt_zur_vista_aus_rooms_json() -> void:
 	# Kompass-Invariante: `walls.N` = strasse ⇒ Nordfassade, = garten ⇒
 	# Südfassade. Bricht das, zeigen Dioramen/Dachschräge in falsche Richtung.
 	for room_id: String in HouseLayout.RAUM_PLAN:
-		var vista := str(RoomDefs.exterior_walls(RoomDefs.room(room_id)).get("N", ""))
+		var aussen := RoomDefs.exterior_walls(RoomDefs.room(room_id))
+		if aussen.is_empty():
+			# I-07: Keller liegt unter der Erde — keine Fassade, keine Vista.
+			assert_eq(HouseLayout.fassade(room_id), "keller", "%s: unterirdisch" % room_id)
+			continue
+		var vista := str(aussen.get("N", ""))
 		var erwartet := (
 			HouseLayout.FASSADE_STRASSE if vista == "strasse" else HouseLayout.FASSADE_GARTEN
 		)
@@ -37,6 +42,12 @@ func test_etagen_sind_konsistent() -> void:
 	assert_eq(HouseLayout.etage("kitchen"), 0, "Küche im Erdgeschoss")
 	assert_eq(HouseLayout.etage("bedroom"), 1, "Schlafzimmer im Dachgeschoss")
 	assert_eq(HouseLayout.etage("bathroom"), 1, "Bad im Dachgeschoss")
+	# I-07: die kaufbare Etage liegt DIREKT über dem Wohnzimmer (Treppe!),
+	# der Keller darunter — gleiche Spalte, andere Ebene.
+	assert_eq(HouseLayout.etage("floor2"), 1, "Zweite Etage oben")
+	assert_eq(HouseLayout.etage("basement"), -1, "Keller unter der Erde")
+	assert_eq(HouseLayout.plan("floor2")["spalte"], HouseLayout.plan("living")["spalte"])
+	assert_eq(HouseLayout.plan("basement")["spalte"], HouseLayout.plan("living")["spalte"])
 
 
 func test_sued_fenster_gehoeren_den_gartenraeumen() -> void:

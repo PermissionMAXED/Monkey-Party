@@ -91,11 +91,18 @@ func test_hinter_jeder_tuer_liegt_eine_nische() -> void:
 	await wait_frames(4)
 	var blick := _blick(living)
 	assert_true(blick != null, "Wohnzimmer trägt FlurBlick")
+	# I-07: Nischen gibt es nur hinter FREIEN Türen — gesperrte Ausbauten
+	# sind zugemauert, eine Nische würde durch die Wand blitzen.
 	var tueren: Array = RoomDefs.room("living").get("doors", [])
-	assert_eq(blick.get_child_count(), tueren.size(), "Eine Nische pro Tür")
+	var freie := 0
 	for door_def: Dictionary in tueren:
 		var nische := blick.get_node_or_null("Nische_%s" % str(door_def["id"]))
-		assert_true(nische != null, "Nische hinter %s" % str(door_def["id"]))
+		if HausAusbau.tuer_frei(gs, door_def):
+			freie += 1
+			assert_true(nische != null, "Nische hinter %s" % str(door_def["id"]))
+		else:
+			assert_true(nische == null, "KEINE Nische hinter %s" % str(door_def["id"]))
+	assert_eq(blick.get_child_count(), freie, "Eine Nische pro freier Tür")
 	# Nischen-Farbe = Zielraum-Farbe (leicht abgedunkelt): Küche hinter der
 	# Küchen-Tür, nicht irgendein Grau.
 	var kueche_nische := blick.get_node("Nische_living_kueche")

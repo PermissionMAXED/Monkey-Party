@@ -55,13 +55,19 @@ static func plopp(parent: Node3D, neubau: Node3D, world_pos: Vector3, staerke :=
 		await parent.get_tree().create_timer(DAUER_REDUZIERT).timeout
 	else:
 		await parent.get_tree().create_timer(DAUER * 0.5).timeout
+		# Der Raum kann während der Pause sterben (Tür-Reise/Reload, I-07
+		# Einweihungs-Plopp) — leise aussteigen statt auf der Leiche tweenen.
+		if not is_instance_valid(parent) or not is_instance_valid(neubau):
+			return
 		var tween := parent.create_tween()
 		tween.set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 		tween.tween_property(neubau, "scale", Vector3.ONE, 0.45)
 		await tween.finished
+		if not is_instance_valid(parent):
+			return
 		AudioDirector.try_play(parent, SFX_FERTIG)
 		await parent.get_tree().create_timer(0.5).timeout
-	if smoke != null:
+	if smoke != null and is_instance_valid(smoke):
 		smoke.queue_free()
 
 

@@ -74,11 +74,16 @@ func test_pflicht_slot_letztes_item_regel() -> void:
 
 
 func test_raum_definitionen() -> void:
-	assert_eq(RoomDefs.ids(), ["bathroom", "bedroom", "garden", "kitchen", "living"])
+	assert_eq(
+		RoomDefs.ids(),
+		["balcony", "basement", "bathroom", "bedroom", "floor2", "garden", "kitchen", "living"]
+	)
 	for room_id: String in RoomDefs.ids():
 		var room := RoomDefs.room(room_id)
 		var grid_size: Vector2i = room["grid"]
-		assert_true(grid_size.x >= 6 and grid_size.y >= 6, "%s: Mindestgröße" % room_id)
+		# I-07: Außen-Anbauten (Balkon) dürfen flacher sein als echte Zimmer.
+		var min_tiefe := 4 if bool(room.get("outdoor", false)) else 6
+		assert_true(grid_size.x >= 6 and grid_size.y >= min_tiefe, "%s: Mindestgröße" % room_id)
 		assert_true(
 			ResourceLoader.exists(str(room["scene"])),
 			"%s: Szene fehlt: %s" % [room_id, room["scene"]]
@@ -116,7 +121,10 @@ func test_default_layouts_kollisionsfrei() -> void:
 				res["ok"],
 				"%s: %s @ %s → %s" % [room_id, entry["item"], str(entry["at"]), res["reason"]]
 			)
-		assert_true(seq >= 8, "%s: liebevolles Layout (≥8 Items, sind %d)" % [room_id, seq])
+		if HausAusbau.ist_ausbau(room_id):
+			assert_eq(seq, 0, "%s: Ausbau-Räume starten bewusst LEER (I-07)" % room_id)
+		else:
+			assert_true(seq >= 8, "%s: liebevolles Layout (≥8 Items, sind %d)" % [room_id, seq])
 
 
 func test_default_layout_laesst_tueren_erreichbar() -> void:
@@ -159,6 +167,7 @@ func test_schlafzimmer_startet_ohne_bett() -> void:
 
 func test_route_table() -> void:
 	var routes := RoomDefs.route_table()
-	assert_eq(routes.size(), 5)
+	assert_eq(routes.size(), 8)
 	assert_eq(routes[&"home/living"], "res://scenes/home/wohnzimmer.tscn")
+	assert_eq(routes[&"home/basement"], "res://scenes/home/keller.tscn")
 	assert_eq(RoomDefs.route_target("garden"), &"home/garden")

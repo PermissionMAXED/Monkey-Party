@@ -744,7 +744,7 @@ func _refresh_raum_chips() -> void:
 	_raum_chips.visible = innen
 	if not innen:
 		return
-	for room_id: String in RoomDefs.ids():
+	for room_id: String in HausAusbau.sichtbare_raum_ids(_game_state()):
 		if bool(RoomDefs.room(room_id).get("outdoor", false)):
 			continue
 		var chip := SquishButton.new()

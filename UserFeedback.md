@@ -158,6 +158,37 @@ Original-Links sind alle übernommen:)_
       „Briefkasten" nicht mehr ab, Baumodus-Knopf-Salat aufgeräumt (HUD gleitet
       animiert weg, Kamera-Chips weichen dem Dock aus).
 
+- [x] **Haus-Ausbau: Keller + Zweite Etage + Balkon (2. August, I-07 aus
+      Welle J — nächster Top-12-Punkt nach Fohlen und Rückkehrer):** Das
+      Haus wächst jetzt WIRKLICH: an den Wohnzimmer-Wänden hängen
+      **Bauplan-Portale** (geisterhafte Blaupausen-Zargen mit Holzschild:
+      Raumname + Preis) für **Keller (8000)** und **Zweite Etage
+      (15000)**; oben wartet der **Balkon (5000, braucht erst die
+      Etage)** hinter einer Glastür-Blaupause. Antippen öffnet die
+      Kauf-Karte (Pitch + Preis, „Bauen!“/„Später“; zu teuer oder
+      Voraussetzung fehlt wird ehrlich als Sprechblase gesagt), der Kauf
+      läuft über die echte Economy, dann hämmert Gooby die Wand auf
+      (Bau-Gag + Rauch-Plopp) und statt des Portals steht die **Treppe**:
+      rauf zur Etage, runter in den Keller — offene Treppen-Durchgänge
+      ohne Türblatt, mit Stufen-Silhouette in der Flur-Nische; die
+      Glastür zum Balkon ist durchsichtig mit Blick „zurück ins Haus“.
+      Die Räume haben Charakter: der Keller ist fensterlos unter der
+      Erde (eigenes Funzel-Profil in HomeLicht, Fassade „keller“ im
+      Hausplan), die Etage hell mit Dachschräge direkt überm Wohnzimmer,
+      der Balkon hängt AN der Hausfassade (N-Wand = Haus in voller Höhe
+      mit Glastür, die anderen Seiten Geländer — und das
+      Garten-Außenmodell bleibt jetzt exklusiv im Garten statt doppelt
+      auf dem Balkon zu stehen). Einweihungs-Feier beim ersten Betreten
+      (Tür-Plopp + Spruch, crash-sicher als Flag im Spielstand),
+      gesperrte Ausbauten tauchen in keiner Gestalten-Liste auf, ihre
+      Wände bleiben bis zum Kauf zugemauert (Portal statt Loch), alle
+      drei sind einrichtbare Vollräume (Baumodus, eigene Grids). DE+EN.
+      Wache: `test_haus_ausbau.gd` (Daten-Integrität inkl. Treppen/
+      Glastür-Kinds auf beiden Seiten, zugemauerte Wand-Spans, Kauf-Pfad
+      inkl. nie-doppelt, requires Balkon→Etage, Feier-Lebenszyklus,
+      Sichtbarkeits-Filter, Flow-Integration Portal→Karte→Neubau,
+      Balkon-Fassaden-Semantik statt Garten-Haus). Preflight grün
+      (3575 PASS).
 - [x] **Onkel-Alwin-Ritual (2. August, das Alwin-NPC-Paket aus der
       Wellen-J/K-Warteschlange):** Onkel Alwin ist im Goo-und-Bye-Laden
       jetzt eine ECHTE Type statt nur der erste Bon: Punkt 9 Uhr kommt er

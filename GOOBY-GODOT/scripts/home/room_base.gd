@@ -427,7 +427,7 @@ func _build_walls() -> void:
 	_wall_mount.name = "Walls"
 	add_child(_wall_mount)
 	_fenster_stand = _fenster_signatur()
-	var spans: Dictionary = RoomDefs.wall_door_spans(_room_def)
+	var spans: Dictionary = HausAusbau.offene_tuer_spans(_gs, _room_def)
 	# S-Wand (Kameraseite) bleibt innen offen, damit die Sicht frei ist.
 	var walls: Array[String] = ["N", "W", "E"]
 	if _is_outdoor():
@@ -455,13 +455,14 @@ func _build_walls() -> void:
 ## frei (Fenster nur in Brüstungshöhe, damit das Diorama sichtbar wird).
 func _build_wall_segments(wall: String, door_spans: Array) -> void:
 	var width := grid.wall_width(wall)
-	var height := FENCE_HEIGHT if _is_outdoor() else WALL_HEIGHT
+	var zaun := HouseLayout.zaun_wand(_room_def, wall)
+	var height := FENCE_HEIGHT if zaun else WALL_HEIGHT
 	var oeffnungen: Array[Dictionary] = []
 	for span: Array in door_spans:
-		var oben := height if _is_outdoor() else DoorTransition.DOOR_HEIGHT
+		var oben := height if zaun else DoorTransition.DOOR_HEIGHT
 		oeffnungen.append({"von": int(span[0]), "bis": int(span[1]), "y0": 0.0, "y1": oben})
 	# HAUS-SICHT: kein Garten-Zaun, wo die Hausfassade die Grenze ist.
-	if _is_outdoor() and wall == "N":
+	if zaun and wall == "N":
 		oeffnungen.append_array(HouseLayout.zaun_oeffnungen(_room_def, height))
 	for span: Array in _fenster_spans(wall):
 		oeffnungen.append(
@@ -524,9 +525,7 @@ func _add_wall_box(wall: String, from: int, to: int, y0: float, y1: float) -> vo
 	var size := _world_size()
 	var mesh := MeshInstance3D.new()
 	var box := BoxMesh.new()
-	var wall_color: Color = _room_def["wall_color"]
-	if _is_outdoor():
-		wall_color = Color(0.55, 0.4, 0.28)
+	var wall_color := HouseLayout.wand_farbe(_room_def, wall)
 	var along_x := wall == "N" or wall == "S"
 	box.size = (
 		Vector3(length, y1 - y0, WALL_THICKNESS)
@@ -690,10 +689,10 @@ func _build_wandbord() -> void:
 
 func _build_doors() -> void:
 	for door_def: Dictionary in _room_def.get("doors", []):
-		var door := DoorTransition.new()
-		door.setup(
-			str(door_def["id"]), str(door_def.get("to", "")), str(door_def.get("to_door", ""))
-		)
+		# I-07: gesperrte Ausbau-Türen existieren noch nicht (Bauplan-Portal).
+		if not HausAusbau.tuer_frei(_gs, door_def):
+			continue
+		var door := DoorTransition.fuer_def(door_def)
 		door.position = RoomDefs.door_world_pos(_room_def, door_def)
 		door.rotation.y = _inward_yaw(str(door_def.get("wall", "N")))
 		door.tapped.connect(_on_door_tapped)

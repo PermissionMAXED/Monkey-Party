@@ -26,6 +26,10 @@ static var last_was_stuck := false
 var door_id := ""
 var target_room := ""
 var to_door_id := ""
+## I-07: "" = normale Zimmertür, "treppe_rauf"/"treppe_runter" = offener
+## Treppen-Durchgang (kein Blatt, Stufen malt FlurBlick), "glastuer" =
+## Balkon-Tür mit Scheibe.
+var kind := ""
 var door_width := RoomDefs.DOOR_WIDTH * GridData.CELL_SIZE
 var logic: DoorLogic
 
@@ -35,6 +39,16 @@ var _sterne: GPUParticles3D
 var _busy := false
 var _open_tween: Tween
 var _travel_gooby: Node3D
+
+
+## Tür direkt aus einem rooms.json-Tür-Def bauen (liest auch `kind`).
+static func fuer_def(door_def: Dictionary) -> DoorTransition:
+	var door := DoorTransition.new()
+	door.kind = str(door_def.get("kind", ""))
+	door.setup(
+		str(door_def.get("id", "")), str(door_def.get("to", "")), str(door_def.get("to_door", ""))
+	)
+	return door
 
 
 ## Baut die Tür-Optik + Tap-Fläche (von RoomBase gerufen).
@@ -170,6 +184,13 @@ func _build_panel() -> void:
 	_hinge.name = "Hinge"
 	_hinge.position = Vector3(-door_width * 0.5, 0.0, 0.0)
 	add_child(_hinge)
+	# I-07: Treppen sind offene Durchgänge — kein Türblatt (der leere Hinge
+	# hält die Öffnen-/Rattle-Tweens harmlos am Leben).
+	if kind == "treppe_rauf" or kind == "treppe_runter":
+		return
+	if kind == "glastuer":
+		_build_glas_blatt()
+		return
 	var glb := HomeProps.prop_glb("tuer_blatt")
 	if glb != null:
 		if not is_equal_approx(door_width, 1.0):
@@ -211,8 +232,52 @@ func _build_panel() -> void:
 	_hinge.add_child(knob)
 
 
+## Glastür (I-07, Balkon): weißer Rahmen + durchscheinende Scheibe am
+## Hinge — dieselbe Öffnen-Mechanik wie das Holzblatt.
+func _build_glas_blatt() -> void:
+	var rahmen_farbe := Color(0.93, 0.93, 0.9)
+	var senkrecht := BoxMesh.new()
+	senkrecht.size = Vector3(0.08, DOOR_HEIGHT, DOOR_THICKNESS)
+	for x: float in [0.04, door_width - 0.04]:
+		var holm := MeshInstance3D.new()
+		holm.mesh = senkrecht
+		holm.material_override = _flat_material(rahmen_farbe)
+		holm.position = Vector3(x, DOOR_HEIGHT * 0.5, 0.0)
+		_hinge.add_child(holm)
+	var quer := BoxMesh.new()
+	quer.size = Vector3(door_width, 0.08, DOOR_THICKNESS)
+	for y: float in [0.04, 1.0, DOOR_HEIGHT - 0.04]:
+		var riegel := MeshInstance3D.new()
+		riegel.mesh = quer
+		riegel.material_override = _flat_material(rahmen_farbe)
+		riegel.position = Vector3(door_width * 0.5, y, 0.0)
+		_hinge.add_child(riegel)
+	var scheibe := MeshInstance3D.new()
+	var glas := BoxMesh.new()
+	glas.size = Vector3(door_width - 0.1, DOOR_HEIGHT - 0.1, 0.02)
+	scheibe.mesh = glas
+	var glas_mat := StandardMaterial3D.new()
+	glas_mat.albedo_color = Color(0.75, 0.88, 0.95, 0.3)
+	glas_mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	glas_mat.roughness = 0.1
+	scheibe.material_override = glas_mat
+	scheibe.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	scheibe.position = Vector3(door_width * 0.5, DOOR_HEIGHT * 0.5, 0.0)
+	_hinge.add_child(scheibe)
+	var griff := MeshInstance3D.new()
+	var griff_mesh := BoxMesh.new()
+	griff_mesh.size = Vector3(0.04, 0.22, 0.04)
+	griff.mesh = griff_mesh
+	griff.material_override = _flat_material(Color(0.7, 0.72, 0.75))
+	griff.position = Vector3(door_width * 0.88, 1.0, DOOR_THICKNESS * 0.5 + 0.03)
+	_hinge.add_child(griff)
+
+
 ## Fußmatte (Kenney-GLB) vor der Tür — echtes Asset statt Farbfläche.
 func _build_doormat() -> void:
+	# Vor einer Treppe liegt keine Matte — die Stufen starten an der Kante.
+	if kind == "treppe_rauf" or kind == "treppe_runter":
+		return
 	var pfad := "res://assets/furniture/rugDoormat.glb"
 	if not ResourceLoader.exists(pfad):
 		return

@@ -41,14 +41,22 @@ func test_alle_raum_szenen_bauen_sich_auf() -> void:
 		var ok := await wait_until(func() -> bool: return revealed[0], 8000)
 		assert_true(ok, "%s: ready_for_reveal (Router-Contract)" % room_id)
 		assert_true(room.grid != null, "%s: Grid geladen" % room_id)
-		assert_true(room.grid.to_items_array().size() >= 8, "%s: Default-Layout bestückt" % room_id)
+		# I-07: Ausbau-Räume (Keller/Etage/Balkon) starten bewusst leer.
+		if not HausAusbau.ist_ausbau(room_id):
+			assert_true(
+				room.grid.to_items_array().size() >= 8, "%s: Default-Layout bestückt" % room_id
+			)
 		assert_true(room.gooby() != null, "%s: Gooby gespawnt" % room_id)
-		var doors: int = RoomDefs.room(room_id)["doors"].size()
+		# I-07: Türen zu GESPERRTEN Ausbauten existieren noch nicht als Nodes.
+		var doors := 0
+		for door_def: Dictionary in RoomDefs.room(room_id)["doors"]:
+			if HausAusbau.tuer_frei(gs, door_def):
+				doors += 1
 		var door_nodes := 0
 		for child in room.get_children():
 			if child is DoorTransition:
 				door_nodes += 1
-		assert_eq(door_nodes, doors, "%s: Tür-Nodes" % room_id)
+		assert_eq(door_nodes, doors, "%s: Tür-Nodes (nur freie Türen)" % room_id)
 		await wait_until(func() -> bool: return not room._rebake_pending, 3000)
 		await _cleanup(room, gs)
 

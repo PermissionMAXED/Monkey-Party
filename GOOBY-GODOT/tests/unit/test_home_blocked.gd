@@ -33,8 +33,10 @@ func test_wall_door_spans() -> void:
 	var room := RoomDefs.room("living")
 	var spans := RoomDefs.wall_door_spans(room)
 	assert_eq(spans["N"], [[2, 4]], "Küchen-Tür N offset 2")
-	assert_eq(spans["W"], [[4, 6]])
-	assert_eq(spans["E"], [[5, 7]])
+	# I-07: die Blockade kennt AUCH die (noch zugemauerten) Ausbau-Treppen —
+	# so stellt nie jemand ein Sofa dahin, wo später die Treppe steht.
+	assert_eq(spans["W"], [[4, 6], [0, 2]], "Schlafzimmer + Etagen-Treppe")
+	assert_eq(spans["E"], [[5, 7], [8, 10]], "Garten + Keller-Treppe")
 
 
 func test_zugebaute_tuer_wird_erkannt() -> void:

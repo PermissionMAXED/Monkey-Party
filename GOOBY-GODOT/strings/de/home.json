@@ -5,7 +5,28 @@
 			"kitchen": "Küche",
 			"bathroom": "Bad",
 			"bedroom": "Schlafzimmer",
-			"garden": "Garten"
+			"garden": "Garten",
+			"basement": "Keller",
+			"floor2": "Zweite Etage",
+			"balcony": "Balkon"
+		},
+		"ausbau": {
+			"titel": "{raum} bauen?",
+			"preis": "{preis} Münzen",
+			"bauen": "Bauen!",
+			"spaeter": "Später",
+			"zu_teuer": "Dafür fehlen noch {fehlt} Münzen… wir sparen weiter!",
+			"brauch_erst": "Dafür brauchen wir erst: {raum}!",
+			"pitch": {
+				"basement": "Ein Keller! Für Vorräte, Geheimsachen und Verstecken-Weltrekorde!",
+				"floor2": "Eine ganze Etage nur für uns! Da passt ALLES rein!",
+				"balcony": "Ein Balkon! Winken üben! Wolken zählen! Draußen sein!"
+			},
+			"feier": {
+				"basement": "Unser Keller! Hier unten hallt es — HALLO! Hallo! hallo…",
+				"floor2": "Eine ganze neue Etage! Ich renn mal im Kreis!",
+				"balcony": "Balkon-Luft! Ich winke einfach allen zu!"
+			}
 		},
 		"tuer": {
 			"stuck": "Gooby ist stecken geblieben!",
