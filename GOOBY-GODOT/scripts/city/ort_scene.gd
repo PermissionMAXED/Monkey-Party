@@ -131,7 +131,16 @@ func oeffne_laden() -> void:
 	var inhalt := HaendlerSheet.new()
 	inhalt.gs = game_state()
 	inhalt.waren = CitySortiment.laden(_sortiment_pfad())
+	# G7-P55b: Käufe quittiert die Kasse (Piep + Winken), wo es eine gibt.
+	inhalt.gekauft.connect(_on_kasse_kunde_zahlt)
 	zeige_sheet(I18nService.t("city.laden.titel"), inhalt)
+
+
+## G7-P55b: Kauf-Quittung an den Kassen-NPC durchreichen (no-op ohne
+## Kasse) — Orte mit eigenem Händler-UI rufen das aus ihrem Kauf-Handler.
+func _on_kasse_kunde_zahlt(_ware_id: String = "") -> void:
+	if kassen_npc != null:
+		kassen_npc.kunde_zahlt()
 
 
 ## Beliebigen Inhalt im Ort-PanelSheet zeigen (ein Sheet je Ort, wird neu

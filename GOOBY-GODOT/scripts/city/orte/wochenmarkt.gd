@@ -89,6 +89,27 @@ func _npc_konfig() -> Dictionary:
 	return {"tint": Color("#4FBF8B"), "emotion": "happy", "pos": Vector3(0.0, 0.0, -2.4)}
 
 
+## G7-P55b: Ambient-Leben auch auf dem Platz — 3 Marktbummler schlendern
+## zwischen den Ständen (die Spruch-Domain „markt“ lag schon bereit), dazu
+## Marktgemurmel; kein Glöckchen (freier Himmel) und keine Kasse (der
+## Eigenstand hat seinen eigenen Verkaufs-Flow).
+func _leben_konfig() -> Dictionary:
+	return {
+		"besucher": 3,
+		"punkte":
+		[
+			Vector3(4.8, 0.0, 1.4),
+			Vector3(2.8, 0.0, 0.5),
+			Vector3(1.4, 0.0, -2.0),
+			Vector3(-3.5, 0.0, -1.0),
+			Vector3(0.2, 0.0, 1.8),
+		],
+		"sprueche": "markt",
+		"blick": Vector3(0.0, 0.0, -4.0),
+		"gemurmel": true,
+	}
+
+
 ## Wochenmarkt VERKAUFT nicht, er KAUFT — plus (W15) der EIGENE Stand.
 ## Ein Sheet mit zwei Tabs: Ankauf (MarktSheet) und „Mein Stand“
 ## (MarktStandSheet mit Bestücken/Preis-Slidern/Replay/Abrechnung).

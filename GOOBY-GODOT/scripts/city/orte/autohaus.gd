@@ -4,7 +4,10 @@ extends OrtScene
 ## echten Wagen aus dem CarDef-Katalog (AutoKatalog → assets/city/autos),
 ## Teppich, Topfpflanze. Kauf + Farbwahl laufen über das AutohausSheet;
 ## das aktive Auto ist der Contract für die Fahr-Minispiele.
+## G7-P55b „Läden lebendig, Teil 2“: schauende Ambient-Kunden (OrtLeben),
+## Blechbert bekommt das Kassen-Verhalten und eine möblierte Beratungsecke.
 
+const INNEN := "res://assets/city/innen"
 const MOEBEL := "res://assets/furniture"
 ## Stellplätze im Raum (Reihenfolge = Katalog-Reihenfolge ab dem 2. Wagen).
 const PLAETZE: Array[Vector3] = [
@@ -20,6 +23,13 @@ func _baue_innenraum() -> void:
 	_prop("%s/monstera_plant_large_potted.gltf" % _pflanzen(), Vector3(6.0, 0.0, -3.0), 0.0, 1.4)
 	_prop("%s/sideTable.glb" % MOEBEL, Vector3(5.2, 0.0, 0.6), 0.0, 1.0)
 	_prop("%s/loungeChair.glb" % MOEBEL, Vector3(-5.2, 0.0, 0.8), 25.0, 1.0)
+	# G7-P55b: möblierte Beratungsecke — Teppich unter der Lounge, Stehlampe,
+	# Prospekt-Aufsteller am Eingang und eine zweite Grünpflanze.
+	_prop("%s/rugRound.glb" % MOEBEL, Vector3(-5.1, 0.01, 0.7), 0.0, 1.6)
+	_prop("%s/lampSquareFloor.glb" % MOEBEL, Vector3(-6.1, 0.0, -1.0), 0.0, 1.1)
+	_prop("%s/menu.gltf" % INNEN, Vector3(6.0, 0.0, -0.9), -30.0, 1.6)
+	# Pothos an die Rückwand (im Vordergrund verdeckte sie den roten Wagen).
+	_prop("%s/pothos_plant_large_potted.gltf" % _pflanzen(), Vector3(-2.0, 0.0, -3.5), 0.0, 1.1)
 	_stelle_wagen_aus()
 
 
@@ -29,6 +39,25 @@ func _dialog_pfad() -> String:
 
 func _npc_konfig() -> Dictionary:
 	return {"tint": Color("#8FD0E8"), "emotion": "happy", "pos": Vector3(1.9, 0.0, 0.9)}
+
+
+## G7-P55b: Ambient-Leben — 2 Kunden schlendern von Wagen zu Wagen (kein
+## Gemurmel: Ausstellungsraum), Blechbert bekommt das Kassen-Verhalten.
+func _leben_konfig() -> Dictionary:
+	return {
+		"besucher": 2,
+		"punkte":
+		[
+			Vector3(-4.0, 0.0, 0.3),
+			Vector3(0.2, 0.0, -0.6),
+			Vector3(4.4, 0.0, 0.3),
+			Vector3(0.8, 0.0, 2.0),
+		],
+		"sprueche": "autohaus",
+		"blick": Vector3(0.0, 0.0, -4.0),
+		"tuer_glocke": true,
+		"kasse": true,
+	}
 
 
 ## Autohaus hat ein eigenes Händler-UI (Stats, Farbwahl, aktives Auto).
@@ -78,7 +107,10 @@ func _lackiere(node: Node3D, hex: String) -> void:
 				mi.set_surface_override_material(i, kopie)
 
 
-func _on_gekauft(_auto_id: String) -> void:
-	if rig != null:
+func _on_gekauft(auto_id: String) -> void:
+	# G7-P55b: der Autokauf piept an Blechberts Kasse (Fallback: Winken).
+	if kassen_npc != null:
+		_on_kasse_kunde_zahlt(auto_id)
+	elif rig != null:
 		rig.play_clip("wave")
 	zeige_toast(I18nService.t("city.autohaus.gekauft_toast"))

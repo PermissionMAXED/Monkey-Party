@@ -6,8 +6,11 @@ extends OrtScene
 ## (Zahnbürsten in 3 Qualitäten, Pflaster, Schlafmaske) via GoobymanSheet.
 ## Kauft man 5+ Artikel auf einmal, wirft sich der Verkäufer den
 ## „GOOBYMAN“-Handtuch-Umhang um (prozedurales Mesh + Tween, Doc H §4.3).
+## G7-P55b „Läden lebendig, Teil 2“: Ambient-Kunden (OrtLeben), Kassen-
+## Verhalten, Tür-Glöckchen, Gemurmel und dichter gefüllte Regale.
 
 const INNEN := "res://assets/city/innen"
+const MOEBEL := "res://assets/furniture"
 
 var _umhang_laeuft := false
 
@@ -25,6 +28,14 @@ func _baue_innenraum() -> void:
 	_prop("%s/crate.gltf" % INNEN, Vector3(3.7, 0.0, 0.2), -12.0, 0.65)
 	_prop("%s/menu.gltf" % INNEN, Vector3(-4.8, 0.0, -1.8), 30.0, 1.6)
 	_prop("%s/kitchencounter_sink.gltf" % INNEN, Vector3(3.4, 0.0, -3.2), 0.0, 0.9)
+	# G7-P55b Regal-Nachschlag: echte Drogerie-Regalwand hinter der Kasse,
+	# Tiegel AUF dem Tresen, Teppich + Grünpflanze — Raum statt Kulisse.
+	_prop("%s/bookcaseOpen.glb" % MOEBEL, Vector3(-0.8, 0.0, -3.6), 0.0, 1.3)
+	_prop("%s/bookcaseOpenLow.glb" % MOEBEL, Vector3(1.2, 0.0, -3.6), 0.0, 1.3)
+	_prop("%s/jar_A_large.gltf" % INNEN, Vector3(0.0, 0.85, -0.6), 20.0, 0.5)
+	_prop("%s/jar_A_large.gltf" % INNEN, Vector3(0.05, 0.85, -1.75), -15.0, 0.5)
+	_prop("%s/rugRound.glb" % MOEBEL, Vector3(-0.4, 0.02, 0.8), 0.0, 1.7)
+	_prop("%s/pottedPlant.glb" % MOEBEL, Vector3(5.6, 0.0, -2.8), 0.0, 1.1)
 	_baue_schriftzug()
 
 
@@ -40,6 +51,28 @@ func _npc_konfig() -> Dictionary:
 	return {"tint": Color("#F26D6D"), "emotion": "happy", "pos": Vector3(0.0, 0.0, -2.2)}
 
 
+## G7-P55b: Ambient-Leben — 3 Kunden stöbern zwischen Tiegel-Regal und
+## Kartons, der Helden-Verkäufer bekommt das Kassen-Verhalten, dazu
+## Glöckchen beim Betreten und leises Laden-Gemurmel.
+func _leben_konfig() -> Dictionary:
+	return {
+		"besucher": 3,
+		"punkte":
+		[
+			Vector3(-3.4, 0.0, -2.0),
+			Vector3(-4.4, 0.0, 0.2),
+			Vector3(2.4, 0.0, -0.8),
+			Vector3(1.6, 0.0, -2.6),
+			Vector3(-1.4, 0.0, 1.2),
+		],
+		"sprueche": "drogerie",
+		"blick": Vector3(0.0, 0.0, -4.0),
+		"gemurmel": true,
+		"tuer_glocke": true,
+		"kasse": true,
+	}
+
+
 ## Eigenes Händler-UI: GoobymanSheet (Bürsten-Status, Pflaster-Cap,
 ## Schlafmaske einmalig, Umhang-Gag-Zähler).
 func oeffne_laden() -> void:
@@ -52,8 +85,12 @@ func oeffne_laden() -> void:
 	zeige_sheet(I18nService.t("city.ort.goobyman"), inhalt)
 
 
-func _on_gekauft(_ware_id: String) -> void:
-	if rig != null and not _umhang_laeuft:
+func _on_gekauft(ware_id: String) -> void:
+	# G7-P55b: Piep + Winken übernimmt die Kasse; ohne Kasse (alte Saves/
+	# Tests mit leerer Leben-Konfig) winkt der Verkäufer wie bisher selbst.
+	if kassen_npc != null:
+		_on_kasse_kunde_zahlt(ware_id)
+	elif rig != null and not _umhang_laeuft:
 		rig.play_clip("wave")
 
 

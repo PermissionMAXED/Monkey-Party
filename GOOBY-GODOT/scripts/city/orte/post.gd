@@ -9,6 +9,8 @@ extends OrtScene
 ## unverändert.
 ## G3/P07: Ungelesen-Zähler als StatusCapsule-Badge in der Kopfzeile
 ## (statt Knopftext-Anhang), Schalter-Knopf auf SquishButton + Touch-Floor.
+## G7-P55b „Läden lebendig, Teil 2“: wartende Ambient-Kunden (OrtLeben),
+## Frau Zettel „stempelt“ am Schalter (KassenNpc) und der Paketberg wächst.
 
 const INNEN := "res://assets/city/innen"
 const MOEBEL := "res://assets/furniture"
@@ -26,6 +28,13 @@ func _baue_innenraum() -> void:
 	_prop("%s/deko/box_A.gltf" % MOEBEL, Vector3(-3.5, 0.0, 0.7), 27.0, 1.5)
 	_prop("%s/coatRackStanding.glb" % MOEBEL, Vector3(-5.6, 0.0, -0.6), 0.0, 1.1)
 	_prop("%s/pottedPlant.glb" % MOEBEL, Vector3(5.6, 0.0, -0.4), 0.0, 1.1)
+	# G7-P55b: der Paketberg hinter den Schaltern wächst (drei Kartons in
+	# Schräglage), Fußmatte am Eingang, Stehlampe in der toten Ecke.
+	_prop("%s/deko/box_B.gltf" % MOEBEL, Vector3(-3.1, 0.0, -3.4), 24.0, 1.4)
+	_prop("%s/deko/box_A.gltf" % MOEBEL, Vector3(-2.1, 0.0, -3.3), 8.0, 1.5)
+	_prop("%s/deko/box_B.gltf" % MOEBEL, Vector3(-1.2, 0.0, -3.5), -18.0, 1.2)
+	_prop("%s/rugDoormat.glb" % MOEBEL, Vector3(0.4, 0.02, 2.6), 0.0, 1.4)
+	_prop("%s/lampSquareFloor.glb" % MOEBEL, Vector3(5.7, 0.0, -2.8), 0.0, 1.1)
 
 
 func _dialog_pfad() -> String:
@@ -34,6 +43,26 @@ func _dialog_pfad() -> String:
 
 func _npc_konfig() -> Dictionary:
 	return {"tint": Color("#FFD166"), "emotion": "happy", "pos": Vector3(-0.4, 0.0, -2.4)}
+
+
+## G7-P55b: Ambient-Leben — 2 wartende Kunden in der Schalter-Halle, Frau
+## Zettel bekommt das Kassen-Verhalten (Stempel-Getippe), dazu Glöckchen;
+## bewusst KEIN Gemurmel (Amtsstube).
+func _leben_konfig() -> Dictionary:
+	return {
+		"besucher": 2,
+		"punkte":
+		[
+			Vector3(0.8, 0.0, 0.6),
+			Vector3(-0.3, 0.0, 1.6),
+			Vector3(2.6, 0.0, 0.2),
+			Vector3(-2.6, 0.0, 1.4),
+		],
+		"sprueche": "post",
+		"blick": Vector3(0.0, 0.0, -4.0),
+		"tuer_glocke": true,
+		"kasse": true,
+	}
 
 
 ## Post hat ein eigenes Schalter-UI: Tagespaket + Postkarten-Archiv (PostSheet,
@@ -49,8 +78,11 @@ func oeffne_laden() -> void:
 	zeige_sheet(I18nService.t("city.post.sheet_titel"), inhalt)
 
 
-func _on_schalter(_schalter: String) -> void:
-	if rig != null:
+func _on_schalter(schalter: String) -> void:
+	# G7-P55b: der Schalter quittiert hörbar (Stempel-Piep + Winken).
+	if kassen_npc != null:
+		_on_kasse_kunde_zahlt(schalter)
+	elif rig != null:
 		rig.play_clip("wave")
 
 

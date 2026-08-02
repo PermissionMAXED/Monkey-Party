@@ -110,6 +110,17 @@ Original-Links sind alle übernommen:)_
       Liste schneidet „Briefkasten" ab, Baumodus = Knopf-Salat (der bekannte
       97-Befunde-Wurzelfix, jetzt MIT Weggleit-Animation).
 
+- [x] **Läden lebendig, Teil 2 (2. August):** Nach REHWEI + Baumarkt (P55) sind
+      jetzt ALLE Stadt-Läden echte Orte: GOOBYMAN, GOOBYTHEKE, POW!, Post und
+      Autohaus haben schlendernde Kunden-Goobys (mit Hüten, Regal-Griffen und
+      eigenen Sprüchen je Laden — Drogerie/Apotheke/POW/Post/Autohaus, DE+EN),
+      einen Kassen-NPC, der tippt, winkt und bei JEDEM Kauf hörbar piept
+      (auch Autokauf und Post-Schalter), Tür-Glöckchen + Gemurmel-Loops und
+      vollere Regale (Drogerie-/Medikamenten-Regalwände, Tiegel auf dem
+      Tresen, Wartebänkchen, Bücher im POW-Regal, wachsender Paketberg,
+      möblierte Autohaus-Beratungsecke). Der Wochenmarkt hat jetzt zusätzlich
+      3 Marktbummler samt Marktgemurmel. 9 neue Wachen-Tests, Preflight grün.
+
 _(Runden W14 UND W15 sind FERTIG — Details unten in „Erledigt". Aktueller Stand:)_
 
 - [x] **W16 / Welle G2 FERTIG (1. August):** 13 Umsetzungs-Pakete gelandet,

@@ -26,6 +26,39 @@
         "Der Stand da drüben duftet herrlich.",
         "Samstag ist einfach der beste Tag.",
         "Eine Kostprobe geht immer."
+      ],
+      "drogerie": [
+        "Diese Zahnbürste sieht stark aus!",
+        "Hier riecht alles nach Seife. Herrlich!",
+        "Pflaster mit Bananen drauf? Her damit!",
+        "Eine Schlafmaske für schönere Träume …",
+        "Ob der Verkäufer wirklich ein Held ist?"
+      ],
+      "apotheke": [
+        "Psst … hier spricht man leise.",
+        "Gooby-Tropfen gibt es nur mit Rezept.",
+        "Was wohl in dem großen Glas ist?",
+        "Hauptsache, es schmeckt nach Banane.",
+        "Gute Besserung für alle!"
+      ],
+      "pow": [
+        "Das da drüben BLINKT! Ich brauche es.",
+        "Vorsicht, das Regal wackelt gleich.",
+        "BÄM! Genau mein Laden.",
+        "Eine Kamera! Damit knipse ich ALLES.",
+        "Was macht wohl dieser Knopf?"
+      ],
+      "post": [
+        "Ob heute ein Paket für mich dabei ist?",
+        "Briefmarken schmecken nach Banane, oder?",
+        "Die Schlange ist heute richtig kurz!",
+        "Ein Brief an Oma — fast fertig."
+      ],
+      "autohaus": [
+        "Der rote hat bestimmt viel Wumms.",
+        "Einmal Probesitzen, bitte!",
+        "Hach, dieser Neuwagen-Duft.",
+        "Passt da auch eine Bananenkiste rein?"
       ]
     }
   }

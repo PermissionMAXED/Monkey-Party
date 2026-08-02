@@ -26,6 +26,39 @@
         "That stall over there smells wonderful.",
         "Saturday is simply the best day.",
         "There's always room for a taste test."
+      ],
+      "drogerie": [
+        "That toothbrush looks mighty strong!",
+        "Everything smells like soap in here. Wonderful!",
+        "Plasters with bananas on them? Yes please!",
+        "A sleep mask for sweeter dreams…",
+        "Is the clerk really a hero?"
+      ],
+      "apotheke": [
+        "Psst… we speak quietly in here.",
+        "Gooby drops? Prescription only.",
+        "What could be in that big jar?",
+        "As long as it tastes like banana.",
+        "Get well soon, everyone!"
+      ],
+      "pow": [
+        "That thing over there is BLINKING! I need it.",
+        "Careful, that shelf is about to wobble.",
+        "POW! This store gets me.",
+        "A camera! I'll snap EVERYTHING with it.",
+        "What does this button do, I wonder?"
+      ],
+      "post": [
+        "I wonder if there's a parcel for me today?",
+        "Stamps taste like banana, right?",
+        "The queue is really short today!",
+        "A letter to grandma — almost done."
+      ],
+      "autohaus": [
+        "The red one surely has plenty of vroom.",
+        "One test sit, please!",
+        "Ahh, that new car smell.",
+        "Will a crate of bananas fit in there too?"
       ]
     }
   }
