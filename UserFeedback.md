@@ -566,8 +566,9 @@ iPhone 17 Pro Max quer = **0 Befunde**):
       nutzt es als Nächstes (Welle H unten)
 
 **Danach sofort (Warteschlange):**
-- [~] **Welle H: PLAYTEST ×10** — LÄUFT: 6 Bereichs-Läufe sind gespielt,
-      berichtet und GEFIXT (Reports in `docs/godot-rewrite/playtest/`):
+- [x] **Welle H: PLAYTEST ×10** — **FERTIG (2. August):** alle 10
+      Bereichs-Läufe gespielt, berichtet und GEFIXT (Reports in
+      `docs/godot-rewrite/playtest/`):
       **H-home** (Zuhause & Pflege — u. a. tote Zähneputz-Pflicht,
       Schlaf-Gate der Pflege-Taps), **H-city** (Stadt & Läden — u. a.
       GOOBERANDO-Gratis-Buff-Exploit, 8 Wächter-Tests), **H-minigames**
@@ -579,12 +580,21 @@ iPhone 17 Pro Max quer = **0 Befunde**):
       lief rückwärts zur Kasse), **H-arcade-friends** (Arcade/Freunde/
       Profil über `flow_arcade` + neuen Flow `flow_profil_freunde` —
       3 Funde, u. a. tote Anfrage-Karte nach Mutual-Autoaccept und
-      „Rekord 0“ im Profil trotz Schwer-/Endlos-Bestwerten); dazu
+      „Rekord 0“ im Profil trotz Schwer-/Endlos-Bestwerten),
+      **H-build-wardrobe** (Baumodus + Garderobe/Gestalten über
+      `flow_baumodus` — 3 Funde), **H-minigames-2** (Batch 2+3: alle 31
+      Rest-Spiele per Headless-Spielprobe `h2_mg_probe` — u. a.
+      UI-Skalierungs-Bugs ranchParcours/gobnom), **H-phone-radio**
+      (Radio/Kamera/Galerie — 2 Funde: Foto-Kappung leckte PNGs,
+      Galerie-Löschen ließ toten Passfoto-Pfad) und
+      **H-onboarding-progression** (Onboarding-Tour + Tagesquests über
+      neuen Flow `flow_onboarding_tour`, 34 Schritte — 3 Funde: erste
+      Tour-Karte fror bildschirmfüllend ein, „Deine Knöpfe“-Coachmark
+      konkurrierte mit der Tour, Toasts lagen auf der Tour-Karte); dazu
       zahlt „Playtest-Bugfixes, Batch 1" (s. oben) auf Quests/Erfolge/
-      Awards ein. **Noch offen:** Baumodus, Minispiele-Batch 2+3,
-      Telefon/Radio-Rest (Radio, Kamera/Galerie), Garderobe/Gestalten,
-      Quests/Progression-Rest, Onboarding → die Restläufe bleiben die
-      nächste Playtest-Tranche.
+      Awards ein. Jeder Fix trägt Wächter-Tests (u. a.
+      `test_h_kamera_galerie`, `test_h_onboarding_tour`,
+      `test_playtest_h_build_wardrobe`).
 - [x] **Welle I: 30+ Ideen-Planner** — **FERTIG (2. August):** konsolidierte
       Ideen-Roadmap mit **50 konkreten Ideen** über alle 10 Planner-Bereiche
       (Seele, Haus/Bau, Stadt, Minispiele, Ranch, DLCs, Multiplayer,
