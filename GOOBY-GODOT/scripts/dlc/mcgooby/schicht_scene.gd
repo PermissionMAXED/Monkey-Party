@@ -5,6 +5,12 @@ extends Control
 ## McGoobySchichtLogic), taktiles Wenden im goldenen Timing-Fenster mit
 ## „Perfekt!“-Callout, Bestellglocke + Brutzel-Feedback aus BESTEHENDEN
 ## SfxMap-Ids, Schicht-Ende-Karte mit Kassensturz (McGoobyAbrechnung).
+## Hinter der UI liegt die McGooby-BÜHNE (McGoobySchichtStage3D, J+/G6-
+## Paket): das gemeinsame 3D-Set der Schicht — Gooby als Grill-Koch, ein
+## echter Patty, der live mit dem Logik-Zustand die Farbe wechselt und beim
+## Wenden einen Salto macht, Brutzel-Dampf und jubelnde Kunden. Die UI
+## bleibt vollständig bedienbar wie zuvor; ein Verlaufs-Scrim („Wallpaper“)
+## hält Kopfzeile und Karten über der Bühne lesbar.
 ## Beim Erststart erzählt eine Dialog-Karte den Eröffnungs-Hook (Doc §1.3);
 ## der Haken wird im additiven Save-Slice `mcgooby` gemerkt (McGoobyState).
 ## Jederzeit pausierbar über das bestehende MinigamePauseModal-Muster.
@@ -31,6 +37,10 @@ const FARBE_TEXT_DUNKEL := Color("#6B4A2B")
 const PATTY_BASIS := 168.0
 ## Karten-Wunschbreite der Intro-/Ende-Overlays (Design-px).
 const KARTE_BASIS := 360.0
+
+## Schicht-Anpfiff: Kamera-Anflug aus der Küchen-Totale (burger_build-
+## Muster; Reduced Motion springt direkt in die Spielpose).
+const ANFLUG_SEC := 0.9
 
 ## Tests/Screenshots: GameState-Double statt /root/GameState.
 var gs_override: Object = null
@@ -59,6 +69,9 @@ var _bestellung_fehlerfrei := true
 var _ergebnisse: Array[Dictionary] = []
 var _kasse: Dictionary = {}
 var _m: Dictionary = {}
+var _anflug_left := 0.0
+
+var _stage: McGoobySchichtStage3D
 
 var _rows: VBoxContainer
 var _back: Button
@@ -113,6 +126,13 @@ func receive_params(params: Dictionary) -> void:
 
 
 func _process(delta: float) -> void:
+	# Die Bühne lebt auch zwischen Bestellungen und unter den Overlays
+	# (Kunden schunkeln, Glow zerfällt) — nur die Pause friert sie ein.
+	if _stage != null and not _pausiert:
+		_stage.tick(delta)
+		if _anflug_left > 0.0:
+			_anflug_left = maxf(0.0, _anflug_left - delta)
+			_stage.establish(1.0 if _reduced_motion() else 1.0 - _anflug_left / ANFLUG_SEC)
 	if not _laeuft or _pausiert or not _patty_aktiv:
 		return
 	_patty_zeit += delta
@@ -171,13 +191,46 @@ func patty_knopf() -> Button:
 	return _patty_btn
 
 
+## Tests/Screenshots: Zugriff auf die 3D-Bühne der Schicht.
+func buehne() -> McGoobySchichtStage3D:
+	return _stage
+
+
 ## ---------------------------------------------------------------- Aufbau
 
 
 func _build_ui() -> void:
-	var wallpaper := AcWallpaper.new()
+	# Die McGooby-Bühne (3D) liegt HINTER allen CanvasItems — Godot rendert
+	# die 3D-Welt eines Viewports immer unter der 2D-Ebene, die UI bleibt
+	# also unverändert obenauf (stage3d-Vertrag).
+	_stage = McGoobySchichtStage3D.new()
+	_stage.name = "Buehne"
+	add_child(_stage)
+	_stage.setup_stage()
+
+	# Statt des deckenden AcWallpaper: ein Verlaufs-Scrim (oben/unten warm
+	# abgedunkelt, Mitte frei) — hält Kopfzeile + Karten über der Bühne
+	# lesbar und erfüllt weiter den Vollflächen-Vertrag der Geometrie-Tests.
+	var wallpaper := TextureRect.new()
 	wallpaper.name = "Wallpaper"
 	wallpaper.set_anchors_preset(Control.PRESET_FULL_RECT)
+	wallpaper.stretch_mode = TextureRect.STRETCH_SCALE
+	wallpaper.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var verlauf := Gradient.new()
+	verlauf.offsets = PackedFloat32Array([0.0, 0.3, 0.72, 1.0])
+	verlauf.colors = PackedColorArray(
+		[
+			Color(0.22, 0.12, 0.07, 0.5),
+			Color(0.22, 0.12, 0.07, 0.0),
+			Color(0.22, 0.12, 0.07, 0.0),
+			Color(0.22, 0.12, 0.07, 0.34),
+		]
+	)
+	var scrim := GradientTexture2D.new()
+	scrim.gradient = verlauf
+	scrim.fill_from = Vector2(0.0, 0.0)
+	scrim.fill_to = Vector2(0.0, 1.0)
+	wallpaper.texture = scrim
 	add_child(wallpaper)
 
 	_rows = VBoxContainer.new()
@@ -398,6 +451,7 @@ func _starte_schicht() -> void:
 	_bestellung_idx = -1
 	_laeuft = not _folge.is_empty()
 	_pausiert = false
+	_anflug_left = ANFLUG_SEC
 	_punkte_anzeigen()
 	_callout.text = " "
 	if _laeuft:
@@ -413,6 +467,8 @@ func _naechste_bestellung() -> void:
 	_patty_idx = 0
 	# Bestellglocken-„Pling“ (Doc §2.2.6) aus dem Bestand: gvz_wave-Glocke.
 	AudioDirector.try_play(self, "gvz_wave")
+	if _stage != null:
+		_stage.bestellglocke()
 	_bestellung_anzeigen()
 	_naechster_patty()
 
@@ -425,6 +481,8 @@ func _naechster_patty() -> void:
 	_patty_aktiv = true
 	# Brutzel-Start: der Patty landet raschelnd-zischend auf dem Grill.
 	AudioDirector.try_play(self, "ranch_heu")
+	if _stage != null:
+		_stage.patty_neu()
 	_bestellung_anzeigen()
 	_patty_visualisieren()
 
@@ -446,7 +504,11 @@ func _werte_patty(wertung: Dictionary) -> void:
 	var punkte := int(wertung["punkte"])
 	_punkte += punkte
 	_bestellung_punkte += punkte
-	if str(wertung["wertung"]) == McGoobySchichtLogic.WERTUNG_PERFEKT:
+	var perfekt := str(wertung["wertung"]) == McGoobySchichtLogic.WERTUNG_PERFEKT
+	if _stage != null:
+		# Bühnen-Echo des Wendens: Patty-Salto + Funken (gold/aschig).
+		_stage.wenden(perfekt)
+	if perfekt:
 		_perfekt_gesamt += 1
 		AudioDirector.try_play(self, "mg_perfect")
 		_callout_zeigen(I18nService.t("dlc_mcgooby.schicht.perfekt"))
@@ -469,6 +531,9 @@ func _bestellung_fertig() -> void:
 	_ergebnisse.append({"punkte": _bestellung_punkte, "fehlerfrei": _bestellung_fehlerfrei})
 	# Münz-Einnahme-Moment: die Kasse klimpert pro fertiger Bestellung.
 	AudioDirector.try_play(self, "ui_coins")
+	if _stage != null:
+		# Die wartenden Kunden jubeln + Funken über dem Abhol-Tablett.
+		_stage.bestellung_fertig()
 	_punkte_anzeigen()
 	if _bestellung_idx + 1 < _folge.size():
 		_naechste_bestellung()
@@ -481,6 +546,9 @@ func _schicht_ende() -> void:
 	_patty_aktiv = false
 	_kasse = McGoobyAbrechnung.abrechnung(_ergebnisse, _bal)
 	AudioDirector.try_play(self, "mg_win")
+	if _stage != null:
+		_stage.feierabend_jubel()
+		_stage.sync_patty(_patty_zustand, 0.0, false, _reduced_motion())
 	_muenzen_gutschreiben(int(_kasse.get("muenzen", 0)))
 	McGoobyState.schicht_verbuchen(_gs, _punkte)
 	_ende_fuellen()
@@ -540,6 +608,22 @@ func _callout_zeigen(text: String) -> void:
 func _patty_visualisieren() -> void:
 	if _patty_btn == null:
 		return
+	if _stage != null:
+		# Bühnen-Sync: der 3D-Patty folgt Zustand + Garungs-Fortschritt,
+		# der Koch kommentiert mit der Miene (goldbraun = JETZT wenden!).
+		_stage.sync_patty(
+			_patty_zustand,
+			McGoobySchichtLogic.fortschritt(_patty_zeit, _patty_timing),
+			_patty_aktiv,
+			_reduced_motion()
+		)
+		match _patty_zustand:
+			McGoobySchichtLogic.ZUSTAND_GOLDBRAUN:
+				_stage.feel("ecstatic")
+			McGoobySchichtLogic.ZUSTAND_KOHLE:
+				_stage.feel("dizzy")
+			_:
+				_stage.feel("happy")
 	var farbe := FARBE_ROH
 	var text_farbe := FARBE_TEXT_DUNKEL
 	var hinweis := I18nService.t("dlc_mcgooby.schicht.roh")
@@ -569,6 +653,8 @@ func _apply_metrics() -> void:
 		return
 	_m = ScreenShell.metrics(get_viewport())
 	var f := float(_m["f"])
+	if _stage != null:
+		_stage.apply_size(_m["canvas"] as Vector2)
 	ScreenShell.content_frame(_rows, _m)
 	ScreenShell.touch_target(_back, _m)
 	ScreenShell.touch_target(_pause_btn, _m)
@@ -649,6 +735,16 @@ func _basis_seed() -> int:
 		return seed_override
 	# Tages-Seed wie MarktSim (Doc §4.1: gleicher Tag = gleicher Kundenstrom).
 	return Time.get_date_string_from_system().hash()
+
+
+## Reduced-Motion-Abfrage (Duck-Typing wie im JuiceKit — ohne Autoload = aus).
+func _reduced_motion() -> bool:
+	if not is_inside_tree():
+		return true
+	var settings := get_node_or_null(^"/root/AppSettings")
+	if settings != null and settings.has_method("is_reduced_motion"):
+		return bool(settings.call("is_reduced_motion"))
+	return false
 
 
 func _muenzen_gutschreiben(betrag: int) -> void:

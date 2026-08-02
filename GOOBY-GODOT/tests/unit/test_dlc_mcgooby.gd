@@ -4,6 +4,9 @@ extends TestCase
 ## Abrechnung (Seed → exakte Werte), „Perfekt!“-Fenster-Bewertung (Doc §2.2),
 ## Save-Slice-Self-Heal, Schicht-Szene mountet headless fehlerfrei
 ## (Erststart-Intro → Schicht → Ende-Karte) und Geometrie-Grundcheck.
+## Dazu (J+/G6 „McGooby-Bühne“): das 3D-Set der Schicht (McGoobySchichtStage3D)
+## mountet mit, der Bühnen-Patty folgt dem Logik-Zustand und die Bühne bleibt
+## unter dem I5-Draw-Call-Budget (≤ 400, Doc §9).
 
 const MENU_DATEI := "res://content/dlc/data/mcgooby_menu.json"
 const SCHICHT_SZENE := "res://scripts/dlc/mcgooby/schicht_scene.tscn"
@@ -372,7 +375,8 @@ func test_schicht_szene_geometrie_grundcheck() -> void:
 		"Patty horizontal zentriert (Δ=%f)" % absf(patty_mitte.x - canvas.x / 2.0)
 	)
 	assert_true(patty_mitte.y > canvas.y * 0.33, "Patty in der unteren Daumen-Hälfte")
-	# Hintergrund vollflächig: das Wallpaper deckt den ganzen Canvas.
+	# Hintergrund vollflächig: das Lesbarkeits-Scrim über der 3D-Bühne
+	# deckt den ganzen Canvas (Vollflächen-Vertrag wie vorher das Wallpaper).
 	var wallpaper: Control = szene.find_child("Wallpaper", true, false)
 	assert_true(wallpaper != null, "Wallpaper existiert")
 	var rect := wallpaper.get_global_rect()
@@ -381,5 +385,74 @@ func test_schicht_szene_geometrie_grundcheck() -> void:
 	# Inhaltsspalte trägt das W16-Meta (FB3-Audit-Kontrakt).
 	var spalte: Control = szene.find_child("Spalte", true, false)
 	assert_true(spalte.has_meta(ScreenShell.META_CONTENT_COLUMN), "Content-Column-Meta")
+	szene.queue_free()
+	await wait_frames(1)
+
+
+## ------------------------------------------------------ Bühne (J+/G6-Paket)
+
+
+func test_schicht_buehne_praesenz_und_patty_sync() -> void:
+	McGoobyKatalog.reset_cache()
+	var gs := FakeGameState.new()
+	gs.set_value("mcgooby.introGesehen", true)
+	var szene: McGoobySchichtScene = (load(SCHICHT_SZENE) as PackedScene).instantiate()
+	szene.gs_override = gs
+	szene.seed_override = GOLD_SEED
+	szene.auto_navigate = false
+	tree.root.add_child(szene)
+	await wait_frames(3)
+	var buehne := szene.buehne()
+	assert_true(buehne != null, "Bühne existiert")
+	assert_true(buehne is Node3D, "EIN gemeinsames 3D-Set, kein SubViewport (Doc §9)")
+	assert_true(buehne.camera != null, "Bühne hat eine Kamera")
+	assert_true(buehne.gooby != null, "Gooby steht als Grill-Koch auf der Bühne")
+	assert_eq(buehne.kunden().size(), 2, "zwei wartende Kunden-Goobys an der Abholtheke")
+	# Der Bühnen-Patty folgt der Logik — dieselbe Farbsprache wie der Knopf.
+	assert_eq(buehne.patty_zustand(), "roh", "frischer Patty = roh")
+	var timing := McGoobyKatalog.timing("grill")
+	szene.patty_zeit_setzen(float(timing["gar_sec"]) + 0.2)
+	assert_eq(buehne.patty_zustand(), "goldbraun", "Bühne folgt ins goldene Fenster")
+	assert_eq(
+		buehne.patty_farbe_ziel(),
+		McGoobySchichtStage3D.FARBE_GOLDBRAUN,
+		"Ziel-Farbe = Knopf-Goldbraun"
+	)
+	szene.patty_zeit_setzen(float(timing["gar_sec"]) + float(timing["fenster_sec"]) + 0.5)
+	assert_eq(buehne.patty_zustand(), "kohle", "zu spät = Kohle (Gag, kein Fail)")
+	assert_eq(
+		buehne.patty_farbe_ziel(),
+		McGoobySchichtStage3D.FARBE_KOHLE,
+		"Ziel-Farbe = Knopf-Kohle"
+	)
+	# Wenden über den echten Knopf: Bühnen-Salto crasht nicht, Schicht läuft.
+	szene.patty_knopf().pressed.emit()
+	await wait_frames(2)
+	assert_true(szene.ist_am_laufen(), "Schicht läuft nach Bühnen-Wenden weiter")
+	szene.queue_free()
+	await wait_frames(1)
+
+
+func test_schicht_buehne_bleibt_im_draw_budget() -> void:
+	McGoobyKatalog.reset_cache()
+	var gs := FakeGameState.new()
+	gs.set_value("mcgooby.introGesehen", true)
+	var szene: McGoobySchichtScene = (load(SCHICHT_SZENE) as PackedScene).instantiate()
+	szene.gs_override = gs
+	szene.seed_override = GOLD_SEED
+	szene.auto_navigate = false
+	tree.root.add_child(szene)
+	await wait_frames(3)
+	var buehne := szene.buehne()
+	# Headless-Schätzung wie test_welt1_budget: jede Mesh-/MultiMesh-/
+	# Partikel-Instanz ≈ 1 Draw-Call (MultiMesh bündelt seine Posen selbst).
+	var meshes := buehne.find_children("*", "MeshInstance3D", true, false).size()
+	var multis := buehne.find_children("*", "MultiMeshInstance3D", true, false).size()
+	var partikel := buehne.find_children("*", "GPUParticles3D", true, false).size()
+	var schaetzung := meshes + multis + partikel
+	assert_true(schaetzung >= 40, "Bühne ist wirklich aufgebaut (%d Instanzen)" % schaetzung)
+	assert_true(
+		schaetzung <= 400, "Draw-Call-Schätzung %d <= 400 (I5-Budget, Doc §9)" % schaetzung
+	)
 	szene.queue_free()
 	await wait_frames(1)
