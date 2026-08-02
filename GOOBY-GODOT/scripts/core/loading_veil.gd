@@ -10,9 +10,15 @@ extends CanvasLayer
 ## hüpfender Motiv-Sticker (72 px, weiß umrandet, überlappt die Coverkante),
 ## Titel, Teal-Verlaufsbalken mit Indeterminate-Sweep, „Lädt… NN%“-Zeile
 ## (Prozent nur bei echtem Fortschritt) und rotierende Tipps (2,6 s,
-## 200-ms-Crossfade). Drei Karten-Modi wie im Web:
+## 200-ms-Crossfade). Vier Karten-Modi (drei aus dem Web + „arcade“
+## aus G7-P56R2):
 ## - game: Minigame-Reise (ArcadeScreen-Hint) — Game-Cover + Spieltitel +
 ##   „Mach dich bereit!“ + Game-Tipps.
+## - arcade: Reise ZUR Arcade (rein wie raus aus jedem Minispiel) —
+##   eigener Titel/Tipps + das GAME-Motiv statt Winke-Gooby; ohne Cover
+##   trägt der warme Verlauf (Web-onerror-Look). Vorher lief hier die
+##   Home-Karte („Trautes Heim“) — der Rückweg aus einem Spiel las sich
+##   wie Heimreise statt „zurück in die Spielhalle“.
 ## - trip: Shop-/Stadt-/Klinik-Ausflüge — „Auf geht’s!“ / „Zeit für einen
 ##   kleinen Ausflug…“ + Trip-Tipps.
 ## - home: alles andere (Rückkehr/Default) — „Trautes Heim“ /
@@ -78,6 +84,9 @@ const MOTIV_GAME_PFAD := "res://assets/acui/gooby_loading_motif.png"
 ## und alle Stadt-Ziele (die Klinik ist der Stadt-Ort city/ort/tierarzt).
 const TRIP_ZIELE: Array[String] = ["ikea"]
 const TRIP_PRAEFIXE: Array[String] = ["city"]
+## G7-P56R2: Reisen ZUR Arcade tragen die Arcade-Karte — der Aus-Weg jedes
+## Minispiels endet damit sichtbar in der Spielhalle statt „zu Hause“.
+const ARCADE_ZIELE: Array[String] = ["arcade"]
 
 static var _travel_hint: Dictionary = {}
 static var _tip_cursor := 0
@@ -156,11 +165,13 @@ static func clear_travel_hint() -> void:
 	_travel_hint = {}
 
 
-## Karten-Modus fürs Ziel (Web-Regel §2.4): Shop-/Stadt-/Klinik-Ausflüge
-## sind „trip“, alles andere (Rückkehr/Default) „home“; „game“ setzt der
-## Minigame-Hint in _apply_variant.
+## Karten-Modus fürs Ziel (Web-Regel §2.4 + G7-P56R2): Arcade-Reisen sind
+## „arcade“, Shop-/Stadt-/Klinik-Ausflüge „trip“, alles andere (Rückkehr/
+## Default) „home“; „game“ setzt der Minigame-Hint in _apply_variant.
 static func modus_fuer_ziel(target: StringName) -> String:
 	var ziel := String(target)
+	if ARCADE_ZIELE.has(ziel):
+		return "arcade"
 	if TRIP_ZIELE.has(ziel):
 		return "trip"
 	for praefix in TRIP_PRAEFIXE:
@@ -388,17 +399,23 @@ void fragment() {
 
 ## Karte auf den aktiven Modus stellen (Web buildCard): home/trip nutzen
 ## das Heim-Cover + Winke-Gooby-Sticker, game das Spiel-Cover aus dem
-## Travel-Hint + das Game-Motiv. Der Vorhang bleibt in ALLEN Modi das
-## statische Blätter-Pattern auf Papier (Web .acui-veil).
+## Travel-Hint + das Game-Motiv, arcade (G7-P56R2) den warmen Verlauf +
+## das Game-Motiv. Der Vorhang bleibt in ALLEN Modi das statische
+## Blätter-Pattern auf Papier (Web .acui-veil).
 func _apply_variant() -> void:
 	if _root == null:
 		return
 	var minigame := not _active_hint.is_empty()
 	var ranch := _ranch_aktiv and not minigame
 	_modus = "game" if minigame else modus_fuer_ziel(_ranch_ziel)
-	var cover_tex: Texture2D = (
-		_active_hint.get("cover") if minigame else _lade_textur(COVER_HOME_PFAD)
-	)
+	var cover_tex: Texture2D = null
+	if minigame:
+		cover_tex = _active_hint.get("cover")
+	elif _modus != "arcade":
+		# Arcade bleibt bewusst ohne Cover-Bild: der warme Fallback-
+		# Verlauf der Karte trägt (Web-onerror-Look) — kein Heim-Motiv
+		# auf dem Weg in die Spielhalle.
+		cover_tex = _lade_textur(COVER_HOME_PFAD)
 	_cover_rect.texture = cover_tex
 	_cover_rect.visible = cover_tex != null
 	var titel := (
@@ -407,7 +424,10 @@ func _apply_variant() -> void:
 	_title_label.text = titel
 	_title_label.visible = titel != ""
 	_ready_label.text = I18nService.t("veil.%s.bereit" % _modus)
-	_gooby.set_motiv(_lade_textur(MOTIV_GAME_PFAD if minigame else MOTIV_WAVE_PFAD))
+	# G7-P56R2: DERSELBE Mini-Gooby begleitet die ganze Spiel-Schleife —
+	# auch der Aus-Weg zur Arcade trägt das Game-Motiv.
+	var game_motiv := minigame or _modus == "arcade"
+	_gooby.set_motiv(_lade_textur(MOTIV_GAME_PFAD if game_motiv else MOTIV_WAVE_PFAD))
 	_gooby.visible = true
 	_laedt_label.visible = true
 	_tip_label.visible = true

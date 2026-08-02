@@ -19,6 +19,15 @@
 				"Die kleinen Schuhe werden geschnürt…"
 			]
 		},
+		"arcade": {
+			"titel": "Ab in die Arcade!",
+			"bereit": "Die Automaten leuchten schon…",
+			"tips": [
+				"Die Highscore-Tafeln werden poliert…",
+				"Die Münzschlitze werden freigepustet…",
+				"Irgendwo klimpert schon ein Jackpot…"
+			]
+		},
 		"game": {
 			"bereit": "Mach dich bereit!",
 			"tips": [

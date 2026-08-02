@@ -44,6 +44,8 @@ var quick_go_sec := 0.5
 ## Duck-Typing-Overrides für Tests (null → /root/GameState bzw. /root/…).
 var state_node: Node = null
 var auto_navigate := true
+## G7-P56R2: Router-Override für die Intro-Wartelogik (null → /root/SceneRouter).
+var intro_router: Node = null
 
 var game_id := ""
 var difficulty := "normal"
@@ -125,7 +127,7 @@ func _ready() -> void:
 	resized.connect(_on_host_resized)
 	_apply_metrics()
 	_layout_stage()
-	_run_countdown()
+	_starte_intro()
 
 
 func _exit_tree() -> void:
@@ -235,6 +237,9 @@ func _build_ui() -> void:
 	# alten Vollflächen-Overlays — echte Pause + 3-2-1 macht der Host.
 	_pause_modal = MinigamePauseModal.new()
 	_pause_modal.hint_key = "mg.%s.hint" % game_id
+	# G7-P56R2: der Rahmen NENNT das Spiel — dieselbe Titel+Spielname-
+	# Paarung wie auf der Results-Plate (ein Rahmen, eine Sprache).
+	_pause_modal.title_key = str(_meta.get("title_key", ""))
 	_pause_modal.resume_requested.connect(_on_resume_requested)
 	_pause_modal.restart_requested.connect(_on_restart_requested)
 	_pause_modal.quit_requested.connect(_on_quit_pressed)
@@ -251,7 +256,7 @@ func _build_ui() -> void:
 
 
 func _mount_game() -> void:
-	var packed: PackedScene = load(str(_meta["scene"]))
+	var packed := _lade_spielszene(str(_meta["scene"]))
 	var node := packed.instantiate()
 	if not (node is MinigameBase):
 		push_warning("[mg_host] Szene %s ist kein MinigameBase" % _meta["scene"])
@@ -272,6 +277,22 @@ func _mount_game() -> void:
 	_apply_car_context()
 	_viewport.add_child(_game)
 	_game.setup(_ctx)
+
+
+## G7-P56R2: Spielszene bevorzugt aus dem threaded Prewarm des Pregame
+## abholen (MinigamePregame startet den Request, WÄHREND der Spieler noch
+## Schwierigkeit/Orientierung wählt) — load_threaded_get blockiert nur
+## noch für den Rest; ohne Prewarm (Tests, Deeplinks) synchron wie bisher.
+static func _lade_spielszene(pfad: String) -> PackedScene:
+	var status := ResourceLoader.load_threaded_get_status(pfad)
+	if (
+		status == ResourceLoader.THREAD_LOAD_IN_PROGRESS
+		or status == ResourceLoader.THREAD_LOAD_LOADED
+	):
+		var res := ResourceLoader.load_threaded_get(pfad)
+		if res is PackedScene:
+			return res
+	return load(pfad) as PackedScene
 
 
 func _on_host_resized() -> void:
@@ -328,6 +349,23 @@ func _layout_stage() -> void:
 		# zurückschreiben — Re-Zuweisung lässt ihn die Basis neu lernen
 		# (Setter-Vertrag am shake_target des JuiceKit).
 		juice.shake_target = _viewport_container
+
+
+## G7-P56R2 „EIN Auftakt für alle“: der 3-2-1 wartet, bis der Router-Wipe
+## den Schirm WIRKLICH freigegeben hat (travel_finished feuert nach dem
+## Reveal) — vorher lief der Countdown schon HINTER dem Veil los
+## (min_shown 600 ms + Wipe 400 ms) und die „3“ war in jedem Spiel halb
+## verschluckt. Direkt-Mounts ohne laufende Reise (Tests, interner
+## Neustart) starten wie bisher sofort.
+func _starte_intro() -> void:
+	var router := intro_router
+	if router == null:
+		router = get_node_or_null("/root/SceneRouter")
+	if router != null and router.has_method("is_busy") and router.is_busy():
+		await router.travel_finished
+		if not is_inside_tree():
+			return
+	_run_countdown()
 
 
 ## Countdown mit Federung und steigender Tonhöhe (POLISH-A): jede Ziffer
@@ -722,7 +760,9 @@ func _baue_strike_veil() -> Control:
 	veil.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	veil.mouse_filter = Control.MOUSE_FILTER_STOP
 	var dim := ColorRect.new()
-	dim.color = Color(0.24, 0.16, 0.12, 0.62)
+	# G7-P56R2: DIE eine Rahmen-Abdunkelung — Pause, Results UND die
+	# Strike-Cutscene teilen exakt denselben Wert (vorher 0.62 Freihand).
+	dim.color = MinigamePauseModal.DIM_COLOR
 	dim.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	veil.add_child(dim)
 	var rows := VBoxContainer.new()

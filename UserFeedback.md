@@ -170,6 +170,25 @@ Original-Links sind alle übernommen:)_
       Tresen, Wartebänkchen, Bücher im POW-Regal, wachsender Paketberg,
       möblierte Autohaus-Beratungsecke). Der Wochenmarkt hat jetzt zusätzlich
       3 Marktbummler samt Marktgemurmel. 9 neue Wachen-Tests, Preflight grün.
+- [x] **P56 Nachschlag „Ein-Spiel-Gefühl", Runde 2 (2. August):** Der
+      gemeinsame Minispiel-Rahmen sitzt jetzt auch in den ÜBERGÄNGEN:
+      **(a)** der 3-2-1-Auftakt wartet auf das ENDE des Blütenblätter-Wipes —
+      vorher zählte er schon HINTER dem Veil los (Mindestanzeige 600 ms +
+      Wipe 400 ms) und die „3" war in jedem Spiel halb verschluckt;
+      **(b)** Reisen ZUR Arcade (rein wie raus aus jedem Minispiel) tragen
+      eine eigene Spielhallen-Karte („Ab in die Arcade!", eigene Tipps,
+      DE+EN) statt der „Trautes Heim"-Karte — und derselbe Mini-Gooby der
+      Lade-Karte begleitet damit wirklich die GANZE Schleife
+      Arcade→Pregame→Spiel→Results→Arcade; **(c)** das Pregame wärmt die
+      (oft schwere 3D-)Spielszene threaded vor, während du noch die
+      Schwierigkeit wählst — der Wipe in die Runde wird spürbar kürzer;
+      **(d)** das Pause-Modal NENNT jetzt das Spiel (dieselbe
+      Titel+Spielname-Paarung wie die Results-Plate); **(e)** die
+      Strike-Teleport-Cutscene dunkelt EXAKT wie Pause/Results ab (vorher
+      Freihand-Wert). Wachen ausgebaut: `test_g7_rahmen.gd` (Intro-Sync,
+      Prewarm, Spielname-Zeile, Abdunkelungs-Pin) und `test_ui_veil.gd`
+      (vierter Karten-Modus „arcade" inkl. DE/EN-Tipp-Parität).
+      Preflight grün (26 042 UI-Checks / 0 rot).
 
 _(Runden W14 UND W15 sind FERTIG — Details unten in „Erledigt". Aktueller Stand:)_
 

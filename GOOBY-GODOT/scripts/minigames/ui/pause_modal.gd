@@ -24,6 +24,10 @@ const DIM_COLOR := Color(0.24, 0.16, 0.12, 0.55)
 
 ## mg.<id>.hint — leer/unbekannt → Hilfe zeigt den freundlichen Fallback.
 var hint_key := ""
+## G7-P56R2: mg.<id>.title — der Rahmen nennt das Spiel unterm „Pausiert“
+## (dieselbe Titel+Spielname-Paarung wie die Results-Plate); leer/unbekannt
+## → Zeile bleibt weg (Alt-Aufrufer ohne Host unverändert).
+var title_key := ""
 
 ## W14/UISCREENS-B: der Hilfe-Text „erzählt“ — Buchstaben-Typewriter im
 ## Gebrabbel-Tempo (Reduced Motion / „Schnelle Dialoge“ = sofort).
@@ -32,6 +36,7 @@ var _typewriter := DialogTypewriter.new()
 var _dim: ColorRect
 var _card: PanelContainer
 var _title: Label
+var _game_label: Label
 var _resume: Button
 var _restart: Button
 var _sound: Button
@@ -66,6 +71,19 @@ func _ready() -> void:
 	_title.text = I18nService.t("mg.host.paused")
 	_title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	rows.add_child(_title)
+	# G7-P56R2: Spielname unterm Titel (Rahmen-Paarung wie Results).
+	var hat_titel := not title_key.is_empty() and I18nService.has_key(title_key)
+	# Bewusst OHNE Autowrap (exakt wie die game_name-Zeile der Results-
+	# Plate): Autowrap in der manuell vermessenen Karte (_relayout misst
+	# per reset_size) bläht die Mindesthöhe auf; die Titel sind kurz
+	# (längster DE-Titel 18 Zeichen) und bleiben unter dem Breiten-Deckel.
+	_game_label = Label.new()
+	_game_label.name = "GameLabel"
+	_game_label.theme_type_variation = &"CaptionLabel"
+	_game_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_game_label.text = I18nService.t(title_key) if hat_titel else ""
+	_game_label.visible = hat_titel
+	rows.add_child(_game_label)
 	_resume = _button(rows, &"PrimaryButton", "mg.host.resume", _on_resume_pressed)
 	_resume.name = "ResumeButton"
 	_restart = _button(rows, &"GhostButton", "mg.host.restart", _on_restart_pressed)

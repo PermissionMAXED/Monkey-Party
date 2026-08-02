@@ -55,11 +55,28 @@ func _ready() -> void:
 		push_warning("[mg_pregame] unbekanntes Spiel '%s'" % game_id)
 		_go_back()
 		return
+	# G7-P56R2: die (oft schwere 3D-)Spielszene JETZT threaded vorwärmen,
+	# während der Spieler noch Schwierigkeit/Orientierung wählt — der Host
+	# holt das Ergebnis ab (_lade_spielszene) und der Wipe in die Runde
+	# wird spürbar kürzer.
+	_prewarm_spielszene()
 	_load_selections()
 	_build_ui()
 	_refresh_buttons()
 	_apply_touch_floor()
 	get_viewport().size_changed.connect(_apply_touch_floor)
+
+
+## Threaded Prewarm der Spielszene (G7-P56R2) — idempotent: schon gecachte
+## oder bereits angefragte Szenen werden nicht erneut angefasst.
+func _prewarm_spielszene() -> void:
+	var pfad := str(_meta.get("scene", ""))
+	if pfad.is_empty() or not ResourceLoader.exists(pfad):
+		return
+	if ResourceLoader.has_cached(pfad):
+		return
+	if ResourceLoader.load_threaded_get_status(pfad) == ResourceLoader.THREAD_LOAD_INVALID_RESOURCE:
+		ResourceLoader.load_threaded_request(pfad)
 
 
 func _load_selections() -> void:

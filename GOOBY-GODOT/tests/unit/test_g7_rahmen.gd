@@ -12,12 +12,17 @@ extends TestCase
 ##     gleiche Abdunkelung wie das Pause-Modal, Gooby jubelt nur bei Sieg.
 ## (5) Wipe-Wache: Reisen decken/öffnen IMMER über das Veil (Rein- UND
 ##     Aus-Weg), Reduced Motion wählt den fade (= schneller Schnitt).
+## (6) P56R2-Nachschlag: der 3-2-1 wartet auf das ENDE des Reveal-Wipes
+##     (vorher zählte er hinter dem Veil los), das Pregame wärmt die
+##     Spielszene threaded vor, die Pause NENNT das Spiel, und die
+##     Strike-Cutscene teilt DIE eine Rahmen-Abdunkelung.
 
 const HOST_SCENE := "res://scripts/minigames/minigame_host.tscn"
 const PREGAME_SCENE := "res://scripts/minigames/pregame.tscn"
 const RESULTS_SCENE := "res://scripts/minigames/results.tscn"
 const ROUTER_SCRIPT := preload("res://scripts/core/scene_router.gd")
 const FAKE_VEIL_SCRIPT := preload("res://tests/fixtures/fake_veil.gd")
+const FAKE_INTRO_ROUTER := preload("res://tests/fixtures/fake_intro_router.gd")
 const VEIL_WIPE := preload("res://scripts/core/loading_veil_wipe.gd")
 const ROOM_A := "res://tests/fixtures/room_a.tscn"
 const ROOM_B := "res://tests/fixtures/room_b.tscn"
@@ -73,6 +78,19 @@ func test_pregame_zeigt_titel_cover_und_gooby() -> void:
 	assert_true(gooby is LoadingVeilSticker, "Gooby-Sticker der Lade-Karte im Pregame")
 	if gooby is LoadingVeilSticker:
 		assert_true((gooby as LoadingVeilSticker).is_animated(), "ohne RM hüpft Gooby")
+	# P56R2: das Pregame wärmt die Spielszene threaded vor (Prewarm läuft
+	# ODER die Szene ist schon im Cache — beides macht den Host-Wipe kurz).
+	var szene := str(MinigameRegistry.get_game("teaParty").get("scene", ""))
+	assert_true(
+		(
+			ResourceLoader.has_cached(szene)
+			or (
+				ResourceLoader.load_threaded_get_status(szene)
+				!= ResourceLoader.THREAD_LOAD_INVALID_RESOURCE
+			)
+		),
+		"Pregame wärmt die Spielszene threaded vor (P56R2)"
+	)
 	pre.free()
 	await wait_frames(1)
 
@@ -98,6 +116,21 @@ func test_host_countdown_und_overlays_einheitlich() -> void:
 	assert_almost(label.anchor_left, 0.5, 1e-4, "Countdown mittig verankert")
 	assert_true(host.get("_pause_modal") is MinigamePauseModal, "EIN Pause-Modal für alle")
 	assert_true(host.get("_results") is MinigameResults, "EIN Results-Screen für alle")
+	# P56R2: die Pause NENNT das Spiel (Titel+Spielname wie die Results-
+	# Plate) — der Rahmen spricht überall dieselbe Sprache.
+	var modal: MinigamePauseModal = host.get("_pause_modal")
+	var game_label := modal.find_child("GameLabel", true, false) as Label
+	assert_ne(game_label, null, "Pause-Modal hat die Spielname-Zeile")
+	if game_label != null:
+		assert_eq(game_label.text, I18nService.t("mg.carrotCatch.title"), "Pause nennt das Spiel")
+	# P56R2: die Strike-Cutscene dunkelt EXAKT wie Pause/Results ab.
+	var strike_veil: Control = host._baue_strike_veil()
+	assert_eq(
+		(strike_veil.get_child(0) as ColorRect).color,
+		MinigamePauseModal.DIM_COLOR,
+		"Strike-Cutscene nutzt DIE eine Rahmen-Abdunkelung"
+	)
+	strike_veil.free()
 	# Aus-Weg: Beenden meldet die Arcade als Ziel — die Navigation läuft in
 	# Produktion über SceneRouter.goto und damit über DENSELBEN Veil-Wipe.
 	var ziele: Array = []
@@ -107,6 +140,32 @@ func test_host_countdown_und_overlays_einheitlich() -> void:
 	host._on_quit_pressed()
 	assert_eq(ziele, [&"arcade"] as Array, "Beenden reist zur Arcade (Router-Pfad)")
 	host.queue_free()
+	await wait_frames(2)
+
+
+## (6) Intro-Sync (P56R2): der 3-2-1 startet erst, wenn der Router-Wipe
+## den Schirm freigegeben hat (travel_finished) — vorher zählte er hinter
+## dem Veil los und die „3“ war in jedem Spiel halb verschluckt.
+func test_intro_wartet_auf_reveal() -> void:
+	_energie_auffuellen()
+	var router: Node = FAKE_INTRO_ROUTER.new()
+	tree.root.add_child(router)
+	var host: MinigameHost = (load(HOST_SCENE) as PackedScene).instantiate()
+	host.auto_navigate = false
+	host.countdown_step_sec = 0.0
+	host.intro_router = router
+	host.receive_params({"game_id": "teaParty", "difficulty": "normal", "seed": 7})
+	tree.root.add_child(host)
+	await wait_frames(4)
+	var label: Label = host.get("_countdown_label")
+	var pause: Button = host.get("_pause_button")
+	assert_eq(label.text, "", "hinter dem Veil zählt NICHTS")
+	assert_true(pause.disabled, "Pause bleibt zu, solange die Reise läuft")
+	router.beende_reise()
+	var go := await wait_until(func() -> bool: return not pause.disabled, 8000)
+	assert_true(go, "nach dem Reveal läuft 3-2-1 → GO")
+	host.queue_free()
+	router.queue_free()
 	await wait_frames(2)
 
 

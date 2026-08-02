@@ -19,6 +19,15 @@
 				"Lacing up the tiny shoes…"
 			]
 		},
+		"arcade": {
+			"titel": "Off to the arcade!",
+			"bereit": "The cabinets are lighting up…",
+			"tips": [
+				"Polishing the high-score boards…",
+				"Dusting out the coin slots…",
+				"Somewhere a jackpot is already jingling…"
+			]
+		},
 		"game": {
 			"bereit": "Get ready!",
 			"tips": [

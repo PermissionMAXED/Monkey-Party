@@ -2,10 +2,13 @@ extends W1cTestCase
 ## W16/VEIL: LoadingVeil-Karte im Look der alten Web-Version. Der
 ## W1a-Contract (cover/reveal awaitbar, Signale, set_progress, Node-Pfade
 ## Root/Backdrop/Spinner) wird weiter von tests/unit/test_loading_veil.gd
-## gehalten — hier kommen die Optik-Varianten dazu: die drei Karten-Modi
-## home/trip/game (Titel, Ready-Zeile, Cover, Motiv-Sticker), das statische
-## Blätter-Pattern, Tipp-Rotation je Modus, Indeterminate-Sweep vs. echter
-## Balken und die geteilten Arcade-Cover-Texturen.
+## gehalten — hier kommen die Optik-Varianten dazu: die vier Karten-Modi
+## home/trip/game/arcade (Titel, Ready-Zeile, Cover, Motiv-Sticker), das
+## statische Blätter-Pattern, Tipp-Rotation je Modus, Indeterminate-Sweep
+## vs. echter Balken und die geteilten Arcade-Cover-Texturen. Der
+## „arcade“-Modus ist G7-P56R2: Reisen ZUR Arcade (rein wie raus aus
+## jedem Minispiel) tragen eine eigene Spielhallen-Karte statt der
+## Home-Karte.
 ##
 ## Bewusste W16-Anpassung (Spez ladebild-alt.md §2.4): statt EINEM
 ## `veil.tips`-Pool (5–8) gibt es je Modus einen eigenen Pool mit den
@@ -13,7 +16,7 @@ extends W1cTestCase
 ## Modus plus DE/EN-Parität.
 
 const VEIL_SCENE := preload("res://scripts/core/loading_veil.tscn")
-const MODI: Array[String] = ["home", "trip", "game"]
+const MODI: Array[String] = ["home", "trip", "game", "arcade"]
 ## W16/G2b: Petal-Sweep-Wipe (Maske+Stempel auf/über dem FROZEN Root).
 const VeilWipe := preload("res://scripts/core/loading_veil_wipe.gd")
 
@@ -64,7 +67,8 @@ func test_trip_variante_fuer_shop_und_stadt() -> void:
 	check_eq(LoadingVeil.modus_fuer_ziel(&"city/ort/tierarzt"), "trip", "Klinik (Stadt-Ort) = trip")
 	check_eq(LoadingVeil.modus_fuer_ziel(&"home"), "home", "Rückkehr = home")
 	check_eq(LoadingVeil.modus_fuer_ziel(&"home/kitchen"), "home", "Hausraum = home")
-	check_eq(LoadingVeil.modus_fuer_ziel(&"arcade"), "home", "Sonstige Screens = home")
+	check_eq(LoadingVeil.modus_fuer_ziel(&"arcade"), "arcade", "Arcade-Reise = arcade (P56R2)")
+	check_eq(LoadingVeil.modus_fuer_ziel(&"album"), "home", "Sonstige Screens = home")
 	var veil := _fresh_veil()
 	veil.prepare_for_travel(&"ikea")
 	check_eq(
@@ -78,6 +82,32 @@ func test_trip_variante_fuer_shop_und_stadt() -> void:
 		"Ready-Zeile „Zeit für einen kleinen Ausflug…“"
 	)
 	check((veil.get_node("%Cover") as Control).visible, "Trip nutzt ebenfalls das Heim-Cover")
+	_cleanup(veil)
+
+
+## G7-P56R2: Reisen ZUR Arcade tragen die eigene Spielhallen-Karte —
+## eigener Titel + Ready-Zeile, KEIN Heim-Cover (der warme Verlauf trägt,
+## Web-onerror-Look) und der Tipp-Pool des Arcade-Modus.
+func test_arcade_variante_eigene_karte() -> void:
+	var veil := _fresh_veil()
+	veil.prepare_for_travel(&"arcade")
+	check_eq(
+		(veil.get_node("%Title") as Label).text,
+		I18nService.t("veil.arcade.titel"),
+		"Arcade-Titel „Ab in die Arcade!“"
+	)
+	check_eq(
+		(veil.get_node("%Ready") as Label).text,
+		I18nService.t("veil.arcade.bereit"),
+		"Arcade-Ready-Zeile"
+	)
+	check(
+		not (veil.get_node("%Cover") as Control).visible,
+		"Arcade: kein Heim-Cover — der warme Verlauf trägt"
+	)
+	check((veil.get_node("%Gooby") as Control).visible, "Motiv-Sticker sichtbar")
+	check((veil.get_node("%Tip") as Control).visible, "Arcade-Tipp sichtbar")
+	check((veil.get_node("%Tip") as Label).text != "", "Tipp nicht leer")
 	_cleanup(veil)
 
 
@@ -115,16 +145,17 @@ func test_minigame_variante_cover_titel_tipp() -> void:
 		ArcadeScreen.COVERS["gvz"],
 		"Hint gilt auch für mg_host"
 	)
-	# … und räumt sich bei jedem anderen Ziel selbst auf.
+	# … und räumt sich bei jedem anderen Ziel selbst auf. Der Aus-Weg zur
+	# Arcade trägt seit P56R2 die eigene Spielhallen-Karte.
 	veil.prepare_for_travel(&"arcade")
 	check(
 		(veil.get_node("%Cover") as TextureRect).texture != ArcadeScreen.COVERS["gvz"],
-		"Nicht-MG-Ziel löscht den Hint (zurück zum Heim-Cover)"
+		"Nicht-MG-Ziel löscht den Hint (Spiel-Cover weg)"
 	)
 	check_eq(
 		(veil.get_node("%Title") as Label).text,
-		I18nService.t("veil.home.titel"),
-		"zurück zur Home-Variante"
+		I18nService.t("veil.arcade.titel"),
+		"Aus-Weg zur Arcade = Arcade-Variante (P56R2)"
 	)
 	veil.prepare_for_travel(&"mg_pregame")
 	check(
