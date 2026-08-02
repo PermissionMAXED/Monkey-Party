@@ -734,7 +734,17 @@ func _basis_seed() -> int:
 	if seed_override != 0:
 		return seed_override
 	# Tages-Seed wie MarktSim (Doc §4.1: gleicher Tag = gleicher Kundenstrom).
-	return Time.get_date_string_from_system().hash()
+	# Der Tag kommt aus der PINNBAREN Uhr (gs.clock, Muster
+	# GoobyeLadenScene._tag_key) — die Systemzeit ignorierte gepinnte
+	# Test-/Dev-Uhren und wich vom Rest des Spiels ab (Playtest H-dlc-park).
+	return _tag_key().hash()
+
+
+func _tag_key() -> String:
+	var ms := int(Time.get_unix_time_from_system() * 1000.0)
+	if _gs != null and "clock" in _gs:
+		ms = int(_gs.clock.now_ms())
+	return Time.get_date_string_from_unix_time(floori(float(ms) / 1000.0))
 
 
 ## Reduced-Motion-Abfrage (Duck-Typing wie im JuiceKit — ohne Autoload = aus).

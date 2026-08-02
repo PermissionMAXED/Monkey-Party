@@ -7,6 +7,7 @@ extends TestCase
 ## der GANZEN Fahrt konstant klein — er kann nicht herausfallen.
 
 const SaveSchema := preload("res://scripts/state/save_schema.gd")
+const ClockScript := preload("res://scripts/logic/clock.gd")
 
 
 ## GameState-Double: dotted get/set + update(mutator) wie /root/GameState.
@@ -41,6 +42,12 @@ class FakeGameState:
 
 	func notify_slice_changed(slice_id: String) -> void:
 		slices_notified.append(slice_id)
+
+
+## Double MIT pinnbarer Uhr — Funkelpark.stunde() liest gs.clock (W1d).
+class FakeClockGameState:
+	extends FakeGameState
+	var clock: Object = null
 
 
 ## ------------------------------------------------------- ParkState (pur)
@@ -222,6 +229,74 @@ func test_funkelpark_nacht_latcht() -> void:
 	assert_true(park.ist_nacht(), "21 Uhr ist Parknacht")
 	assert_true(bool(gs.get_value("park.nightVisit", false)), "nightVisit gelatcht")
 	assert_true(park.get_node("Nachtlichter").visible, "Lichterketten an")
+	park.queue_free()
+	await wait_frames(1)
+
+
+## Playtest H-dlc-park: das Nachtband kippt WÄHREND des Besuchs (Web-Vorbild
+## parkScene.js prüft im Tick) — Lichter an + nightVisit-Latch nachgebucht,
+## und der Morgen hellt die Optik wieder auf (Latch bleibt).
+func test_funkelpark_nachtband_kippt_waehrend_besuch() -> void:
+	var gs := FakeGameState.new()
+	var park: Funkelpark = Funkelpark.new()
+	park.game_state_override = gs
+	park.stunde_override = 12.0
+	tree.root.add_child(park)
+	await wait_frames(2)
+	assert_false(bool(gs.get_value("park.nightVisit", true)), "mittags kein Nacht-Latch")
+	assert_false(park.get_node("Nachtlichter").visible, "Lichterketten tagsüber aus")
+	park.stunde_override = 21.0
+	park._pruefe_nachtband()
+	assert_true(park.get_node("Nachtlichter").visible, "Sonnenuntergang schaltet die Lichter an")
+	assert_true(bool(gs.get_value("park.nightVisit", false)), "nightVisit wird nachgelatcht")
+	park.stunde_override = 12.0
+	park._pruefe_nachtband()
+	assert_false(park.get_node("Nachtlichter").visible, "der Morgen macht die Lichter aus")
+	assert_true(bool(gs.get_value("park.nightVisit", false)), "der Latch bleibt gelatcht")
+	park.queue_free()
+	await wait_frames(1)
+
+
+## Playtest H-dlc-park: die Parkstunde kommt aus der PINNBAREN Uhr (gs.clock)
+## statt aus der Systemzeit — sonst kippen Dev-Zeitreisen das Band nie.
+func test_funkelpark_stunde_aus_pinnbarer_uhr() -> void:
+	var gs := FakeClockGameState.new()
+	var uhr: RefCounted = ClockScript.new()
+	uhr.pin(1768478400000)  # 2026-01-15T12:00:00Z
+	uhr.set_utc_offset_minutes(0)
+	gs.clock = uhr
+	var park := Funkelpark.new()
+	park.game_state_override = gs
+	park.stunde_override = -1.0
+	assert_eq(park.stunde(), 12.0, "Stunde kommt aus der gepinnten Uhr")
+	assert_false(park.ist_nacht(), "12 Uhr = Tag")
+	uhr.advance(9 * 3600000)
+	assert_eq(park.stunde(), 21.0, "9 h später = 21 Uhr")
+	assert_true(park.ist_nacht(), "21 Uhr = Parknacht")
+	park.free()
+
+
+## Playtest H-dlc-park: „Hände hoch“ ist eine HALTE-Pose — der wave-One-Shot
+## wird nachgefeuert, solange der Knopf gedrückt bleibt; Loslassen stoppt
+## die Schleife (der One-Shot-Rückweg blendet zurück in die Sitzpose).
+func test_coaster_hands_up_haelt_die_pose() -> void:
+	var gs := FakeGameState.new()
+	gs.state["economy"]["coins"] = 50
+	var park: Funkelpark = Funkelpark.new()
+	park.game_state_override = gs
+	park.stunde_override = 12.0
+	tree.root.add_child(park)
+	await wait_frames(2)
+	assert_true(park.fahre("coaster"), "Fahrt startet")
+	park.coaster.set_hands_up(true)
+	assert_eq(park.coaster.rig._pending_oneshot, "wave", "Hände hoch feuert den Winke-Clip")
+	park.coaster.rig._pending_oneshot = ""
+	park.coaster._on_rig_clip_finished("wave")
+	assert_eq(park.coaster.rig._pending_oneshot, "wave", "gehaltener Knopf feuert nach")
+	park.coaster.set_hands_up(false)
+	park.coaster.rig._pending_oneshot = ""
+	park.coaster._on_rig_clip_finished("wave")
+	assert_eq(park.coaster.rig._pending_oneshot, "", "Loslassen stoppt die Winke-Schleife")
 	park.queue_free()
 	await wait_frames(1)
 

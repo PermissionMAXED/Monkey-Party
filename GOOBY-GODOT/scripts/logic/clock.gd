@@ -48,10 +48,21 @@ func set_utc_offset_minutes(minutes: int) -> void:
 ## Local calendar day string (YYYY-MM-DD) for "per local day" rules
 ## (daily x2, streaks). Mirrors web localDay(ms).
 func local_day(ms := -1) -> String:
+	var d := _local_dict(ms)
+	return "%04d-%02d-%02d" % [d.year, d.month, d.day]
+
+
+## Local hour of day (0..24 with minute fraction) for time-band rules
+## (e.g. the Funkelpark night band). Same offset handling as local_day().
+func local_hour(ms := -1) -> float:
+	var d := _local_dict(ms)
+	return float(d.hour) + float(d.minute) / 60.0
+
+
+func _local_dict(ms := -1) -> Dictionary:
 	var at := ms if ms >= 0 else now_ms()
 	var offset := _offset_minutes
 	if not _offset_overridden:
 		offset = int(Time.get_time_zone_from_system().get("bias", 0))
 	var local_secs := int(floor(at / 1000.0)) + offset * 60
-	var d := Time.get_datetime_dict_from_unix_time(local_secs)
-	return "%04d-%02d-%02d" % [d.year, d.month, d.day]
+	return Time.get_datetime_dict_from_unix_time(local_secs)

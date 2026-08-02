@@ -11,6 +11,7 @@ extends TestCase
 const MENU_DATEI := "res://content/dlc/data/mcgooby_menu.json"
 const SCHICHT_SZENE := "res://scripts/dlc/mcgooby/schicht_scene.tscn"
 const GOLD_SEED := 4711
+const ClockScript := preload("res://scripts/logic/clock.gd")
 
 
 ## GameState-Double: dotted get/set wie /root/GameState + update()-Pfad
@@ -39,6 +40,12 @@ class FakeGameState:
 
 	func update(mutator: Callable) -> void:
 		mutator.call(s)
+
+
+## Double MIT pinnbarer Uhr — der Tages-Seed der Schicht liest gs.clock.
+class FakeClockGameState:
+	extends FakeGameState
+	var clock: Object = null
 
 
 ## SceneRouter-Double: zeichnet register_route/goto auf (Muster GoobyeRouten).
@@ -262,6 +269,25 @@ func test_routen_helfer_registriert_und_reist() -> void:
 	assert_eq(int((router.reisen[0]["params"] as Dictionary).get("seed", 0)), 7)
 	# Ohne Router (kein Override, kein Baum): fail-closed statt Crash.
 	assert_false(McGoobyRouten.fahre_zur_schicht(null), "ohne Router = false")
+
+
+## Playtest H-dlc-park: der Tages-Seed folgt der PINNBAREN Uhr (gs.clock),
+## nicht der Systemzeit — gepinnte Test-/Dev-Uhren bekommen den Kundenstrom
+## des gepinnten Tages (Muster GoobyeLadenScene._tag_key).
+func test_tages_seed_folgt_der_pinnbaren_uhr() -> void:
+	var szene: McGoobySchichtScene = (load(SCHICHT_SZENE) as PackedScene).instantiate()
+	var gs := FakeClockGameState.new()
+	var uhr: RefCounted = ClockScript.new()
+	uhr.pin(1768478400000)  # 2026-01-15T12:00:00Z
+	gs.clock = uhr
+	szene._gs = gs
+	szene.seed_override = 0
+	assert_eq(szene._tag_key(), "2026-01-15", "Tag kommt aus der gepinnten Uhr")
+	assert_eq(szene._basis_seed(), "2026-01-15".hash(), "Seed = Hash des gepinnten Tages")
+	uhr.advance(24 * 3600000)
+	assert_eq(szene._tag_key(), "2026-01-16", "ein Uhr-Tag später = neuer Tag")
+	assert_true(szene._basis_seed() != "2026-01-15".hash(), "neuer Tag = neuer Seed")
+	szene.free()
 
 
 func test_schicht_szene_erststart_intro_und_komplette_schicht() -> void:

@@ -77,11 +77,21 @@ func simuliere(delta: float) -> void:
 
 
 ## „Hände hoch“ halten (HUD-Knopf) — zählt in den erlaubten Zonen.
+## Der wave-Clip ist ein One-Shot: für die HALTE-Semantik feuert
+## _on_rig_clip_finished ihn nach, solange der Knopf gedrückt bleibt
+## (vorher fielen die Hände nach EINEM Durchlauf runter, obwohl der
+## Knopf noch gehalten wurde — Playtest H-dlc-park). Loslassen stoppt
+## das Nachfeuern; der One-Shot-Rückweg blendet zurück in die Sitzpose.
 func set_hands_up(an: bool) -> void:
 	_hands_up = an
 	if rig == null:
 		return
 	if an:
+		rig.play_clip("wave")
+
+
+func _on_rig_clip_finished(clip: String) -> void:
+	if clip == "wave" and _hands_up and faehrt:
 		rig.play_clip("wave")
 
 
@@ -255,6 +265,7 @@ func _baue_zug() -> void:
 	# Unsichtbar bis zur Fahrt — der Park hat EINEN Plaza-Gooby, der beim
 	# Einsteigen "in den Wagen wechselt" (starte_fahrt blendet um).
 	rig.visible = false
+	rig.clip_finished.connect(_on_rig_clip_finished)
 	_carts[0].add_child(rig)
 	_cam = Camera3D.new()
 	_cam.name = "PovCam"

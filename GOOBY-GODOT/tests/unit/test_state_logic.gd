@@ -267,3 +267,16 @@ func test_clock_pin_and_local_day() -> void:
 	assert_eq(clock.local_day(), "2026-01-16", "13 h spaeter = naechster UTC-Tag")
 	clock.set_utc_offset_minutes(-120)
 	assert_eq(clock.local_day(), "2026-01-15", "UTC-2 ist noch am 15.")
+
+
+## local_hour (Playtest H-dlc-park): Zeitband-Regeln (Funkelpark-Nacht)
+## lesen die Stunde aus derselben pinnbaren Uhr wie local_day.
+func test_clock_local_hour() -> void:
+	var clock := Clock.new()
+	clock.pin(int(_load_golden()["vacation"]["nowMs"]))
+	clock.set_utc_offset_minutes(0)
+	assert_eq(clock.local_hour(), 12.0, "NOW = 12:00Z")
+	clock.advance(int(13.5 * 3600000.0))
+	assert_eq(clock.local_hour(), 1.5, "13,5 h spaeter = 01:30")
+	clock.set_utc_offset_minutes(-120)
+	assert_eq(clock.local_hour(), 23.5, "UTC-2 = 23:30 am Vortag")

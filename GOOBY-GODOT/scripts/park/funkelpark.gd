@@ -42,6 +42,15 @@ const FARBE_WEG := Color("#D9C6A5")
 const FARBE_WIESE := Color("#8FBF6C")
 const FARBE_ROSA := Color("#F781B0")
 const FARBE_CREME := Color("#F0EFE9")
+## Tag/Nacht-Stimmung (Tag = Aufbauwerte aus _baue_welt, Nacht = gedimmt).
+const TAG_HIMMEL := Color(0.62, 0.79, 0.94)
+const TAG_AMBIENT := Color(1.0, 0.97, 0.92)
+const NACHT_HIMMEL := Color(0.13, 0.16, 0.30)
+const NACHT_AMBIENT := Color(0.62, 0.66, 0.86)
+## Web-Parität parkScene.js: das Nachtband wird WÄHREND des Besuchs weiter
+## beobachtet (applyBand/bookNightIfNight im Tick) — hier reicht ein Check
+## pro Sekunde, das Band kippt nur zur vollen Stunde.
+const NACHT_CHECK_SEC := 1.0
 const BESUCHER_FARBEN: Array[Color] = [
 	Color("#9BD7E8"), Color("#F2C14E"), Color("#B58CE4"), Color("#8FD06C")
 ]
@@ -72,6 +81,8 @@ var _sonne: DirectionalLight3D
 var _besucher: Array[Node3D] = []
 var _besucher_ziele: Array[Vector3] = []
 var _zeit := 0.0
+var _nacht_aktiv := false
+var _nacht_check_akku := 0.0
 
 
 func _ready() -> void:
@@ -94,6 +105,10 @@ func _ready() -> void:
 func _process(delta: float) -> void:
 	_zeit += delta
 	_bewege_besucher(delta)
+	_nacht_check_akku += delta
+	if _nacht_check_akku >= NACHT_CHECK_SEC:
+		_nacht_check_akku = 0.0
+		_pruefe_nachtband()
 
 
 func receive_params(params: Dictionary) -> void:
@@ -108,10 +123,15 @@ func game_state() -> Object:
 	return get_node_or_null("/root/GameState")
 
 
-## Aktuelle Parkstunde (Tests überschreiben via stunde_override).
+## Aktuelle Parkstunde (Tests überschreiben via stunde_override). Die Uhr
+## kommt aus gs.clock (pinnbare Uhr, W1d) statt direkt aus der Systemzeit —
+## sonst kippen Dev-Zeitreisen/gepinnte Tests das Nachtband nie.
 func stunde() -> float:
 	if stunde_override >= 0.0:
 		return stunde_override
+	var gs := game_state()
+	if gs != null and "clock" in gs:
+		return float(gs.clock.local_hour())
 	var uhr := Time.get_datetime_dict_from_system()
 	return float(uhr["hour"]) + float(uhr["minute"]) / 60.0
 
@@ -275,9 +295,9 @@ func _baue_welt() -> void:
 	var env_node := WorldEnvironment.new()
 	_env = Environment.new()
 	_env.background_mode = Environment.BG_COLOR
-	_env.background_color = Color(0.62, 0.79, 0.94)
+	_env.background_color = TAG_HIMMEL
 	_env.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
-	_env.ambient_light_color = Color(1.0, 0.97, 0.92)
+	_env.ambient_light_color = TAG_AMBIENT
 	_env.ambient_light_energy = 1.0
 	env_node.environment = _env
 	add_child(env_node)
@@ -588,18 +608,41 @@ func _baue_lichter() -> void:
 		_nacht_licht.add_child(licht)
 
 
-## Nacht anwenden: Umgebung dimmen, Lichter an, nightVisit-Latch buchen.
+## Startzustand des Nachtbands beim Betreten (den nightVisit-Latch bucht
+## _buche_besuch über record_visit mit).
 func _wende_nacht_an() -> void:
+	_nacht_aktiv = ist_nacht()
+	_wende_band_an(_nacht_aktiv)
+
+
+## Band-Wache (1×/s aus _process): kippt das Band WÄHREND des Besuchs,
+## gehen die Lichter an/aus und der nightVisit-Latch wird nachgebucht.
+## Vorher wurde das Band nur einmal in _ready ausgewertet — wer den
+## Sonnenuntergang im Park erlebte, bekam weder Lichterketten noch den
+## nightLights-Sticker (Web-Vorbild parkScene.js prüft im Tick;
+## Playtest H-dlc-park).
+func _pruefe_nachtband() -> void:
 	var nacht := ist_nacht()
-	_nacht_licht.visible = nacht
-	if not nacht:
+	if nacht == _nacht_aktiv:
 		return
-	_env.background_color = Color(0.13, 0.16, 0.30)
-	_env.ambient_light_color = Color(0.62, 0.66, 0.86)
-	_env.ambient_light_energy = 0.55
-	_sonne.light_energy = 0.25
-	_sonne.light_color = Color(0.72, 0.78, 1.0)
-	_zeige_toast(I18nService.t("park.nacht.lichter"))
+	_nacht_aktiv = nacht
+	_wende_band_an(nacht)
+	if nacht:
+		ParkState.schreibe(
+			game_state(), func(slice: Variant) -> Dictionary: return ParkState.record_night(slice)
+		)
+
+
+## Band-Optik anwenden: Umgebung dimmen/aufhellen + Lichterketten schalten.
+func _wende_band_an(nacht: bool) -> void:
+	_nacht_licht.visible = nacht
+	_env.background_color = NACHT_HIMMEL if nacht else TAG_HIMMEL
+	_env.ambient_light_color = NACHT_AMBIENT if nacht else TAG_AMBIENT
+	_env.ambient_light_energy = 0.55 if nacht else 1.0
+	_sonne.light_energy = 0.25 if nacht else 1.0
+	_sonne.light_color = Color(0.72, 0.78, 1.0) if nacht else Color.WHITE
+	if nacht:
+		_zeige_toast(I18nService.t("park.nacht.lichter"))
 
 
 func _starte_musik() -> void:
