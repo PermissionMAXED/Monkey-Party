@@ -170,17 +170,11 @@ func wenden(perfekt: bool) -> void:
 	_wende_tween = create_tween()
 	_wende_tween.set_parallel(true)
 	_wende_tween.tween_property(_patty, "rotation:x", PI, 0.3)
-	(
-		_wende_tween
-		. tween_property(_patty, "position:y", PATTY_POS.y + 1.0, 0.15)
-		. set_ease(Tween.EASE_OUT)
+	_wende_tween.tween_property(_patty, "position:y", PATTY_POS.y + 1.0, 0.15).set_ease(
+		Tween.EASE_OUT
 	)
 	_wende_tween.set_parallel(false)
-	(
-		_wende_tween
-		. tween_property(_patty, "position:y", PATTY_POS.y, 0.15)
-		. set_ease(Tween.EASE_IN)
-	)
+	_wende_tween.tween_property(_patty, "position:y", PATTY_POS.y, 0.15).set_ease(Tween.EASE_IN)
 	_wende_tween.tween_callback(func() -> void: _patty.rotation = Vector3.ZERO)
 
 
@@ -234,9 +228,9 @@ func feel(emotion: String) -> void:
 ## Glow-Zerfall der Basis + Patty-Farbverlauf + Kunden-Schunkeln.
 func tick(delta: float) -> void:
 	super.tick(delta)
-	_patty_mat.albedo_color = (
-		_patty_mat.albedo_color.lerp(_patty_farbe_ziel, minf(1.0, FARB_TEMPO * delta))
-	)
+	_patty_mat.albedo_color = (_patty_mat.albedo_color.lerp(
+		_patty_farbe_ziel, minf(1.0, FARB_TEMPO * delta)
+	))
 	_kunden_jubel = maxf(0.0, _kunden_jubel - delta)
 	if _reduced:
 		for i in _kunden.size():
@@ -475,9 +469,7 @@ func _build_bananen_boegen() -> void:
 	for center_x: float in [-0.52, 0.52]:
 		for i in 9:
 			var winkel := PI * float(i) / 8.0
-			var pos := Vector3(
-				center_x + cos(winkel) * 0.52, -0.55 + sin(winkel) * 0.95, 0.1
-			)
+			var pos := Vector3(center_x + cos(winkel) * 0.52, -0.55 + sin(winkel) * 0.95, 0.1)
 			var basis := Basis(Vector3.BACK, atan2(cos(winkel) * 0.95, -sin(winkel) * 0.52))
 			poses.append(Transform3D(basis, pos))
 	holder.add_child(Models.swarm([{"mesh": seg, "xform": Transform3D.IDENTITY}], poses, 30.0))
@@ -568,9 +560,7 @@ func _build_grill_station() -> void:
 	var poses: Array = []
 	for i in 7:
 		poses.append(
-			Transform3D(
-				Basis.IDENTITY, Vector3(PATTY_POS.x, COUNTER_Y + 0.13, -1.4 + i * 0.3)
-			)
+			Transform3D(Basis.IDENTITY, Vector3(PATTY_POS.x, COUNTER_Y + 0.13, -1.4 + i * 0.3))
 		)
 	add_child(Models.swarm([{"mesh": stab, "xform": Transform3D.IDENTITY}], poses, 30.0))
 	# Glut-Streifen an der Plattenfront: glüht stärker, je weiter die Garung.

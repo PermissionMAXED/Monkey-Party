@@ -421,9 +421,7 @@ func test_schicht_buehne_praesenz_und_patty_sync() -> void:
 	szene.patty_zeit_setzen(float(timing["gar_sec"]) + float(timing["fenster_sec"]) + 0.5)
 	assert_eq(buehne.patty_zustand(), "kohle", "zu spät = Kohle (Gag, kein Fail)")
 	assert_eq(
-		buehne.patty_farbe_ziel(),
-		McGoobySchichtStage3D.FARBE_KOHLE,
-		"Ziel-Farbe = Knopf-Kohle"
+		buehne.patty_farbe_ziel(), McGoobySchichtStage3D.FARBE_KOHLE, "Ziel-Farbe = Knopf-Kohle"
 	)
 	# Wenden über den echten Knopf: Bühnen-Salto crasht nicht, Schicht läuft.
 	szene.patty_knopf().pressed.emit()
@@ -451,8 +449,6 @@ func test_schicht_buehne_bleibt_im_draw_budget() -> void:
 	var partikel := buehne.find_children("*", "GPUParticles3D", true, false).size()
 	var schaetzung := meshes + multis + partikel
 	assert_true(schaetzung >= 40, "Bühne ist wirklich aufgebaut (%d Instanzen)" % schaetzung)
-	assert_true(
-		schaetzung <= 400, "Draw-Call-Schätzung %d <= 400 (I5-Budget, Doc §9)" % schaetzung
-	)
+	assert_true(schaetzung <= 400, "Draw-Call-Schätzung %d <= 400 (I5-Budget, Doc §9)" % schaetzung)
 	szene.queue_free()
 	await wait_frames(1)
