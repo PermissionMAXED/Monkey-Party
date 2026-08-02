@@ -288,6 +288,29 @@ Original-Links sind alle übernommen:)_
       und jeden Frame getickt; **(f)** ranchHerde-HUD ebenfalls auf M9
       umgestellt. SFX-/i18n-Sweeps ohne Befund. 5 Wächter-Tests
       (`test_h_minigames.gd`), Report `docs/godot-rewrite/playtest/H-minigames.md`.
+- [x] **Settings-/A11y-Politur + Flake-Fix (2. August):** Einstellungs-Screen
+      und Barrierefreiheits-Optionen auditiert — 3 echte Befunde gefixt:
+      **(a)** der bekannte Suiten-Flake in `test_settings_screen.gd`
+      (Einzelregler-Test): unter Last senkt die Perf-Notbremse das
+      Auto-Profil auf „niedrig" — dessen Partikel-Wert ist exakt 0.35, der
+      Slider stand dann SCHON dort und der Test setzte denselben Wert
+      (Godot feuert dann kein value_changed) → Zielwert jetzt immer
+      ≠ Ist-Wert, plus neue Regressions-Wache fürs Niedrig-Profil-Szenario;
+      **(b)** ECHTER A11y-Bug: der gespeicherte Reduced-Motion-Schalter
+      erreichte den Laufzeit-Schalter (UiTheme) nur über den
+      Settings-Toggle — nach App-Neustart animierte alles wieder voll, bis
+      man den Schalter einmal neu umlegte → UiTheme seedet jetzt beim Boot
+      aus AppSettings und bleibt bei JEDEM Schreiber synchron;
+      **(c)** „Hinweise anzeigen: Länger" galt nur fürs Notify-Banner,
+      nicht für Toasts (die häufigsten Hinweise) → Toast-Standzeit
+      verdoppelt sich jetzt ebenfalls (2,2 → 4,4 s).
+      Reduced-Motion-Abdeckung erweitert: der Radio-Endlos-Ticker steht
+      still statt dauerzulaufen, der Tomaten-Splat verzichtet auf
+      Aufprall-Zoom + Abrutschen (nur weiches Blenden, gleiche Dauer).
+      5 neue Wachen in `test_a11y_optionen.gd`. Alle Settings-/A11y-Tests
+      grün, Boot-Smoke 0 Warnzeilen; die einzigen Voll-Lauf-FAILs stammen
+      aus der parallel laufenden Haus-Ausbau-Baustelle (rooms.json-WIP),
+      nicht aus diesem Schnitt.
 - [x] **Warn-Sweep (2. August, das B11-Paket aus der Wellen-J-Warteschlange):**
       Headless-Fehlerjagd über Boot-Smoke, beide Test-Runner und den kompletten
       bughunt-Walkthrough — 3 echte Ursachen gefunden und gefixt:

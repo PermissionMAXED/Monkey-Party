@@ -35,6 +35,31 @@ var reduced_motion := false:
 
 func _ready() -> void:
 	apply_to_window(get_tree().root)
+	_sync_reduced_motion_from_settings()
+
+
+## W18-A11y-Fix: der persistierte Reduced-Motion-Schalter (AppSettings,
+## user://settings.json) erreichte diesen Laufzeit-Schalter bisher NUR über
+## den Settings-Screen-Toggle — nach einem App-Neustart animierte alles
+## wieder voll (UiMotion/SquishButton/Wallpaper lesen UiTheme, nicht
+## AppSettings), bis man den Schalter einmal aus- und wieder einschaltete.
+## Jetzt: beim Boot aus AppSettings seeden UND auf setting_changed lauschen —
+## damit hält JEDER Schreiber (Settings-Screen, Dev-Tools, Save-Transfer)
+## beide Quellen synchron. Defensiv per Duck-Typing: isolierte Test-Trees
+## ohne AppSettings-Autoload laufen unverändert weiter.
+func _sync_reduced_motion_from_settings() -> void:
+	var settings := get_node_or_null("/root/AppSettings")
+	if settings == null:
+		return
+	if settings.has_method("is_reduced_motion"):
+		reduced_motion = settings.is_reduced_motion()
+	if settings.has_signal("setting_changed"):
+		settings.setting_changed.connect(_on_app_setting_changed)
+
+
+func _on_app_setting_changed(key: String, value: Variant) -> void:
+	if key == "reduced_motion":
+		reduced_motion = bool(value)
 
 
 ## Theme + Cream-ClearColor auf ein Window anwenden (Root oder Popups).

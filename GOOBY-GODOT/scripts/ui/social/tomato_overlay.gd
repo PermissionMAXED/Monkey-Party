@@ -29,9 +29,20 @@ func splat(at_ratio := Vector2(0.5, 0.4)) -> void:
 	rect.pivot_offset = rect.size * 0.5
 	rect.rotation = randf_range(-0.35, 0.35)
 	add_child(rect)
+	var slide := BoardEmotes.SPLAT_SLIDE_SEC
+	# W18-A11y: Reduced Motion zeigt den Splat OHNE Aufprall-Zoom und OHNE
+	# Abrutschen — nur weiches Ein-/Ausblenden, gleiche Gesamtdauer (damit
+	# has_active_splat()/Gameplay-Timing identisch bleiben).
+	if ThemeService.is_reduced_motion(self):
+		rect.modulate.a = 0.0
+		var ruhig := create_tween()
+		ruhig.tween_property(rect, "modulate:a", 1.0, 0.08)
+		ruhig.tween_interval(0.4 + slide * 0.5)
+		ruhig.tween_property(rect, "modulate:a", 0.0, slide * 0.5)
+		ruhig.tween_callback(rect.queue_free)
+		return
 	rect.scale = Vector2(1.6, 1.6)
 	rect.modulate.a = 0.0
-	var slide := BoardEmotes.SPLAT_SLIDE_SEC
 	var tween := create_tween()
 	tween.tween_property(rect, "modulate:a", 1.0, 0.08)
 	(

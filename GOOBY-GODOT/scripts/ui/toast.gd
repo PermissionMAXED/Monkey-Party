@@ -17,6 +17,10 @@ extends Control
 ## sie nie mehr in die Blase drücken.
 
 const HOLD_SEC := 2.2
+## W18-A11y: „Hinweise anzeigen: Länger“ (accessibility.hint_duration) griff
+## bisher nur beim Notify-Banner — Toasts sind aber die häufigsten Hinweise.
+## „lang“ verdoppelt die Standzeit (gleiche Regel wie notification_service).
+const HOLD_SEC_LANG := 4.4
 const FADE_SEC := 0.25
 ## Web .toast: font-size 1rem (16), Leaf-Glyph 11 px, Gap 8 px, max-width
 ## min(86vw, 22rem = 352 px) — alles Design-px, skaliert mit UiScale.
@@ -122,7 +126,16 @@ func _show_next() -> void:
 	_panel.visible = true
 	_panel.reset_size()
 	_reposition()
-	_hold_timer.start(HOLD_SEC)
+	_hold_timer.start(_hold_seconds())
+
+
+## Standzeit nach Hinweisdauer-Option (defensiv: Trees ohne Autoload = normal).
+func _hold_seconds() -> float:
+	var settings := get_node_or_null("/root/AppSettings")
+	if settings != null and settings.has_method("value_of"):
+		if String(settings.value_of("accessibility.hint_duration")) == "lang":
+			return HOLD_SEC_LANG
+	return HOLD_SEC
 
 
 ## Web-Maße auf den Canvas skalieren (zentrale UiScale-Regel, FIX1).

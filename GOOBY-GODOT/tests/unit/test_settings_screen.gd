@@ -99,13 +99,50 @@ func test_einzelregler_markiert_benutzerdefiniert() -> void:
 	var slider := (
 		screen.find_child("RowGraphicsParticles", true, false).get_node("Value") as HSlider
 	)
-	slider.value = 0.35
+	# Bekannter Suiten-Flake (W18): unter Last senkt die PerfGovernor-
+	# Notbremse das Auto-Profil auf "niedrig" — dessen particles-Wert ist
+	# exakt 0.35. Der Slider steht dann SCHON auf 0.35, und Range feuert
+	# value_changed nur bei ECHTEN Aenderungen — fester Zielwert 0.35 lief
+	# dann ins Leere. Deshalb: Ziel IMMER verschieden vom Ist-Wert waehlen
+	# (ein echter Nutzer-Drag aendert den Wert per Definition auch).
+	var ziel := 0.35 if absf(slider.value - 0.35) > 0.001 else 0.5
+	slider.value = ziel
 	assert_eq(
 		str(app.value_of("graphics.preset")),
 		"benutzerdefiniert",
 		"Einzelregler stellt das Profil auf benutzerdefiniert"
 	)
-	assert_almost(float(app.value_of("graphics.particles")), 0.35, 0.001)
+	assert_almost(float(app.value_of("graphics.particles")), ziel, 0.001)
+	_unmount(screen)
+	app.set_setting("graphics", prev_graphics)
+	app.set_setting("graphics.preset", str(prev_graphics.get("preset", "auto")))
+	Engine.max_fps = prev_fps
+
+
+## Regressions-Wache fuer den W18-Flake: laeuft das Niedrig-Profil (genau der
+## Zustand, den die Notbremse unter Suiten-Last herstellt), steht der
+## Partikel-Slider SCHON auf dem Buendel-Wert 0.35 — ein Drag auf einen
+## ANDEREN Wert muss das Profil trotzdem auf "benutzerdefiniert" flippen.
+func test_einzelregler_flippt_auch_im_niedrig_profil() -> void:
+	var app := _app()
+	if app == null:
+		fail_test("AppSettings-Autoload fehlt")
+		return
+	var prev_graphics: Dictionary = (app.get_setting("graphics") as Dictionary).duplicate(true)
+	var prev_fps := Engine.max_fps
+	app.set_setting("graphics.preset", "niedrig")
+	var screen := _mount_screen()
+	var slider := (
+		screen.find_child("RowGraphicsParticles", true, false).get_node("Value") as HSlider
+	)
+	assert_almost(slider.value, 0.35, 0.001, "Slider startet auf dem Niedrig-Buendel-Wert")
+	slider.value = 0.5
+	assert_eq(
+		str(app.value_of("graphics.preset")),
+		"benutzerdefiniert",
+		"Drag flippt das Profil auch aus dem Niedrig-Buendel heraus"
+	)
+	assert_almost(float(app.value_of("graphics.particles")), 0.5, 0.001)
 	_unmount(screen)
 	app.set_setting("graphics", prev_graphics)
 	app.set_setting("graphics.preset", str(prev_graphics.get("preset", "auto")))

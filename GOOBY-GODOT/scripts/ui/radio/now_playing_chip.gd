@@ -185,6 +185,12 @@ func _setze_text(text: String) -> void:
 func _lege_ticker_aus() -> void:
 	if _label_a == null or _clip == null:
 		return
+	# W18-A11y: Reduced Motion friert den Endlos-Ticker ein (Dauerbewegung
+	# ohne Nutzer-Anlass) — der Textanfang steht, die Wickel-Kopie bleibt weg.
+	if ThemeService.is_reduced_motion(self):
+		_label_a.position.x = 0.0
+		_label_b.visible = false
+		return
 	var sicht_w := maxf(1.0, _clip.size.x)
 	var offset := ticker_offset(_elapsed, _text_breite, sicht_w)
 	_label_a.position.x = offset
