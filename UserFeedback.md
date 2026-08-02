@@ -158,6 +158,29 @@ Original-Links sind alle übernommen:)_
       „Briefkasten" nicht mehr ab, Baumodus-Knopf-Salat aufgeräumt (HUD gleitet
       animiert weg, Kamera-Chips weichen dem Dock aus).
 
+- [x] **Rückkehrer-Karte (2. August, I-44 aus Welle J — Platz 2 der
+      Ideen-Rangliste, bester Retention-Hebel pro Aufwand):** Wer nach
+      ≥ 7 Tagen Pause wiederkommt, bekommt direkt nach dem Ankunfts-Wipe
+      eine liebevolle **„Was bisher geschah"-Karte**: Gooby erzählt drei
+      Geschichten, was er „alleine gemacht" hat — deterministisch aus dem
+      Spielstand gewürfelt (Ranch-Anekdote nur mit gekaufter Ranch,
+      Kühlschrank-Witz nur mit Fütter-Historie usw.; Immer-Geschichten
+      füllen auf, die Karte ist NIE leer) plus die Abwesenheit in ganzen
+      Tagen im Untertitel. Dazu startet eine **sanfte
+      Wiedereinstiegs-Quest** (3× streicheln, 1× füttern, 1 Minispiel-
+      Runde) — die Baselines frieren beim Karten-Start ein, alte Zähler
+      zählen also nicht. Der Abschluss zahlt das Wiedersehens-Geschenk
+      (120 Münzen + 40 XP) GENAU EINMAL über die echten Economy/Leveling-
+      Pfade, mit Konfetti + Toast. Ein offenes Tagesbonus-Popup wird nur
+      verdrängt (PanelStack-„Später"-Semantik) und klopft nach dem
+      Schließen der Karte erneut an. Nie doppelt für dieselbe
+      Abwesenheit, nie vor dem Onboarding. DE+EN.
+      Wache: `test_rueckkehr.gd` (Slice-Self-Heal, 7-Tage-Gating inkl.
+      nie-doppelt, deterministische zustandsbasierte Geschichten,
+      Baseline-Einfrieren + Geschenk einmalig, Besuchslücke am echten
+      State, DE/EN-String-Parität, Karte baut headless). Volle Suite
+      grün (3520 PASS; die einzigen FAILs stammen aus der parallel
+      laufenden Audio-/RMP-Baustelle, nicht aus diesem Schnitt).
 - [x] **DLC-Ladebildschirme (2. August, I-29 aus Welle J):** Reisen zu den
       beiden neuen DLCs tragen jetzt eigene Lade-Karten statt der
       „Trautes Heim“-Karte: der Weg in den Goo-und-Bye-Laden zeigt das
