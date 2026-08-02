@@ -97,8 +97,9 @@ func can_place(def: Dictionary, at: Vector2i, rot: int, ignore_uid := "") -> Dic
 		var bad := REASON_UNKNOWN_ITEM if def.is_empty() else REASON_OOB
 		return {"ok": false, "reason": bad}
 	var layer: int = def["layer"]
+	var traegt_surface := bool(def.get("surface", false))
 	for cell in cells_for(at, def["footprint"], rot):
-		var reason := _cell_reason(layer, cell, ignore_uid)
+		var reason := _cell_reason(layer, cell, ignore_uid, traegt_surface)
 		if reason != REASON_OK:
 			return {"ok": false, "reason": reason}
 	return {"ok": true, "reason": REASON_OK}
@@ -107,15 +108,25 @@ func can_place(def: Dictionary, at: Vector2i, rot: int, ignore_uid := "") -> Dic
 ## Ablehnungsgrund für EINE Zelle eines Zellen-Layer-Items (REASON_OK = frei).
 ## CEILING prüft nur Bounds + andere Decken-Items — Tür-Freihaltezonen sind
 ## ein Boden-Konzept und gelten an der Decke nicht (Doc D §1.2).
-func _cell_reason(layer: int, cell: Vector2i, ignore_uid: String) -> String:
+func _cell_reason(
+	layer: int, cell: Vector2i, ignore_uid: String, traegt_surface := false
+) -> String:
 	if not in_bounds(cell):
 		return REASON_OOB
 	if layer == Layer.CEILING:
 		return REASON_OCCUPIED if _taken(_ceiling_cells, cell, ignore_uid) else REASON_OK
 	if layer != Layer.SURFACE and blocked.has(cell):
 		return REASON_BLOCKED
+	# PLAYTEST-H BUG 2: Unter einem wartenden SURFACE-Item (Träger gerade im
+	# Lager — E9-P1-1-Gnadenfrist) darf nur wieder ein TRÄGER stehen. Vorher
+	# durfte z. B. ein Stuhl in die Zelle: die Deko clippte ins Möbel und
+	# wanderte beim nächsten Raum-Load als needs_surface-Leftover still ins
+	# Lager (Datenverlust aus Spielersicht).
+	var deko_wartet := (
+		layer == Layer.FLOOR and not traegt_surface and _taken(_surface_cells, cell, ignore_uid)
+	)
 	var cells_of_layer: Dictionary = [_rug_cells, _floor_cells, _surface_cells][layer]
-	if _taken(cells_of_layer, cell, ignore_uid):
+	if _taken(cells_of_layer, cell, ignore_uid) or deko_wartet:
 		return REASON_OCCUPIED
 	if layer == Layer.SURFACE and not _has_surface_below(cell):
 		return REASON_NEEDS_SURFACE

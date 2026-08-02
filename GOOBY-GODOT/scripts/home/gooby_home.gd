@@ -70,6 +70,11 @@ var grid: GridData
 ## sichtbar langsamer (PflegeRunner setzt das; 1.0 = normal).
 var speed_mult := 1.0
 
+## PLAYTEST-H BUG 1: Garderoben-Cosmetics am Home-Gooby (vorher nur in der
+## Garderoben-VORSCHAU sichtbar — im Raum lief Gooby immer nackt herum).
+var _attach: CosmeticAttach
+var _gs: Object = null
+
 var _wander_enabled := true
 var _wander_timer := 0.0
 var _walking := false
@@ -87,11 +92,43 @@ func _ready() -> void:
 	rig = GoobyRig.new()
 	add_child(rig)
 	# FIX-F-Handoff: gespeicherte Char-Editor-Morphs auf den Spieler-Gooby anwenden.
-	var gs := get_node_or_null("/root/GameState")
-	if gs != null:
-		rig.apply_saved_morphs(gs)
+	_gs = _resolve_gs()
+	if _gs != null:
+		rig.apply_saved_morphs(_gs)
+		_dress_from_state()
 	add_child(_make_blob_shadow())
 	_wander_timer = _rng.randf_range(1.0, 3.0)
+
+
+## GameState auflösen: bevorzugt der Raum-GameState (RoomBase.game_state()
+## honoriert das Test-Override), sonst das Autoload. GoobyHome ist in der
+## Besuchs-Szene IMMER der eigene Gooby — das lokale Save ist dort richtig.
+func _resolve_gs() -> Object:
+	var room := get_parent()
+	if room != null and room.has_method("game_state"):
+		var gs: Object = room.game_state()
+		if gs != null:
+			return gs
+	return get_node_or_null("/root/GameState")
+
+
+## PLAYTEST-H BUG 1: Angelegte Cosmetics (Hut/Brille/Hals/Rücken + Fellfarbe)
+## auf den Home-Rig anziehen — und bei cosmetics/meta-Änderungen live folgen
+## (z. B. Galaxie-Fell-Kauf, Morph-Änderung am Spiegel im selben Raum).
+func _dress_from_state() -> void:
+	_attach = CosmeticAttach.fuer_rig(rig)
+	if _attach == null:
+		return
+	_attach.apply_from_state(_gs)
+	if _gs is Node and (_gs as Node).has_signal("slice_changed"):
+		(_gs as Node).connect("slice_changed", _on_slice_geaendert)
+
+
+func _on_slice_geaendert(slice_id: String, _data: Variant) -> void:
+	if slice_id != "cosmetics" and slice_id != "meta":
+		return
+	if _attach != null and is_instance_valid(_attach):
+		_attach.apply_from_state(_gs)
 
 
 ## Blob-Shadow (W4-P3 POLISH-6, Doc A §7): weicher Schattenfleck statt

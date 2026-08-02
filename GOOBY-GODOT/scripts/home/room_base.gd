@@ -181,10 +181,10 @@ func rebuild_furniture() -> void:
 			_spawn_furniture(entry, def)
 	for entry: Dictionary in surface_entries:
 		_spawn_furniture(entry, FurnitureCatalog.def(str(entry["item"])))
-	# Ein neu gehängtes Außenfenster schneidet ein Loch in die Wand — deshalb
-	# nach jedem Bau-Commit prüfen, ob die Wände neu gesetzt werden müssen.
+	# Fenster-Umbau: Wand-Neubau ersetzt die Wall_*-Meshes — Tapete neu anwenden (BUG 3).
 	if _fenster_signatur() != _fenster_stand:
 		_build_walls()
+		HouseStyle.apply_to_room(self, HouseStyleState.style(_gs))
 	_rebuild_dioramas()
 	request_rebake()
 
