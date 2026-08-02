@@ -31,6 +31,7 @@
       "betreten_energie": "{ort} betreten? (Energie −{energie})",
       "betreten_frei": "{ort} betreten? (kostenlos)",
       "zu_muede": "Gooby ist zu müde… Ruf ein Taxi über IGohbie!",
+      "geschlossen": "{ort} hat gerade zu. {grund}",
       "beinahe": "Uff! Das war knapp.",
       "beinahe_hupe": "HUUUP! Der andere Gooby winkt. Vermutlich freundlich."
     },
@@ -170,6 +171,7 @@
       "abgestellt": "Die Tüte stand vor der Tür. Zettel: „Hab geklingelt! – G.“",
       "buff": "Extra-Grinsen 😁 — Gooby wird 2 Stunden lang langsamer müde!",
       "trinkgeld_hinweis": "Trinkgeld schadet nie ;)",
+      "trinkgeld_pleite": "Zu wenig Münzen fürs Trinkgeld — der Liefer-Gooby winkt trotzdem.",
       "notif_da": "🍜 Dein Essen ist da! DING DONG"
     }
   }

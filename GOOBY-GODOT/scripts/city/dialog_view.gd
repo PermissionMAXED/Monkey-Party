@@ -32,6 +32,9 @@ var _optionen_box: VBoxContainer
 var _typewriter := DialogTypewriter.new()
 var _label: Label
 var _fang: Control
+## H-city: läuft gerade ein Dialog? (true ab starte() bis `beendet`) —
+## Guard für Tap-to-Talk am NPC (OrtScene._on_npc_tipp).
+var _laeuft := false
 
 
 func _ready() -> void:
@@ -63,9 +66,17 @@ func _ready() -> void:
 func starte(dialog_baum: Dictionary, flags: Dictionary) -> void:
 	runner = OrtDialogRunner.new(dialog_baum, flags)
 	if not runner.ist_geladen():
+		_laeuft = false
 		beendet.emit()
 		return
+	_laeuft = true
 	_zeige_knoten()
+
+
+## Läuft gerade ein Dialog? (H-city Tap-to-Talk: ein laufender Dialog darf
+## durch NPC-Tippen nicht neu gestartet werden.)
+func ist_aktiv() -> bool:
+	return _laeuft
 
 
 func _process(delta: float) -> void:
@@ -89,6 +100,7 @@ func _on_bubble_finished() -> void:
 	for eintrag in runner.effekte():
 		effekt.emit(eintrag)
 	if runner.ist_ende():
+		_laeuft = false
 		beendet.emit()
 		return
 	if runner.optionen().is_empty() and runner.weiter():

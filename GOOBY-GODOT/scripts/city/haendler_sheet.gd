@@ -73,6 +73,19 @@ func aktualisiere() -> void:
 		_liste.add_child(_buch_zeile(buch))
 
 
+## H-city i18n-Fix: Anzeigename einer Ware. Food-Waren (leeres `inventar`
+## → inventory.food) haben lokalisierte rewards.food-Strings (FoodCatalog);
+## Item-Waren (Bücher/Saatgut/…) zeigen name_<locale> mit name_de-Fallback.
+## Vorher stand in EN-Spielen überall das deutsche name_de.
+func ware_name(ware: Dictionary) -> String:
+	var id := str(ware.get("id", ""))
+	if str(ware.get("inventar", "")).is_empty():
+		var lokalisiert := FoodCatalog.display_name(id)
+		if lokalisiert != id:
+			return lokalisiert
+	return str(ware.get("name_%s" % I18nService.get_locale(), ware.get("name_de", id)))
+
+
 func kann_kaufen(ware: Dictionary) -> bool:
 	if int(ware.get("preis", 0)) > _coins():
 		return false
@@ -120,7 +133,7 @@ func _buch_zeile(buch: Dictionary) -> Control:
 	zeile.name = "Buch_%s" % str(buch.get("id", "?"))
 	zeile.add_theme_constant_override("separation", 12)
 	var name_label := Label.new()
-	name_label.text = str(buch.get("name_de", buch.get("id", "?")))
+	name_label.text = ware_name(buch)
 	name_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	zeile.add_child(name_label)
 	var btn := Button.new()
@@ -150,7 +163,7 @@ func _zeile(ware: Dictionary) -> Control:
 	var zeile := HBoxContainer.new()
 	zeile.add_theme_constant_override("separation", 12)
 	var name_label := Label.new()
-	name_label.text = str(ware.get("name_de", ware.get("id", "?")))
+	name_label.text = ware_name(ware)
 	name_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	zeile.add_child(name_label)
 	if bool(ware.get("braucht_rezept", false)):

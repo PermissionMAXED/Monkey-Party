@@ -28,6 +28,9 @@ const VERKEHR_TINTS: Array[String] = ["#E8524A", "#4E79D6", "#F2C14E", "#8FD06C"
 var game_state_override: Object
 ## Tests/Screenshots erzwingen eine Uhrzeit (< 0 = echte Systemzeit).
 var stunde_override := -1.0
+## Tests frieren die Unix-Zeit ein (< 0 = echte Systemzeit) — H-city:
+## Öffnungszeiten-Prüfung beim Betreten (OrtKatalog.ist_offen).
+var unix_override := -1
 
 var karte: CityMap
 var graph: CityRoadGraph
@@ -135,6 +138,13 @@ func _stunde() -> float:
 		return stunde_override
 	var jetzt := Time.get_time_dict_from_system()
 	return float(jetzt["hour"]) + float(jetzt["minute"]) / 60.0
+
+
+## Unix-Zeit für die Öffnungszeiten (Muster MarktSheet.zeit_override).
+func unix_s() -> int:
+	if unix_override >= 0:
+		return unix_override
+	return int(Time.get_unix_time_from_system())
 
 
 ## Ambient-Verkehr (FIX-5): mehr Loops, mehr Modelle, eigene Lackfarben —
@@ -463,7 +473,21 @@ func _update_parkplatz() -> void:
 	if gefunden.is_empty():
 		hud.verstecke_prompt()
 	else:
-		hud.zeige_prompt(gefunden, gefunden_name, energie)
+		# H-city: geschlossene Orte zeigen den „Warum zu?“-Text und einen
+		# gesperrten Betreten-Knopf statt eines Prompts, der eh abprallt.
+		var geschlossen := ""
+		if gefunden != "zuhause" and not OrtKatalog.ist_offen(gefunden, unix_s(), karte):
+			geschlossen = (
+				I18nService
+				. t("city.fahren.geschlossen")
+				. format(
+					{
+						"ort": gefunden_name,
+						"grund": I18nService.t(OrtKatalog.geschlossen_key(gefunden, karte)),
+					}
+				)
+			)
+		hud.zeige_prompt(gefunden, gefunden_name, energie, geschlossen)
 
 
 func _on_nach_hause() -> void:
@@ -482,6 +506,12 @@ func _on_betreten(ort_id: String) -> void:
 	var eintrag := karte.ort(ort_id)
 	if str(eintrag.get("typ", "")) == "stub" or str(eintrag.get("szene", "")).is_empty():
 		_zeige_toast(I18nService.t("city.ort.bald_offen"))
+		return
+	# H-city Fix: Öffnungszeiten VOR dem Energie-Abzug prüfen — vorher ließ
+	# sich der Wochenmarkt (Sa 8–14) auch dienstags nachts betreten und die
+	# Energie war trotzdem weg.
+	if not OrtKatalog.ist_offen(ort_id, unix_s(), karte):
+		_zeige_toast(I18nService.t(OrtKatalog.geschlossen_key(ort_id, karte)))
 		return
 	var kosten := karte.energie_kosten(ort_id)
 	if gs != null:

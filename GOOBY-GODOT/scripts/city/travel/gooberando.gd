@@ -343,7 +343,7 @@ func _render_menue() -> void:
 				)
 			)
 		)
-	var coins := int(gs.get_value("economy.coins", 0))
+	var coins := _coins()
 	var kaufen := _knopf(
 		I18nService.t("phone.gooberando.bestellen").format({"summe": summe}), "PrimaryButton"
 	)
@@ -412,6 +412,9 @@ func _render_trinkgeld() -> void:
 	_liefer_gooby()
 	_label(I18nService.t("travel.gooberando.uebergeben"))
 	var geben := _knopf(I18nService.t("travel.gooberando.trinkgeld_geben"), "PrimaryButton")
+	# H-city: ohne 5 Münzen gibt es nichts zu geben — Knopf aus (Muster
+	# _render_menue/FahrdienstApp) statt beim Tippen still zu scheitern.
+	geben.disabled = _coins() < GooberandoLogic.TRINKGELD
 	geben.pressed.connect(_on_trinkgeld.bind(true))
 	_box.add_child(geben)
 	var winken := _knopf(I18nService.t("travel.gooberando.nur_winken"), "GhostButton")
@@ -531,17 +534,30 @@ func _on_uebergabe() -> void:
 
 
 func _on_trinkgeld(geben: bool) -> void:
-	var res := GooberandoLogic.trinkgeld(CityState.gooberando_slice(gs), now_ms(), geben, randf())
+	# H-city Exploit-Fix: Zahlung ZUERST — vorher wurde der Slice (Zähler +
+	# Buff-Chance) auch bei fehlgeschlagenem Münz-Abzug gespeichert (Gratis-
+	# Buff bei leerem Beutel). Scheitert spend(), läuft die Übergabe als
+	# „nur winken" weiter; nur der Trinkgeld-Zustand darf überhaupt abbuchen.
+	var slice := CityState.gooberando_slice(gs)
+	if str(slice.get("state", "")) != GooberandoLogic.STATE_TRINKGELD:
+		_render()
+		return
 	if geben:
 		var zahlung := {"ok": false}
 		gs.update(
 			func(state: Dictionary) -> void:
-				zahlung["ok"] = Economy.spend(state["economy"], int(res["kosten"]), "trinkgeld")
+				zahlung["ok"] = Economy.spend(
+					state["economy"], GooberandoLogic.TRINKGELD, "trinkgeld"
+				)
 		)
-		if bool(zahlung["ok"]):
+		geben = bool(zahlung["ok"])
+		if geben:
 			AudioDirector.try_play(self, "ui_buy")
+		else:
+			_zeige_toast(I18nService.t("travel.gooberando.trinkgeld_pleite"))
 	else:
 		AudioDirector.try_play(self, "ui_click")
+	var res := GooberandoLogic.trinkgeld(slice, now_ms(), geben, randf())
 	CityState.save_gooberando_slice(gs, res["slice"])
 	if bool(res["buff"]):
 		_zeige_toast(I18nService.t("travel.gooberando.buff"))
@@ -551,6 +567,12 @@ func _on_trinkgeld(geben: bool) -> void:
 
 
 ## ---------------------------------------------------------------- Helfer
+
+
+func _coins() -> int:
+	if gs == null:
+		return 0
+	return int(gs.get_value("economy.coins", 0))
 
 
 func _gib_essen(gericht_id: String) -> void:

@@ -103,20 +103,25 @@ func _gui_input(_event: InputEvent) -> void:
 	pass
 
 
-## Parkplatz-Prompt zeigen/verstecken (energie 0 = „kostenlos“).
-func zeige_prompt(ort_id: String, ort_name: String, energie: int) -> void:
+## Parkplatz-Prompt zeigen/verstecken (energie 0 = „kostenlos“). H-city:
+## `geschlossen_text` ≠ "" zeigt den „Warum zu?“-Text und sperrt den
+## Betreten-Knopf (CityScene prüft die Öffnungszeiten via OrtKatalog).
+func zeige_prompt(ort_id: String, ort_name: String, energie: int, geschlossen_text := "") -> void:
 	_prompt_ort = ort_id
 	# Ziel erreicht: der Prompt des GPS-Ziels räumt den Chevron auf.
 	if not _ziel_ort.is_empty() and ort_id == _ziel_ort:
 		_ziel_ort = ""
 		_chevron.visible = false
 		_zeige_toast(I18nService.t("city_leben.ziel_erreicht").format({"ort": _ort_name(ort_id)}))
-	if energie > 0:
+	if not geschlossen_text.is_empty():
+		_prompt_label.text = geschlossen_text
+	elif energie > 0:
 		_prompt_label.text = I18nService.t("city.fahren.betreten_energie").format(
 			{"ort": ort_name, "energie": energie}
 		)
 	else:
 		_prompt_label.text = I18nService.t("city.fahren.betreten_frei").format({"ort": ort_name})
+	_prompt_btn.disabled = not geschlossen_text.is_empty()
 	_prompt.visible = true
 
 

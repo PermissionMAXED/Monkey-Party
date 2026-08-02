@@ -226,6 +226,21 @@ func _baue_npc() -> void:
 	voice = GoobyVoice.new()
 	add_child(voice)
 	voice.silbe.connect(func(_i: int, _n: int) -> void: rig.babble_pulse())
+	# H-city UX-Fix: NPC antippen startet den Dialog neu (und öffnet damit
+	# via „laden“-Effekt auch das Laden-Sheet wieder) — vorher musste man
+	# den Ort verlassen und neu betreten (kostet Energie), wenn das Sheet
+	# einmal zu war.
+	var tipp := Area3D.new()
+	tipp.name = "NpcTippBereich"
+	var form := CollisionShape3D.new()
+	var kapsel := CapsuleShape3D.new()
+	kapsel.radius = 0.6
+	kapsel.height = 1.7
+	form.shape = kapsel
+	form.position = Vector3(0.0, 0.85, 0.0)
+	tipp.add_child(form)
+	rig.add_child(tipp)
+	tipp.input_event.connect(_on_npc_tipp)
 
 
 func _baue_ui() -> void:
@@ -409,6 +424,19 @@ func _on_dialog_beendet() -> void:
 	# Dialog zu Ende: freundlich winken; Laden bleibt über den Knopf offen.
 	if rig != null:
 		rig.play_clip("wave")
+
+
+## NPC-Tap (H-city): Dialog neu starten — aber nie in einen LAUFENDEN
+## Dialog hineinfunken (Guard: OrtDialogView.ist_aktiv).
+func _on_npc_tipp(
+	_kamera: Node, event: InputEvent, _pos: Vector3, _normal: Vector3, _shape_idx: int
+) -> void:
+	var tippt := event is InputEventMouseButton or event is InputEventScreenTouch
+	if not tippt or not event.is_pressed():
+		return
+	if dialog == null or dialog.ist_aktiv():
+		return
+	_starte_dialog()
 
 
 func _on_verlassen() -> void:

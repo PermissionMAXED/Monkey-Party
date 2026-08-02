@@ -31,6 +31,7 @@
       "betreten_energie": "Enter {ort}? (Energy −{energie})",
       "betreten_frei": "Enter {ort}? (free)",
       "zu_muede": "Gooby is too tired… Call a taxi via IGohbie!",
+      "geschlossen": "{ort} is closed right now. {grund}",
       "beinahe": "Phew! That was close.",
       "beinahe_hupe": "HOOONK! The other Gooby waves. Probably in a friendly way."
     },
@@ -170,6 +171,7 @@
       "abgestellt": "The bag was left at the door. Note: \"I rang! – G.\"",
       "buff": "Extra grin 😁 — Gooby tires more slowly for 2 hours!",
       "trinkgeld_hinweis": "Tipping never hurts ;)",
+      "trinkgeld_pleite": "Not enough coins for a tip — the delivery Gooby waves anyway.",
       "notif_da": "🍜 Your food is here! DING DONG"
     }
   }

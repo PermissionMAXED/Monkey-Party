@@ -55,6 +55,11 @@ func _baue_zeile(liste: Control, eintrag: Dictionary) -> void:
 	var id := str(eintrag["id"])
 	var vorrat := int(eintrag["vorrat"])
 	var preis := int(eintrag["preis"])
+	# H-city i18n-Fix: Ernte-Namen über die rewards.food-Strings (EN zeigt
+	# sonst deutsche name_de-Namen); unbekannte Ids fallen auf name_de.
+	var anzeigename := FoodCatalog.display_name(id)
+	if anzeigename == id:
+		anzeigename = str(eintrag.get("name_de", id))
 	var zusatz := I18nService.t("city.markt.vorrat").format({"n": vorrat})
 	if preis < int(eintrag["voll"]):
 		zusatz = (
@@ -63,7 +68,7 @@ func _baue_zeile(liste: Control, eintrag: Dictionary) -> void:
 		)
 	var zeile := CitySheetBausteine.kauf_zeile(
 		liste,
-		"%s — %s" % [str(eintrag["name_de"]), CitySheetBausteine.preis_text(preis)],
+		"%s — %s" % [anzeigename, CitySheetBausteine.preis_text(preis)],
 		zusatz,
 		I18nService.t("city.markt.verkauf_eins"),
 		vorrat > 0,
