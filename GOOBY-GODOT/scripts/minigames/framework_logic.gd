@@ -118,6 +118,18 @@ static func best_for_mode(state: Dictionary, game_id: String, mode: String) -> i
 	return slice["best"]
 
 
+## H-Playtest-Fix: Rekord ÜBER ALLE Modi (best ∪ bestByDiff ∪ endlessBest) —
+## die Profil-Rekordzeile las vorher nur das Mittel-Board (`legacy.best`)
+## und zeigte „Rekord 0“, wenn nur Leicht/Schwer/Endlos gespielt wurde.
+static func best_overall(state: Dictionary, game_id: String) -> int:
+	var slice := difficulty_slice_of(state, game_id)
+	var best := int(slice["best"])
+	var by_diff: Dictionary = slice["bestByDiff"]
+	for mode in ["easy", "hard"]:
+		best = maxi(best, int(floor(_num(by_diff.get(mode)))))
+	return maxi(best, int(slice["endlessBest"]))
+
+
 ## POLISH-E Strike-Entscheidung: Zähler hoch, Teleport AB dem 3. Strike.
 static func apply_strike(strikes: Variant) -> Dictionary:
 	var n := maxi(0, int(floor(_num(strikes)))) + 1

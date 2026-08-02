@@ -118,6 +118,12 @@ func _on_push(type: String, data: Dictionary) -> void:
 		"FRIEND_ADDED":
 			_upsert_friend(data)
 			friends_changed.emit(friends)
+			# H-Playtest-Fix: Mutual-Autoaccept (beide schicken sich eine
+			# Anfrage → der Server befreundet sofort und räumt BEIDE
+			# Requests serverseitig weg). Ohne Spiegelung bliebe hier eine
+			# tote „Anfrage von X“-Karte stehen — Annehmen liefe dann auf
+			# NOT_FOUND, die Karte verschwände nie.
+			_remove_request(str(data.get("friendCode", "")))
 		"FRIEND_REMOVED":
 			_remove_friend_row(str(data.get("friendCode", "")))
 		"FRIEND_PRESENCE":
@@ -164,9 +170,12 @@ func _remove_friend_row(code: String) -> void:
 	friends_changed.emit(friends)
 
 
+## Entfernt die Anfrage von `code` und meldet NUR bei echter Änderung —
+## FRIEND_ADDED-Pushes ohne Gegen-Anfrage sollen die Anfragen-UI nicht
+## grundlos neu aufbauen lassen.
 func _remove_request(code: String) -> void:
 	for i in requests.size():
 		if requests[i].get("from", "") == code:
 			requests.remove_at(i)
-			break
-	requests_changed.emit(requests)
+			requests_changed.emit(requests)
+			return

@@ -84,6 +84,44 @@ func test_add_input_sendet_friend_request() -> void:
 	await _teardown(rig, screen)
 
 
+## H-Playtest-Fix: Annehmen-Fehler (z. B. NOT_FOUND bei veralteter Anfrage)
+## darf nicht stumm verpuffen — Fehlertext erscheint und ein refresh()
+## (FRIENDS_LIST) bringt die Listen wieder in Deckung.
+func test_accept_fehler_zeigt_feedback_und_resynct() -> void:
+	var rig := NetTestRig.boot(tree)
+	var screen := _attach_screen(rig)
+	await rig.go_online(tree)
+	(
+		rig
+		. link()
+		. push_server(
+			{
+				"v": 1,
+				"t": "FRIEND_REQUEST_INCOMING",
+				"ts": 0,
+				"d": {"from": "GOOBY-DDDD", "name": "Timo", "goobyName": "Gooby", "at": 4},
+			}
+		)
+	)
+	await wait_frames(3)
+	assert_eq(screen._requests_box.get_child_count(), 1, "Anfrage-Zeile da")
+
+	var lists_before := rig.link().count_sent("FRIENDS_LIST")
+	screen._on_accept_pressed("GOOBY-DDDD")
+	await wait_frames(1)
+	rig.link().respond_to("FRIEND_ACCEPT", "ERROR", {"code": "NOT_FOUND"})
+	var done := await wait_until(func() -> bool: return screen._add_feedback.visible, 3000)
+	assert_true(done, "Fehlertext erscheint statt stummem Nichts")
+	assert_eq(
+		screen._add_feedback.text, I18nService.t("net.friends.add_error", {"code": "NOT_FOUND"})
+	)
+	var resynced := await wait_until(
+		func() -> bool: return rig.link().count_sent("FRIENDS_LIST") > lists_before, 3000
+	)
+	assert_true(resynced, "refresh() nach Fehler resynct die Listen")
+	await _teardown(rig, screen)
+
+
 func _attach_screen(rig: NetTestRig) -> FriendsScreen:
 	var friends := FriendsService.new()
 	rig.client.add_child(friends)

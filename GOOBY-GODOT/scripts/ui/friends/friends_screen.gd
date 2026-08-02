@@ -370,17 +370,38 @@ func _on_add_pressed() -> void:
 		)
 
 
+# H-Playtest-Fix: Outcome schlägt Press (AUDIO-GRAMMATIK, wie beim
+# Hinzufügen oben) — vorher spielten Annehmen/Ablehnen den Erfolgston VOR
+# der Server-Antwort und verschluckten Fehler komplett: die Karte blieb
+# stumm stehen. Jetzt entscheidet die Antwort; bei Fehlern erscheint der
+# Fehlertext und ein refresh() räumt ggf. veraltete Zeilen weg.
 func _on_accept_pressed(from_code: String) -> void:
-	if _has_friends_service():
+	if not _has_friends_service():
+		return
+	var res: Dictionary = await _net.friends.accept(from_code)
+	if res.get("ok", false):
 		AudioDirector.try_play(self, "ui_confirm")
 		Haptics.success(self)
-		await _net.friends.accept(from_code)
+	else:
+		_show_request_error(res)
 
 
 func _on_decline_pressed(from_code: String) -> void:
-	if _has_friends_service():
+	if not _has_friends_service():
+		return
+	var res: Dictionary = await _net.friends.decline(from_code)
+	if res.get("ok", false):
 		AudioDirector.try_play(self, "ui_back")
-		await _net.friends.decline(from_code)
+	else:
+		_show_request_error(res)
+
+
+func _show_request_error(res: Dictionary) -> void:
+	AudioDirector.try_play(self, "ui_error")
+	_show_feedback(NetErrorText.for_code(str(res.get("code", "?")), "net.friends.add_error"), false)
+	# Stale Zeile (z. B. NOT_FOUND, weil die Freundschaft schon besteht):
+	# frischer FRIENDS_STATE bringt Listen + Anfragen wieder in Deckung.
+	_net.friends.refresh()
 
 
 func _show_feedback(text: String, ok: bool) -> void:

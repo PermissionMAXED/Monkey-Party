@@ -121,3 +121,22 @@ func test_difficulty_slice_v5_shape() -> void:
 	assert_eq(empty["selected"], "normal")
 	assert_eq(empty["best"], 0)
 	assert_false(MinigameFrameworkLogic.endless_unlocked({}, "x"))
+
+
+## H-Playtest-Fix: die Profil-Rekordzeile nutzt den Modi-übergreifenden
+## Bestwert — nur-Schwer-/nur-Endlos-Spieler sahen vorher „Rekord 0“.
+func test_best_overall_maxt_ueber_alle_modi() -> void:
+	var legacy := {
+		"best": {"teaParty": 0},
+		"bestByDiff": {"teaParty": {"easy": 12, "hard": 88.0}},
+		"endlessBest": {"teaParty": 9},
+	}
+	var state := {"minigames": {"legacy": legacy}}
+	assert_eq(MinigameFrameworkLogic.best_overall(state, "teaParty"), 88, "hard gewinnt")
+	legacy["bestByDiff"] = {}
+	assert_eq(MinigameFrameworkLogic.best_overall(state, "teaParty"), 9, "endless bleibt")
+	# Nur Mittel-Board gespielt → identisch mit best_for_mode('normal').
+	(legacy["best"] as Dictionary)["teaParty"] = 70
+	assert_eq(MinigameFrameworkLogic.best_overall(state, "teaParty"), 70)
+	# Hostile/leerer State wirft nie.
+	assert_eq(MinigameFrameworkLogic.best_overall({}, "x"), 0)

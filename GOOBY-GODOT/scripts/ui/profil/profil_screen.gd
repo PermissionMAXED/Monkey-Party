@@ -345,11 +345,16 @@ func _build_minigames_card() -> Control:
 	var card := _card("MinigamesCard", I18nService.t("profil.minigames"), "gamepad")
 	var box := card.get_child(0) as VBoxContainer
 	var plays: Variant = _value("minigames.plays", {})
-	var best: Variant = _value("minigames.legacy.best", {})
+	# H-Playtest-Fix: Rekord über ALLE Modi (best_overall) statt nur
+	# `legacy.best` (Mittel-Board) — wer z. B. nur auf Schwer oder Endlos
+	# spielte, sah hier trotz Runden > 0 „Rekord 0“.
+	var state: Dictionary = {}
+	if _gs != null and _gs.has_method("state"):
+		state = _gs.state()
 	for game: Dictionary in MinigameRegistry.all_games():
 		var id := str(game.get("id", ""))
 		var n := int(plays.get(id, 0)) if plays is Dictionary else 0
-		var record := int(best.get(id, 0)) if best is Dictionary else 0
+		var record := MinigameFrameworkLogic.best_overall(state, id)
 		var value := (
 			I18nService.t("profil.rekord_zeile", {"best": record, "n": n})
 			if n > 0

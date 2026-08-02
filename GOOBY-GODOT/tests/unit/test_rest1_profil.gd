@@ -131,6 +131,38 @@ func test_profil_screen_zeigt_save_daten() -> void:
 	gs.free()
 
 
+## H-Playtest-Fix: die Rekordzeile aggregiert über ALLE Modi — wer nur auf
+## Schwer (oder Endlos) spielte, sah vorher „Rekord 0 · Runden n“, weil nur
+## das Mittel-Board `legacy.best` gelesen wurde.
+func test_profil_rekordzeile_nutzt_alle_modi() -> void:
+	var gs := _fresh_gs()
+	tree.root.add_child(gs)
+	gs.update(
+		func(state: Dictionary) -> void:
+			var mg: Dictionary = state["minigames"]
+			(mg["plays"] as Dictionary)["teaParty"] = 3
+			((mg["legacy"] as Dictionary)["bestByDiff"] as Dictionary)["teaParty"] = {"hard": 55}
+	)
+	var screen := ProfilScreen.new()
+	screen.auto_navigate = false
+	screen.gs_override = gs
+	tree.root.add_child(screen)
+	await wait_frames(2)
+	var row := screen.find_child("RowteaParty", true, false)
+	assert_true(row != null, "Teestuben-Rekordzeile da")
+	if row != null:
+		var wert := row.find_child("Wert", true, false) as Label
+		assert_eq(
+			wert.text,
+			I18nService.t("profil.rekord_zeile", {"best": 55, "n": 3}),
+			"Rekord kommt vom Schwer-Board statt 0"
+		)
+	tree.root.remove_child(screen)
+	screen.free()
+	tree.root.remove_child(gs)
+	gs.free()
+
+
 func test_erfolgs_screen_kategorien_und_mystery() -> void:
 	var gs := _fresh_gs()
 	tree.root.add_child(gs)

@@ -136,6 +136,53 @@ func test_pushes_pflegen_cache() -> void:
 	await rig.shutdown(tree)
 
 
+## H-Playtest-Fix: Mutual-Autoaccept — schicken sich BEIDE eine Anfrage,
+## befreundet der Server sofort und pusht nur FRIEND_ADDED. Der Client muss
+## die liegengebliebene Gegen-Anfrage miträumen, sonst bleibt eine tote
+## „Anfrage von X“-Karte stehen (Annehmen → NOT_FOUND, Karte bleibt ewig).
+func test_friend_added_push_raeumt_gegenanfrage() -> void:
+	var rig := NetTestRig.boot(tree)
+	var friends := _attach_friends(rig)
+	await rig.go_online(tree)
+	(
+		rig
+		. link()
+		. push_server(
+			{
+				"v": 1,
+				"t": "FRIEND_REQUEST_INCOMING",
+				"ts": 0,
+				"d": {"from": "GOOBY-9ZML", "name": "Lena", "goobyName": "Knöpfchen", "at": 1},
+			}
+		)
+	)
+	await wait_frames(2)
+	assert_eq(friends.requests.size(), 1)
+
+	(
+		rig
+		. link()
+		. push_server(
+			{
+				"v": 1,
+				"t": "FRIEND_ADDED",
+				"ts": 0,
+				"d":
+				{
+					"friendCode": "GOOBY-9ZML",
+					"name": "Lena",
+					"goobyName": "Knöpfchen",
+					"online": true
+				},
+			}
+		)
+	)
+	await wait_frames(2)
+	assert_eq(friends.friends.size(), 1, "Freundin ist da")
+	assert_eq(friends.requests.size(), 0, "Gegen-Anfrage wird mitgeräumt")
+	await rig.shutdown(tree)
+
+
 func test_accept_entfernt_request_aus_liste() -> void:
 	var rig := NetTestRig.boot(tree)
 	var friends := _attach_friends(rig)
