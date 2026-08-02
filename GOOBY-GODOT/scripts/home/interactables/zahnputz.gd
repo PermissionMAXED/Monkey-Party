@@ -34,6 +34,11 @@ func _process(_delta: float) -> void:
 	var gs := _host.game_state()
 	if gs == null or not BadState.needs_brushing(gs):
 		return
+	# H-HOME-Playtest-Fix: die Warte-Pose zerrt keinen Schläfer ans Becken
+	# und drängelt nicht mitten im Baumodus — die Pflicht bleibt bestehen
+	# und greift, sobald Gooby wieder wach/der Umbau vorbei ist.
+	if _room_busy() or _host.gooby_sleeping():
+		return
 	_waiting_pose_done = true
 	_take_waiting_pose()
 
@@ -51,6 +56,10 @@ func _take_waiting_pose() -> void:
 
 func _on_tapped() -> void:
 	if _busy or _room_busy():
+		return
+	if _host.gooby_sleeping():
+		# H-HOME-Playtest-Fix (Web blockedBySleep): kein Zähneputzen im Schlaf.
+		_say("home.suche.schlaeft")
 		return
 	# W13C: gebrochene Bürste blockiert — außer im Inventar wartet Ersatz
 	# vom GOOBYMAN, dann wird der automatisch eingespannt.

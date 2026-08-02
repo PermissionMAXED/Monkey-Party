@@ -36,6 +36,11 @@ func _on_tapped() -> void:
 	var gs := _host.game_state()
 	if gs == null:
 		return
+	if _host.gooby_sleeping():
+		# H-HOME-Playtest-Fix (Web blockedBySleep): Füttern weckt nicht —
+		# sonst zerrt die Mampf-Sequenz den Schläfer aus dem Bett.
+		_say_text(I18nService.t("home.suche.schlaeft"))
+		return
 	if FoodCatalog.too_full(gs.state()):
 		_say_text(I18nService.t("rewards.fuettern.satt"))
 		return

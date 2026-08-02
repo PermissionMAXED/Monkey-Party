@@ -16,6 +16,8 @@ extends Node3D
 ## Einhängen (W2a-Hook-Request: W3d-home-requests.md):
 ##   InteractablesHost.attach_to(room)  # nach RoomBase._ready()
 
+const SleepLogic := preload("res://scripts/logic/sleep.gd")
+
 const KLO_IDS: Array[String] = ["toilet", "shower", "bathtub"]
 ## REST-4: Möbel-Ids, die die Radio-Oberfläche öffnen (Katalog W2a).
 const RADIO_IDS: Array[String] = ["radio", "radioRetro", "speaker"]
@@ -120,6 +122,20 @@ func game_state() -> Object:
 	if _room != null and _room.has_method("game_state"):
 		return _room.game_state()
 	return get_node_or_null("/root/GameState")
+
+
+## H-HOME-Playtest-Fix — geteilter Schlaf-Gate aller Pflege-Interactables
+## (Web-Parität home/interactions.js `blockedBySleep`): ein schlafender
+## Gooby wird von Kühlschrank/Klo/Dusche/Zahnputz/TV-Taps NICHT aus dem
+## Bett gerissen (der PflegeRunner snappt ihn sonst alle 2 s zurück —
+## sichtbarer Jank). Das Bett selbst bleibt bewusst tappbar: Sanft-Wecken
+## läuft über sein Panel.
+func gooby_sleeping() -> bool:
+	var gs := game_state()
+	if gs == null or not gs.has_method("state"):
+		return false
+	var gooby: Variant = (gs.state() as Dictionary).get("gooby")
+	return gooby is Dictionary and SleepLogic.is_sleeping(gooby)
 
 
 func _furniture_nodes() -> Array:

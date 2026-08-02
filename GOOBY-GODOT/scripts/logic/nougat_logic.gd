@@ -16,6 +16,7 @@ extends RefCounted
 ## verbatim §C6.4. Zeit wird IMMER injiziert (now_ms) — kein Time.*-Zugriff.
 
 const Stats := preload("res://scripts/logic/stats.gd")
+const SleepLogic := preload("res://scripts/logic/sleep.gd")
 const HealthLogic := preload("res://scripts/logic/health.gd")
 const WeightLogic := preload("res://scripts/logic/weight.gd")
 const Leveling := preload("res://scripts/logic/leveling.gd")
@@ -86,8 +87,10 @@ static func cooldown_remaining_ms(state: Dictionary, now_ms: int) -> int:
 ## Rückgabe {ok: true} oder {ok: false, reason: "sleeping"|"sick"|"cooldown"}.
 static func can_glob(state: Dictionary, now_ms: int) -> Dictionary:
 	var gooby: Dictionary = state.get("gooby", {}) if state.get("gooby") is Dictionary else {}
-	var sleep: Variant = gooby.get("sleep")
-	if sleep is Dictionary and (sleep as Dictionary).get("sleeping", false) == true:
+	# H-HOME-Playtest-Fix: strict-bool wie Sleep.is_sleeping (Schema-
+	# `_is_true`-Semantik) statt nacktem `== true` — Junk-Saves mit
+	# {"sleeping": 1} zählten hier als schlafend, überall sonst als wach.
+	if SleepLogic.is_sleeping(gooby):
 		return {"ok": false, "reason": "sleeping"}
 	var health: Variant = gooby.get("health")
 	if health is Dictionary and str((health as Dictionary).get("state", "")) == "sick":

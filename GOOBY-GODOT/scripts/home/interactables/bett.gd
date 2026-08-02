@@ -253,6 +253,9 @@ func _on_wake_chosen() -> void:
 	var now := _now_ms()
 	gs.update(func(state: Dictionary) -> void: events["list"] = Sleep.wake_early_state(state, now))
 	if (events["list"] as Array).has("wokeEarly"):
+		# H-HOME-Playtest-Fix (Doc F §3.2): auch frueh Geweckte muessen
+		# Zaehne putzen — der Ticker-Pfad deckt nur das volle wokeUp ab.
+		BadState.mark_woke_up(gs)
 		var gooby := _gooby()
 		if gooby != null:
 			gooby.play_clip("idle")

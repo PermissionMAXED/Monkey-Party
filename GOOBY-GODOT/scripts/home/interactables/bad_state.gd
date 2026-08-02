@@ -100,6 +100,15 @@ static func mark_woke_up(gs: Object) -> void:
 	_write(gs, "needsBrushing", true)
 
 
+## H-HOME-Playtest-Fix: pure v5-State-Variante von mark_woke_up für den
+## GoobyTicker, der INNERHALB von GameState direkt auf dem State-Dict
+## arbeitet (dort gibt es kein gs.update). VORHER wurde mark_woke_up in
+## Produktion NIRGENDS gerufen — die Zähneputz-Pflicht (und damit Warte-
+## Pose + Sticker-Pfad) war nur aus Tests erreichbar.
+static func mark_woke_up_state(state: Dictionary) -> void:
+	_ensure(state)["needsBrushing"] = true
+
+
 ## Geduscht/gebadet (EF-1, EVAL-1 D3): `washes`-Counter hoch — vorher wurde
 ## er NIRGENDS inkrementiert, Sticker squeakyClean/cleanMachine und die
 ## Recap-Zeile waren unerreichbar. Feuert die achievements-Auswertung an.

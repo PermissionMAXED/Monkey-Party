@@ -98,6 +98,7 @@ static func catch_up(state: Dictionary, now_ms: int) -> Array:
 	# FERTIG-1 (EVAL Rang 12): Modifier-Scheduler holt Offline-Zeit nach
 	# (ein verpasstes nextAt startet das Event JETZT — Web-§C-SYS4.1).
 	events.append_array(_tick_modifiers(state, now_ms))
+	_mark_brushing_due(state, events)
 	return events
 
 
@@ -114,7 +115,20 @@ static func catch_up(state: Dictionary, now_ms: int) -> Array:
 static func live_tick(state: Dictionary, now_ms: int) -> Array:
 	var events := _live_tick_core(state, now_ms)
 	events.append_array(_tick_modifiers(state, now_ms))
+	_mark_brushing_due(state, events)
 	return events
+
+
+## H-HOME-Playtest-Fix (Doc F §3.2): nach JEDEM zu Ende geschlafenen Schlaf
+## wird Zähneputzen Pflicht. VORHER wurde BadState.mark_woke_up nirgends in
+## Produktion gerufen — needsBrushing blieb ewig false, die Warte-Pose am
+## Waschbecken und der teeth_brushed-Sticker-Pfad waren tot. Der Ticker ist
+## der EINE Ort, an dem beide wokeUp-Quellen (Live-Tick UND Offline-Catchup)
+## vorbeikommen; das fruehe manuelle Wecken setzt die Pflicht im Bett-Panel
+## (bett.gd _on_wake_chosen).
+static func _mark_brushing_due(state: Dictionary, events: Array) -> void:
+	if events.has("wokeUp"):
+		BadState.mark_woke_up_state(state)
 
 
 static func _live_tick_core(state: Dictionary, now_ms: int) -> Array:

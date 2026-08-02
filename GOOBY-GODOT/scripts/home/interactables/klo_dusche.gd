@@ -42,6 +42,11 @@ func _process(delta: float) -> void:
 	if _klo_accum < KLO_CHECK_S:
 		return
 	_klo_accum = 0.0
+	# H-HOME-Playtest-Fix: der Auto-Klo-Gang pausiert im Schlaf und im
+	# Baumodus — vorher riss er den Schläfer aus dem Bett bzw. lief mitten
+	# im Umbau los. Der Timer bleibt fällig und feuert nach dem Aufwachen.
+	if _room_busy() or _host.gooby_sleeping():
+		return
 	var gs := _host.game_state()
 	if gs != null and BadState.klo_due(int(gs.get_value("bad.kloLastMs", 0)), _now_ms()):
 		_run_klo_routine()
@@ -53,6 +58,10 @@ func _on_tapped() -> void:
 	if _routine_active:
 		# Zweiter Tap während der Dusche = abspülen.
 		finish_shower()
+		return
+	if _host.gooby_sleeping():
+		# H-HOME-Playtest-Fix (Web blockedBySleep): kein Klo/Dusche im Schlaf.
+		_say("home.suche.schlaeft")
 		return
 	if _is_shower:
 		_run_shower_routine()

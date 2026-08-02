@@ -93,6 +93,10 @@ func _on_tapped() -> void:
 		return
 	if _an:
 		_zappen()
+	elif _host.gooby_sleeping():
+		# H-HOME-Playtest-Fix (Web blockedBySleep): Einschalten würde den
+		# Schläfer zum Sitzplatz vor den Bildschirm ziehen — bleibt aus.
+		_say_text(I18nService.t("home.suche.schlaeft"))
 	else:
 		_einschalten()
 
