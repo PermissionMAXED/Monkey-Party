@@ -158,6 +158,25 @@ Original-Links sind alle übernommen:)_
       „Briefkasten" nicht mehr ab, Baumodus-Knopf-Salat aufgeräumt (HUD gleitet
       animiert weg, Kamera-Chips weichen dem Dock aus).
 
+- [x] **Doku-Refresh (2. August, aus der Wellen-J-Warteschlange):** Die
+      Vollständigkeits-Matrix `docs/godot-rewrite/EVAL-VOLLSTAENDIGKEIT.md`
+      ist auf die **Revision H/J** gebracht — alle seit W13 geschlossenen
+      Zeilen am Code nachgeprüft und umgebucht: Ball-Wurf, Sammlungsset-UI,
+      Gyro-Parallax, sichtbare Wetter-FX, Fotomodus-Werkzeuge (Pose/Emotion/
+      Rahmen), Nougatschleuse + Nutella und City Drive als echte
+      Arcade-Runde sind jetzt „Vollständig"; neue Summen **77 von 79
+      vollständig, 1 teilweise (nur noch die Speise `corn-dog`), 0 fehlend,
+      1 gestrichen** (~97 %). B11 ist als BEHOBEN verbucht (Warn-Sweep:
+      Anchor-Warnung im kompletten Walkthrough weg), B4 bleibt ehrlich
+      teilweise (Boot-Smoke leakfrei, Leak-Gate über alle 38 Spiele fehlt);
+      Restliste #17/20/21/22/29/30 auf ERLEDIGT. Außerdem alle README-/
+      Doku-Zeiger aufs neue Zuhause `PermissionMAXED/Monkey-Party@
+      cursor/gooby-godot-loop-continue` aktualisiert: Root-`README.md` ist
+      jetzt ein Wegweiser (GOOBY ↔ MONKEY-PARTY/AETHERKLANG),
+      `GOOBY-README.md` (Branch-Hinweis, Ordner-Tabelle inkl. neuer
+      Repo-Projekte, Arbeitsregeln-Link auf `GOOBY-AGENTS.md`, Trailer 5.1)
+      und die veraltete „Repo-Umzug (W16)"-Notiz in `GOOBY-AGENTS.md` →
+      W18-Stand.
 - [x] **Rückkehrer-Karte (2. August, I-44 aus Welle J — Platz 2 der
       Ideen-Rangliste, bester Retention-Hebel pro Aufwand):** Wer nach
       ≥ 7 Tagen Pause wiederkommt, bekommt direkt nach dem Ankunfts-Wipe
@@ -531,7 +550,8 @@ iPhone 17 Pro Max quer = **0 Befunde**):
       §4: Wellen J–M) + die neu einsortierten G6-Pakete (DLC Welle B beider
       Läden, Ball-Wurf, ~~DLC-Ladebildschirme~~ *(erledigt 2.8., s. oben in
       „Neu von dir")*, Audio-Feel, ~~B11/Warn-Sweep~~
-      *(erledigt 2.8., s. oben in „Neu von dir")*, Doku-Refresh,
+      *(erledigt 2.8., s. oben in „Neu von dir")*, ~~Doku-Refresh~~
+      *(erledigt 2.8., s. oben in „Neu von dir")*,
       McGooby-Bühne, Alwin-NPC — alle in J/K eingeordnet)
 
 ---

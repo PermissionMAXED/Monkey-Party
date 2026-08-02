@@ -42,14 +42,17 @@ Arbeitsregeln für Agents in diesem Repo (GOOBY Godot-Rewrite).
   `godot --headless --path GOOBY-GODOT --import`, sonst wirft der Test-Runner
   Parse-Errors (staler global_script_class_cache); erzeugte `.uid`/`.import`
   gehören MIT committet. Parallele `--import`-Läufe vermeiden (Cache-Race).
-- **Repo-Umzug (W16):** Das Projekt lebt jetzt im Repo
-  `MedusaV9/MinecraftBubbleShieldMod` auf dem Branch
-  `cursor/gooby-godot-loop-2c10` (voller Verlauf des alten Branches
-  `cursor/gooby-godot-rewrite-d1d8` aus `MedusaV9/CustomServerPrivate` wurde
-  übernommen). `main` dieses Repos enthält ein ANDERES Projekt (Minecraft-Mod
-  „Bubble Shield", Java/Gradle) — auf diesem Branch nicht anfassen. Der User
-  schreibt live in `UserFeedback.md` (auch per Web-Commit → vor dem Push
-  fetchen/rebasen) — Datei vor und nach jeder Runde lesen, Erledigtes abhaken.
+- **Repo-Umzug (W18):** Das Projekt lebt jetzt im Repo
+  `PermissionMAXED/Monkey-Party` auf dem Branch
+  `cursor/gooby-godot-loop-continue` (voller Verlauf aus
+  `MedusaV9/MinecraftBubbleShieldMod@cursor/gooby-godot-loop-2c10` wurde
+  übernommen; dorthin war es in W16 aus `MedusaV9/CustomServerPrivate`
+  gezogen). `main` dieses Repos enthält ANDERE Projekte (Partyspiel
+  „Monkey-Party" in `MONKEY-PARTY/`, Minecraft-Mod „Aetherklang" in
+  `AETHERKLANG/`; Regeln dazu im Root-`AGENTS.md`) — nicht kaputt machen,
+  nicht nach `main` mergen. Der User schreibt live in `UserFeedback.md`
+  (auch per Web-Commit → vor dem Push fetchen/rebasen) — Datei vor und
+  nach jeder Runde lesen, Erledigtes abhaken.
 - **CI:** Jeder Push auf `GOOBY-GODOT/**` baut die unsignierte .ipa (Artefakt
   `GOOBY-godot-unsigned-ipa`, Job `ios-ipa` auf macos-15, ~10-12 min).
   Versionierte GitHub-Releases: Tag `ipa-v<semver>` pushen (Job `release`).

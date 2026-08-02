@@ -9,12 +9,16 @@ Zielplattform **iPhone** (Installation per Sideload-`.ipa`), komplett auf
 **Deutsch**.
 
 > [!IMPORTANT]
-> **Dieser Branch (`cursor/gooby-godot-loop-2c10`) ist eine eigenständige
-> Arbeitslinie** im Repo `MedusaV9/MinecraftBubbleShieldMod`. Der `main`-Branch
-> enthält ein **anderes Projekt** (eine Minecraft-Mod „Bubble Shield",
-> Java/Gradle) — nicht mischen, nicht nach `main` mergen. Das GOOBY-Projekt ist
-> in Runde W16 aus dem Repo `MedusaV9/CustomServerPrivate` hierher umgezogen;
-> der volle Verlauf (Runden W1–W15) wurde übernommen.
+> **Dieser Branch (`cursor/gooby-godot-loop-continue`) ist eine eigenständige
+> Arbeitslinie** im Repo `PermissionMAXED/Monkey-Party`. Der `main`-Branch
+> enthält **andere Projekte** (das Partyspiel „Monkey-Party" in `MONKEY-PARTY/`
+> und die Minecraft-Mod „Aetherklang" in `AETHERKLANG/`) — nicht mischen,
+> nicht nach `main` mergen. Das GOOBY-Projekt ist in Runde W18 aus
+> `MedusaV9/MinecraftBubbleShieldMod@cursor/gooby-godot-loop-2c10` hierher
+> umgezogen (dorthin war es in W16 aus `MedusaV9/CustomServerPrivate`
+> gekommen); der volle Verlauf (Runden W1–W17) wurde übernommen. Die
+> kontinuierliche Verbesserungs-Schleife läuft HIER weiter — Protokoll:
+> [`docs/godot-rewrite/LOOP.md`](docs/godot-rewrite/LOOP.md).
 
 ## Was liegt wo
 
@@ -24,12 +28,15 @@ Zielplattform **iPhone** (Installation per Sideload-`.ipa`), komplett auf
 | [`GOOBY/`](GOOBY/README.md) | Die alte Web-Version (GOOBY 4.0, three.js/Capacitor) — dient nur noch als **Referenz**, read-only |
 | [`GOOBY-SERVER/`](GOOBY-SERVER/README.md) | Node-Mehrspieler-/Meta-Server (Freunde, Presence, GoobyPal, Codes, Besuche, Schiffe versenken) inkl. Admin-Webpanel |
 | [`MONKEYBAR/`](MONKEYBAR/README.md) | **Eigenständiges, von GOOBY unabhängiges Projekt**, das aus dem alten Repo mitgezogen ist: „MONKEYBAR" 1.0, ein Online-Multiplayer-Bluff-Partyspiel mit Affen (three.js-Client + autoritativer Node-`ws`-Server, 6 Spielmodi, 10 Maps) |
-| [`docs/`](docs/) | Design-Docs; das Godot-Rewrite lebt in [`docs/godot-rewrite/`](docs/godot-rewrite/) (Plan: `GODOT-PLAN.md`, Ist-Stand: `STATUS.md`) |
+| [`MONKEY-PARTY/`](MONKEY-PARTY/README.md) | **Eigenständiges Projekt dieses Repos** (Root-Projekt von `main`): „Monkey-Party", ein Mehrspieler-Partyspiel (Vite + three.js + Node-`ws`-Server) — beim GOOBY-Loop nicht anfassen |
+| [`AETHERKLANG/`](AETHERKLANG/README.md) | **Eigenständiges Projekt dieses Repos**: „Aetherklang", eine Fabric-1.21.9-Minecraft-Mod (JDK 21, Gradle) — beim GOOBY-Loop nicht anfassen |
+| [`docs/`](docs/) | Design-Docs; das Godot-Rewrite lebt in [`docs/godot-rewrite/`](docs/godot-rewrite/) (Plan: `GODOT-PLAN.md`, Ist-Stand: `STATUS.md`, Feature-Matrix: `EVAL-VOLLSTAENDIGKEIT.md`, Schleifen-Protokoll: `LOOP.md`) |
 | [`tools/`](tools/ci/README.md) | Werkzeuge: Preflight/CI-Skripte (`tools/ci/`), Blender-Pipelines, Pack- und Audio-Tools |
-| [`trailer/`](trailer/README.md) | Remotion-Projekt + fertiges Trailer-Video `GOOBY-5.0-Godot-Update-Trailer.mp4` |
+| [`trailer/`](trailer/README.md) | Remotion-Projekt + fertiges Trailer-Video `GOOBY-5.1-Godot-Trailer.mp4` (Vorgänger 5.0 liegt daneben) |
 
-Das frühere Root-README („# MonkeyBar") stammte noch vom MONKEYBAR-Projekt und
-passte nicht mehr zum Inhalt dieses Branches.
+Das Root-README ([`README.md`](README.md)) und das Root-`AGENTS.md` gehören zu
+den Repo-Projekten MONKEY-PARTY/AETHERKLANG; der Wegweiser dort verlinkt
+hierher zurück.
 
 ## Spielen / Testen (iPhone)
 
@@ -48,7 +55,7 @@ passte nicht mehr zum Inhalt dieses Branches.
 ## Entwickeln
 
 Kurzfassung — die verbindlichen Arbeitsregeln stehen in
-[`AGENTS.md`](AGENTS.md), Setup-Details in
+[`GOOBY-AGENTS.md`](GOOBY-AGENTS.md), Setup-Details in
 [`GOOBY-GODOT/README.md`](GOOBY-GODOT/README.md):
 
 - **Toolchain:** Godot 4.4.1 (stable), Python 3 + `gdtoolkit==4.*`
