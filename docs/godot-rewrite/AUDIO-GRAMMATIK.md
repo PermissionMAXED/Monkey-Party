@@ -45,6 +45,13 @@ wellenweise mit und scannt reparierte Builder/Screens.
 - Der 45-ms-Debounce des AudioDirector schluckt Doppel-Trigger derselben Id —
   trotzdem Doppel-Verdrahtung vermeiden. Erfolgs-Toasts bleiben stumm
   (`ui_toast` nur deklarativ in Cutscenes/FeelEmotions — nicht „aufräumen“).
+- **Große Belohnungsmomente ducken das Musikbett** (EVAL-1 S8):
+  `MusicDirector.try_duck(self)` VOR Stinger/Fanfare/Konfetti-Feier —
+  senkt nur den `MusicBed`-Unterbus (Kontext/Radio) um −6 dB (Attack 80 ms,
+  Halten ~1,4 s, Release 600 ms); Stinger (Bus `Music`) bleiben unberührt.
+  Verdrahtet: RewardHub (Gold-Sticker/Erfolge/Tagesbonus), LevelUpFeier,
+  Rekord-Fanfare (Results), Sammlungs-/Postkarten-Set-Bonus. Für kleine
+  Plucks (ui_click & Co.) NICHT ducken.
 
 ## Haptik-Stärke (W16 F11)
 

@@ -56,6 +56,17 @@ func test_kauf_zeile_sound_overrides_bleiben_kompatibel() -> void:
 	box.free()
 
 
+func test_park_stall_baut_nur_squish_buttons() -> void:
+	# Dopamin-Pass: die Naschgassen-Stände waren die letzten Button.new()-
+	# Kaufknöpfe im Park — jetzt SquishButtons mit ui_buy/ui_error-Outcome.
+	var sheet := ParkStallSheet.new()
+	tree.root.add_child(sheet)
+	await wait_frames(2)
+	_assert_alle_buttons_squish(sheet, "ParkStallSheet")
+	sheet.queue_free()
+	await wait_frames(2)
+
+
 func test_goobay_panel_baut_nur_squish_buttons() -> void:
 	# F4: GooBay-Listenzeile, „zu“, Versand und die _add_button-Knöpfe.
 	var gs := _fresh_gs()

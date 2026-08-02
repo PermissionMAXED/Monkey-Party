@@ -13,6 +13,10 @@ extends Node
 ##   replaceContext) — geshuffelte Sender-Queue, Level-Schranken respektiert,
 ##   radio_stop() blendet zurück in den Szenen-Kontext.
 ## - play_stinger("stinger-levelup"): One-Shot über die laufende Musik.
+## - duck(): Musikbett kurz absenken (EVAL-1 S8) — Belohnungs-Stinger und
+##   Fanfaren atmen, statt gegen das Bett zu kämpfen. Läuft über den
+##   eigenen "MusicBed"-Unterbus (Kontext/Radio-Player), der Stinger-Player
+##   bleibt direkt auf "Music" und wird NICHT mitgeduckt.
 ## Hängt sich selbst an SceneRouter.travel_finished (ROUTE_CONTEXTS) — Räume
 ## brauchen KEINE eigene Verdrahtung. Headless-sicher (Dummy-Treiber spielt
 ## still, Tweens degradieren zu Sofort-Sprüngen ohne Baum).
@@ -31,6 +35,15 @@ const FADE_OUT_DB := -40.0
 ## Boost hebt sie in die Nähe der SFX-Ebene (eff. ≈ −21 dBFS), Peaks
 ## bleiben dank Datei-Headroom + Master-Limiter unter −1 dBFS.
 const STINGER_BOOST_DB := 6.0
+## Ducking (EVAL-1 S8): Bett −6 dB, schneller Attack, weiches Release —
+## Referenzwerte aus dem EVAL-1-Bericht (Rang 17).
+const DUCK_DB := -6.0
+const DUCK_HOLD_S := 1.4
+const DUCK_ATTACK_S := 0.08
+const DUCK_RELEASE_S := 0.6
+## Unterbus fürs Musikbett: Kontext-/Radio-Player spielen hier, damit
+## duck() sie absenkt, ohne die Stinger (Bus "Music") zu berühren.
+const BED_BUS := "MusicBed"
 const NODE_NAME := "MusicDirector"
 
 ## W13/RADIO (H §6.1) — Bordmusik-Modus ohne Radio-Besitz. Pseudo-Sender-Id
@@ -71,6 +84,7 @@ var _radio_queue: Array[String] = []
 var _radio_pos := 0
 var _stinger_player: AudioStreamPlayer
 var _rng := RandomNumberGenerator.new()
+var _duck_tween: Tween
 
 
 ## Autoload /root/Music bevorzugt, sonst lazy-Instanz unter /root.
@@ -97,12 +111,23 @@ static func try_context(from: Node, context: String) -> void:
 	get_or_create(from).set_context(context)
 
 
+## Bequemer One-Liner fürs Ducking (EVAL-1 S8): Belohnungsmomente rufen das
+## VOR ihrem Stinger/ihrer Fanfare — ohne Baum still no-op (nackte Tests).
+static func try_duck(from: Node, db := DUCK_DB, hold_s := DUCK_HOLD_S) -> void:
+	if from == null or not from.is_inside_tree():
+		return
+	var director := get_or_create(from)
+	if director.is_inside_tree():
+		director.duck(db, hold_s)
+
+
 func _ready() -> void:
 	_rng.randomize()
 	_ensure_music_bus()
+	_ensure_bed_bus()
 	for _i in 2:
 		var player := AudioStreamPlayer.new()
-		player.bus = &"Music"
+		player.bus = StringName(BED_BUS)
 		add_child(player)
 		_players.append(player)
 	_stinger_player = AudioStreamPlayer.new()
@@ -248,6 +273,37 @@ static func radio_queue_for(station_id: String, level: int) -> Array:
 	return out
 
 
+# ── Ducking (EVAL-1 S8) ──────────────────────────────────────────────────────
+
+
+## Musikbett kurz absenken: Attack → Halten → Release (Sinus-Ease). Ein
+## zweiter Duck während des ersten gewinnt (Tween wird ersetzt) — Feiern
+## in Serie verlängern die Absenkung, statt sich zu stapeln.
+func duck(db := DUCK_DB, hold_s := DUCK_HOLD_S) -> void:
+	var idx := AudioServer.get_bus_index(BED_BUS)
+	if idx < 0 or not is_inside_tree():
+		return
+	if _duck_tween != null and _duck_tween.is_valid():
+		_duck_tween.kill()
+	_duck_tween = create_tween()
+	_duck_tween.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+	_duck_tween.tween_method(_set_bed_db, AudioServer.get_bus_volume_db(idx), db, DUCK_ATTACK_S)
+	_duck_tween.tween_interval(maxf(hold_s, 0.0))
+	_duck_tween.tween_method(_set_bed_db, db, 0.0, DUCK_RELEASE_S)
+
+
+## Aktuelle Absenkung des Musikbetts in dB (0.0 = kein Duck) — für Tests.
+func bed_duck_db() -> float:
+	var idx := AudioServer.get_bus_index(BED_BUS)
+	return AudioServer.get_bus_volume_db(idx) if idx >= 0 else 0.0
+
+
+func _set_bed_db(db: float) -> void:
+	var idx := AudioServer.get_bus_index(BED_BUS)
+	if idx >= 0:
+		AudioServer.set_bus_volume_db(idx, db)
+
+
 # ── Stinger ───────────────────────────────────────────────────────────────────
 
 
@@ -387,3 +443,14 @@ func _ensure_music_bus() -> void:
 	# Fallback ohne AudioDirector: Mix-Offset trotzdem anwenden, damit die
 	# Musik nie wieder 9 dB über den Effekten liegt (EVAL-1 S1).
 	AudioServer.set_bus_volume_db(idx, float(AudioDirector.BUS_BASE_DB.get("Music", 0.0)))
+
+
+## Bett-Unterbus (EVAL-1 S8): sitzt VOR "Music" — Nutzer-Regler und
+## Mix-Offset bleiben auf "Music", duck() arbeitet nur hier.
+func _ensure_bed_bus() -> void:
+	if AudioServer.get_bus_index(BED_BUS) >= 0:
+		return
+	var idx := AudioServer.bus_count
+	AudioServer.add_bus(idx)
+	AudioServer.set_bus_name(idx, BED_BUS)
+	AudioServer.set_bus_send(idx, &"Music")

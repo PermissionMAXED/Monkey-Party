@@ -259,7 +259,8 @@ func _refresh() -> void:
 
 func _thumb(foto: Dictionary) -> Control:
 	var pfad := str(foto["pfad"])
-	var karte := Button.new()
+	# W16-Grammatik: interaktive Karte = SquishButton (Haptik + Squish).
+	var karte := SquishButton.new()
 	karte.name = "Foto_%s" % pfad.get_file().get_basename()
 	karte.theme_type_variation = &"AcCard"
 	# G4-Nachfix: 200·f, aber in die Spalte geklemmt (s. _kachel_groesse).
@@ -305,6 +306,8 @@ func _thumb(foto: Dictionary) -> Control:
 
 func _zeige_vollansicht(pfad: String) -> void:
 	_schliesse_vollansicht()
+	# Eigenbau-Overlay klingt wie ein PanelSheet (AUDIO-GRAMMATIK).
+	AudioDirector.try_play(self, "ui_open")
 	_voll_pfad = pfad
 	_voll_zoom = 0
 	_voll = Control.new()
@@ -405,6 +408,7 @@ func _voll_knopf(parent: Control, node_name: String, text: String, aktion: Calla
 
 func _schliesse_vollansicht() -> void:
 	if _voll != null and is_instance_valid(_voll):
+		AudioDirector.try_play(self, "ui_close")
 		_voll.queue_free()
 	_voll = null
 	_voll_spalte = null
@@ -422,11 +426,13 @@ func _on_voll_input(event: InputEvent) -> void:
 
 
 func _zoom_rein() -> void:
+	AudioDirector.try_play(self, "ui_tick")
 	_voll_zoom = mini(_voll_zoom + 1, ZOOM_STUFEN.size() - 1)
 	_wende_zoom_an()
 
 
 func _zoom_raus() -> void:
+	AudioDirector.try_play(self, "ui_tick", 0.94)
 	_voll_zoom = maxi(_voll_zoom - 1, 0)
 	_wende_zoom_an()
 
@@ -443,6 +449,7 @@ func _wende_zoom_an() -> void:
 func _on_voll_favorit() -> void:
 	if _gs == null or _voll_pfad.is_empty():
 		return
+	AudioDirector.try_play(self, "ui_toggle")
 	var pfad := _voll_pfad
 	# Box statt lokaler Variable: Lambdas fangen Primitive per WERT.
 	var box := {"neu": false}
@@ -469,10 +476,13 @@ func _refresh_fav_knopf() -> void:
 ## FERTIG-1: aus „Teilen (bald)“ wurde ein echter Export — das PNG landet
 ## im Bilder-Ordner des Systems (bzw. user://export ohne System-Ordner).
 func _on_teilen() -> void:
+	# Outcome schlägt Press (AUDIO-GRAMMATIK): der Export entscheidet.
 	var ziel := GalerieLogic.exportiere(_voll_pfad)
 	if ziel.is_empty():
+		AudioDirector.try_play(self, "ui_error")
 		_toasts.show_toast(I18nService.t("galerie.export_fehler"))
 		return
+	AudioDirector.try_play(self, "ui_confirm")
 	_toasts.show_toast(I18nService.t("galerie.export_ok", {"ziel": ziel}))
 
 
@@ -482,6 +492,7 @@ func _on_teilen() -> void:
 func _on_loeschen_gefragt() -> void:
 	if _bestaetigung != null and is_instance_valid(_bestaetigung):
 		_bestaetigung.queue_free()
+	AudioDirector.try_play(self, "ui_open")
 	_bestaetigung = PanelContainer.new()
 	_bestaetigung.name = "LoeschDialog"
 	_bestaetigung.theme_type_variation = &"AcCard"
@@ -512,7 +523,11 @@ func _on_loeschen_gefragt() -> void:
 	nein.theme_type_variation = &"BtnGhost"
 	nein.text = I18nService.t("galerie.abbrechen")
 	nein.focus_mode = Control.FOCUS_NONE
-	nein.pressed.connect(func() -> void: _bestaetigung.queue_free())
+	nein.pressed.connect(
+		func() -> void:
+			AudioDirector.try_play(self, "ui_back")
+			_bestaetigung.queue_free()
+	)
 	ScreenShell.touch_target(nein, _m)
 	zeile.add_child(nein)
 	var ziel: Control = _voll if _voll != null and is_instance_valid(_voll) else self
@@ -524,6 +539,9 @@ func _on_loeschen_bestaetigt() -> void:
 		_bestaetigung.queue_free()
 	if _gs == null or _voll_pfad.is_empty():
 		return
+	# Destruktive Aktion: Klick-Klang + Warn-Haptik (AUDIO-GRAMMATIK).
+	AudioDirector.try_play(self, "ui_click")
+	Haptics.warn(self)
 	var pfad := _voll_pfad
 	# Box statt lokaler Variable: Lambdas fangen Primitive per WERT.
 	var box := {"entfernt": false}
@@ -545,6 +563,7 @@ func _on_loeschen_bestaetigt() -> void:
 
 
 func _on_filter_pressed() -> void:
+	AudioDirector.try_play(self, "ui_toggle")
 	nur_favoriten = not nur_favoriten
 	_refresh()
 
@@ -574,6 +593,7 @@ func _state() -> Dictionary:
 
 
 func _on_back_pressed() -> void:
+	AudioDirector.try_play(self, "ui_back")
 	if not auto_navigate:
 		return
 	var router := get_node_or_null("/root/SceneRouter")

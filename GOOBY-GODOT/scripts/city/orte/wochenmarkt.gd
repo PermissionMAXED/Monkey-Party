@@ -226,10 +226,12 @@ func _richte_kunden_ein() -> void:
 
 
 func _tab_knopf(text: String) -> Button:
-	var knopf := Button.new()
+	# W16-Grammatik: SquishButton + Tab-Wechsel klingt als ui_chip.
+	var knopf := SquishButton.new()
 	knopf.theme_type_variation = "GhostButton"
 	knopf.text = text
 	knopf.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	knopf.pressed.connect(func() -> void: AudioDirector.try_play(self, "ui_chip"))
 	return knopf
 
 

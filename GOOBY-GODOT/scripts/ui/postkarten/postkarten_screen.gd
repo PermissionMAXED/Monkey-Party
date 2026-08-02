@@ -432,7 +432,12 @@ func _on_claim(n: int) -> int:
 	_gs.notify_slice_changed("vacation")
 	if coins > 0:
 		_toasts.show_toast(I18nService.t("postkarten.set.erhalten", {"bonus": coins}))
+		# Set-Bonus ist eine Münz-EINNAHME (AUDIO-GRAMMATIK) + Erfolgs-Haptik;
+		# das Musikbett duckt, damit der Stinger trägt (EVAL-1 S8).
+		AudioDirector.try_play(self, "ui_coins")
+		Haptics.success(self)
 		if is_inside_tree():
+			MusicDirector.try_duck(self)
 			MusicDirector.get_or_create(self).play_stinger("stinger-levelup")
 	_refresh()
 	return coins
@@ -462,6 +467,7 @@ func _now_ms() -> int:
 
 
 func _on_back_pressed() -> void:
+	AudioDirector.try_play(self, "ui_back")
 	if not auto_navigate:
 		return
 	var router := get_node_or_null("/root/SceneRouter")

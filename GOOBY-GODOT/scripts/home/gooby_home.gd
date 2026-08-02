@@ -57,6 +57,9 @@ const IDLE_AKTE: Array[Dictionary] = [
 ]
 ## Wie lange ein Idle-Variety-Loop steht, bevor der Rig in move zurückkehrt.
 const IDLE_CLIP_DAUER_S := 2.6
+## EVAL-1 F8: leises Tapsen im Schrittrhythmus (SPEED 1,15 m/s ≈ 3 Taps/s;
+## müde Goobys tapsen langsamer, weil der Takt mit speed_mult skaliert).
+const STEP_SFX_INTERVALL_S := 0.34
 
 ## Schlaf-Logik (pure) für die Tat-Bubble („Psst… er schläft").
 const Sleep := preload("res://scripts/logic/sleep.gd")
@@ -77,6 +80,7 @@ var _target := Vector3.ZERO
 var _path := PackedVector3Array()
 var _path_index := 0
 var _path_retry := 0.0
+var _step_sfx_rest := 0.0
 
 
 func _ready() -> void:
@@ -588,3 +592,9 @@ func _step_walk(delta: float) -> void:
 	global_position += step
 	rig.rotation.y = lerp_angle(rig.rotation.y, atan2(to_next.x, to_next.z), 10.0 * delta)
 	rig.set_locomotion(1.0)
+	# EVAL-1 F8: Gooby tapst hörbar — der Pitch-Jitter (0,1) sitzt in der
+	# SfxMap, der Takt folgt dem echten Tempo (müde = langsamer).
+	_step_sfx_rest -= delta * clampf(speed_mult, 0.25, 1.0)
+	if _step_sfx_rest <= 0.0:
+		_step_sfx_rest = STEP_SFX_INTERVALL_S
+		AudioDirector.try_play(self, "step_tap")

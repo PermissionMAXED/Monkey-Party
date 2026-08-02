@@ -37,6 +37,9 @@ func _ready() -> void:
 	_baue_texte()
 	var breite := size.x if size.x > 0.0 else 960.0
 	RewardFx.konfetti_2d(self, KONFETTI_TEILE, breite)
+	# EVAL-1 S8: der größte Moment des Spiels duckt das Musikbett (2,6 s
+	# Feier — der Duck hält fast die ganze Karte lang).
+	MusicDirector.try_duck(self, MusicDirector.DUCK_DB, 2.0)
 	AudioDirector.try_play(self, "ui_levelup")
 	if bonus_coins > 0:
 		AudioDirector.try_play(self, "ui_coins", 1.08)

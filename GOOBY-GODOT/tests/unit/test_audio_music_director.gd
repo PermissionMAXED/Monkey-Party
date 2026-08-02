@@ -75,6 +75,47 @@ func test_radio_queue_respektiert_level() -> void:
 		)
 
 
+func test_duck_senkt_und_hebt_musikbett() -> void:
+	## EVAL-1 S8: duck() senkt den MusicBed-Unterbus (Attack) und stellt
+	## ihn nach Halten + Release wieder auf 0 dB — der Stinger-Player
+	## (Bus "Music") bleibt unberührt.
+	var director := _director()
+	await wait_frames(1)
+	assert_true(AudioServer.get_bus_index(MusicDirector.BED_BUS) >= 0, "MusicBed-Unterbus fehlt")
+	director.duck(-8.0, 0.05)
+	await tree.create_timer(0.2).timeout
+	assert_true(
+		director.bed_duck_db() < -4.0,
+		"Duck greift nicht (Bett bei %.1f dB)" % director.bed_duck_db()
+	)
+	await tree.create_timer(0.9).timeout
+	assert_true(
+		absf(director.bed_duck_db()) < 0.5,
+		"Duck kommt nicht zurück (Bett bei %.1f dB)" % director.bed_duck_db()
+	)
+	director.queue_free()
+	await wait_frames(1)
+
+
+func test_kontext_player_spielen_auf_dem_bett_bus() -> void:
+	## Kontext-/Radio-Player laufen auf MusicBed (duckbar), der Stinger-
+	## Player direkt auf Music (wird bei Feiern NICHT mitgeduckt).
+	var director := _director()
+	await wait_frames(1)
+	var bed_count := 0
+	var music_count := 0
+	for child in director.get_children():
+		if child is AudioStreamPlayer:
+			if String((child as AudioStreamPlayer).bus) == MusicDirector.BED_BUS:
+				bed_count += 1
+			elif (child as AudioStreamPlayer).bus == &"Music":
+				music_count += 1
+	assert_eq(bed_count, 2, "Beide Kontext-Player gehören auf MusicBed")
+	assert_eq(music_count, 1, "Der Stinger-Player bleibt auf Music")
+	director.queue_free()
+	await wait_frames(1)
+
+
 func test_radio_ersetzt_kontext_und_stoppt_zurueck() -> void:
 	var director := _director()
 	director.set_context("home")

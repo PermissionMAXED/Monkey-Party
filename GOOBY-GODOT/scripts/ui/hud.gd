@@ -135,6 +135,10 @@ var _coin_icon: TextureRect
 var _coin_chip: Control
 var _coin_tween: Tween
 var _coin_shown := 0
+## EVAL-1 D10: Münz-ZUWACHS klingt (ui_coins). Die ersten ~2 s nach dem
+## Aufbau bleiben stumm — Initial-Sets beim Verdrahten (set_coins(0) →
+## Save-Stand) sind kein Belohnungsmoment.
+var _coin_sfx_ab_ms := 0
 var _status_sheet: PanelSheet
 var _eye_timer: Timer
 var _coachmark: Control
@@ -168,6 +172,7 @@ func _ready() -> void:
 	# G4/P21 (QW #18): HUD-Finder (DialogBubble/WhatsNextHint/Onboarding)
 	# suchen über diese Gruppe statt per Vollbaum-find_children.
 	add_to_group(&"hud")
+	_coin_sfx_ab_ms = Time.get_ticks_msec() + 2000
 	_build_action_buttons()
 	_build_status_chips()
 	_setup_static_buttons()
@@ -423,6 +428,12 @@ func set_coins(coins: int) -> void:
 		_coin_chip.scale = Vector2.ONE
 		UiMotion.wiggle(_coin_icon)
 		UiMotion.bounce(_coin_chip)
+	# EVAL-1 D10 (Rang 16): Zuwachs klingt — Pitch steigt sanft mit der
+	# Größe des Gewinns (+0,02 je Zehnerpotenz). Ausgaben bleiben stumm
+	# (ui_buy spielt am Kauf-Ort, AUDIO-GRAMMATIK).
+	if coins > from and Time.get_ticks_msec() >= _coin_sfx_ab_ms:
+		var delta := float(coins - from)
+		AudioDirector.try_play(self, "ui_coins", 1.0 + 0.02 * (log(delta) / log(10.0)))
 
 
 func set_level(level: int, xp_ratio: float = 0.0) -> void:

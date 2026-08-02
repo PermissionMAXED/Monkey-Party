@@ -549,10 +549,12 @@ func _apply_metrics() -> void:
 
 
 func _on_achievements_pressed() -> void:
+	AudioDirector.try_play(self, "ui_click")
 	_navigate(AchievementsScreen.ROUTE)
 
 
 func _on_friends_pressed() -> void:
+	AudioDirector.try_play(self, "ui_click")
 	SocialScreen.register_routes()
 	_navigate(SocialScreen.ROUTE)
 
@@ -566,6 +568,7 @@ func _navigate(target: StringName) -> void:
 
 
 func _on_back_pressed() -> void:
+	AudioDirector.try_play(self, "ui_back")
 	if not auto_navigate:
 		return
 	var router := _router()

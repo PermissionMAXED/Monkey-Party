@@ -295,6 +295,8 @@ func _celebrate_record(line: Label) -> void:
 func _zeige_rekord_feier(line: Label) -> void:
 	if not visible or _juice == null:
 		return
+	# EVAL-1 S8: Rekord-Fanfare atmet über geducktem Musikbett.
+	MusicDirector.try_duck(self)
 	FeelSfx.play(self, "game_record")
 	_juice.confetti(110)
 	_juice.hit_flash(Color(1.0, 0.85, 0.35, 0.2), 320)

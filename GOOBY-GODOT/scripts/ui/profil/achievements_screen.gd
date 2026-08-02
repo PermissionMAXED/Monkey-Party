@@ -129,6 +129,9 @@ func _build_chip_row() -> Control:
 		chip.theme_type_variation = &"AcChip"
 		chip.text = I18nService.t("achievements.kategorie.%s" % cat)
 		chip.focus_mode = Control.FOCUS_NONE
+		# Kategorie-Wechsel klingt als ui_chip (AUDIO-GRAMMATIK) — nur beim
+		# Druck, nicht beim programmatischen _show_category am Aufbau.
+		chip.pressed.connect(func() -> void: AudioDirector.try_play(self, "ui_chip"))
 		chip.pressed.connect(_show_category.bind(cat))
 		_chip_row.add_child(chip)
 	return _chip_row
@@ -286,6 +289,7 @@ func _apply_metrics() -> void:
 
 
 func _on_back_pressed() -> void:
+	AudioDirector.try_play(self, "ui_back")
 	if not auto_navigate:
 		return
 	var router := _router()

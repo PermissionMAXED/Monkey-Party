@@ -304,6 +304,11 @@ func _on_claim_pressed(set_id: String) -> void:
 	var reward := CollectionsLogic.apply_claim(_gs, set_id, _now_ms(), _local_day())
 	if reward.is_empty():
 		return
+	# Set-Belohnung = Münz-EINNAHME: Kaching + Erfolgs-Haptik (AUDIO-
+	# GRAMMATIK); das Musikbett duckt für den Feier-Moment (EVAL-1 S8).
+	MusicDirector.try_duck(self)
+	AudioDirector.try_play(self, "ui_coins")
+	Haptics.success(self)
 	refresh()
 	set_claimed.emit(set_id, reward)
 

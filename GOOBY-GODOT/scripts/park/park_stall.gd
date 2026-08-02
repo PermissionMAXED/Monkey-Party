@@ -33,7 +33,8 @@ func _baue_stand(food_id: String, preis: int) -> void:
 	var karte := CitySheetBausteine.karte(self)
 	CitySheetBausteine.label(karte, I18nService.t("park.stall.%s.name" % food_id), "HeadlineLabel")
 	CitySheetBausteine.label(karte, I18nService.t("park.stall.%s.pitch" % food_id), "CaptionLabel")
-	var btn := Button.new()
+	# W16-Grammatik: SquishButton (Haptik + Squish zentral).
+	var btn := SquishButton.new()
 	btn.theme_type_variation = "AccentButton"
 	btn.text = I18nService.t("park.stall.kaufen", {"preis": preis})
 	btn.pressed.connect(func() -> void: _kaufe(food_id, preis))
@@ -45,6 +46,8 @@ func _kaufe(food_id: String, preis: int) -> void:
 		return
 	# Vorab prüfen (Lambda-Captures sind by-value — kein Out-Flag möglich).
 	if _coins() < preis:
+		# Outcome schlägt Press (AUDIO-GRAMMATIK): zu teuer klingt als Fehler.
+		AudioDirector.try_play(self, "ui_error")
 		_zeige_toast(I18nService.t("park.ride.zu_teuer"))
 		return
 	gs.update(
@@ -57,8 +60,13 @@ func _kaufe(food_id: String, preis: int) -> void:
 	)
 	if gs.has_method("notify_slice_changed"):
 		gs.notify_slice_changed("park")
+	# Abgeschlossene Münz-AUSGABE = ui_buy + Erfolgs-Haptik (AUDIO-GRAMMATIK);
+	# der Münzstand hüpft kurz mit (Kauf-Feedback wie im IKEA-Referenzmuster).
+	AudioDirector.try_play(self, "ui_buy")
+	Haptics.success(self)
 	if _coins_label != null:
 		_coins_label.text = I18nService.t("city.laden.coins").format({"coins": _coins()})
+		UiMotion.bounce(_coins_label)
 	_zeige_toast(
 		I18nService.t("park.stall.gekauft", {"name": I18nService.t("park.food.%s" % food_id)})
 	)

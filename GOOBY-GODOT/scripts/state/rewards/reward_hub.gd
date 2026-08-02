@@ -180,6 +180,10 @@ func _celebrate(def: Dictionary) -> void:
 	var sticker_name := str(def.get("name_de", def.get("id", "")))
 	var feier := StickerCard.celebration_for(str(def.get("rarity", "haeufig")))
 	_toasts.show_toast(I18nService.t(str(feier["toast_key"]), {"name": sticker_name}))
+	# EVAL-1 S8: große Feiern (Konfetti) ducken das Musikbett kurz, damit
+	# Jingle + Konfetti-Moment über der Musik atmen.
+	if bool(feier["konfetti"]):
+		MusicDirector.try_duck(self)
 	AudioDirector.try_play(self, str(feier["sfx"]))
 	var breite := 640.0
 	var viewport := get_viewport()
@@ -205,6 +209,7 @@ func _celebrate_achievement(def: Dictionary) -> void:
 			"achievements.unlock_toast", {"name": ach_name, "coins": int(def.get("coins", 0))}
 		)
 	)
+	MusicDirector.try_duck(self)
 	AudioDirector.try_play(self, "ui_sticker")
 	var breite := 640.0
 	var viewport := get_viewport()
@@ -289,6 +294,8 @@ func _on_daily_bonus_claimed(reward: Dictionary) -> void:
 	var viewport := get_viewport()
 	if viewport != null:
 		breite = viewport.get_visible_rect().size.x
+	# EVAL-1 S8: Tagesbonus ist ein Konfetti-Moment — Musikbett kurz ducken.
+	MusicDirector.try_duck(self)
 	RewardFx.konfetti_2d(_toasts, KONFETTI_TEILE, breite)
 	daily_bonus_claimed.emit(reward)
 
