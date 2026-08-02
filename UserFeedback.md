@@ -91,7 +91,7 @@ Original-Links sind alle übernommen:)_
       die CC0-Quellen decken denselben Stil ohne Account ab. Falls du ein
       bestimmtes Store-Pack unbedingt willst: lade es selbst und leg es ins
       Repo, dann binde ich es sauber ein.
-- [ ] **A3 Asset-Intake-Pipeline dokumentieren + absichern** (Unterbau für
+- [x] **A3 Asset-Intake-Pipeline dokumentieren + absichern** (Unterbau für
       A1 + A2). Akzeptanzkriterien:
       **(1)** kurze Checkliste in `GOOBY-GODOT/assets/README.md`, wie externe
       Modelle reinkommen (Format glb/gltf, Maßstab-Referenz „Gooby ≈ Referenzhöhe",
@@ -99,6 +99,25 @@ Original-Links sind alle übernommen:)_
       erzeugte `.import`/`.uid` MIT committen, Lizenz-Eintrag in LICENSES.md);
       **(2)** ein Import-Konformitäts-Test prüft neue Assets automatisch gegen
       diese Konvention (Rotation/Maßstab/Pivot) und läuft in Preflight + CI mit.
+      **Gemacht (2. August):** Die verbindliche Anleitung steht in
+      `docs/godot-rewrite/ASSET-INTAKE.md` (Ordner-Layout „ein Pack = ein
+      Unterordner", glb/gltf-Format, Maßstab-Referenz **Gooby ≈ 1,13 m**
+      + Decke 2,45 m + Pferderücken 1,42 m, Pivot = Boden-Mitte samt
+      Ausnahme-Regeln, -Z-Front-Vertrag aus A1, wer die Kollision liefert
+      — Katalog-Footprint bzw. Szenen-Blocker, GLBs bleiben ohne
+      Collision-Mesh —, Lizenz-Pflichten, Stil-Gate, 8-Schritte-Ablauf).
+      Die Kurz-Checkliste dazu: `GOOBY-GODOT/assets/README.md` (Kriterium 1);
+      der bislang fehlende zentrale Lizenz-Index (von A2 + LOOP.md schon
+      referenziert) existiert jetzt: `GOOBY-GODOT/assets/LICENSES.md`.
+      **Dauerhaft (Kriterium 2):** die neue Wache
+      `tests/unit/test_asset_intake.gd` läuft im Haupt-Runner (Preflight
+      4/6 + CI linux-checks) und prüft JEDES Modell unter `assets/`:
+      `.import` liegt daneben im Repo, Maßstab-Band 0,02–40 m (fängt
+      cm-/inch-Exporte), Pivot auf der Boden-Kante (±6 cm bzw. 10 % Höhe;
+      32 begründete Bestands-Ausnahmen wie Wand-/Hänge-/Achs-Pivots stehen
+      MIT Begründung im Test, verwaiste Einträge werden gemeldet) und
+      90°-Rotations-Raster. Bestand komplett vermessen (723 Modelle) —
+      alles konform.
 
 
 
