@@ -42,6 +42,7 @@ import './match.css';
 import { createOfflineSession } from '../app/session.js';
 import { t } from './i18n.js';
 import { tm } from './matchStrings.js';
+import { tNet } from './netStrings.js';
 import { div, button, clearNode, toast, playSfx } from './dom.js';
 import { createMatchHud } from './hud.js';
 import { buildItemBar } from './itemBar.js';
@@ -905,7 +906,7 @@ export function createMatchScreen(ctx) {
     });
     sub('error', (msg) => {
       // Server errors arrive as {code, msg} (see shared/protocol.js).
-      const text = msg?.msg ?? msg?.message ?? 'Server error';
+      const text = msg?.msg ?? msg?.message ?? tNet('net.serverError');
       toast(msg?.code ? `${text} (${msg.code})` : text, 'error');
     });
 
@@ -918,14 +919,14 @@ export function createMatchScreen(ctx) {
         if (typeof off === 'function') netOffs.push(off);
       };
       nsub('reconnecting', (info) => {
-        if (!disposed && (info?.attempt ?? 1) === 1) toast('Connection lost – reconnecting…', 'info');
+        if (!disposed && (info?.attempt ?? 1) === 1) toast(tNet('net.connLost'), 'info');
       });
       nsub('reconnect_failed', () => {
         reconnectFailed = true;
-        if (!disposed) toast('Could not reconnect to the server. Check your connection and reload the page.', 'error');
+        if (!disposed) toast(tNet('net.connLostFinal'), 'error');
       });
       nsub('close', () => {
-        if (!disposed && !reconnectFailed) toast('Connection to the server was closed.', 'error');
+        if (!disposed && !reconnectFailed) toast(tNet('net.connClosed'), 'error');
       });
     }
 

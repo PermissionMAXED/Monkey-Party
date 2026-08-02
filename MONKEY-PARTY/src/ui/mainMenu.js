@@ -10,6 +10,7 @@
 import { MSG } from '#shared/protocol.js';
 import { createOfflineSession, createOnlineSession } from '../app/session.js';
 import { t, setLang, getLang, onLangChange } from './i18n.js';
+import { tNet } from './netStrings.js';
 import { el, div, button, clearNode, overlay, toast, select, playSfx } from './dom.js';
 
 const MAX_LOCAL = 8; // total local seats offered in the couch setup
@@ -291,13 +292,13 @@ export function createMainMenuScreen(ctx) {
       const offErr = client.on('error', (msg) => {
         if (msg?.code === 'resume') return; // stale token: harmless, hello follows
         offErr();
-        toast(msg?.msg ?? 'Server error', 'error');
+        toast(msg?.msg ?? tNet('net.serverError'), 'error');
       });
 
       const resumed = wasOpen ? null : await waitForResumeOutcome(client, session);
       if (resumed === 'match') {
         // Rejoin the running match instead of abandoning the seat.
-        toast('Rejoining your running match…', 'info');
+        toast(tNet('net.rejoining'), 'info');
         ctx.router.go('match');
         return;
       }

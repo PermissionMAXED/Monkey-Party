@@ -22,6 +22,14 @@ export const NET_DICT = {
     de: 'Versionskonflikt — Client und Server nutzen unterschiedliche Protokollversionen. Bitte Seite neu laden.',
   },
   'net.fatal': { en: 'Connection error: {msg}', de: 'Verbindungsfehler: {msg}' },
+  'net.connLost': { en: 'Connection lost — reconnecting…', de: 'Verbindung verloren — verbinde neu…' },
+  'net.connLostFinal': {
+    en: 'Could not reconnect to the server. Check your connection and reload the page.',
+    de: 'Wiederverbinden fehlgeschlagen. Prüfe deine Verbindung und lade die Seite neu.',
+  },
+  'net.connClosed': { en: 'Connection to the server was closed.', de: 'Die Verbindung zum Server wurde getrennt.' },
+  'net.rejoining': { en: 'Rejoining your running match…', de: 'Kehre in dein laufendes Match zurück…' },
+  'net.serverError': { en: 'Server error', de: 'Serverfehler' },
 
   /* ---------- lobby connection quality dots ---------- */
   'net.conn.good': { en: 'Connected', de: 'Verbunden' },

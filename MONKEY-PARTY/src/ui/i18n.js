@@ -88,6 +88,7 @@ const DICT = {
   'browser.refresh': { en: 'Refresh', de: 'Aktualisieren' },
   'browser.join': { en: 'Join', de: 'Beitreten' },
   'browser.empty': { en: 'No public lobbies right now. Create one!', de: 'Gerade keine öffentlichen Lobbys. Erstell doch eine!' },
+  'browser.hostPublic': { en: 'Host a public lobby', de: 'Öffentliche Lobby eröffnen' },
   'browser.host': { en: 'Host', de: 'Host' },
   'browser.players': { en: 'Players', de: 'Spieler' },
 

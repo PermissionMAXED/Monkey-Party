@@ -1212,6 +1212,18 @@ body.reduced-motion #ui-root *::after {
 }
 .browser-row--head { background: transparent; border: none; font-size: 0.72rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ui-text-dim); padding: 0 16px; }
 
+/* Empty state: no public lobbies -> icon, hint and a host-one CTA. */
+.browser-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 28px 16px;
+  text-align: center;
+}
+.browser-empty__icon { font-size: 2.6rem; line-height: 1; }
+.browser-empty__text { color: var(--ui-text-dim); max-width: 360px; }
+
 /* ------------------------------------------------------------------
    Settings screen
    ------------------------------------------------------------------ */

@@ -460,7 +460,7 @@ export function createLobbyScreen(ctx) {
         unsubs.push(s.on('error', (msg) => {
           // Server refusals (failed start_game, bad rules, ...) must be
           // visible AND unstick the Start button.
-          const text = msg?.msg ?? msg?.message ?? 'Server error';
+          const text = msg?.msg ?? msg?.message ?? tNet('net.serverError');
           toast(msg?.code ? `${text} (${msg.code})` : text, 'error');
           if (starting) {
             starting = false;
@@ -492,14 +492,14 @@ export function createLobbyScreen(ctx) {
               if (typeof off === 'function') unsubs.push(off);
             };
             nsub('reconnecting', (info) => {
-              if ((info?.attempt ?? 1) === 1) toast('Connection lost – reconnecting…', 'info');
+              if ((info?.attempt ?? 1) === 1) toast(tNet('net.connLost'), 'info');
             });
             nsub('reconnect_failed', () => {
               reconnectFailed = true;
-              toast('Could not reconnect to the server. Check your connection and reload the page.', 'error');
+              toast(tNet('net.connLostFinal'), 'error');
             });
             nsub('close', () => {
-              if (!reconnectFailed) toast('Connection to the server was closed.', 'error');
+              if (!reconnectFailed) toast(tNet('net.connClosed'), 'error');
             });
           }
         }
