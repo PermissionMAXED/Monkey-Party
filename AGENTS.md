@@ -36,3 +36,11 @@ A colorful multiplayer party game (Mario-Party-inspired, fully original) themed 
 
 ### Subagent model preference
 - The project owner requires **`claude-fable-5-thinking-xhigh`** for all Task subagents (planning, building, testing, reviewing). Use that model slug when spawning subagents for this repo.
+
+## GOOBY-GODOT (imported from MedusaV9/MinecraftBubbleShieldMod @ cursor/gooby-godot-loop-2c10)
+
+- Project root: `GOOBY-GODOT/` (Godot 4.4.1), feedback: `UserFeedback.md`
+- Preflight before push: `bash tools/ci/preflight.sh`
+- Unsigned IPA: GitHub Actions workflow `.github/workflows/gooby-godot.yml` job `ios-ipa` (artifact `GOOBY-godot-unsigned-ipa`)
+- Also legacy web iOS: `.github/workflows/gooby-ios.yml` for `GOOBY/`
+- Do not break MONKEY-PARTY or AETHERKLANG unless asked

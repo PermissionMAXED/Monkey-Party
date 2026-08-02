@@ -1,0 +1,234 @@
+class_name ToastLayer
+extends Control
+## Sichtbarer Toast-Layer: genau EIN Toast gleichzeitig (Queue in
+## `ToastQueue`, pure Logik). In eine Screen-Szene legen (Full-Rect,
+## oberste UI-Ebene) und `show_toast("…")` rufen.
+##
+## UICOZY (Web .toast): Paper-Bubble mit Leaf-Akzent statt Frost-Pill —
+## Radius 22, Outline-Ring + Shadow-Pop, Ink-Text 700; federt mit kleinem
+## Hüpfer herein (@keyframes toast-in) und sinkt beim Ausblenden sanft ab
+## (.toast-out). Größen skalieren über die ZENTRALE `UiScale`-Regel.
+##
+## W14/UISCREENS-B (User-Bug „Notifications und Goobys Bubble überschneiden
+## sich unten"): Toasts reservieren die TOP-Zone (UIKERN-Vertrag
+## `UiAnchors`), rutschen unter andere Top-Belegungen (Notify-Banner) und
+## werden per `dodge` ÜBER jede Bottom-Belegung (Goobys Sprechblase,
+## dialog_bubble.gd/AcBubble) gehoben — auch der Hint-Karten-Dodge kann
+## sie nie mehr in die Blase drücken.
+
+const HOLD_SEC := 2.2
+const FADE_SEC := 0.25
+## Web .toast: font-size 1rem (16), Leaf-Glyph 11 px, Gap 8 px, max-width
+## min(86vw, 22rem = 352 px) — alles Design-px, skaliert mit UiScale.
+const FONT_PX := 16.0
+const LEAF_PX := 13.0
+const GAP_PX := 8.0
+const MAX_WIDTH_PX := 352.0
+## Vertikale Ankerhöhe (Anteil der Canvas-Höhe, unter den Status-Pills).
+const TOP_SHARE := 0.12
+## G4/P21 (QW #17): Gruppen-Name für den zentralen `zeige()`-Helfer —
+## ersetzt die 8 kopierten Vollbaum-Scans (`find_children` über root).
+const GROUP := &"toast_layer"
+
+var queue := ToastQueue.new()
+
+var _panel: PanelContainer
+var _label: Label
+var _leaf: TextureRect
+var _hold_timer: Timer
+var _in_tween: Tween
+
+
+## Zentraler Toast-Weg für Nicht-Screen-Code (Sheets, Services): findet den
+## nächsten ToastLayer über die Gruppe statt per O(Baum)-`find_children`.
+## Ohne Baum/Layer still no-op (headless/Tests: wie die alten Kopien).
+static func zeige(von: Node, text: String, error := false) -> void:
+	if von == null or not von.is_inside_tree():
+		return
+	for layer: Node in von.get_tree().get_nodes_in_group(GROUP):
+		if layer is ToastLayer and not layer.is_queued_for_deletion():
+			(layer as ToastLayer).show_toast(text, error)
+			return
+
+
+func _ready() -> void:
+	add_to_group(GROUP)
+	mouse_filter = Control.MOUSE_FILTER_IGNORE
+	set_anchors_preset(Control.PRESET_FULL_RECT)
+	_panel = PanelContainer.new()
+	_panel.name = "ToastPanel"
+	_panel.theme_type_variation = "ToastBubble"
+	_panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_panel.visible = false
+	_panel.z_index = 100
+	add_child(_panel)
+	var box := HBoxContainer.new()
+	box.name = "ToastBox"
+	box.alignment = BoxContainer.ALIGNMENT_CENTER
+	box.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_panel.add_child(box)
+	_leaf = TextureRect.new()
+	_leaf.name = "ToastLeaf"
+	_leaf.texture = load("res://assets/ui/icons/leaf.svg")
+	_leaf.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	_leaf.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	_leaf.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	_leaf.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	box.add_child(_leaf)
+	_label = Label.new()
+	_label.name = "ToastText"
+	_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	# Wrap bleibt AUS, bis _reposition Überbreite misst — ein Label MIT
+	# Autowrap meldet ~1 Zeichen Minimalbreite, und Godots verzögerte
+	# Min-Size-Durchsetzung würde die Bubble sonst zum Hochkant-Turm ziehen.
+	_label.autowrap_mode = TextServer.AUTOWRAP_OFF
+	_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	box.add_child(_label)
+	_hold_timer = Timer.new()
+	_hold_timer.one_shot = true
+	_hold_timer.timeout.connect(_on_hold_done)
+	add_child(_hold_timer)
+
+
+func _exit_tree() -> void:
+	if _panel != null:
+		UiAnchors.release(UiAnchors.ZONE_TOP, _panel)
+
+
+## Toast anfordern; wird ggf. eingereiht (nie gestapelt). `error = true`
+## spielt den Fehler-Blip (W4P1-SFX-Wiring: Erfolgs-Toasts bleiben stumm).
+func show_toast(text: String, error := false) -> void:
+	var accepted := queue.push(text)
+	if accepted and error:
+		AudioDirector.try_play(self, "ui_error")
+	if accepted and queue.current().is_empty():
+		_show_next()
+
+
+func is_showing() -> bool:
+	return _panel != null and _panel.visible
+
+
+func _show_next() -> void:
+	var text := queue.advance()
+	if text.is_empty():
+		_panel.visible = false
+		UiAnchors.release(UiAnchors.ZONE_TOP, _panel)
+		return
+	_apply_scale()
+	_label.text = text
+	_label.autowrap_mode = TextServer.AUTOWRAP_OFF
+	_label.custom_minimum_size = Vector2.ZERO
+	_panel.visible = true
+	_panel.reset_size()
+	_reposition()
+	_hold_timer.start(HOLD_SEC)
+
+
+## Web-Maße auf den Canvas skalieren (zentrale UiScale-Regel, FIX1).
+func _apply_scale() -> void:
+	var f := UiScale.for_viewport(get_viewport())
+	_label.add_theme_font_size_override("font_size", int(FONT_PX * f))
+	if ThemeService.font(700) != null:
+		_label.add_theme_font_override("font", ThemeService.font(700))
+	_leaf.custom_minimum_size = Vector2.ONE * roundf(LEAF_PX * f)
+	var box := _panel.get_node("ToastBox") as HBoxContainer
+	box.add_theme_constant_override("separation", int(GAP_PX * f))
+
+
+func _reposition() -> void:
+	await get_tree().process_frame
+	if not is_instance_valid(_panel) or not _panel.visible:
+		return
+	var f := UiScale.for_viewport(get_viewport())
+	# Layer kann im ersten Frame noch 0-groß sein (frisch gemountet).
+	var area := size
+	if area.x <= 1.0:
+		area = Vector2(get_viewport().get_visible_rect().size)
+	# Breiten-Deckel wie Web (min(86vw, 22rem)); langer Text wickelt um.
+	# Godot-Falle: MIT Autowrap meldet das Label ~1 Zeichen Minimalbreite —
+	# deshalb erst OHNE Wrap die natürliche Breite messen und nur bei
+	# Überbreite auf den Deckel klemmen.
+	var max_w := minf(area.x * 0.86, MAX_WIDTH_PX * f)
+	var natural := _panel.get_combined_minimum_size()
+	if natural.x > max_w:
+		var chrome := natural.x - _label.get_combined_minimum_size().x
+		_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		_label.custom_minimum_size = Vector2(maxf(max_w - chrome, 40.0), 0.0)
+		await get_tree().process_frame
+		if not is_instance_valid(_panel) or not _panel.visible:
+			return
+		natural = Vector2(max_w, _panel.get_combined_minimum_size().y)
+	_panel.size = natural
+	# FB3: nie hinter die Notch — Ankerhöhe mindestens Safe-Top + Luft.
+	var insets := UiScale.safe_insets_canvas(get_viewport())
+	var top := maxf(area.y * TOP_SHARE, float(insets["top"]) + 8.0 * f)
+	var rest := Vector2((area.x - natural.x) / 2.0, top)
+	rest.y = _dodge_hint_card(Rect2(rest, natural), f)
+	# W14-Zonen-Regel (UIKERN-Vertrag): unter andere Top-Belegungen
+	# (Notify-Banner) rutschen, aber NIE in ein Bottom-Rect (Goobys
+	# Sprechblase) hinein — das war der Überschneidungs-Bug.
+	var rect := Rect2(rest, natural)
+	rect = UiAnchors.dodge(
+		rect, UiAnchors.occupied_rects(UiAnchors.ZONE_TOP, _panel), UiAnchors.ZONE_TOP
+	)
+	# Gap > 12·f: die Einblende-Animation startet 12 px UNTER der Ruhelage
+	# (_animate_in) — der Abstand deckt auch diese Zwischenframes ab.
+	rect = UiAnchors.dodge(
+		rect,
+		UiAnchors.occupied_rects(UiAnchors.ZONE_BOTTOM, _panel),
+		UiAnchors.ZONE_BOTTOM,
+		14.0 * f
+	)
+	rest.y = maxf(rect.position.y, float(insets["top"]) + 8.0 * f)
+	UiAnchors.reserve(UiAnchors.ZONE_TOP, _panel)
+	_panel.position = rest
+	_animate_in(rest, f)
+
+
+## UIFINAL Runde 2: Toast und „Was nun?“-Karte teilen sich die Kopf-Zone —
+## bei Quest-Erfolg lag die Paper-Bubble mitten AUF der Karte. Steht die
+## Karte im Weg, rutscht der Toast unter ihre Unterkante.
+func _dodge_hint_card(toast_rect: Rect2, f: float) -> float:
+	var tree := get_tree()
+	if tree == null:
+		return toast_rect.position.y
+	for node: Node in tree.get_nodes_in_group(&"wasnun_karte"):
+		if node is Control and (node as Control).is_visible_in_tree():
+			var card := (node as Control).get_global_rect()
+			if toast_rect.intersects(card):
+				return card.end.y + 8.0 * f
+	return toast_rect.position.y
+
+
+## Web @keyframes toast-in: von +12 px / Scale 0.9 federnd auf Position.
+func _animate_in(rest: Vector2, f: float) -> void:
+	if _in_tween != null and _in_tween.is_valid():
+		_in_tween.kill()
+	if ThemeService.is_reduced_motion(self):
+		_panel.modulate.a = 1.0
+		_panel.scale = Vector2.ONE
+		return
+	_panel.pivot_offset = _panel.size / 2.0
+	_panel.position = rest + Vector2(0.0, 12.0 * f)
+	_panel.scale = Vector2.ONE * 0.9
+	_panel.modulate.a = 0.0
+	_in_tween = create_tween().set_parallel()
+	_in_tween.set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	_in_tween.tween_property(_panel, "position:y", rest.y, AcTokens.DUR_POP)
+	_in_tween.tween_property(_panel, "scale", Vector2.ONE, AcTokens.DUR_POP)
+	_in_tween.tween_property(_panel, "modulate:a", 1.0, AcTokens.DUR_POP / 2.0).set_trans(
+		Tween.TRANS_LINEAR
+	)
+
+
+func _on_hold_done() -> void:
+	if ThemeService.is_reduced_motion(self):
+		_show_next()
+		return
+	# Web .toast-out: absinken + ausblenden, dann nächster aus der Queue.
+	var tween := create_tween().set_parallel()
+	tween.tween_property(_panel, "modulate:a", 0.0, FADE_SEC)
+	tween.tween_property(_panel, "position:y", _panel.position.y + 8.0, FADE_SEC)
+	tween.chain().tween_callback(_show_next)
+	tween.chain().tween_callback(func() -> void: _panel.modulate.a = 1.0)
