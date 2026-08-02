@@ -19,6 +19,18 @@ extends Node
 ## Danach öffnet sich das Cover charmant (Zoom + Kreis-Wipe auf Gooby +
 ## Konfetti; Reduced Motion: Fade). Force-Reveal nach ZUHAUSE_TIMEOUT_MS —
 ## das Cover sperrt NIE dauerhaft (Web-Veil-HARD_TIMEOUT-Muster).
+##
+## WARN-SWEEP (Coroutine-Hygiene): _boot wartet auf die SIGNALE welt_geladen/
+## zuhause_erreicht statt direkt auf die Poll-Coroutinen. Ein `await` auf eine
+## Coroutine, die ihrerseits in einem await hängt, bildet einen Funktions-
+## zustands-Referenzzyklus — beendet die App mitten im Boot (Headless-Smoke
+## `--quit` nach Frame 1), leakt der als ObjectDB-Instanzen. Signal-Awaits
+## räumt der SceneTree-Teardown dagegen sauber ab (empirisch verifiziert).
+
+## Boot-intern: _lade_welt meldet den fertig geladenen Einstieg (oder null).
+signal welt_geladen(packed: PackedScene)
+## Boot-intern: _warte_auf_zuhause meldet das Ende der ersten Router-Reise.
+signal zuhause_erreicht
 
 const ENTRY_SCENE_PATH := "res://scenes/home/home_entry.tscn"
 ## Force-Reveal-Deckel der letzten Phase (Web-Veil: HARD_TIMEOUT_MS 8 s +
@@ -58,13 +70,34 @@ func _ready() -> void:
 	_boot()
 
 
+## WARN-SWEEP: verwaiste threaded Loads beim Abgang einsammeln. Beendet die
+## App mitten im Boot (Headless-Smoke `--quit` nach Frame 1), bleiben die
+## load_threaded_request-Tasks sonst in Flug und leaken als ObjectDB-
+## Instanzen („ObjectDB instances leaked at exit" in jedem CI-Lauf).
+## Nach normalem Boot sind alle Ziele längst abgeholt (Status INVALID) —
+## dann ist das hier ein No-op.
+func _exit_tree() -> void:
+	for ziel in warmup_ziele():
+		var pfad := str(ziel["pfad"])
+		var status := ResourceLoader.load_threaded_get_status(pfad)
+		if (
+			status == ResourceLoader.THREAD_LOAD_IN_PROGRESS
+			or status == ResourceLoader.THREAD_LOAD_LOADED
+		):
+			ResourceLoader.load_threaded_get(pfad)
+
+
 func _boot() -> void:
 	# Ein Frame warten, damit das Cover garantiert VOR der Boot-Arbeit malt.
 	await get_tree().process_frame
 	if not is_inside_tree():
 		return
 	_melde_autoload_phasen()
-	var packed := await _lade_welt()
+	# call_deferred entkoppelt: die Coroutine startet erst, wenn _boot schon
+	# am Signal wartet — sonst könnte ein Sofort-Fertig-Pfad (alles im Cache)
+	# synchron emitten, bevor hier jemand lauscht.
+	_lade_welt.call_deferred()
+	var packed: PackedScene = await welt_geladen
 	if not is_inside_tree():
 		return
 	if packed == null:
@@ -92,7 +125,8 @@ func _boot() -> void:
 		boot_router.min_shown_ms = 0
 	add_child(packed.instantiate())
 	_cover.set_progress(BootPhasen.prozent("einrichten", 1.0))
-	await _warte_auf_zuhause()
+	_warte_auf_zuhause.call_deferred()
+	await zuhause_erreicht
 	if boot_router != null and min_shown_normal >= 0:
 		boot_router.min_shown_ms = min_shown_normal
 	if not is_inside_tree():
@@ -134,11 +168,13 @@ static func warmup_ziele() -> Array[Dictionary]:
 ## Zuhause-Einstieg + Warmup-Liste threaded laden (W16/BOOTPERF E3); der
 ## ECHTE, gewichtete Lade-Fortschritt ALLER Ziele speist die "welt"-Phase —
 ## feine Granularität statt des load_steps=2-Sprungs, und die späteren
-## Synchron-Loads der Verbraucher werden Cache-Hits.
-func _lade_welt() -> PackedScene:
+## Synchron-Loads der Verbraucher werden Cache-Hits. Das Ergebnis kommt als
+## welt_geladen-Signal (KEIN Rückgabewert — s. Coroutine-Hygiene oben).
+func _lade_welt() -> void:
 	if ResourceLoader.load_threaded_request(ENTRY_SCENE_PATH) != OK:
 		var direkt := load(ENTRY_SCENE_PATH)
-		return direkt if direkt is PackedScene else null
+		welt_geladen.emit(direkt if direkt is PackedScene else null)
+		return
 	var ziele := warmup_ziele()
 	var fertig: Dictionary = {}
 	for ziel in ziele:
@@ -153,7 +189,8 @@ func _lade_welt() -> PackedScene:
 	var sub_gemeldet := 0.0
 	while true:
 		if not is_inside_tree():
-			return null
+			welt_geladen.emit(null)
+			return
 		var sub := _warmup_fortschritt(ziele, fertig)
 		# Nur vorwärts melden — die gewichtete Summe ist monoton, der Guard
 		# hält die Regel auch bei Rundungs-Rauschen ein.
@@ -162,13 +199,15 @@ func _lade_welt() -> PackedScene:
 			_cover.set_progress(BootPhasen.prozent("welt", sub))
 		if fertig.has(ENTRY_SCENE_PATH):
 			if _warmup_refs.get(ENTRY_SCENE_PATH) == null:
-				return null  # Einstieg fehlgeschlagen → Fallback wie bisher.
+				# Einstieg fehlgeschlagen → Fallback wie bisher.
+				welt_geladen.emit(null)
+				return
 			if fertig.size() == ziele.size():
 				break
 		await get_tree().process_frame
 	_cover.set_progress(BootPhasen.prozent("welt", 1.0))
 	var res: Variant = _warmup_refs.get(ENTRY_SCENE_PATH)
-	return res if res is PackedScene else null
+	welt_geladen.emit(res if res is PackedScene else null)
 
 
 ## Gewichteter Gesamt-Fortschritt (0..1) aller Warmup-Ziele. Fertige Ziele
@@ -201,10 +240,12 @@ func _warmup_fortschritt(ziele: Array[Dictionary], fertig: Dictionary) -> float:
 ## Letzte Phase: auf die erste abgeschlossene Router-Reise warten (Sub-
 ## Fortschritt aus den ECHTEN Router-State-Meilensteinen). Frische Saves
 ## zeigen stattdessen das Onboarding — sobald der Router dafür still bleibt,
-## öffnet das Cover aufs Onboarding. Deckel: ZUHAUSE_TIMEOUT_MS.
+## öffnet das Cover aufs Onboarding. Deckel: ZUHAUSE_TIMEOUT_MS. Das Ende
+## kommt als zuhause_erreicht-Signal (s. Coroutine-Hygiene oben).
 func _warte_auf_zuhause() -> void:
 	var router := get_node_or_null("/root/SceneRouter")
 	if router == null:
+		zuhause_erreicht.emit()
 		return
 	var fertig := {"ok": false}
 	if router.has_signal("travel_finished"):
@@ -217,6 +258,7 @@ func _warte_auf_zuhause() -> void:
 	var deadline := Time.get_ticks_msec() + ZUHAUSE_TIMEOUT_MS
 	while not fertig["ok"] and Time.get_ticks_msec() < deadline:
 		if not is_inside_tree():
+			zuhause_erreicht.emit()
 			return
 		if _wartet_auf_eingabe(router):
 			break
@@ -224,6 +266,7 @@ func _warte_auf_zuhause() -> void:
 	_zuhause_aktiv = false
 	if router.has_signal("state_changed") and router.state_changed.is_connected(_on_router_state):
 		router.state_changed.disconnect(_on_router_state)
+	zuhause_erreicht.emit()
 
 
 ## Onboarding/Übernahme-Angebot wartet auf den Spieler (kein Router-Ziel in

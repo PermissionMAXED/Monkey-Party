@@ -42,6 +42,23 @@ static func track_farbe() -> Color:
 ## `spanne` = Rechteck, über das sich der Verlauf spannt (fürs Sweep-Band
 ## auch außerhalb des sichtbaren Ausschnitts `rect`).
 static func zeichne_gradient_pill(ziel: CanvasItem, rect: Rect2, spanne: Rect2) -> void:
+	var punkte := pill_punkte(rect)
+	if punkte.size() < 3:
+		return
+	var farben := PackedColorArray()
+	for punkt in punkte:
+		var k := clampf((punkt.x - spanne.position.x) / maxf(spanne.size.x, 1.0), 0.0, 1.0)
+		farben.append(AcTokens.TEAL.lerp(HIMMEL, k))
+	ziel.draw_polygon(punkte, farben)
+
+
+## Pill-Umriss (halbrunde Kappen) als Polygon. Ist die Pill schmaler als
+## hoch, fallen beide Kappen-Zentren auf denselben Punkt (r = Breite/2) —
+## die Nahtpunkte bei ±90° doppeln sich dann und der Schlusspunkt landet
+## auf dem Startpunkt. Ohne Dedupe scheitert daran die Triangulation
+## (Godot: „Invalid polygon data, triangulation failed“ — bei JEDEM
+## schmalen Sweep-Band-/Füllstand-Frame, WARN-SWEEP).
+static func pill_punkte(rect: Rect2) -> PackedVector2Array:
 	var r := minf(rect.size.y / 2.0, rect.size.x / 2.0)
 	var mitte_y := rect.position.y + rect.size.y / 2.0
 	var punkte := PackedVector2Array()
@@ -51,8 +68,17 @@ static func zeichne_gradient_pill(ziel: CanvasItem, rect: Rect2, spanne: Rect2) 
 	for i in KAPPEN_SEGMENTE + 1:
 		var winkel := PI / 2.0 + PI * float(i) / float(KAPPEN_SEGMENTE)
 		punkte.append(Vector2(rect.position.x + r + cos(winkel) * r, mitte_y + sin(winkel) * r))
-	var farben := PackedColorArray()
+	return ohne_doppelpunkte(punkte)
+
+
+## Aufeinanderfolgende (quasi-)identische Polygonpunkte entfernen, inkl.
+## der Naht Schlusspunkt→Startpunkt — Nullflächen-Ohren lassen Godots
+## Ear-Clipping sonst komplett scheitern.
+static func ohne_doppelpunkte(punkte: PackedVector2Array) -> PackedVector2Array:
+	var out := PackedVector2Array()
 	for punkt in punkte:
-		var k := clampf((punkt.x - spanne.position.x) / maxf(spanne.size.x, 1.0), 0.0, 1.0)
-		farben.append(AcTokens.TEAL.lerp(HIMMEL, k))
-	ziel.draw_polygon(punkte, farben)
+		if out.is_empty() or out[out.size() - 1].distance_squared_to(punkt) > 0.0001:
+			out.append(punkt)
+	while out.size() > 2 and out[out.size() - 1].distance_squared_to(out[0]) <= 0.0001:
+		out.remove_at(out.size() - 1)
+	return out

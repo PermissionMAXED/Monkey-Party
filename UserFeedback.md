@@ -192,6 +192,32 @@ Original-Links sind alle übernommen:)_
       und jeden Frame getickt; **(f)** ranchHerde-HUD ebenfalls auf M9
       umgestellt. SFX-/i18n-Sweeps ohne Befund. 5 Wächter-Tests
       (`test_h_minigames.gd`), Report `docs/godot-rewrite/playtest/H-minigames.md`.
+- [x] **Warn-Sweep (2. August, das B11-Paket aus der Wellen-J-Warteschlange):**
+      Headless-Fehlerjagd über Boot-Smoke, beide Test-Runner und den kompletten
+      bughunt-Walkthrough — 3 echte Ursachen gefunden und gefixt:
+      **(a)** die Pill-Polygone der Ladebalken (Veil-Teal-Balken/-Sweep +
+      Boot-Möhrenbalken) doppelten bei schmalen Füllständen ihre Kappen-
+      Nahtpunkte → „Invalid polygon data, triangulation failed" bei fast
+      jedem Screenwechsel (26× pro Walkthrough-Lauf, sichtbar als
+      Sweep-Band-Aussetzer) — ein geteilter Punkte-Bauer dedupliziert jetzt
+      die Naht, neue Wache `test_warnsweep.gd`; **(b)** der CI-Boot-Smoke
+      meldete bei JEDEM Lauf „ObjectDB instances leaked at exit" (7 geleakte
+      Instanzen): verschachtelte Coroutine-awaits im Boot (Funktionszustand
+      wartet auf Funktionszustand = Referenzzyklus, empirisch per
+      Minimal-Probe belegt) plus verwaiste threaded Loads (Welt-Warmup +
+      Cover-Artwork) beim Quit mitten im Boot — _boot wartet jetzt auf
+      Signale und _exit_tree sammelt die Loader-Tasks ein; **(c)** der
+      bughunt-Walkthrough selbst warf einen SCRIPT ERROR (freed Host am
+      typisierten Parameter). **Zahlen:** Boot-Smoke 1 → **0** Warnzeilen
+      (3× stabil), Walkthrough 31 → **4** Warn-/Fehlerzeilen — die 4
+      verbleibenden sind absichtlich provozierte Kanten-Warnungen des Tools
+      (unbekannte Spiel-Id, erschöpfter Gooby) + der Tool-Exit. Nebenbefunde:
+      die alte B11-Anchor-Warnung (gvz_level_select) trat im kompletten
+      Walkthrough NICHT mehr auf; 2 unformatierte McGooby-Dateien am HEAD
+      repariert (CI-lint wäre sonst rot geblieben). Ehrlich offen: 4×
+      „Parameter material is null" tief in der Testsuite (nur in
+      Suiten-Reihenfolge reproduzierbar, isoliert grün) und das
+      RID-Aufräum-Rauschen des Dummy-Renderers am Suiten-Ende. Preflight grün.
 - [x] **Läden lebendig, Teil 2 (2. August):** Nach REHWEI + Baumarkt (P55) sind
       jetzt ALLE Stadt-Läden echte Orte: GOOBYMAN, GOOBYTHEKE, POW!, Post und
       Autohaus haben schlendernde Kunden-Goobys (mit Hüten, Regal-Griffen und
@@ -438,8 +464,9 @@ iPhone 17 Pro Max quer = **0 Befunde**):
 - [ ] **Wellen J+: Umsetzung** — Playtest-Bugs + beste Planner-Ideen
       (jetzt konkret geschnitten in `docs/godot-rewrite/IDEAS-WELLE-I.md`
       §4: Wellen J–M) + die neu einsortierten G6-Pakete (DLC Welle B beider
-      Läden, Ball-Wurf, DLC-Ladebildschirme, Audio-Feel, B11/Warn-Sweep,
-      Doku-Refresh, McGooby-Bühne, Alwin-NPC — alle in J/K eingeordnet)
+      Läden, Ball-Wurf, DLC-Ladebildschirme, Audio-Feel, ~~B11/Warn-Sweep~~
+      *(erledigt 2.8., s. oben in „Neu von dir")*, Doku-Refresh,
+      McGooby-Bühne, Alwin-NPC — alle in J/K eingeordnet)
 
 ---
 

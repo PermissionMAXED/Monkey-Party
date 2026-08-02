@@ -25,8 +25,6 @@ const BLATT_DUNKEL := Color("#5E9C4C")
 const TRACK_MIX := 0.18
 ## Anteil der Control-Höhe für den Pill-Track (Rest = Luft für den Schopf).
 const TRACK_ANTEIL := 0.5
-## Halbrunde Pill-Kappen (Segmentzahl wie loading_veil_balken.gd).
-const KAPPEN_SEGMENTE := 7
 
 ## Anzeige-Glättung in Anteilen/Sekunde (nur vorwärts Richtung Ziel).
 const GLEIT_TEMPO := 1.6
@@ -108,28 +106,22 @@ func _moehrenkopf(spitze: Vector2, track_h: float) -> void:
 
 ## Pill (halbrunde Kappen) einfarbig — Track-Bett des Balkens.
 func _pill(rect: Rect2, farbe: Color) -> void:
-	draw_colored_polygon(_pill_punkte(rect), farbe)
+	var punkte := LoadingVeilBalken.pill_punkte(rect)
+	if punkte.size() < 3:
+		return
+	draw_colored_polygon(punkte, farbe)
 
 
 ## Füllung mit horizontalem MOEHRE→MOEHRE_HELL-Verlauf über die Füllbreite
-## (Web linear-gradient(90deg, …) — Rezept wie loading_veil_balken.gd).
+## (Web linear-gradient(90deg, …) — Rezept wie loading_veil_balken.gd;
+## WARN-SWEEP: der geteilte Punkte-Bauer dort dedupliziert die Kappen-Naht,
+## sonst scheitert die Triangulation bei Füllbreite == Trackhöhe).
 func _gradient_pill(rect: Rect2) -> void:
-	var punkte := _pill_punkte(rect)
+	var punkte := LoadingVeilBalken.pill_punkte(rect)
+	if punkte.size() < 3:
+		return
 	var farben := PackedColorArray()
 	for punkt in punkte:
 		var k := clampf((punkt.x - rect.position.x) / maxf(rect.size.x, 1.0), 0.0, 1.0)
 		farben.append(MOEHRE.lerp(MOEHRE_HELL, k))
 	draw_polygon(punkte, farben)
-
-
-static func _pill_punkte(rect: Rect2) -> PackedVector2Array:
-	var r := minf(rect.size.y / 2.0, rect.size.x / 2.0)
-	var mitte_y := rect.position.y + rect.size.y / 2.0
-	var punkte := PackedVector2Array()
-	for i in KAPPEN_SEGMENTE + 1:
-		var winkel := -PI / 2.0 + PI * float(i) / float(KAPPEN_SEGMENTE)
-		punkte.append(Vector2(rect.end.x - r + cos(winkel) * r, mitte_y + sin(winkel) * r))
-	for i in KAPPEN_SEGMENTE + 1:
-		var winkel := PI / 2.0 + PI * float(i) / float(KAPPEN_SEGMENTE)
-		punkte.append(Vector2(rect.position.x + r + cos(winkel) * r, mitte_y + sin(winkel) * r))
-	return punkte

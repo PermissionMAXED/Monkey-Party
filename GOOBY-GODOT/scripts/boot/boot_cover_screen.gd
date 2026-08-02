@@ -81,6 +81,19 @@ func _ready() -> void:
 	_spruch_timer.start()
 
 
+## WARN-SWEEP: den verwaisten threaded Artwork-Load einsammeln, wenn die App
+## mitten im Boot endet (Headless-Smoke `--quit`) — der Loader-Task leakt
+## sonst als ObjectDB-Instanz. Nach normalem Boot hat _artwork_abwarten den
+## Load längst abgeholt (Status INVALID) → No-op.
+func _exit_tree() -> void:
+	var status := ResourceLoader.load_threaded_get_status(COVER_PFAD)
+	if (
+		status == ResourceLoader.THREAD_LOAD_IN_PROGRESS
+		or status == ResourceLoader.THREAD_LOAD_LOADED
+	):
+		ResourceLoader.load_threaded_get(COVER_PFAD)
+
+
 ## ECHTER Boot-Fortschritt 0..1 (BootPhasen.prozent-Werte aus main.gd).
 func set_progress(ratio: float) -> void:
 	if _balken != null:

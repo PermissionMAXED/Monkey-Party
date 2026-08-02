@@ -151,6 +151,10 @@ func _play_all_minigames() -> void:
 		if is_instance_valid(host):
 			_finish_round(host, id)
 			await _settle(0.8)
+		# Frisch prüfen: der Host kann sich WÄHREND des Ausklingens
+		# verabschiedet haben — ein freed Object am typisierten Parameter
+		# von _leave_results wirft sonst einen SCRIPT ERROR (WARN-SWEEP).
+		if is_instance_valid(host):
 			await _leave_results(host)
 		else:
 			await _wait_idle(25_000)
