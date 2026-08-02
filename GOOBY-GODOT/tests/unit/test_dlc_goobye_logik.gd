@@ -226,6 +226,52 @@ func _stueckzahl(plan: Dictionary) -> int:
 	return summe
 
 
+## ------------------------------------------------------------ Alwin-Ritual
+
+
+func test_alwin_moehren_erkennung() -> void:
+	assert_true(
+		GoobyeAlwin.hat_moehre({"positionen": [{"ware": "carrot", "preis": 5}]}),
+		"Möhre im Bon erkannt"
+	)
+	assert_false(
+		GoobyeAlwin.hat_moehre({"positionen": [{"ware": "apple", "preis": 6}]}),
+		"fremde Ware zählt nicht"
+	)
+	assert_false(GoobyeAlwin.hat_moehre({"positionen": []}), "leerer Bon = keine Möhre")
+	assert_false(GoobyeAlwin.hat_moehre({}), "kaputter Bon fällt weich")
+
+
+## Alwins Tageszeile: Seed injiziert (AGENTS-Regel), gleicher Tag = gleiche
+## Zeile, jeder Seed trifft den Pool — und DE/EN-Pools sind gleich groß,
+## sonst zeigen die Sprachen am selben Tag verschiedene Zeilen.
+func test_alwin_tageszeile_deterministisch() -> void:
+	I18nService.reset_cache()
+	var moehre := I18nService.items(GoobyeAlwin.SPRUECHE_MOEHRE)
+	var leer := I18nService.items(GoobyeAlwin.SPRUECHE_LEER)
+	assert_true(moehre.size() >= 6, "Möhren-Pool gefüllt (%d)" % moehre.size())
+	assert_true(leer.size() >= 3, "Leer-Pool gefüllt (%d)" % leer.size())
+	assert_eq(
+		GoobyeAlwin.spruch(GOLDEN_SEED, true),
+		GoobyeAlwin.spruch(GOLDEN_SEED, true),
+		"gleicher Seed = gleiche Zeile"
+	)
+	for seed_wert: int in [0, 1, 42, GOLDEN_SEED, 123456789]:
+		var idx := GoobyeAlwin.spruch_index(seed_wert, moehre.size())
+		assert_true(idx >= 0 and idx < moehre.size(), "Index im Pool (Seed %d)" % seed_wert)
+		assert_eq(GoobyeAlwin.spruch(seed_wert, true), String(moehre[idx]), "Zeile = Pool[Index]")
+		assert_false(GoobyeAlwin.spruch(seed_wert, false).is_empty(), "Leer-Zeile nie leer")
+	assert_eq(GoobyeAlwin.spruch_index(7, 0), -1, "leerer Pool → -1")
+	var de := I18nService.table("de")
+	var en := I18nService.table("en")
+	for key: String in [GoobyeAlwin.SPRUECHE_MOEHRE, GoobyeAlwin.SPRUECHE_LEER]:
+		assert_eq(
+			(de.get(key, []) as Array).size(),
+			(en.get(key, []) as Array).size(),
+			"DE/EN-Pool gleich groß: %s" % key
+		)
+
+
 ## ------------------------------------------------------------ Regal
 
 

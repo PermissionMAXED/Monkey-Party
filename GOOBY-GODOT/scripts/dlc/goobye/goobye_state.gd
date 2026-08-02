@@ -13,7 +13,8 @@ extends RefCounted
 ##   v, gekauft (bool), gekauftAm (ms), angebotGesehen, angebotVerschoben,
 ##   erstbesuchGesehen (Story-Beat §1.3 einmalig),
 ##   lager {wareId: menge}  (ohne Verfall, §4.3),
-##   umsatz {tage, gestern, gesamt}  (Kassensturz-Zettel, §2.3)
+##   umsatz {tage, gestern, gesamt}  (Kassensturz-Zettel, §2.3),
+##   alwinBedient (int)  (Stammkunden-Buch §6.3 — Futter für „treuesteMoehre“ §7.3)
 
 const SaveSchema := preload("res://scripts/state/save_schema.gd")
 
@@ -46,6 +47,7 @@ static func default_goobye() -> Dictionary:
 		"erstbesuchGesehen": false,
 		"lager": {},
 		"umsatz": {"tage": 0, "gestern": 0, "gesamt": 0},
+		"alwinBedient": 0,
 	}
 
 
@@ -76,6 +78,7 @@ static func normalize_goobye(raw: Variant) -> Dictionary:
 	for feld: String in ["tage", "gestern", "gesamt"]:
 		umsatz[feld] = maxi(0, int(umsatz.get(feld, 0)))
 	goobye["umsatz"] = umsatz
+	goobye["alwinBedient"] = maxi(0, int(goobye.get("alwinBedient", 0)))
 	return goobye
 
 
@@ -171,6 +174,19 @@ static func umsatz_verbuchen(gs: Object, betrag: int) -> void:
 			umsatz["tage"] = int(umsatz.get("tage", 0)) + 1
 			umsatz["gestern"] = betrag
 			umsatz["gesamt"] = int(umsatz.get("gesamt", 0)) + betrag
+	)
+	gs.notify_slice_changed(SLICE_ID)
+
+
+## Stammkunden-Buch (§6.3): Alwin hat seine tägliche Möhre bekommen —
+## zählt EINEN Kassen-Moment (Futter für den §7.3-Erfolg „treuesteMoehre“).
+static func alwin_bedient(gs: Object) -> void:
+	if gs == null:
+		return
+	gs.update(
+		func(state: Dictionary) -> void:
+			var goobye := ensure_goobye(state)
+			goobye["alwinBedient"] = int(goobye.get("alwinBedient", 0)) + 1
 	)
 	gs.notify_slice_changed(SLICE_ID)
 

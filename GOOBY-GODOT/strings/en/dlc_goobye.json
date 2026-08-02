@@ -51,6 +51,26 @@
 			"kunde_familie": "The Hoppel family",
 			"kunde_hamster_gooby": "Hamster Gooby"
 		},
+		"alwin": {
+			"hinweis": "9 o'clock sharp: Uncle Alwin is checking on things.",
+			"poliert": "Uncle Alwin polishes a shelf in passing — spotless!",
+			"sprueche_moehre": [
+				"One carrot, as always. The rest is just decoration.",
+				"40 years, one carrot a day. Why stop when it's tasty?",
+				"That shelf hangs two millimeters crooked. I like it. Character.",
+				"The carrots used to sit over there. But you're doing fine.",
+				"The cruise only served carrot smoothies. Barbaric.",
+				"The store still smells like back then. Of happiness and floor wax.",
+				"Say hello to the till for me. We used to be a good team.",
+				"One carrot, please. No arguing — I remember the prices of '86."
+			],
+			"sprueche_leer": [
+				"No carrot…? Kiddo. KIDDO.",
+				"For 40 years there was ALWAYS a carrot here. I'm not saying anything. I'm just looking.",
+				"Tomorrow, then. The carrot and I, we have time.",
+				"A store without a carrot is like a key without a door. Think about it."
+			]
+		},
 		"nachschub": {
 			"titel": "Order restock",
 			"hinweis": "The wholesale market delivers to the store door — you pay wholesale, you sell at the suggested price.",

@@ -20,12 +20,6 @@ signal ready_for_reveal
 
 const Economy := preload("res://scripts/logic/economy.gd")
 const PanelSheetScene := preload("res://scripts/ui/panel_sheet.tscn")
-const INNEN := "res://assets/city/innen"
-## PROPS-2026-08 (A2 Welle 2): Laden-Warenwelt aus dem Kenney Food Kit
-## (CC0, assets/city/essen/) + Eröffnungs-Banner aus dem Kenney Fantasy
-## Town Kit (CC0, assets/ranch/dorf/) — Lizenzen in den Bereichs-LIZENZ.md.
-const ESSEN := "res://assets/city/essen"
-const DORF := "res://assets/ranch/dorf"
 
 ## Tages-Phasen: einräumen → offen (Kundenstrom) → abschluss (Kassensturz).
 const PHASE_EINRAEUMEN := "einraeumen"
@@ -33,9 +27,17 @@ const PHASE_OFFEN := "offen"
 const PHASE_ABSCHLUSS := "abschluss"
 
 ## Kundenstrom Welle A (§3.2 „klein, aber meins“): 2–3 Kunden pro Tag,
-## Kunde 0 ist immer Onkel Alwin (Gag-Vertrag §6.3).
+## Kunde 0 ist immer Onkel Alwin (Gag-Vertrag §6.3) — mit eigenem
+## Stammkunden-Ritual: Schiebermütze, Kennerblick, Polier-Wisch und
+## seiner deterministischen Tageszeile (GoobyeAlwin). Ohne Möhre im
+## Regal geht er mit Hängeohren wieder — OHNE Kassen-Stopp.
 const KUNDEN_MIN := 2
 const KUNDEN_MAX := 3
+
+## Alwins Regal-Moment: Kennerblick-Verweildauer (× STOEBER_SEC) und
+## Sprechblasen-Dauer (Sekunden, skaliert mit `tempo`).
+const ALWIN_KENNERBLICK_X := 2.0
+const ALWIN_SPRUCH_S := 3.0
 
 ## Diorama-Ankerpunkte (Meter): Tür rechts, Regal links, Kasse rechts.
 const TUER_POS := Vector3(5.4, 0.0, 1.4)
@@ -115,7 +117,7 @@ func _ready() -> void:
 	_lager = GoobyeState.lager_von(_gs)
 	_regal = GoobyeRegal.neues_regal()
 	_baue_raum()
-	_baue_requisiten()
+	GoobyeLadenDeko.requisiten(self, KASSE_POS)
 	_baue_regal()
 	_baue_ui()
 	_relayout_ui()
@@ -222,18 +224,69 @@ func _naechster_kunde() -> void:
 	var bon: Dictionary = bons[_bon_idx]
 	_kunde = GoobyRig.new()
 	_kunde.position = TUER_POS
-	_kunde.rotation.y = PI / 2.0
+	_kunde.rotation.y = blick_yaw(TUER_POS, REGAL_STOP)
 	add_child(_kunde)
 	_kunde.set_emotion("happy")
 	_tinte_rig(_kunde, KUNDEN_TINTE.get(str(bon.get("archetyp", "")), Color.WHITE))
 	_kunde.set_locomotion(1.0)
+	if str(bon.get("archetyp", "")) == GoobyeMarkttag.ARCHETYP_ALWIN:
+		_alwin_auftritt(bon)
+		return
 	_zeige_toast(I18nService.t("dlc_goobye.laden.kunde_hinweis", {"name": _kunden_name(bon)}))
 	var tween := create_tween()
 	tween.tween_property(_kunde, "position", REGAL_STOP, LAUF_SEC * tempo)
 	tween.tween_callback(_kunde_stoebert)
 	tween.tween_interval(STOEBER_SEC * tempo)
+	tween.tween_callback(_kunde_blickt_zu.bind(KASSE_STOP))
 	tween.tween_property(_kunde, "position", KASSE_STOP, LAUF_SEC * 0.7 * tempo)
 	tween.tween_callback(_kassiere.bind(bon))
+
+
+## Onkel Alwins Stammkunden-Ritual (§6.3): Punkt 9 Uhr, Schiebermütze auf,
+## Kennerblick ins Regal (er hat den Laden 40 Jahre geführt), Polier-Wisch
+## im Vorbeigehen — und GENAU eine Möhre. Steht keine im Regal, dreht er
+## traurig wieder ab (das leere Regal steht schon als `verpasst` im Plan).
+func _alwin_auftritt(bon: Dictionary) -> void:
+	GoobyeLadenDeko.muetze_aufsetzen(_kunde)
+	_zeige_toast(I18nService.t("dlc_goobye.alwin.hinweis"))
+	var mit_moehre := GoobyeAlwin.hat_moehre(bon)
+	var tween := create_tween()
+	tween.tween_property(_kunde, "position", REGAL_STOP, LAUF_SEC * tempo)
+	tween.tween_callback(_alwin_kennerblick.bind(mit_moehre))
+	tween.tween_interval(STOEBER_SEC * ALWIN_KENNERBLICK_X * tempo)
+	if mit_moehre:
+		tween.tween_callback(_alwin_poliert)
+		tween.tween_interval(STOEBER_SEC * tempo)
+		tween.tween_callback(_kunde_blickt_zu.bind(KASSE_STOP))
+		tween.tween_property(_kunde, "position", KASSE_STOP, LAUF_SEC * 0.7 * tempo)
+		tween.tween_callback(_kassiere.bind(bon))
+	else:
+		tween.tween_callback(_kunde_fertig)
+
+
+## Kennerblick am Regal: umsehen + Tageszeile als Sprechblase (gleicher
+## Tag = gleiche Zeile, GoobyeAlwin). Ohne Möhre hängen die Ohren.
+func _alwin_kennerblick(mit_moehre: bool) -> void:
+	if _kunde == null:
+		return
+	_kunde.set_locomotion(0.0)
+	_kunde.play_clip("idle_lookaround")
+	_kunde.set_emotion("happy" if mit_moehre else "sad")
+	var zeile := GoobyeAlwin.spruch(_seed(), mit_moehre)
+	if zeile.is_empty() or _ui == null:
+		return
+	AcBubble.show_bubble(
+		_ui, zeile, {"speaker_3d": _kunde, "dauer_s": ALWIN_SPRUCH_S * clampf(tempo, 0.05, 1.0)}
+	)
+
+
+## Polier-Wisch (§6.3: „poliert im Vorbeigehen ein Regal“): der wave-Clip
+## liest am Regalbrett als Wischen — dazu die Blitzblank-Zeile.
+func _alwin_poliert() -> void:
+	if _kunde == null:
+		return
+	_kunde.play_clip("wave")
+	_zeige_toast(I18nService.t("dlc_goobye.alwin.poliert"))
 
 
 func _kunde_stoebert() -> void:
@@ -243,9 +296,18 @@ func _kunde_stoebert() -> void:
 
 ## Kassen-Moment (§1.2): pro Bon-Position EIN Gebrabbel-Piep — die Tonhöhe
 ## kommt aus der Warengruppe (GoobyeKatalog.ton_fuer via Melodie-Helfer).
+## Alwins Möhren-Piep füttert zusätzlich das Stammkunden-Buch (§6.3) und
+## macht ihn selig — alte Gewohnheiten schmecken am besten.
 func _kassiere(bon: Dictionary) -> void:
 	if _kunde != null:
 		_kunde.set_locomotion(0.0)
+	if (
+		str(bon.get("archetyp", "")) == GoobyeMarkttag.ARCHETYP_ALWIN
+		and GoobyeAlwin.hat_moehre(bon)
+	):
+		GoobyeState.alwin_bedient(_gs)
+		if _kunde != null:
+			_kunde.set_emotion("ecstatic")
 	var tween := create_tween()
 	for position: Dictionary in bon.get("positionen", []):
 		tween.tween_callback(_piep_position.bind(position))
@@ -269,10 +331,29 @@ func _kunde_fertig() -> void:
 		_kunde_weg()
 		return
 	_kunde.set_locomotion(1.0)
-	_kunde.rotation.y = -PI / 2.0
+	_kunde_blickt_zu(TUER_POS)
 	var tween := create_tween()
 	tween.tween_property(_kunde, "position", TUER_POS, LAUF_SEC * tempo)
 	tween.tween_callback(_kunde_weg)
+
+
+## Blickrichtung für den Laufweg `von → nach`: der Kunde ist ein GoobyRig
+## (GLB-Rig, Front -Z) — Yaw-Formel `atan2(-dx, -dz)` aus dem
+## Orientierungs-Vertrag (docs/godot-rewrite/ASSET-ORIENTATION.md §1).
+## Vorher standen hier hart kodierte ±PI/2: auf dem Regal→Kasse-Bein
+## lief der Kunde dadurch RÜCKWÄRTS zur Kasse (Playtest H-dlc-park).
+static func blick_yaw(von: Vector3, nach: Vector3) -> float:
+	var d := nach - von
+	if Vector2(d.x, d.z).length_squared() < 0.000001:
+		return 0.0
+	return atan2(-d.x, -d.z)
+
+
+## Kunden vor einem Tween-Bein in Laufrichtung drehen (Choreo-Callback).
+func _kunde_blickt_zu(ziel: Vector3) -> void:
+	if _kunde == null:
+		return
+	_kunde.rotation.y = blick_yaw(_kunde.position, ziel)
 
 
 func _kunde_weg() -> void:
@@ -429,40 +510,6 @@ func _baue_raum() -> void:
 	add_child(_cam)
 
 
-## KayKit-Requisiten wie im REHWEI-Vorbild: Kasse rechts, Kisten links.
-func _baue_requisiten() -> void:
-	_prop("%s/kitchencounter_straight.gltf" % INNEN, KASSE_POS, 90.0, 0.9)
-	_prop("%s/crate_carrots.gltf" % INNEN, Vector3(-3.8, 0.0, -1.8), 12.0, 0.65)
-	_prop("%s/crate.gltf" % INNEN, Vector3(-4.0, 0.0, 0.0), -10.0, 0.65)
-	_prop("%s/crate_cheese.gltf" % INNEN, Vector3(3.6, 0.0, 0.6), -14.0, 0.65)
-	_prop("%s/menu.gltf" % INNEN, Vector3(3.0, 0.0, -3.4), 0.0, 1.6)
-	_prop("%s/fridge_A.gltf" % INNEN, Vector3(-5.4, 0.0, -3.2), 0.0, 0.9)
-	# PROPS-2026-08 (A2 Welle 2, Kenney Food Kit CC0): der Laden wird ein
-	# GESCHÄFT — Frische-Ecke bei den Kisten, Lieferstapel an der Tür,
-	# Vorrat unterm Regal und Feinkost auf der Kassentheke.
-	_prop("%s/cabbage.glb" % ESSEN, Vector3(-3.2, 0.0, 0.55), 40.0, 0.8)
-	_prop("%s/pineapple.glb" % ESSEN, Vector3(-4.6, 0.0, 0.9), 30.0, 0.8)
-	_prop("%s/paprika.glb" % ESSEN, Vector3(-2.85, 0.0, 0.9), -15.0, 0.8)
-	_prop("%s/loaf-round.glb" % ESSEN, Vector3(-3.1, 0.0, -0.7), 65.0, 0.8)
-	_prop("%s/loaf-baguette.glb" % ESSEN, Vector3(-2.45, 0.0, -0.05), -35.0, 0.8)
-	_prop("%s/carton.glb" % ESSEN, Vector3(4.7, 0.0, -0.4), 12.0, 0.85)
-	_prop("%s/carton.glb" % ESSEN, Vector3(5.1, 0.0, -0.1), -25.0, 0.85)
-	_prop("%s/can.glb" % ESSEN, Vector3(4.5, 0.0, 0.25), 0.0, 0.8)
-	_prop("%s/soda-bottle.glb" % ESSEN, Vector3(4.95, 0.0, 0.55), 55.0, 0.8)
-	_prop("%s/soda-can.glb" % ESSEN, Vector3(4.55, 0.0, 0.7), -80.0, 0.8)
-	_prop("%s/bag.glb" % ESSEN, Vector3(5.45, 0.0, 0.35), -40.0, 0.85)
-	_prop("%s/honey.glb" % ESSEN, Vector3(1.35, 0.86, -1.0), 20.0, 0.75)
-	_prop("%s/peanut-butter.glb" % ESSEN, Vector3(1.62, 0.86, -0.9), -30.0, 0.75)
-	_prop("%s/bottle-ketchup.glb" % ESSEN, Vector3(1.35, 0.86, -1.4), 15.0, 0.7)
-	_prop("%s/bottle-oil.glb" % ESSEN, Vector3(1.6, 0.86, -1.45), -10.0, 0.7)
-	# Eröffnungs-Banner an der Rückwand (Fantasy Town Kit). Achtung Pivot:
-	# das Tuch hängt +0,4 m in +X neben dem Anker (Wand-Raster-Pivot) —
-	# -90° dreht dieses Offset in +Z, das Tuch schwebt also VOR der Wand
-	# (Anker liegt unsichtbar in der Wand bei z=-4,35).
-	_prop("%s/banner-red.glb" % DORF, Vector3(-0.8, 1.25, -4.35), -90.0, 1.6)
-	_prop("%s/banner-green.glb" % DORF, Vector3(0.8, 1.25, -4.35), -90.0, 1.6)
-
-
 ## Regal-Reihe aus Grund-Meshes: Brett + Füße + je Slot ein Anker mit
 ## Stapel-Halter (die Waren-Meshes hängen unter dem Halter).
 func _baue_regal() -> void:
@@ -518,7 +565,7 @@ func _slots_aktualisieren() -> void:
 		if ware.is_empty() or menge <= 0:
 			continue
 		var gruppe := GoobyeKatalog.gruppe(str(ware.get("gruppe", "")))
-		var mesh := _form_mesh(str(gruppe.get("form", "eckig")))
+		var mesh := GoobyeLadenDeko.form_mesh(str(gruppe.get("form", "eckig")))
 		var mat := StandardMaterial3D.new()
 		mat.albedo_color = Color(str(gruppe.get("farbe", "#CCCCCC")))
 		for n in menge:
@@ -532,51 +579,6 @@ func _slots_aktualisieren() -> void:
 				stueck.rotation_degrees.z = 45.0
 			stapel.add_child(stueck)
 	_slot_knoepfe_beschriften()
-
-
-## Form-Sprache der Warengruppen (§2.5) als Grund-Meshes.
-func _form_mesh(form: String) -> Mesh:
-	match form:
-		"rund":
-			var kugel := SphereMesh.new()
-			kugel.radius = 0.05
-			kugel.height = 0.1
-			return kugel
-		"tropfen":
-			var kapsel := CapsuleMesh.new()
-			kapsel.radius = 0.04
-			kapsel.height = 0.12
-			return kapsel
-		"dreieck":
-			var prisma := PrismMesh.new()
-			prisma.size = Vector3(0.1, 0.1, 0.1)
-			return prisma
-		"stern":
-			var stern := CylinderMesh.new()
-			stern.top_radius = 0.02
-			stern.bottom_radius = 0.06
-			stern.height = 0.1
-			stern.radial_segments = 5
-			return stern
-		_:
-			var box := BoxMesh.new()
-			box.size = Vector3(0.09, 0.09, 0.09)
-			return box
-
-
-## Requisiten-Helfer (Ort-Muster: still bei Fehlpfad).
-func _prop(pfad: String, pos: Vector3, rot_grad: float, groesse: float) -> Node3D:
-	if not ResourceLoader.exists(pfad):
-		return null
-	var szene: PackedScene = load(pfad)
-	if szene == null:
-		return null
-	var node: Node3D = szene.instantiate()
-	node.position = pos
-	node.rotation_degrees.y = rot_grad
-	node.scale = Vector3.ONE * groesse
-	add_child(node)
-	return node
 
 
 func _tinte_rig(rig: GoobyRig, farbe: Color) -> void:

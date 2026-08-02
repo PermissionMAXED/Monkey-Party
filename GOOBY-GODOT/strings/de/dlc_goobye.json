@@ -51,6 +51,26 @@
 			"kunde_familie": "Familie Hoppel",
 			"kunde_hamster_gooby": "Hamster-Gooby"
 		},
+		"alwin": {
+			"hinweis": "Punkt 9 Uhr: Onkel Alwin schaut nach dem Rechten.",
+			"poliert": "Onkel Alwin poliert im Vorbeigehen ein Regal — blitzblank!",
+			"sprueche_moehre": [
+				"Eine Möhre, wie immer. Der Rest ist nur Deko.",
+				"40 Jahre, jeden Tag eine Möhre. Warum aufhören, wenn's schmeckt?",
+				"Das Regal hängt zwei Millimeter schief. Gefällt mir. Charakter.",
+				"Früher lag die Möhre da drüben. Aber du machst das schon.",
+				"Auf der Kreuzfahrt gab's nur Möhren-Smoothies. Barbarei.",
+				"Der Laden riecht noch wie damals. Nach Glück und Bohnerwachs.",
+				"Sag der Kasse einen Gruß von mir. Wir waren mal ein gutes Team.",
+				"Eine Möhre bitte. Keine Widerrede — ich kenne die Preise von '86."
+			],
+			"sprueche_leer": [
+				"Keine Möhre …? Junge. JUNGE.",
+				"40 Jahre lag hier IMMER eine Möhre. Ich sag ja nichts. Ich gucke nur.",
+				"Dann eben morgen. Die Möhre und ich, wir haben Zeit.",
+				"Ein Laden ohne Möhre ist wie ein Schlüssel ohne Tür. Denk mal drüber nach."
+			]
+		},
 		"nachschub": {
 			"titel": "Nachschub bestellen",
 			"hinweis": "Der Großmarkt liefert bis zur Ladentür — Einkaufspreis, verkauft wird zum Richtwert.",

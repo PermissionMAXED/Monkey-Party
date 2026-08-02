@@ -158,6 +158,27 @@ Original-Links sind alle übernommen:)_
       „Briefkasten" nicht mehr ab, Baumodus-Knopf-Salat aufgeräumt (HUD gleitet
       animiert weg, Kamera-Chips weichen dem Dock aus).
 
+- [x] **Onkel-Alwin-Ritual (2. August, das Alwin-NPC-Paket aus der
+      Wellen-J/K-Warteschlange):** Onkel Alwin ist im Goo-und-Bye-Laden
+      jetzt eine ECHTE Type statt nur der erste Bon: Punkt 9 Uhr kommt er
+      mit grauer **Schiebermütze** (sitzt per Bone-Anker auf dem Kopf und
+      macht Kopf-Nicken, Lauf-Wippen und Hängeohren-Pose mit), wirft
+      seinen **Kennerblick** ins Regal (er hat den Laden 40 Jahre
+      geführt) und sagt seine **Tageszeile** als Sprechblase —
+      deterministisch aus dem Tages-Seed, 8 Möhren-Sprüche + 4
+      Leergefegt-Sprüche, gleicher Tag = gleiche Zeile, DE+EN. Liegt
+      seine Möhre da, **poliert er im Vorbeigehen ein Regal**
+      („blitzblank!“-Toast), kauft GENAU eine Möhre und geht selig; ist
+      das Möhrenregal leer, dreht er mit Hängeohren wieder ab — ohne
+      Kassen-Stopp. Jede bediente Möhre zählt ins neue
+      **Stammkunden-Buch** (`alwinBedient` im Spielstand — Futter für den
+      §7.3-Erfolg „treuesteMoehre“). Dazu ein neuer Trailer-Clip
+      `tools/capture/clips/goobye_alwin.gd` (Happy-Path +
+      `--variante=leer` für den traurigen Pfad). Wachen:
+      `test_dlc_goobye_logik.gd` (Möhren-Erkennung, deterministische
+      Tageszeile inkl. DE/EN-Pool-Parität) + `test_dlc_goobye.gd`
+      (Ritual-Choreo mit Mütze + Sprechblase, trauriger Pfad ohne Kauf,
+      Zähler-Normalisierung).
 - [x] **Doku-Refresh (2. August, aus der Wellen-J-Warteschlange):** Die
       Vollständigkeits-Matrix `docs/godot-rewrite/EVAL-VOLLSTAENDIGKEIT.md`
       ist auf die **Revision H/J** gebracht — alle seit W13 geschlossenen
@@ -522,17 +543,23 @@ iPhone 17 Pro Max quer = **0 Befunde**):
       nutzt es als Nächstes (Welle H unten)
 
 **Danach sofort (Warteschlange):**
-- [~] **Welle H: PLAYTEST ×10** — LÄUFT: 4 Bereichs-Läufe sind gespielt,
+- [~] **Welle H: PLAYTEST ×10** — LÄUFT: 6 Bereichs-Läufe sind gespielt,
       berichtet und GEFIXT (Reports in `docs/godot-rewrite/playtest/`):
       **H-home** (Zuhause & Pflege — u. a. tote Zähneputz-Pflicht,
       Schlaf-Gate der Pflege-Taps), **H-city** (Stadt & Läden — u. a.
       GOOBERANDO-Gratis-Buff-Exploit, 8 Wächter-Tests), **H-minigames**
       (Minispiel-Batch 1: teaParty/veggieChop/gardenRush/basketBounce/
       ranchHerde — 6 Funde), **H-ranch-travel** (Ranch-Kauf + Reise/Urlaub
-      über 2 neue Headless-Flows im Playtest-Harness — 7 Funde); dazu
+      über 2 neue Headless-Flows im Playtest-Harness — 7 Funde),
+      **H-dlc-park** (McGooby/Goo und Bye/Funkelpark/IGohbie — 4 Funde,
+      u. a. Nachtband kippte nie während des Parkbesuchs, Goobye-Kunde
+      lief rückwärts zur Kasse), **H-arcade-friends** (Arcade/Freunde/
+      Profil über `flow_arcade` + neuen Flow `flow_profil_freunde` —
+      3 Funde, u. a. tote Anfrage-Karte nach Mutual-Autoaccept und
+      „Rekord 0“ im Profil trotz Schwer-/Endlos-Bestwerten); dazu
       zahlt „Playtest-Bugfixes, Batch 1" (s. oben) auf Quests/Erfolge/
-      Awards ein. **Noch offen:** Baumodus, Minispiele-Batch 2+3, DLCs
-      (Goo und Bye/McGooby), Telefon/Radio, Garderobe/Gestalten,
+      Awards ein. **Noch offen:** Baumodus, Minispiele-Batch 2+3,
+      Telefon/Radio-Rest (Radio, Kamera/Galerie), Garderobe/Gestalten,
       Quests/Progression-Rest, Onboarding → die Restläufe bleiben die
       nächste Playtest-Tranche.
 - [x] **Welle I: 30+ Ideen-Planner** — **FERTIG (2. August):** konsolidierte
@@ -552,7 +579,8 @@ iPhone 17 Pro Max quer = **0 Befunde**):
       „Neu von dir")*, Audio-Feel, ~~B11/Warn-Sweep~~
       *(erledigt 2.8., s. oben in „Neu von dir")*, ~~Doku-Refresh~~
       *(erledigt 2.8., s. oben in „Neu von dir")*,
-      McGooby-Bühne, Alwin-NPC — alle in J/K eingeordnet)
+      McGooby-Bühne, ~~Alwin-NPC~~ *(erledigt 2.8., s. oben in
+      „Neu von dir")* — alle in J/K eingeordnet)
 
 ---
 

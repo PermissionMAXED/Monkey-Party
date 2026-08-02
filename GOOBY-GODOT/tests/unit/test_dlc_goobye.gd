@@ -182,10 +182,15 @@ func test_state_erstbesuch_umsatz_und_fremde_unterschluessel() -> void:
 	assert_eq(gs.get_value("dlc.goobye.umsatz.gesamt"), 80, "Gesamtumsatz summiert")
 	GoobyeState.lager_setzen(gs, {"apple": 3, "kaputt": 0})
 	assert_eq(gs.get_value("dlc.goobye.lager"), {"apple": 3}, "0-Mengen heilen raus")
+	# Stammkunden-Buch (§6.3): jede bediente Möhre zählt einmal.
+	GoobyeState.alwin_bedient(gs)
+	GoobyeState.alwin_bedient(gs)
+	assert_eq(gs.get_value("dlc.goobye.alwinBedient"), 2, "Alwin-Zähler summiert")
 	# Geschwister-DLCs im dlc-Slice bleiben beim Normalisieren VERBATIM.
 	var slice := GoobyeState.normalize_slice({"zukunft": {"x": 1}, "goobye": "kaputt"})
 	assert_eq(slice["zukunft"], {"x": 1}, "fremder Unterschlüssel unangetastet")
 	assert_eq(slice["goobye"]["gekauft"], false, "eigener Unterschlüssel geheilt")
+	assert_eq(slice["goobye"]["alwinBedient"], 0, "Alwin-Zähler geheilt")
 	_teardown_gs(gs)
 
 
@@ -355,6 +360,135 @@ func test_laden_szene_kompletter_markttag() -> void:
 	for anzahl: Variant in (plan["verkauft"] as Dictionary).values():
 		verkauft += int(anzahl)
 	assert_eq(lager_danach, lager_start - verkauft, "kein Stück geht verloren")
+	_teardown_gs(gs)
+
+
+## Alwins Stammkunden-Ritual (§6.3) mit Möhre im Regal: Schiebermütze
+## sitzt, die deterministische Tageszeile steht in der Sprechblase, und der
+## Kassen-Moment füttert das Stammkunden-Buch (dlc.goobye.alwinBedient).
+func test_laden_szene_alwin_ritual_mit_moehre() -> void:
+	GoobyeKatalog.reset_cache()
+	var gs := _fresh_gs(12, GoobyeKatalog.preis())
+	assert_eq(GoobyeKauf.kaufe(gs), GoobyeKauf.RESULT_OK, "Vorbereitung: Laden gekauft")
+	gs.set_value("dlc.goobye.erstbesuchGesehen", true)
+	var szene: GoobyeLadenScene = LadenSzene.instantiate()
+	szene.game_state_override = gs
+	szene.seed_override = 12345
+	szene.tempo = 0.05
+	szene.auto_navigate = false
+	tree.root.add_child(szene)
+	await wait_frames(3)
+	# Slot 0 = Äpfel, Slot 1 = Möhren (Katalog-Reihenfolge, s. Markttag-Test).
+	szene.slot_tippen(0)
+	szene.slot_tippen(1)
+	szene.laden_oeffnen()
+	var zeile := [""]
+	var blase := await wait_until(
+		func() -> bool:
+			var bubble: AcBubble = szene.find_child("AcBubble", true, false)
+			if bubble == null:
+				return false
+			zeile[0] = bubble.current_line()
+			return true,
+		10000
+	)
+	assert_true(blase, "Alwins Sprechblase erscheint am Regal")
+	assert_eq(zeile[0], GoobyeAlwin.spruch(12345, true), "Tageszeile deterministisch (Möhre)")
+	assert_true(szene.find_child("AlwinMuetze", true, false) != null, "Schiebermütze sitzt")
+	var fertig := await wait_until(
+		func() -> bool: return szene.phase == GoobyeLadenScene.PHASE_ABSCHLUSS, 20000
+	)
+	assert_true(fertig, "Markttag läuft trotz Ritual bis zum Kassensturz")
+	assert_eq(gs.get_value("dlc.goobye.alwinBedient"), 1, "Stammkunden-Buch zählt die Möhre")
+	szene.queue_free()
+	await wait_frames(2)
+	_teardown_gs(gs)
+
+
+## Leergefegtes Möhrenregal: Alwin sagt seine traurige Tageszeile, lässt
+## die Kasse aus — und der Tag läuft trotzdem sauber bis zum Kassensturz.
+func test_laden_szene_alwin_ohne_moehre() -> void:
+	GoobyeKatalog.reset_cache()
+	var gs := _fresh_gs(12, GoobyeKatalog.preis())
+	assert_eq(GoobyeKauf.kaufe(gs), GoobyeKauf.RESULT_OK, "Vorbereitung: Laden gekauft")
+	gs.set_value("dlc.goobye.erstbesuchGesehen", true)
+	var szene: GoobyeLadenScene = LadenSzene.instantiate()
+	szene.game_state_override = gs
+	szene.seed_override = 12345
+	szene.tempo = 0.05
+	szene.auto_navigate = false
+	tree.root.add_child(szene)
+	await wait_frames(3)
+	# NUR Äpfel listen (Slot 0) — Alwins Möhrenregal bleibt leer.
+	szene.slot_tippen(0)
+	szene.laden_oeffnen()
+	var zeile := [""]
+	var blase := await wait_until(
+		func() -> bool:
+			var bubble: AcBubble = szene.find_child("AcBubble", true, false)
+			if bubble == null:
+				return false
+			zeile[0] = bubble.current_line()
+			return true,
+		10000
+	)
+	assert_true(blase, "auch ohne Möhre spricht Alwin")
+	assert_eq(zeile[0], GoobyeAlwin.spruch(12345, false), "Tageszeile deterministisch (leer)")
+	var fertig := await wait_until(
+		func() -> bool: return szene.phase == GoobyeLadenScene.PHASE_ABSCHLUSS, 20000
+	)
+	assert_true(fertig, "Tag läuft durch, obwohl Alwin die Kasse auslässt")
+	assert_eq(gs.get_value("dlc.goobye.alwinBedient"), 0, "keine Möhre = kein Eintrag")
+	szene.queue_free()
+	await wait_frames(2)
+	_teardown_gs(gs)
+
+
+## Playtest H-dlc-park: der Kunde (GoobyRig, GLB-Front -Z) blickt auf JEDEM
+## Choreo-Bein in Laufrichtung — vorher stand das Regal→Kasse-Bein auf dem
+## hart kodierten Tür-Yaw (+PI/2) und der Kunde lief RÜCKWÄRTS zur Kasse.
+func test_laden_kunden_blick_folgt_laufweg() -> void:
+	# Vertragsformel (ASSET-ORIENTATION.md §1, GLB-Rigs): der -Z-Vorwärts-
+	# Vektor zeigt nach dem Yaw exakt in die Laufrichtung — alle drei Beine.
+	var beine: Array = [
+		[GoobyeLadenScene.TUER_POS, GoobyeLadenScene.REGAL_STOP],
+		[GoobyeLadenScene.REGAL_STOP, GoobyeLadenScene.KASSE_STOP],
+		[GoobyeLadenScene.KASSE_STOP, GoobyeLadenScene.TUER_POS],
+	]
+	for bein: Array in beine:
+		var von: Vector3 = bein[0]
+		var nach: Vector3 = bein[1]
+		var yaw := GoobyeLadenScene.blick_yaw(von, nach)
+		var vorn := Vector3(0.0, 0.0, -1.0).rotated(Vector3.UP, yaw)
+		var richtung := (nach - von).normalized()
+		assert_true(
+			vorn.dot(richtung) > 0.999,
+			"Blick folgt dem Bein %s→%s (dot %.3f)" % [von, nach, vorn.dot(richtung)]
+		)
+	# In der Szene: der frisch gespawnte Kunde blickt zum Regal-Bein.
+	GoobyeKatalog.reset_cache()
+	var gs := _fresh_gs(12, GoobyeKatalog.preis())
+	assert_eq(GoobyeKauf.kaufe(gs), GoobyeKauf.RESULT_OK, "Vorbereitung: Laden gekauft")
+	gs.set_value("dlc.goobye.erstbesuchGesehen", true)
+	var szene: GoobyeLadenScene = LadenSzene.instantiate()
+	szene.game_state_override = gs
+	szene.seed_override = 12345
+	szene.tempo = 0.05
+	szene.auto_navigate = false
+	tree.root.add_child(szene)
+	await wait_frames(3)
+	szene.slot_tippen(0)
+	szene.laden_oeffnen()
+	assert_true(szene._kunde != null, "Kunde steht in der Tür")
+	# rotation.y ist float32 — Vergleich mit Toleranz gegen die 64-bit-Formel.
+	assert_almost(
+		szene._kunde.rotation.y,
+		GoobyeLadenScene.blick_yaw(GoobyeLadenScene.TUER_POS, GoobyeLadenScene.REGAL_STOP),
+		1e-4,
+		"Spawn-Blick zeigt zum Regal (Vertragsformel, nicht ±PI/2)"
+	)
+	szene.queue_free()
+	await wait_frames(2)
 	_teardown_gs(gs)
 
 
